@@ -18,11 +18,6 @@
 #include "detours/detours.h"
 
 /*
-* JSON
-*/
-#include "json/json.hpp"
-
-/*
 * STD Includes
 */
 #include <iostream>
