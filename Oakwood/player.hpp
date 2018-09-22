@@ -2,7 +2,7 @@
 //--------------------------[ LIBRG EVENTS ]--------------------------
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
-	auto player = new mafia_player;
+	auto player = new mafia_player();
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
 	librg_data_rptr(evnt->data, player->model, sizeof(char) * 32);

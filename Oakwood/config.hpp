@@ -40,7 +40,7 @@ inline auto config_get() -> void {
     zpl_string json_config_data = zpl_string_make(zpl_heap(), (const char*)json_file.data);
 
     zpl_json_object json_config = { 0 };
-    zpl_json_parse(&json_config, zpl_string_length(json_config_data), json_config_data, zpl_heap(), false, &ok);
+    zpl_json_parse(&json_config, zpl_string_length(json_config_data), json_config_data, zpl_heap(), true, &ok);
 
     zpl_file_free_contents(&json_file);
 
