@@ -26,6 +26,12 @@
 #include <fstream>
 
 /*
+* DX 
+*/
+#include <d3d8.h>
+#include <d3dx8.h>
+
+/*
 * Shared
 */
 #include "helpers.hpp"
