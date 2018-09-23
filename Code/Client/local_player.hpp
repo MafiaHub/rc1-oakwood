@@ -176,12 +176,43 @@ namespace hooks
 			jmp shoot_fix_jmp_back
 		}
 	}
+
+	MafiaSDK::C_Actor* Scene_CreateActor_Filter(MafiaSDK::C_Mission_Enum::ObjectTypes type, DWORD frame) {
+		if (type != MafiaSDK::C_Mission_Enum::Car &&
+			type != MafiaSDK::C_Mission_Enum::Dog &&
+			type != MafiaSDK::C_Mission_Enum::Enemy) {
+			return MafiaSDK::GetMission()->CreateActor(type);
+		}
+
+		//NOTE(DavoSK): Dont spawn actor but we need to call destructor of frame
+		__asm {
+			mov eax, frame
+			push eax
+			mov ecx, [eax]
+			call dword ptr ds : [ecx]
+		}
+
+		return nullptr;
+	}
+
+	DWORD filter_create_actor_back = 0x00544B07;
+	__declspec(naked) void Scene_CreateActor() {
+		__asm {
+			push edi
+			push eax
+			call Scene_CreateActor_Filter
+			add esp, 0x8
+
+			jmp filter_create_actor_back
+		}
+	}
 };
 
 inline auto local_player_init() -> void {
 	MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);
 	MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
 	MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);
+	MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
 
 	hooks::select_by_id_original = reinterpret_cast<hooks::G_Inventory_SelectByID_t>(
 		DetourFunction((PBYTE)0x006081D0, (PBYTE)&hooks::SelectByID)
