@@ -2,17 +2,8 @@
 inventory_item thompson = { 10, 50, 50, 0 };
 inventory_item colt		= { 9, 50, 50, 0 };
 
-std::vector<zplm_vec3> spawn_points = {
-	{ -31.548204f, 8.051225f, 30.740961f },
-	{ -40.273148f, 1.410721f, 44.122868f },
-	{ 9.099307f,   1.465376f, 31.149347f },
-	{ -15.85788f,  1.465376f, 41.045544f }
-};
-
-inline auto mode_generate_random_spawn() -> zplm_vec3 {
-	srand((unsigned)time(0));
-	size_t index = (rand() % spawn_points.size());
-	return spawn_points.at(index);
+inline auto mode_generate_spawn() -> zplm_vec3 {
+	return { -1984.884277f, -5.032383f, 23.144674f };
 }
 
 inline auto mode_broadcast_msg(const char* text, u32 color = 0xFFFFFF) {
@@ -36,7 +27,7 @@ inline auto mode_player_connected(librg_event_t* evnt, mafia_player* player) -> 
 	player_inventory_add(evnt->entity, &colt);
 
 	//set position of entity
-	evnt->entity->position = mode_generate_random_spawn();
+	evnt->entity->position = mode_generate_spawn();
 
 	//sent player for making player spawned !
 	player_send_spawn(evnt->entity);
@@ -69,7 +60,7 @@ inline auto mode_player_died(librg_entity_t* player_ent) -> void {
 	player_inventory_add(player_ent, &colt);
 
 	//set position of entity
-	player_ent->position = mode_generate_random_spawn();
+	player_ent->position = mode_generate_spawn();
 	
 	player_send_respawn(player_ent);
 

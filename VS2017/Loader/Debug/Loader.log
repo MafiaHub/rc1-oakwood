@@ -1,0 +1,3 @@
+﻿  Main.cpp
+inject.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/INCREMENTAL:NO' specification
+  Loader.vcxproj -> D:\Mafia 1.2\oakwood\VS2017\Debug\Loader.exe

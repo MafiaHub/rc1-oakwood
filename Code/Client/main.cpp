@@ -64,7 +64,8 @@ BOOL WINAPI DllMain(
 	case DLL_PROCESS_ATTACH: {
 		// Initialize once for each new process.
 		// Return FALSE to fail DLL load.
-		mod_init();
+		DisableThreadLibraryCalls(hinstDLL);
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&mod_init, 0, 0, 0);
 	} break;
 
 	case DLL_THREAD_ATTACH:
@@ -175,5 +176,5 @@ auto mod_init_patches() -> void {
 	MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
 	MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
 	MafiaSDK::C_Game_Patches::PatchRemovePlayer();
-	MafiaSDK::C_Game_Patches::PatchJumpToGame("dm");
+	MafiaSDK::C_Game_Patches::PatchJumpToGame("freeitaly");
 }
