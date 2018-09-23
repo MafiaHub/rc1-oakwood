@@ -1,0 +1,4 @@
+﻿  inject.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Code\Loader\inject.cpp': No such file or directory
+  Main.cpp
+c1xx : fatal error C1083: Cannot open source file: '..\Code\Loader\Main.cpp': No such file or directory

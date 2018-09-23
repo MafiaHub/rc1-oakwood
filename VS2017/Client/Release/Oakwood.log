@@ -1,0 +1,11 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(391,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (Oakwood.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  main.cpp
+f:\games\mafia\oakwood\vendors\mafia-sdk\mafiasdk\game\c_human.hpp(262): warning C4409: illegal instruction size
+  Generating code
+  All 693 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+detours.lib(detours.obj) : warning LNK4099: PDB 'detours.pdb' was not found with 'detours.lib(detours.obj)' or at 'F:\Games\mafia\Oakwood\Release\detours.pdb'; linking object as if no debug info
+detours.lib(disasm.obj) : warning LNK4099: PDB 'detours.pdb' was not found with 'detours.lib(disasm.obj)' or at 'F:\Games\mafia\Oakwood\Release\detours.pdb'; linking object as if no debug info
+  Oakwood.vcxproj -> F:\Games\mafia\Oakwood\Release\Client.dll
+  F:\Games\mafia\Oakwood\Release\Oakwood.dll
+  1 File(s) copied
