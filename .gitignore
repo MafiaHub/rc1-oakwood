@@ -1,7 +1,6 @@
 .vs
 
-VS2017/Debug
+*/Debug
 
-VS2017/Release
-
+*/Release
 .vscode
