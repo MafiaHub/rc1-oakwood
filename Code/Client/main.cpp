@@ -43,6 +43,7 @@
 auto mod_init()			-> void;
 auto mod_init_patches() -> void;
 auto mod_bind_events()  -> void;
+auto mod_hook_dx()		-> void;
 
 f32 last_delta  = 0.0f;
 f32 last_update = 0.0f;
@@ -58,6 +59,11 @@ bool hit_hook_skip = true;
 #include "player.hpp"
 #include "weapon_drop.hpp"
 #include "mp.hpp"
+#include "menu.hpp"
+
+#include "graphics/font.hpp"
+#include "graphics/graphics.hpp"
+#include "graphics/device_proxy.h"
 
 BOOL WINAPI DllMain(
 	HINSTANCE hinstDLL,  // handle to DLL module
@@ -109,10 +115,12 @@ auto mod_init() -> void {
 	mod_bind_events();
 }
 
+//TODO, remove this hax for forcing ammo
 void librg_entites_tick(librg_entity_t* ent) {
 	*(int*)((DWORD)ent->user_data + 0x4A4) = 50;
 }
 
+//TODO, change menu_skip with mission string comparing !
 int menu_skip = 0;
 auto mod_bind_events() -> void {
 
@@ -124,22 +132,22 @@ auto mod_bind_events() -> void {
 		}
 
 		if (menu_skip == 1) {
-
 			// disable traffic
 			MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 
 			// connecting camera look at the LockAt more cuz it's weird
  			auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
-			Vector3D cam_pos = { -1.658540964f, 7.694108963f, 38.52610779f };
-			Vector3D cam_rot = {0.5f, 0.5f, 0.5f };
+			Vector3D cam_pos = { -1788.927612f, -4.542368f,  -9.105090f };
+			Vector3D cam_rot = { 0.982404f,0.520000f, 1.017291f };
 			cam->LockAt(cam_pos, cam_rot);
 			
 			// welcome msg
 			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Welcome to Mafia DM Alpha 0.1", 0xFF0000);
 			std::string connect_string = "Connecting to " + GlobalConfig.server_address + " ...";
 			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(connect_string.c_str(), 0xFFFFFF);
-
 			mod_librg_connect();
+			menu_skip = 0;
+			return;
 		}
 		menu_skip++;
 	});
@@ -174,6 +182,36 @@ auto mod_bind_events() -> void {
 	});	
 }
 
+/* 
+* Wait till d3d8 pointer is not null then hook
+* TODO make it as hook ( fucking crashes on startup )
+*/
+auto mod_hook_dx() -> void {
+
+	while (*(DWORD*)(D3D_DEVICE_PTR) == NULL) {
+		Sleep(100);
+	}
+
+	Sleep(500);
+	*(CDirect3DDevice8Proxy**)(D3D_DEVICE_PTR) = new CDirect3DDevice8Proxy(*(IDirect3DDevice8**)(D3D_DEVICE_PTR));
+}
+
+/* 
+* Simple file replacment router
+* Needs to be moved into separated file for later ussage
+*/
+typedef DWORD(_stdcall *DtaOpen_t) (const char* filename, DWORD params);
+DtaOpen_t DtaOpen = nullptr;
+
+auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
+
+	if (strstr(filename, "mainmenu.mnu")){
+		return DtaOpen("oakwood/Files/main.mnu", params);
+	}
+
+	return DtaOpen(filename, params);
+}
+
 auto mod_init_patches() -> void {
 
 	MafiaSDK::C_Game_Patches::PatchDisableLogos();
@@ -182,5 +220,14 @@ auto mod_init_patches() -> void {
 	MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
 	MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
 	MafiaSDK::C_Game_Patches::PatchRemovePlayer();
-	MafiaSDK::C_Game_Patches::PatchJumpToGame("freeitaly");
+
+	HMODULE rw_data = GetModuleHandleA("rw_data.dll");
+	DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
+	
+	mod_hook_dx();
+	menu::init();
+
+	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
+		graphics::render_nicknames();
+	});
 }

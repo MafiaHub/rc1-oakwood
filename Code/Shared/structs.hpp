@@ -22,6 +22,10 @@ struct mafia_player {
 	current_weapon_id(0) {
 		for (size_t i = 0; i < 8; i++)
 			inventory.items[i] = { -1, 0, 0, 0 };
+
+#ifdef MAFIA_SDK_IMPLEMENTATION
+		nickname_texture = nullptr;
+#endif
 	}
 
 	zplm_vec3_t rotation;
@@ -40,6 +44,7 @@ struct mafia_player {
 	Interpolator inter_pos;
 	Interpolator inter_pose;
 	MafiaSDK::C_Human* ped;
+	IDirect3DTexture8* nickname_texture;
 #endif
 };
 

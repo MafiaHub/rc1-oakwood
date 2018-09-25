@@ -2,7 +2,7 @@
 #define _MAFIA_SDK_
 
 #include <Windows.h>
-//#include <d3d8.h>
+#include <d3d8.h>
 #include <functional>
 
 #define byte BYTE
@@ -14,7 +14,7 @@
 #include "Engine/I3D_Projector.hpp"
 #include "Engine/I3D_Light.hpp"
 #include "Engine/I3D_Sector.hpp"
-//#include "Engine/DirectHook.hpp"
+#include "Engine/DirectHook.hpp"
 
 #include "Game/C_Entity.hpp"
 #include "Game/C_Actor.hpp"
@@ -24,6 +24,7 @@
 #include "Game/C_Vehicle.hpp"
 #include "Game/C_Camera.hpp"
 #include "Game/C_Indicators.hpp"
+#include "Game/GM_Menu.hpp"
 #include "Game/C_Blood.hpp"
 #include "Game/C_BloodManager.hpp"
 #include "Game/C_Game.hpp"

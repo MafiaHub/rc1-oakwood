@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\graphics">
+      <UniqueIdentifier>{9475dae1-a8b3-4c8b-8596-f91afacd0d12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\Client\local_player.hpp">
@@ -33,7 +36,13 @@
     <ClInclude Include="..\..\Code\Client\player.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphics.hpp">
+    <ClInclude Include="..\..\Code\Client\graphics\font.hpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\graphics.hpp">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\menu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

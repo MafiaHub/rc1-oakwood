@@ -25,6 +25,7 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
 	librg_data_wptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
 	librg_data_wptr(evnt->data, player->model, sizeof(char) * 32);
+	librg_data_wptr(evnt->data, player->name, sizeof(char) * 32);
 	librg_data_wu8(evnt->data, player->is_crouching);
 	librg_data_wu8(evnt->data, player->is_aiming);
 	librg_data_wptr(evnt->data, &player->inventory, sizeof(player_inventory));

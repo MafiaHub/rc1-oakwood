@@ -66,7 +66,7 @@ namespace MafiaSDK
 			strcpy((char*)0x637A78, klz.c_str());
             strcpy((char*)0x637A94, mission_name);
             //MemoryPatcher::PatchAddress(0x5EA2E0, 0xC3); 
-			MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C 
+			//MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C 
 			MemoryPatcher::PatchAddress(0x5BEE7A, 105961); // E9 9D0100000
 		}
 
@@ -280,7 +280,7 @@ namespace MafiaSDK
 		{
 			return reinterpret_cast<C_BloodManager*>((unsigned long)this + 0x2D90);
 		}
-		
+
 		void SetLocalPlayer(C_Player* player)
 		{
 			this->GetInterface()->mLocalPlayer = player;

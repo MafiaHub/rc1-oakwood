@@ -20,12 +20,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\Client\config.hpp" />
+    <ClInclude Include="..\..\Code\Client\graphics\font.hpp" />
+    <ClInclude Include="..\..\Code\Client\graphics\graphics.hpp" />
     <ClInclude Include="..\..\Code\Client\interpolation.h" />
     <ClInclude Include="..\..\Code\Client\local_player.hpp" />
+    <ClInclude Include="..\..\Code\Client\menu.hpp" />
     <ClInclude Include="..\..\Code\Client\mp.hpp" />
     <ClInclude Include="..\..\Code\Client\player.hpp" />
     <ClInclude Include="..\..\Code\Client\weapon_drop.hpp" />
-    <ClInclude Include="graphics.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Code\Client\main.cpp" />
@@ -99,6 +101,7 @@
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)..\Vendors\detours;$(SolutionDir)..\Vendors\DirectXSDK\Lib\x86</AdditionalLibraryDirectories>
       <AdditionalDependencies>detours.lib;d3d8.lib;d3dx8.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libci.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y "$(SolutionDir)Debug\Client.dll" ..\..\..</Command>
@@ -128,6 +131,7 @@
       <AdditionalLibraryDirectories>$(SolutionDir)..\Vendors\detours;$(SolutionDir)..\Vendors\DirectXSDK\Lib\x86</AdditionalLibraryDirectories>
       <AdditionalDependencies>detours.lib;d3d8.lib;d3dx8.lib;legacy_stdio_definitions.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>libci.lib</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /Y $(SolutionDir)Release\Oakwood.dll ..\..\..</Command>
