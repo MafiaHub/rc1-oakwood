@@ -64,9 +64,9 @@ inline auto drop_on_pickup(MafiaSDK::C_Drop_In_Weapon* drop) {
 
 namespace hooks
 {
+	char model[32];
 	DWORD jump_back = 0x00580180;
 	DWORD other_jmp = 0x0057FB78;
-	char model[32];
 	DWORD jmp_back_capture = 0x0057FBA8;
 	
 	void copy_model(char* model_name) {

@@ -16,6 +16,18 @@
     <Filter Include="Header Files\graphics">
       <UniqueIdentifier>{9475dae1-a8b3-4c8b-8596-f91afacd0d12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics\imgui">
+      <UniqueIdentifier>{385ad474-a7c0-4cbc-b1a7-92da43ab1d42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics">
+      <UniqueIdentifier>{dfc5e57b-a236-411e-b562-ebaf7d5e729b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\imgui">
+      <UniqueIdentifier>{da27edb1-b1ff-4f8e-8d83-ee989c10ca78}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\input">
+      <UniqueIdentifier>{2beadbe3-9a09-434e-af15-53de967d3388}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\Client\local_player.hpp">
@@ -45,10 +57,58 @@
     <ClInclude Include="..\..\Code\Client\menu.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imconfig.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imgui.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imgui_internal.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imstb_rectpack.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imstb_textedit.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imstb_truetype.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imgui_impl_dx9.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\graphics\imgui\imgui_impl_win32.h">
+      <Filter>Header Files\graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\input\CDirectInput8Proxy.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\input\CDirectInputDevice8Proxy.h">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\Client\input\input.hpp">
+      <Filter>Header Files\input</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Code\Client\main.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\Client\graphics\imgui\imgui.cpp">
+      <Filter>Source Files\graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\Client\graphics\imgui\imgui_draw.cpp">
+      <Filter>Source Files\graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\Client\graphics\imgui\imgui_widgets.cpp">
+      <Filter>Source Files\graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\Client\graphics\imgui\imgui_impl_dx9.cpp">
+      <Filter>Source Files\graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\Client\graphics\imgui\imgui_impl_win32.cpp">
+      <Filter>Source Files\graphics\imgui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

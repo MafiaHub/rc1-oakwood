@@ -44,7 +44,7 @@ struct mafia_player {
 	Interpolator inter_pos;
 	Interpolator inter_pose;
 	MafiaSDK::C_Human* ped;
-	IDirect3DTexture8* nickname_texture;
+	IDirect3DTexture9* nickname_texture;
 #endif
 };
 

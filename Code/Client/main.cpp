@@ -13,6 +13,12 @@
 #include "mafia-sdk/MafiaSDK/MafiaSDK.h"
 
 /*
+* HTTP lib for server browser 
+*/
+#define HTTP_IMPLEMENTATION
+#include "http/http.h" 
+
+/*
 * Detours
 */
 #include "detours/detours.h"
@@ -24,12 +30,22 @@
 #include <string>
 #include <functional>
 #include <fstream>
+#include <vector>
 
 /*
-* DX 
+* DX & DInput
 */
-#include <d3d8.h>
-#include <d3dx8.h>
+#include <d3d9.h>
+#include <d3dx9.h>
+#include <dinput.h>
+
+/*
+* Imgui sheel we ?  
+*/
+extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#include "graphics/imgui/imgui.h"
+#include "graphics/imgui/imgui_impl_dx9.h"
+#include "graphics/imgui/imgui_impl_win32.h"
 
 /*
 * Shared
@@ -60,10 +76,11 @@ bool hit_hook_skip = true;
 #include "weapon_drop.hpp"
 #include "mp.hpp"
 #include "menu.hpp"
+#include "input/input.hpp"
 
-#include "graphics/font.hpp"
+#include "graphics/CDirect3DDevice9Proxy.h"
+#include "graphics/CDirect3D9Proxy.h"
 #include "graphics/graphics.hpp"
-#include "graphics/device_proxy.h"
 
 BOOL WINAPI DllMain(
 	HINSTANCE hinstDLL,  // handle to DLL module
@@ -96,22 +113,20 @@ BOOL WINAPI DllMain(
 }
 
 auto mod_init() -> void {
+	
+	graphics::hook();
+	input::hook();
+	Sleep(300);
+	input::hook_window();
 
-	//alloc console
 	AllocConsole();
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);
 
-	//get config
 	config_get();
-
-	mod_log("Initialization of patches");
 	mod_init_patches();
-
-	mod_log("Initialization of librg");
 	mod_librg_init_stuff();
-
 	mod_bind_events();
 }
 
@@ -183,20 +198,6 @@ auto mod_bind_events() -> void {
 }
 
 /* 
-* Wait till d3d8 pointer is not null then hook
-* TODO make it as hook ( fucking crashes on startup )
-*/
-auto mod_hook_dx() -> void {
-
-	while (*(DWORD*)(D3D_DEVICE_PTR) == NULL) {
-		Sleep(100);
-	}
-
-	Sleep(500);
-	*(CDirect3DDevice8Proxy**)(D3D_DEVICE_PTR) = new CDirect3DDevice8Proxy(*(IDirect3DDevice8**)(D3D_DEVICE_PTR));
-}
-
-/* 
 * Simple file replacment router
 * Needs to be moved into separated file for later ussage
 */
@@ -212,7 +213,41 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
 	return DtaOpen(filename, params);
 }
 
+
+class KeyToggle {
+public:
+	KeyToggle(int key) :mKey(key), mActive(false) {}
+	operator bool() {
+		if (GetAsyncKeyState(mKey)) {
+			if (!mActive) {
+				mActive = true;
+				return true;
+			}
+		}
+		else
+			mActive = false;
+		return false;
+	}
+private:
+	int mKey;
+	bool mActive;
+};
+
+KeyToggle myDebugKey(VK_F2);
+
 auto mod_init_patches() -> void {
+
+	menu::init();
+	HMODULE rw_data = GetModuleHandleA("rw_data.dll");
+	DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
+	
+	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
+		graphics::render_nicknames();
+
+		if (myDebugKey) {
+			input::toggle_block_input();
+		}
+	});
 
 	MafiaSDK::C_Game_Patches::PatchDisableLogos();
 	MafiaSDK::C_Game_Patches::PatchDisablePleaseWait();
@@ -220,14 +255,4 @@ auto mod_init_patches() -> void {
 	MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
 	MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
 	MafiaSDK::C_Game_Patches::PatchRemovePlayer();
-
-	HMODULE rw_data = GetModuleHandleA("rw_data.dll");
-	DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
-	
-	mod_hook_dx();
-	menu::init();
-
-	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
-		graphics::render_nicknames();
-	});
 }

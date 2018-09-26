@@ -1,152 +1,58 @@
 #pragma once
 namespace graphics {
 	
-	#define OURQUAD (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE)
-	struct QuadVertex {
-		float x, y, z;
-		float rhw;
-		DWORD color;
-		float tu, tv;
-	};
+	typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);
+	d3dcreate9_t d3dcreate9_original = nullptr;
+	IDirect3DDevice9* global_device	= nullptr;
+	
+	
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	IDirect3DVertexBuffer8* vertex_buffer	= nullptr;
-	IDirect3DDevice8* global_device			= nullptr;
-
-	inline auto init(IDirect3DDevice8* device) -> void {
-
-		global_device = device;
-		mod_log("DirectX Hooked !");
-
-		if (FAILED(device->CreateVertexBuffer(6 * sizeof(QuadVertex), D3DUSAGE_WRITEONLY, OURQUAD, D3DPOOL_MANAGED, &vertex_buffer))) {
-			MessageBoxA(NULL, "LHMP", "Graphics - unable to create vertex buffer !", MB_OK);
-		}
-	}
-
-	DWORD				m_dwRenderTextureBlock;
-	DWORD				m_dwRenderTextureBlockDeposit;
-
-	void SetRenderTextureStateBlock()
-	{
-		for (int i = 0; i < 2; i++) {
-			global_device->BeginStateBlock();
-
-			global_device->SetRenderState(D3DRS_ZENABLE, TRUE);
-			global_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-			global_device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			global_device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-			global_device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-			global_device->SetRenderState(D3DRS_ALPHAREF, 0x08);
-			global_device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-			global_device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-			global_device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-			global_device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
-			global_device->SetRenderState(D3DRS_CLIPPING, TRUE);
-			global_device->SetRenderState(D3DRS_EDGEANTIALIAS, FALSE);
-			global_device->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
-			global_device->SetRenderState(D3DRS_VERTEXBLEND, FALSE);
-			global_device->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
-			global_device->SetRenderState(D3DRS_FOGENABLE, FALSE);
-
-			//--- 
-			global_device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-			global_device->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-			global_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-			//------
-			global_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
-			global_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-
-			//------ important for rendering as sprite---
-			global_device->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_POINT);
-			global_device->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_POINT);
-			global_device->SetTextureStageState(0, D3DTSS_MIPFILTER, D3DTEXF_NONE);
-
-			global_device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-			global_device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-			global_device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-			global_device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-			global_device->SetRenderState(D3DRS_WRAP0, 0);
-
-			// now save it
-			if (i == 0)
-				global_device->EndStateBlock(&m_dwRenderTextureBlock);
-			else
-				global_device->EndStateBlock(&m_dwRenderTextureBlockDeposit);
-		}
-	}
-
-
-	inline auto render_texture_primitive(int x, int y, float z, int w, int h, LPDIRECT3DTEXTURE8 texture, unsigned char alpha) -> void {
-		
-		
-		global_device->SetTexture(0, texture);
-
-		// x, y, z, rhw, color
-		DWORD color = (alpha << 24);
-		QuadVertex g_square_vertices[] = {
-			{ (float)x, (float)y, z, 1.0f,color, 0.0f, 0.0f },
-			{ (float)(x + w), (float)y, z, 1.0f, color, 1.0f, 0.0f },
-			{ (float)x, (float)(y + h), z, 1.0f, color, 0.0f, 1.0f },
-			{ (float)(x + w), (float)(y + h), z, 1.0f, color, 1.0f, 1.0f }
-		};
-
-		unsigned char* buffer;
-		vertex_buffer->Lock(0, 0, &buffer, 0);
-		memcpy(buffer, g_square_vertices, sizeof(g_square_vertices));
-		vertex_buffer->Unlock();
-
-		global_device->SetPixelShader(NULL);
-		global_device->SetVertexShader(OURQUAD);
-		global_device->SetStreamSource(0, vertex_buffer, sizeof(QuadVertex));
-		global_device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
-	}
-
-	LPD3DXFONT pFont = nullptr;
-	inline void draw_text(int x, int y, DWORD color, const char *str)
-	{
-		if (pFont == nullptr) {
-			// Create the D3DX Font
-			HFONT hFont = CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0, ANSI_CHARSET, 0, 0, 0, 0, "Verdana");
-			if (FAILED(D3DXCreateFont(global_device, hFont, &pFont))) {
-				return;
-			}
-		}
-		
-		RECT TextRect = { x, y, 0, 0 };
-		pFont->Begin();
-		pFont->DrawText(str, -1, &TextRect, DT_CALCRECT, 0);
-		pFont->DrawText(str, -1, &TextRect, DT_LEFT, color);
-		pFont->End();
-		//pFont->Release();
-	}
-
-
-	int get_text_width(const char *szText)
-	{
-		RECT rcRect = { 0,0,0,0 };
-		if (pFont)
-		{
-			// calculate required rect
-			pFont->DrawText(szText, strlen(szText), &rcRect, DT_CALCRECT,
-				D3DCOLOR_XRGB(0, 0, 0));
+	IDirect3D9* WINAPI d3dcreate9_hook(UINT SDKVersion) {
+		IDirect3D9 *new_direct = d3dcreate9_original(SDKVersion);
+		if (new_direct) {
+			return new CDirect3D9Proxy(new_direct);
 		}
 
-		// return width
-		return rcRect.right - rcRect.left;
+		MessageBox(NULL, "Unable to create Direct3D9 interface.", "Fatal error", MB_ICONERROR);
+		TerminateProcess(GetCurrentProcess(), 0);
+		return NULL;
 	}
 
-	inline auto device_lost(IDirect3DDevice8* device) -> void {
+	inline auto hook() -> void {
+
+		while (!GetModuleHandle("d3d9.dll")) {
+			Sleep(100);
+		}
+
+		d3dcreate9_original = (d3dcreate9_t)(DetourFunction(DetourFindFunction((char*)"d3d9.dll", (char*)"Direct3DCreate9"), (PBYTE)d3dcreate9_hook));
+	}
+
+	inline auto init(IDirect3DDevice9* device) -> void {
+
+		global_device = device;	
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		ImGui_ImplWin32_Init(*(HWND*)(0x101C5458));
+		ImGui_ImplDX9_Init(device);
+		ImGui::StyleColorsDark();
+	}
+
+	inline auto device_lost(IDirect3DDevice9* device) -> void {
 
 	}
 
-	inline auto device_reset(IDirect3DDevice8* device) -> void {
+	inline auto device_reset(IDirect3DDevice9* device) -> void {
 
 	}
 
 	inline auto world_to_screen(D3DXVECTOR3 input) -> D3DXVECTOR3 {
 
 		D3DXVECTOR3 out;
-		D3DVIEWPORT8 viewport;
+		D3DVIEWPORT9 viewport;
 		global_device->GetViewport(&viewport);
 		D3DXMATRIX projection, view, world;
 		global_device->GetTransform(D3DTS_VIEW, &view);
@@ -187,7 +93,40 @@ namespace graphics {
 		}
 	}
 
-	inline auto end_scene(IDirect3DDevice8* device) -> void {
+	inline auto end_scene(IDirect3DDevice9* device) -> void {
 
+		// Start the Dear ImGui frame
+		ImGui::GetIO().MouseDrawCursor = input::InputState.input_blocked;
+		ImGui_ImplDX9_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		if(input::InputState.input_blocked) {
+			static float f = 0.0f;
+			static int counter = 0;
+
+			ImGui::Begin("Hello, world!");                         
+
+			ImGui::Text("This is some useful text.");             
+			ImGui::Checkbox("Demo Window", &show_demo_window);     
+			ImGui::Checkbox("Another Window", &show_another_window);
+
+			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);              
+			ImGui::ColorEdit3("clear color", (float*)&clear_color);
+
+			if (ImGui::Button("Button"))                       
+				counter++;
+
+			ImGui::SameLine();
+			ImGui::Text("counter = %d", counter);
+
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
+		}
+
+		// Rendering
+		ImGui::EndFrame();
+		ImGui::Render();
+		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
 	}
 }

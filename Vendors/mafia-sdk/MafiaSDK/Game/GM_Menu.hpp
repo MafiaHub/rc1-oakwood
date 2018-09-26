@@ -54,6 +54,7 @@ namespace MafiaSDK
 		{
 			std::function<void(unsigned int)> onMenuItemClick;
 			std::function<void(GM_Menu*)> onMenuCreated;
+			std::function<void(GM_Menu*, unsigned long)> onMenuItemHover;
 		};
 
 		namespace Functions
@@ -68,6 +69,12 @@ namespace MafiaSDK
 			{
 				if (FunctionsPointers::onMenuCreated != nullptr)
 					FunctionsPointers::onMenuCreated(menu);
+			}
+
+			inline void OnMenuItemHover(GM_Menu* menu, unsigned long component)
+			{
+				if (FunctionsPointers::onMenuItemHover != nullptr)
+					FunctionsPointers::onMenuItemHover(menu, component);
 			}
 		};
 
@@ -90,6 +97,30 @@ namespace MafiaSDK
 					call dword ptr ds : [edx + 0x24]
 
 					jmp on_menu_itemclick_back
+				}
+			}
+
+			unsigned long on_menu_itemhover_back = 0x005EAB03;
+			__declspec(naked) void OnMenuItemHover_Hook()
+			{
+				__asm
+				{
+					
+					mov eax, dword ptr ds : [esi]
+					push ebp
+					push edi
+					mov ecx, esi
+					call dword ptr ds : [eax + 0x2C]
+
+					//ebp, edi
+					pushad
+					push ebp
+					push esi
+					call Functions::OnMenuItemHover
+					add esp, 0x8
+					popad
+
+					jmp on_menu_itemhover_back
 				}
 			}
 
@@ -118,6 +149,12 @@ namespace MafiaSDK
 		{
 			FunctionsPointers::onMenuItemClick = functionPointer;
 			MemoryPatcher::InstallJmpHook(0x005EAB3E, (unsigned long)&NakedFunctions::OnMenuItemClick_Hook);
+		}
+
+		inline void HookOnMenuItemHover(std::function<void(GM_Menu*, unsigned long)> functionPointer)
+		{
+			FunctionsPointers::onMenuItemHover = functionPointer;
+			MemoryPatcher::InstallJmpHook(0x005EAAFA, (unsigned long)&NakedFunctions::OnMenuItemHover_Hook);
 		}
 
 		inline void HookOnMenuCreated(std::function<void(GM_Menu*)> functionPointer)
@@ -286,6 +323,11 @@ namespace MafiaSDK
 		void ReturnFromMenuExecute(int return_number) 
 		{
 			*(unsigned long*)(0x006BD8A8) = return_number;
+		}
+
+		unsigned int GetComponentID(unsigned long component)
+		{
+			return *(unsigned int*)(component + 0x4);
 		}
 	};
 
