@@ -103,18 +103,32 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
- librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
     Vector3D target = EXPAND_VEC(pos);
 
     auto entity = librg_entity_fetch(&network_context, id);
-    auto player = (mafia_player*)entity->user_data;
+    if(entity) {
+        auto player = (mafia_player*)entity->user_data;
+        *(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
+        player->ped->Do_Shoot(true, target);
+        player->ped->Do_Shoot(false, target);
+    }
+});
 
-    *(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
-    player->ped->Do_Shoot(true, target);
-    player->ped->Do_Shoot(false, target);
+librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message_t* msg) {
+    zpl_vec3 pos;
+    librg_entity_id id = librg_data_rent(msg->data);
+    librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
+    Vector3D target = EXPAND_VEC(pos);
+
+    auto entity = librg_entity_fetch(&network_context, id);
+    if(entity) {
+        auto player = (mafia_player*)entity->user_data;
+        player->ped->Do_ThrowGranade(pos);
+    }
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message_t* msg) {

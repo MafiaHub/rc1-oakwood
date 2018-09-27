@@ -91,4 +91,10 @@ inline auto local_player_weaponpickup(librg_entity_t* item_entity) -> void {
 	local_player.ped->Do_ChangeWeapon(0, 0);
 }
 
+inline auto local_player_throwgrenade(const Vector3D & pos) {
+	librg_send(&network_context, NETWORK_PLAYER_THROW_GRENADE, data, {
+		librg_data_wptr(&data, &pos, sizeof(Vector3D));
+	});
+}
+
 #include "Game/Hooks/local_player.hpp"

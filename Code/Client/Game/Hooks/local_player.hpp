@@ -16,6 +16,21 @@ namespace hooks
 	}
 
 	//----------------------------------------------
+	// C_human::Do_ThrowGrenade((S_vector &)) 
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Human_Do_ThrowGrenade_t)(void* _this, const Vector3D & pos);
+	C_Human_Do_ThrowGrenade_t do_throw_grenade_original = nullptr;
+
+	bool __fastcall C_Human_Do_ThrowGrenade(void* _this, const Vector3D & pos) {
+
+		if(_this == local_player.ped) {
+			local_player_throwgrenade(pos);
+		}
+
+		return C_Human_Do_ThrowGrenade_t(_this, pos);
+	}
+
+	//----------------------------------------------
 	//G_Inventory::SelectByID(id, Vec*)
 	//----------------------------------------------
 	typedef bool(__thiscall* G_Inventory_SelectByID_t)(void* _this, u32 index, void* items_vec);
@@ -134,5 +149,9 @@ inline auto local_player_init() {
 
 	hooks::human_hit_original = reinterpret_cast<hooks::C_Human_Hit_t>(
 		DetourFunction((PBYTE)0x005762A0, (PBYTE)&hooks::OnHit)
+	);
+
+	hooks::do_throw_grenade_original = reinterpret_cast<hooks::C_Human_Do_ThrowGrenade_t>(
+		DetourFunction((PBYTE)0x00583F40, (PBYTE)&hooks::C_Human_Do_ThrowGrenade)
 	);
 }

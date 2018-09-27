@@ -10,6 +10,18 @@ librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* ms
     });
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message_t* msg) {
+    
+    zpl_vec3 pos;
+    auto entity = librg_entity_find(&network_context, msg->peer);
+    librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
+
+    mod_message_send_except(&network_context, NETWORK_PLAYER_THROW_GRENADE, msg->peer, [&](librg_data_t *data) {
+        librg_data_went(data, entity->id);
+        librg_data_wptr(data, &pos, sizeof(zpl_vec3));
+    });
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message_t* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
