@@ -55,6 +55,8 @@ namespace menu {
 		http_t* request = http_get("http://localhost:3000/", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
+			MessageBoxW(0, L"No to ma pojeb", L"Nebezi ti master ty kokotko", MB_OK);
+			exit(EXIT_FAILURE);
 			return "";
 		}
 
@@ -69,6 +71,8 @@ namespace menu {
 
 		if (status == HTTP_STATUS_FAILED) {
 			printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
+            MessageBoxW(0, L"No to ma pojeb", L"Nebezi ti master ty kokotko", MB_OK);
+            exit(EXIT_FAILURE);
 			http_release(request);
 			return "";
 		}
