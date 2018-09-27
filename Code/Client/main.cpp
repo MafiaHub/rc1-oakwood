@@ -43,9 +43,9 @@
 * Imgui sheel we ?  
 */
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#include "graphics/imgui/imgui.h"
-#include "graphics/imgui/imgui_impl_dx9.h"
-#include "graphics/imgui/imgui_impl_win32.h"
+#include "Graphics/imgui/imgui.h"
+#include "Graphics/imgui/imgui_impl_dx9.h"
+#include "Graphics/imgui/imgui_impl_win32.h"
 
 /*
 * Shared
@@ -77,11 +77,11 @@ bool hit_hook_skip = true;
 #include "weapon_drop.hpp"
 #include "mp.hpp"
 #include "menu.hpp"
-#include "input/input.hpp"
+#include "Input/input.hpp"
 
-#include "graphics/CDirect3DDevice9Proxy.h"
-#include "graphics/CDirect3D9Proxy.h"
-#include "graphics/graphics.hpp"
+#include "Graphics/CDirect3DDevice9Proxy.h"
+#include "Graphics/CDirect3D9Proxy.h"
+#include "Graphics/graphics.hpp"
 
 BOOL WINAPI DllMain(
 	HINSTANCE hinstDLL,  // handle to DLL module

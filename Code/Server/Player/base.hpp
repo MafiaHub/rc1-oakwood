@@ -33,7 +33,6 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	librg_data_wf32(evnt->data, player->health);
 }
 
-//-- OTHER
 inline auto player_send_spawn(librg_entity_t* player_ent) -> void {
 	auto player = (mafia_player*)player_ent->user_data;
 	librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
