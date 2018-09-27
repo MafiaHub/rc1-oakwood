@@ -125,40 +125,16 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
     u32 current_wep = librg_data_ru32(msg->data);
     f32 health = librg_data_rf32(msg->data);
 
-    Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
-    Vector3D default_pos = EXPAND_VEC(position);
-
-    auto player_frame = new MafiaSDK::I3D_Frame();
-    player_frame->SetName("testing_player");
-    player_frame->LoadModel(model);
-    player_frame->SetScale(default_scale);
-    player_frame->SetPos(default_pos);
-
-    local_player.ped = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Player));
-    local_player.ped->Init(player_frame);
-    local_player.ped->SetShooting(1.0f);
-
-    MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(local_player.ped);
-    MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(local_player.ped);
-
-    local_player.ped->GetInterface()->humanObject.health = health;
-    local_player.ped->GetInterface()->humanObject.entity.position = default_pos;
-    local_player.ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
-
-    for (size_t i = 0; i < 8; i++) {
-        S_GameItem* item = (S_GameItem*)&inventory.items[i];
-        if (item->weaponId != 0) {
-            ((MafiaSDK::C_Human*)local_player.ped)->G_Inventory_AddItem(*item);
-        }
-    }
-
-    ((MafiaSDK::C_Human*)local_player.ped)->G_Inventory_SelectByID(current_wep);
-    ((MafiaSDK::C_Human*)local_player.ped)->ChangeWeaponModel();
-
-    if (current_wep == 0)
-        ((MafiaSDK::C_Human*)local_player.ped)->Do_Holster();
-
-    MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(local_player.ped);
+    player_spawn(
+        nullptr, 
+        position, 
+        rotation,
+        inventory, 
+        model, 
+        current_wep, 
+        health, 
+        true, 
+        0);
 });
 
  librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {

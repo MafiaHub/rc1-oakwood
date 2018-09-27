@@ -64,6 +64,7 @@ bool hit_hook_skip = true;
 /*
 * Mod includes 
 */
+#include "Game/Factory/defs.hpp"
 #include "Network/base.hpp"
 #include "Input/input.hpp"
 #include "Graphics/base.hpp"

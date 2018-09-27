@@ -18,43 +18,16 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	player->inter_pos.init(evnt->entity->position);
 	player->inter_pose.init(player->pose);
 
-	/*------------------------------------------------------------*/
-	/* Spawn mafia player*/
-	/*------------------------------------------------------------*/
-	auto player_frame		= new MafiaSDK::I3D_Frame();
-	Vector3D default_scale	= { 1.0f, 1.0f, 1.0f };
-	Vector3D default_pos	= EXPAND_VEC(evnt->entity->position);
-
-	player_frame->SetName("testing_player");
-	player_frame->LoadModel(player->model);
-	player_frame->SetScale(default_scale);
-	player_frame->SetPos(default_pos);
-
-	player->ped = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Enemy));
-	player->ped->Init(player_frame);
-	player->ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
-	player->ped->SetShooting(1.0f);
-	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(player->ped);
-
-	player->ped->GetInterface()->health				= player->health;
-	player->ped->GetInterface()->entity.position	= default_pos;
-	player->ped->GetInterface()->entity.rotation	= EXPAND_VEC(player->rotation);
-
-	for (size_t i = 0; i < 8; i++) {
-		S_GameItem* item = (S_GameItem*)&player->inventory.items[i];
-		if (item->weaponId != -1) {
-			((MafiaSDK::C_Human*)player->ped)->G_Inventory_AddItem(*item);
-		}
-	}
-
-	printf("librg_entity_create weapon: %d\n", player->current_weapon_id);
-	((MafiaSDK::C_Human*)player->ped)->G_Inventory_SelectByID(player->current_weapon_id);
-	((MafiaSDK::C_Human*)player->ped)->Do_ChangeWeapon(0, 0);
-	((MafiaSDK::C_Human*)player->ped)->ChangeWeaponModel();
-
-	if (player->current_weapon_id == 0) {
-		((MafiaSDK::C_Human*)player->ped)->Do_Holster();
-	}
+	player_spawn(
+		player,
+		evnt->entity->position,
+		player->rotation,
+		player->inventory,
+		player->model,
+		player->current_weapon_id,
+		player->health,
+		false,
+		-1);
 
 	evnt->entity->user_data = player;
 }
