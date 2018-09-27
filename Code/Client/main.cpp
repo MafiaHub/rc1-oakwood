@@ -71,7 +71,7 @@ bool hit_hook_skip = true;
 #include "Game/base.hpp"
 
 
-auto mod_init() -> void {
+auto mod_init() {
 	mod_pre_init_game();
 	alloc_console();
 	config_get();

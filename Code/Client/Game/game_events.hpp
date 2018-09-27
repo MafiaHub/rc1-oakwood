@@ -7,7 +7,7 @@ void librg_entites_tick(librg_entity_t* ent) {
 
 //TODO, change menu_skip with mission string comparing !
 int menu_skip = 0;
-auto mod_bind_events() -> void {
+auto mod_bind_events() {
 
 	MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
 

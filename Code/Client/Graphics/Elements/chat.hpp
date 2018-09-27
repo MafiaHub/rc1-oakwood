@@ -6,7 +6,7 @@ namespace chat {
 	KeyToggle key_chat_open(VK_T);
 	KeyToggle key_chat_send(VK_RETURN);
 
-    auto render() -> void {
+    auto render() {
 
         if(!MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) return;
 

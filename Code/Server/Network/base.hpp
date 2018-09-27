@@ -3,7 +3,7 @@
 #include "events.hpp"
 #include "messages.hpp"
 
-inline auto mod_init_networking() -> void {
+inline auto mod_init_networking() {
     network_context.max_entities		= 16;
 	network_context.max_connections		= 16;
 	network_context.mode				= LIBRG_MODE_SERVER;

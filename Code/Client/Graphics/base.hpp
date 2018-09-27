@@ -27,7 +27,7 @@ namespace graphics {
 		return NULL;
 	}
 
-	inline auto hook() -> void {
+	inline auto hook() {
 
 		while (!GetModuleHandle("d3d9.dll")) {
 			Sleep(100);

@@ -56,7 +56,7 @@ void on_librg_clientstreamer_update(librg_event_t* evnt) {
 	}
 }
 
-auto mod_add_network_events() -> void {
+auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CONNECTION_ACCEPT, on_librg_connect);
 	librg_event_add(&network_context, LIBRG_ENTITY_CREATE, on_librg_entity_create);
 	librg_event_add(&network_context, LIBRG_ENTITY_UPDATE, on_librg_entity_update);

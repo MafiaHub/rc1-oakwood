@@ -25,7 +25,7 @@ inline auto get_player_from_base(void* base) -> librg_entity_t* {
 /* 
 * todo add reason killer and so one ...
 */
-inline auto local_player_died() -> void {
+inline auto local_player_died() {
 	librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
 }
 

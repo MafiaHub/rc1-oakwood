@@ -129,7 +129,7 @@ namespace menu {
 		}
 	}
 
-	inline auto init() -> void {
+	inline auto init() {
 
 		MafiaSDK::GM_Menu_Hooks::HookOnMenuItemClick([&](unsigned int component_id) {
 

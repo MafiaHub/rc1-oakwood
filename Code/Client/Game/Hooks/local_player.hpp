@@ -122,7 +122,7 @@ namespace hooks
 	}
 };
 
-inline auto local_player_init() -> void {
+inline auto local_player_init() {
 	MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);
 	MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
 	MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);

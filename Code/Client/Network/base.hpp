@@ -7,12 +7,12 @@
 /*
 *  Librg connect to server
 */
-inline auto mod_librg_connect() -> void {
+inline auto mod_librg_connect() {
 	librg_address_t addr = { 27010, (char*)GlobalConfig.server_address.c_str()};
 	librg_network_start(&network_context, addr);
 }
 
-inline auto mod_init_networking() -> void {
+inline auto mod_init_networking() {
     network_context.mode = LIBRG_MODE_CLIENT;
 	network_context.max_entities = 16;
 	network_context.tick_delay = 32;

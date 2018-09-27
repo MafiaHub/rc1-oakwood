@@ -21,7 +21,7 @@ static const char *mod_default_config = R"foo(
 }
 )foo";
 
-inline auto config_get() -> void {
+inline auto config_get() {
 
     if (!zpl_file_exists(config_file_name)) {
         mod_debug("No JSON config found! Generating...");

@@ -73,7 +73,7 @@ namespace input {
 	/*
 	* Wait till dinput is loaded then hook
 	*/
-	inline auto hook() -> void {
+	inline auto hook() {
 		
 		while (!GetModuleHandle("dinput8.dll")) {
 			Sleep(100);
@@ -85,7 +85,7 @@ namespace input {
 	/*
 	* Hook both input windows winproc
 	*/
-	inline auto hook_window() -> void {
+	inline auto hook_window() {
 
 		auto mod_win32_hwnd_parent = *(HWND*)(0x101C5458);
 		mod_wndproc_original_keyboard = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd_parent, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_keyboard);
@@ -119,7 +119,7 @@ namespace input {
 		InputState.input_blocked = do_block;
 	}
 
-	auto toggle_block_input() -> void {
+	auto toggle_block_input() {
 		block_input(!InputState.input_blocked);
 	}
 }

@@ -19,7 +19,7 @@ private:
 	bool mActive;
 };
 
-inline auto alloc_console() -> void {
+inline auto alloc_console() {
 	AllocConsole();
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);

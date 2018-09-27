@@ -66,7 +66,7 @@ namespace hooks
 	}
 };
 
-inline auto drop_init() -> void {
+inline auto drop_init() {
 	MemoryPatcher::InstallJmpHook(0x0057FBA3, (DWORD)&hooks::drop_capture_model);
 	MemoryPatcher::InstallJmpHook(0x00580176, (DWORD)&hooks::drop_in_weapon_init);
 	MemoryPatcher::InstallJmpHook(0x00443650, (DWORD)&hooks::no_phys);

@@ -73,7 +73,7 @@ ZPL_EVENT(freeride_player_died) {
 	mode_broadcast_msg(die_msg.c_str());
 }
 
-auto freeride_events_add() -> void {
+auto freeride_events_add() {
 	zpl_event_add(&gamemode_events, MODE_ON_PLAYER_CONNECTED, freeride_player_connected);
 	zpl_event_add(&gamemode_events, MODE_ON_PLAYER_DISCONNECTED, freeride_player_disconnected);
 	zpl_event_add(&gamemode_events, MODE_ON_PLAYER_DIED, freeride_player_died);

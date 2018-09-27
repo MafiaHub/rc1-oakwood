@@ -1,6 +1,6 @@
 #pragma once
 
-auto mod_add_network_messages() -> void {
+auto mod_add_network_messages() {
     
     #include "Messages/player.hpp"
 
