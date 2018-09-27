@@ -7,11 +7,6 @@ do { \
     VAR = (NAME && NAME->STR) ? NAME->STR : DEF; \
 } while (0)
 
-struct _GlobalConfig {
-	std::string server_address;
-	std::string username;
-} GlobalConfig;
-
 constexpr const char* config_file_name = "multiplayer.json";
 
 static const char *mod_default_config = R"foo(

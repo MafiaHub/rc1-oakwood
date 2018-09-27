@@ -7,10 +7,6 @@ IDirect3DDevice9* global_device	= nullptr;
 
 #include "utils.hpp"
 
-#include "Elements/nameplates.hpp"
-#include "Elements/menu.hpp"
-#include "Elements/chat.hpp"
-
 namespace graphics {
 	
 	typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);

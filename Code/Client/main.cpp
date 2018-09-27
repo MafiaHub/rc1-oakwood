@@ -61,13 +61,20 @@ f32 last_update = 0.0f;
 librg_ctx_t network_context = { 0 };
 bool hit_hook_skip = true;
 
+struct _GlobalConfig {
+	std::string server_address;
+	std::string username;
+} GlobalConfig;
+
 /*
 * Mod includes 
 */
-#include "Game/Factory/defs.hpp"
-#include "Network/base.hpp"
 #include "Input/input.hpp"
+#include "Game/Factory/defs.hpp"
+#include "Graphics/elements_pre.hpp"
+#include "Network/base.hpp"
 #include "Graphics/base.hpp"
+#include "Graphics/elements_post.hpp"
 #include "Game/base.hpp"
 
 
