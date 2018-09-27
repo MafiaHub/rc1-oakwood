@@ -127,7 +127,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_messa
     auto entity = librg_entity_fetch(&network_context, id);
     if(entity) {
         auto player = (mafia_player*)entity->user_data;
-        player->ped->Do_ThrowGranade(pos);
+        player->ped->Do_ThrowGranade(target);
     }
 });
 

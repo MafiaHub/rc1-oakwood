@@ -16,6 +16,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_messa
     auto entity = librg_entity_find(&network_context, msg->peer);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
 
+    printf("Debug player throw grenade: %f %f %f\n", pos.x, pos.y, pos.z);
     mod_message_send_except(&network_context, NETWORK_PLAYER_THROW_GRENADE, msg->peer, [&](librg_data_t *data) {
         librg_data_went(data, entity->id);
         librg_data_wptr(data, &pos, sizeof(zpl_vec3));

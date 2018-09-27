@@ -27,7 +27,7 @@ namespace hooks
 			local_player_throwgrenade(pos);
 		}
 
-		return C_Human_Do_ThrowGrenade_t(_this, pos);
+		return do_throw_grenade_original(_this, pos);
 	}
 
 	//----------------------------------------------
