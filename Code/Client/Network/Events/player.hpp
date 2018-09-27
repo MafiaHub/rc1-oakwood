@@ -1,5 +1,6 @@
 #pragma once
 
+
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();
@@ -74,23 +75,8 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 inline auto player_entityremove(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	if (player->ped) {
-		/*auto player_frame = *(DWORD*)((DWORD)player->ped + 0x68);
-		
-		if (player_frame) {
-			__asm {
-				mov eax, player_frame
-				push eax
-				mov ecx, [eax]
-				call dword ptr ds : [ecx]
-			}
-		}
-
-		MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(player->ped);
-		player->ped = nullptr;*/
-		Vector3D haha = { 0.0, 0.0, 0.0 };
-		player->ped->GetInterface()->entity.frame->SetOn(false);
-		player->ped->GetInterface()->entity.position = haha;
-		player->ped->GetInterface()->entity.frame->SetPos(haha);
+		player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
+		player->ped = nullptr;
 	}
 }
 

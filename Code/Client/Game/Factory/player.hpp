@@ -1,4 +1,21 @@
 #pragma once
+auto player_despawn(MafiaSDK::C_Player* player) -> void {
+    
+    if(player) {
+        MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(player);
+		auto player_frame = *(DWORD*)((DWORD)player + 0x68);
+		printf("[DEBUG] %X\n", player_frame);;
+
+		if (player_frame) {
+			__asm {
+				mov eax, player_frame
+				push eax
+				mov ecx, [eax]
+				call dword ptr ds : [ecx]
+			}
+		}
+    }
+}
 
 auto player_spawn(zpl_vec3 position, 
                   zpl_vec3 rotation,

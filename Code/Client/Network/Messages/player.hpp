@@ -36,11 +36,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
             //remove old ped
             //find new way how to properly remove players :)
             if (player->ped) {
-                Vector3D haha = { 0.0, 0.0, 0.0 };
-                player->ped->GetInterface()->entity.frame->SetOn(false);
-                player->ped->GetInterface()->entity.position = haha;
-                player->ped->GetInterface()->entity.frame->SetPos(haha);
-                player->ped = new_ped;
+                player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
             }
 
             //interpolator init
@@ -63,10 +59,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
         MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives(100);
 
         if (local_player.ped) {
-            Vector3D haha = { 0.0, 0.0, 0.0 };
-            local_player.ped->GetInterface()->humanObject.entity.position = { 0.0, 0.0, 0.0 };
-            local_player.ped->GetInterface()->humanObject.entity.frame->SetOn(false);
-            local_player.ped->GetInterface()->humanObject.entity.frame->SetPos(haha);
+			player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
         }
 
         local_player.dead = false;
