@@ -117,7 +117,7 @@ namespace menu {
 					new_server_data.max_players = "Max players: " + std::to_string(server_property->integer);
 
 					zpl_json_find(server_node, "players_now", false, &server_property);
-					new_server_data.current_players = "Now Players: " + std::to_string(server_property->integer);
+					new_server_data.current_players = "Players: " + std::to_string(server_property->integer);
 
 					servers.push_back(new_server_data);
 				}
