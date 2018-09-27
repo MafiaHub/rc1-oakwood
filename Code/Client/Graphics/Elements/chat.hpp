@@ -40,9 +40,6 @@ namespace chat {
 				librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
 					librg_data_wu8(&data, zpl_strlen(add_text));
 					librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
-
-					librg_data_wu8(&data, GlobalConfig.username.size());
-					librg_data_wptr(&data, (void *)GlobalConfig.username.c_str(), GlobalConfig.username.size());
 				});
 
 				strcpy(add_text, "");
