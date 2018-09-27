@@ -2,8 +2,8 @@
 
 IDirect3DDevice9* global_device	= nullptr;
 
-#include "Graphics/CDirect3DDevice9Proxy.h"
-#include "Graphics/CDirect3D9Proxy.h"
+#include "Graphics/d3d9/CDirect3DDevice9Proxy.h"
+#include "Graphics/d3d9/CDirect3D9Proxy.h"
 
 #include "utils.hpp"
 
