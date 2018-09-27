@@ -32,7 +32,7 @@ librg_ctx_t network_context = { 0 };
 auto main() -> int {
 
 	mod_log("Initializing server ...");
-	init_networking();
+	mod_init_networking();
 	
 	librg_address_t addr = { 27010 };
 	librg_network_start(&network_context, addr);

@@ -1,5 +1,5 @@
 #pragma once
-//--------------------------[ LIBRG EVENTS ]--------------------------
+
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();
@@ -145,4 +145,13 @@ inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 	librg_data_wu8(evnt->data, player->is_crouching);
 	librg_data_wu8(evnt->data, player->is_aiming);
 	librg_data_wu64(evnt->data, player->aiming_time);
+}
+
+auto mod_player_add_events() -> void {
+    librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event_t *evnt) {
+        // TODO: password sending
+        char nickname[32];
+        strcpy(nickname, GlobalConfig.username.c_str());
+        librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
+    });
 }

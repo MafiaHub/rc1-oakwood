@@ -18,3 +18,10 @@ private:
 	int mKey;
 	bool mActive;
 };
+
+inline auto alloc_console() -> void {
+	AllocConsole();
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
+}
