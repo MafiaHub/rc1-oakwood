@@ -4,6 +4,7 @@
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_DEBUG
 #include "librg/librg.h"
+#include "Network/interpolation.hpp"
 
 /*
 * Mafia SDK
@@ -49,7 +50,6 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 /*
 * Shared
 */
-#include "Network/interpolation.hpp"
 #include "helpers.hpp"
 #include "structs.hpp"
 #include "messages.hpp"
