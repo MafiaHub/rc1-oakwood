@@ -1,0 +1,11 @@
+Client/Debug
+Client/Release
+Client/x64
+Loader/Debug
+Loader/Release
+Loader/x64
+Server/Debug
+Server/Release
+Server/x64
+Debug
+Release

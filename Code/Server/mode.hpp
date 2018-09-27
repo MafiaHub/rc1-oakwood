@@ -2,7 +2,7 @@
 inventory_item thompson = { 10, 50, 50, 0 };
 inventory_item colt		= { 9, 50, 50, 0 };
 
-inline auto mode_generate_spawn() -> zplm_vec3 {
+inline auto mode_generate_spawn() -> zpl_vec3 {
 	return { -1984.884277f, -5.032383f, 23.144674f };
 }
 

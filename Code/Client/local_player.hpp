@@ -6,7 +6,7 @@ struct local_player_data {
 	}
 	MafiaSDK::C_Player* ped;
 	librg_entity_t entity;
-	zplm_vec3 pose;
+	zpl_vec3 pose;
 	bool dead;
 } local_player;
 
@@ -42,9 +42,9 @@ inline auto local_player_hit(
 	librg_send(&ctx, NETWORK_PLAYER_HIT, data, {
 		librg_data_went(&data, victim_ent->id);
 		librg_data_wu32(&data, hit_type);
-		librg_data_wptr(&data, (void*)unk1, sizeof(zplm_vec3));
-		librg_data_wptr(&data, (void*)unk2, sizeof(zplm_vec3));
-		librg_data_wptr(&data, (void*)unk3, sizeof(zplm_vec3));
+		librg_data_wptr(&data, (void*)unk1, sizeof(zpl_vec3));
+		librg_data_wptr(&data, (void*)unk2, sizeof(zpl_vec3));
+		librg_data_wptr(&data, (void*)unk3, sizeof(zpl_vec3));
 		librg_data_wf32(&data, damage);
 		librg_data_wu32(&data, player_part);
 	});

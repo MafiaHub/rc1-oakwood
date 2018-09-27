@@ -3,8 +3,8 @@
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();
-	librg_data_rptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_rptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_rptr(evnt->data, player->model, sizeof(char) * 32);
 	librg_data_rptr(evnt->data, player->name, sizeof(char) * 32);
 	player->is_crouching = librg_data_ru8(evnt->data);
@@ -81,8 +81,8 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	auto player_int = player->ped->GetInterface();
 
-	librg_data_rptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_rptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	player->animation_state = librg_data_ru8(evnt->data);
 	player->is_crouching = librg_data_ru8(evnt->data);
 	player->is_aiming = librg_data_ru8(evnt->data);
@@ -139,8 +139,8 @@ inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 	player->is_aiming		= player_int->humanObject.isAiming;
 	player->aiming_time		= *(DWORD*)((DWORD)player_int + 0xAD4);
 
-	librg_data_wptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_wptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_wu8(evnt->data, player->animation_state);
 	librg_data_wu8(evnt->data, player->is_crouching);
 	librg_data_wu8(evnt->data, player->is_aiming);

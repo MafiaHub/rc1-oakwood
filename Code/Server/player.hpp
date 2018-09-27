@@ -2,8 +2,8 @@
 //--------------------------[ LIBRG EVENTS ]--------------------------
 inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
-	librg_data_rptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_rptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	player->animation_state = librg_data_ru8(evnt->data);
 	player->is_crouching = librg_data_ru8(evnt->data);
 	player->is_aiming = librg_data_ru8(evnt->data);
@@ -12,8 +12,8 @@ inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 
 inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
-	librg_data_wptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_wptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_wu8(evnt->data, player->animation_state);
 	librg_data_wu8(evnt->data, player->is_crouching);
 	librg_data_wu8(evnt->data, player->is_aiming);
@@ -22,8 +22,8 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
-	librg_data_wptr(evnt->data, &player->rotation, sizeof(zplm_vec3_t));
-	librg_data_wptr(evnt->data, &player->pose, sizeof(zplm_vec3_t));
+	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
+	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_wptr(evnt->data, player->model, sizeof(char) * 32);
 	librg_data_wptr(evnt->data, player->name, sizeof(char) * 32);
 	librg_data_wu8(evnt->data, player->is_crouching);
@@ -37,8 +37,8 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 inline auto player_send_spawn(librg_entity_t* player_ent) -> void {
 	auto player = (mafia_player*)player_ent->user_data;
 	librg_send_to(&ctx, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
-		librg_data_wptr(&data, &player_ent->position, sizeof(zplm_vec3_t));
-		librg_data_wptr(&data, &player->rotation, sizeof(zplm_vec3_t));
+		librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3_t));
+		librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3_t));
 		librg_data_wptr(&data, player->model, sizeof(char) * 32);
 		librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
 		librg_data_wu32(&data, player->current_weapon_id);
@@ -59,8 +59,8 @@ inline auto player_send_respawn(librg_entity_t* player_ent) -> void {
 
 	librg_send(&ctx, NETWORK_PLAYER_RESPAWN, data, {
 		librg_data_went(&data, player_ent->id);
-		librg_data_wptr(&data, &player_ent->position, sizeof(zplm_vec3_t));
-		librg_data_wptr(&data, &player->rotation, sizeof(zplm_vec3_t));
+		librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3_t));
+		librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3_t));
 		librg_data_wptr(&data, player->model, sizeof(char) * 32);
 		librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
 		librg_data_wu32(&data, player->current_weapon_id);

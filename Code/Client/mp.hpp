@@ -62,13 +62,13 @@ inline auto mod_librg_register_messages() -> void {
 	librg_network_add(&ctx, NETWORK_PLAYER_RESPAWN, [](librg_message_t* msg) {
 
 		//read data
-		zplm_vec3 position, rotation;
+		zpl_vec3 position, rotation;
 		player_inventory inventory;
 		char model[32];
 
 		librg_entity_id player_id = librg_data_rent(msg->data);
-		librg_data_rptr(msg->data, &position, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, &rotation, sizeof(zplm_vec3));
+		librg_data_rptr(msg->data, &position, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, &rotation, sizeof(zpl_vec3));
 		librg_data_rptr(msg->data, model, sizeof(char) * 32);
 		librg_data_rptr(msg->data, &inventory, sizeof(player_inventory));
 		u32 current_wep = librg_data_ru32(msg->data);
@@ -175,12 +175,12 @@ inline auto mod_librg_register_messages() -> void {
 
 	librg_network_add(&ctx, NETWORK_PLAYER_SPAWN, [](librg_message_t* msg) {
 		
-		zplm_vec3 position, rotation;
+		zpl_vec3 position, rotation;
 		player_inventory inventory;
 		char model[32];
 
-		librg_data_rptr(msg->data, &position, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, &rotation, sizeof(zplm_vec3));
+		librg_data_rptr(msg->data, &position, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, &rotation, sizeof(zpl_vec3));
 		librg_data_rptr(msg->data, model, sizeof(char) * 32);
 		librg_data_rptr(msg->data, &inventory, sizeof(player_inventory));
 		u32 current_wep = librg_data_ru32(msg->data);
@@ -251,9 +251,9 @@ inline auto mod_librg_init_stuff() -> void {
 
 
 	librg_network_add(&ctx, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
-		zplm_vec3 pos;
+		zpl_vec3 pos;
 		librg_entity_id id = librg_data_rent(msg->data);
-		librg_data_rptr(msg->data, &pos, sizeof(zplm_vec3));
+		librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
 		Vector3D target = EXPAND_VEC(pos);
 
 		auto entity = librg_entity_fetch(&ctx, id);
@@ -323,9 +323,9 @@ inline auto mod_librg_init_stuff() -> void {
 
 		u32 hit_type = librg_data_ru32(msg->data);
 		Vector3D unk1, unk2, unk3;
-		librg_data_rptr(msg->data, (void*)&unk1, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, (void*)&unk2, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, (void*)&unk3, sizeof(zplm_vec3));
+		librg_data_rptr(msg->data, (void*)&unk1, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, (void*)&unk2, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, (void*)&unk3, sizeof(zpl_vec3));
 
 		f32 damage = librg_data_rf32(msg->data);
 		u32 player_part = librg_data_ru32(msg->data);

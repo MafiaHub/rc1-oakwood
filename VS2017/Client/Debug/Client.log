@@ -1,6 +1,0 @@
-﻿  main.cpp
-d:\mafia 1.2\oakwood\vendors\mafia-sdk\mafiasdk\game\c_human.hpp(262): warning C4409: illegal instruction size
-  c:\program files (x86)\windows kits\10\include\10.0.17134.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  Client.vcxproj -> D:\Mafia 1.2\oakwood\VS2017\Debug\Client.dll
-  D:\Mafia 1.2\oakwood\VS2017\Debug\Client.dll
-  1 File(s) copied

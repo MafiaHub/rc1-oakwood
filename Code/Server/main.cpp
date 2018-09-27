@@ -104,13 +104,13 @@ auto main() -> int {
 	//---- net messages
 	librg_network_add(&ctx, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
 		
-		zplm_vec3 pos;
+		zpl_vec3 pos;
 		auto entity = librg_entity_find(&ctx, msg->peer);
-		librg_data_rptr(msg->data, &pos, sizeof(zplm_vec3));
+		librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
 
 		mod_message_send_except(&ctx, NETWORK_PLAYER_SHOOT, msg->peer, [&](librg_data_t *data) {
 			librg_data_went(data, entity->id);
-			librg_data_wptr(data, &pos, sizeof(zplm_vec3));
+			librg_data_wptr(data, &pos, sizeof(zpl_vec3));
 		});
 	});
 
@@ -167,10 +167,10 @@ auto main() -> int {
 		auto sender_ent = librg_entity_find(&ctx, msg->peer);
 		librg_entity_id target_id = librg_data_rent(msg->data);
 		u32 hit_type = librg_data_ru32(msg->data);
-		zplm_vec3 unk1, unk2, unk3;
-		librg_data_rptr(msg->data, (void*)&unk1, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, (void*)&unk2, sizeof(zplm_vec3));
-		librg_data_rptr(msg->data, (void*)&unk3, sizeof(zplm_vec3));
+		zpl_vec3 unk1, unk2, unk3;
+		librg_data_rptr(msg->data, (void*)&unk1, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, (void*)&unk2, sizeof(zpl_vec3));
+		librg_data_rptr(msg->data, (void*)&unk3, sizeof(zpl_vec3));
 		f32 damage = librg_data_rf32(msg->data);
 		u32 player_part = librg_data_ru32(msg->data);
 
@@ -184,9 +184,9 @@ auto main() -> int {
 		mod_message_send_except(&ctx, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data_t *data) {
 			librg_data_went(data, sender_ent->id);
 			librg_data_wu32(data, hit_type);
-			librg_data_wptr(data, (void*)&unk1, sizeof(zplm_vec3));
-			librg_data_wptr(data, (void*)&unk2, sizeof(zplm_vec3));
-			librg_data_wptr(data, (void*)&unk3, sizeof(zplm_vec3));
+			librg_data_wptr(data, (void*)&unk1, sizeof(zpl_vec3));
+			librg_data_wptr(data, (void*)&unk2, sizeof(zpl_vec3));
+			librg_data_wptr(data, (void*)&unk3, sizeof(zpl_vec3));
 			librg_data_wf32(data, damage);
 			librg_data_wu32(data, player_part);
 		});

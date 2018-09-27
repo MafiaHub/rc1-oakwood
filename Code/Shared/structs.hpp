@@ -28,8 +28,8 @@ struct mafia_player {
 #endif
 	}
 
-	zplm_vec3_t rotation;
-	zplm_vec3_t pose;
+	zpl_vec3_t rotation;
+	zpl_vec3_t pose;
 	f32 health;
 	u8 animation_state;
 	u8 is_aiming;
