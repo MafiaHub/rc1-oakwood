@@ -7,7 +7,7 @@ inline auto mode_generate_spawn() -> zpl_vec3 {
 }
 
 inline auto mode_broadcast_msg(const char* text, u32 color = 0xFFFFFF) {
-	librg_send(&ctx, NETWORK_SEND_CONSOLE_MSG, data, {
+	librg_send(&network_context, NETWORK_SEND_CONSOLE_MSG, data, {
 		librg_data_wu32(&data, strlen(text));
 		librg_data_wu32(&data, color);
 		librg_data_wptr(&data, (void*)text, strlen(text));

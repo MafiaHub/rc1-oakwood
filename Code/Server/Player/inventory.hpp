@@ -67,7 +67,7 @@ inline auto player_inventory_add(
 	//check if weapon is picked case
 	if (weapon_picked) {
 
-		librg_send_except(&ctx, NETWORK_PLAYER_WEAPON_PICKUP, player_ent->client_peer, data, {
+		librg_send_except(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, player_ent->client_peer, data, {
 			librg_data_went(&data, player_ent->id);
 			librg_data_wptr(&data, item, sizeof(inventory_item));
 		});
@@ -77,7 +77,7 @@ inline auto player_inventory_add(
 	}
 
 	//broadcast to others for giving a weapon
-	librg_send(&ctx, NETWORK_PLAYER_WEAPON_ADD, data, {
+	librg_send(&network_context, NETWORK_PLAYER_WEAPON_ADD, data, {
 		librg_data_went(&data, player_ent->id);
 		librg_data_wptr(&data, item, sizeof(inventory_item));
 	});
@@ -109,7 +109,7 @@ inline auto player_inventory_remove(
 	if (!announce) return;
 	
 	if (weapon_dropped) {
-		librg_send_except(&ctx, NETWORK_PLAYER_WEAPON_DROP, player_ent->client_peer, data, {
+		librg_send_except(&network_context, NETWORK_PLAYER_WEAPON_DROP, player_ent->client_peer, data, {
 			librg_data_went(&data, player_ent->id);
 			librg_data_wu32(&data, id);
 		});
@@ -117,7 +117,7 @@ inline auto player_inventory_remove(
 	}
 
 	//broadcast message
-	librg_send(&ctx, NETWORK_PLAYER_WEAPON_REMOVE, data, {
+	librg_send(&network_context, NETWORK_PLAYER_WEAPON_REMOVE, data, {
 		librg_data_went(&data, player_ent->id);
 		librg_data_wu32(&data, id);
 	});
