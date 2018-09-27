@@ -11,6 +11,7 @@
 #include <fstream>
 #include <ostream>
 #include <vector>
+
 #include "librg/librg_ext.h"
 
 /* 
@@ -20,8 +21,6 @@
 #include "structs.hpp"
 #include "messages.hpp"
 
-#pragma comment (lib, "Ws2_32.lib")
-#pragma comment (lib, "Winmm.lib")
 librg_ctx_t network_context = { 0 };
 
 #include "player.hpp"
