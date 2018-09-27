@@ -42,9 +42,12 @@ namespace input {
 	*/
 	LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	
-		if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-			return true;
-	
+		//Process gui input only when our window is focues
+		if(*(HWND*)(0x101C5458) == GetActiveWindow()) {
+			if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+				return true;
+		}
+
 		return false;
 	}
 
