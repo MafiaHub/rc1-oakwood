@@ -1,5 +1,5 @@
 #pragma once
-inventory_item thompson = { 10, 50, 50, 0 };
+inventory_item thompson = { 15, 50, 50, 0 };
 inventory_item colt		= { 9, 50, 50, 0 };
 
 inline auto mode_generate_spawn() -> zpl_vec3 {

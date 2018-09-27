@@ -16,21 +16,6 @@ namespace hooks
 	}
 
 	//----------------------------------------------
-	// C_human::Do_ThrowGrenade((S_vector &)) 
-	//----------------------------------------------
-	typedef bool(__thiscall* C_Human_Do_ThrowGrenade_t)(void* _this, const Vector3D & pos);
-	C_Human_Do_ThrowGrenade_t do_throw_grenade_original = nullptr;
-
-	bool __fastcall C_Human_Do_ThrowGrenade(void* _this, const Vector3D & pos) {
-
-		if(_this == local_player.ped) {
-			local_player_throwgrenade(pos);
-		}
-
-		return do_throw_grenade_original(_this, pos);
-	}
-
-	//----------------------------------------------
 	//G_Inventory::SelectByID(id, Vec*)
 	//----------------------------------------------
 	typedef bool(__thiscall* G_Inventory_SelectByID_t)(void* _this, u32 index, void* items_vec);
@@ -80,6 +65,42 @@ namespace hooks
 		return ret_val;
 	}
 	
+	//----------------------------------------------
+	// C_human::Do_ThrowGrenade((S_vector &)) 
+	//----------------------------------------------
+	void C_Human_Do_ThrowGrenade(void* _this) {
+
+		if(_this != nullptr) {
+			
+			Vector3D pos = *(Vector3D*)((DWORD)_this + 0x200);
+			if(_this == local_player.ped) {
+				local_player_throwgrenade(pos);
+			}
+			printf("Throw grenade: %f %f %f", pos.x, pos.y, pos.z);
+		}
+	}
+
+	DWORD throw_grenade_jmp_back = 0x00583A68;
+	DWORD c_human_person_anim = 0x00573E50;
+
+	__declspec(naked) void ThrowGrenade() {
+		__asm {
+			pushad
+				push esi
+				call C_Human_Do_ThrowGrenade
+				add esp, 0x4
+			popad
+
+			push 	ebx
+			push    1
+			push    ebx
+			mov     ecx, esi
+			mov     dword ptr [esi+74h], 0x0A3
+			call    c_human_person_anim
+			jmp throw_grenade_jmp_back
+		}
+	}
+
 	//----------------------------------------------
 	//CHuman::DoSoot(const S_Vector) custom jmp hook
 	//----------------------------------------------
@@ -142,6 +163,7 @@ inline auto local_player_init() {
 	MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
 	MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);
 	MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
+	MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&hooks::ThrowGrenade);
 
 	hooks::select_by_id_original = reinterpret_cast<hooks::G_Inventory_SelectByID_t>(
 		DetourFunction((PBYTE)0x006081D0, (PBYTE)&hooks::SelectByID)
@@ -149,9 +171,5 @@ inline auto local_player_init() {
 
 	hooks::human_hit_original = reinterpret_cast<hooks::C_Human_Hit_t>(
 		DetourFunction((PBYTE)0x005762A0, (PBYTE)&hooks::OnHit)
-	);
-
-	hooks::do_throw_grenade_original = reinterpret_cast<hooks::C_Human_Do_ThrowGrenade_t>(
-		DetourFunction((PBYTE)0x00583F40, (PBYTE)&hooks::C_Human_Do_ThrowGrenade)
 	);
 }
