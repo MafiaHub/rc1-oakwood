@@ -24,11 +24,11 @@ namespace chat {
 		
 		ImGui::EndChild();
 
-		if (!input::InputState.input_blocked && key_chat_open) {
+		if (!input::InputState.input_blocked && MafiaSDK::IsWindowFocused() && key_chat_open) {
 			input::toggle_block_input();
 		}
 
-		if (input::InputState.input_blocked) {
+		if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 			
 			static char add_text[128] = "";
 			ImGui::SetKeyboardFocusHere(0);

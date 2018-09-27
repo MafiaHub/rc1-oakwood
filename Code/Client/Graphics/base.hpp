@@ -37,7 +37,7 @@ namespace graphics {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		ImGui_ImplWin32_Init(*(HWND*)(0x101C5458));
+		ImGui_ImplWin32_Init(MafiaSDK::GetMainWindow());
 		ImGui_ImplDX9_Init(device);
 
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("oakwood/Files/ChatFont.ttf", 20);

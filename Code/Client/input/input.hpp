@@ -43,7 +43,7 @@ namespace input {
 	LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	
 		//Process gui input only when our window is focues
-		if(*(HWND*)(0x101C5458) == GetActiveWindow()) {
+		if(MafiaSDK::IsWindowFocused()) {
 			if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
 				return true;
 		}
@@ -90,11 +90,11 @@ namespace input {
 	*/
 	inline auto hook_window() {
 
-		auto mod_win32_hwnd_parent = *(HWND*)(0x101C5458);
+		auto mod_win32_hwnd_parent = MafiaSDK::GetMainWindow();
 		mod_wndproc_original_keyboard = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd_parent, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_keyboard);
 		SetWindowLongW(mod_win32_hwnd_parent, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd_parent, GWL_WNDPROC));
 
-		auto mod_win32_hwnd = *(HWND*)(0x101C5408);
+		auto mod_win32_hwnd = MafiaSDK::GetChildWindow();
 		mod_wndproc_original_mouse = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_mouse);
 		SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
 	}

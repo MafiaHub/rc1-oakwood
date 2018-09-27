@@ -14,6 +14,7 @@
 #include "Engine/I3D_Projector.hpp"
 #include "Engine/I3D_Light.hpp"
 #include "Engine/I3D_Sector.hpp"
+#include "Engine/IGraph.hpp"
 //#include "Engine/DirectHook.hpp"
 
 #include "Game/C_Entity.hpp"
