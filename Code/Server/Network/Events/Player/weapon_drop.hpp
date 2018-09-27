@@ -7,4 +7,5 @@ inline auto drop_entitycreate(librg_event_t* evnt) -> void {
 }
 
 inline auto drop_entityremove(librg_event_t* evnt) -> void {
+	
 }

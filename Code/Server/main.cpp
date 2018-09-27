@@ -22,13 +22,19 @@
 #include "messages.hpp"
 
 librg_ctx_t network_context = { 0 };
+zpl_event_pool gamemode_events = { 0 };
 
-#include "player.hpp"
 #include "mode.hpp"
 
 #include "Network/base.hpp"
 
+// TODO replace by plugin loader
+#include "freeride.hpp"
+
 auto main() -> int {
+
+	init_event_handler();
+	freeride_events_add();
 
 	mod_log("Initializing server ...");
 	mod_init_networking();
@@ -45,5 +51,7 @@ auto main() -> int {
 
 	librg_network_stop(&network_context);
 	librg_free(&network_context);
+	zpl_event_destroy(&gamemode_events);
+
 	return 0;
 }

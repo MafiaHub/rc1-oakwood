@@ -17,5 +17,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
             player->inventory.items[i] = { -1, 0, 0, 0 };
     }
 
-    mode_player_died(sender_ent);
+    mode_prepare_data();
+    mode_data.player_ent = sender_ent;
+
+    mode_trigger(MODE_ON_PLAYER_DIED);
 });
