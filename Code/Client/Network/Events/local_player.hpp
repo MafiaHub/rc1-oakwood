@@ -40,6 +40,9 @@ inline auto local_player_hit(
 	unsigned int player_part) -> void {
 
 	auto victim_ent = get_player_from_base(victim);
+
+	if (!victim_ent) return;
+	
 	librg_send(&network_context, NETWORK_PLAYER_HIT, data, {
 		librg_data_went(&data, victim_ent->id);
 		librg_data_wu32(&data, hit_type);
