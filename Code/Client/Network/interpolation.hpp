@@ -1,5 +1,7 @@
 #pragma once
+
 constexpr float DELTA_TIME = 0.25f;
+
 class Interpolator
 {
 public:

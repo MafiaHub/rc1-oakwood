@@ -49,8 +49,8 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 /*
 * Shared
 */
+#include "Network/interpolation.hpp"
 #include "helpers.hpp"
-#include "interpolation.h"
 #include "structs.hpp"
 #include "messages.hpp"
 #include "utils.hpp"
