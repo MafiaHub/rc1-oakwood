@@ -8,9 +8,10 @@ namespace chat {
 
     auto render() {
 
-        if(!MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) return;
-
-        ImGui::Begin("Mafia Multiplayer - Chat", nullptr, ImGuiWindowFlags_NoMove);
+		if(!MafiaSDK::GetMission()->GetGame() ||
+		   !MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) return; 
+        
+		ImGui::Begin("Mafia Multiplayer - Chat", nullptr, ImGuiWindowFlags_NoMove);
 		ImGui::SetWindowSize(ImVec2(400, 300));
 		ImGui::SetWindowPos(ImVec2(20, 20));
 		
