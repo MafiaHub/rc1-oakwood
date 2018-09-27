@@ -98,6 +98,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
         true, 
         0);
 
+    local_player.ped = ped;
+    
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 

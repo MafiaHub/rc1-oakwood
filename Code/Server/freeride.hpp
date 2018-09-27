@@ -45,7 +45,7 @@ ZPL_EVENT(freeride_player_disconnected) {
 	auto player = (mafia_player*)data->player_ent->user_data;
 
 	//broadcast disconnect message
-	std::string disconnect_msg = "Player " + std::string(data->player->name) + " has disconnected";
+	std::string disconnect_msg = "Player " + std::string(player->name) + " has disconnected";
 	mod_log(disconnect_msg.c_str());
 	mode_broadcast_msg(disconnect_msg.c_str());
 }
@@ -56,7 +56,7 @@ ZPL_EVENT(freeride_player_died) {
 	auto player = (mafia_player*)data->player_ent->user_data;
 	
 	//set default health
-	data->player->health = 200.0f;
+	player->health = 200.0f;
 
 	//add weapons
 	player_inventory_add(data->player_ent, &thompson);
