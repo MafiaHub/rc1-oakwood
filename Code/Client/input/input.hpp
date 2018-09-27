@@ -104,10 +104,16 @@ namespace input {
 		if (do_block) {
 			InputState.devices[ZINPUT_MOUSE]->masterAquired = false;
 			InputState.devices[ZINPUT_MOUSE]->Unacquire();
+
+			InputState.devices[ZINPUT_KEYBOARD]->masterAquired = false;
+			InputState.devices[ZINPUT_KEYBOARD]->Unacquire();
 		}
 		else {
 			InputState.devices[ZINPUT_MOUSE]->masterAquired = true;
 			InputState.devices[ZINPUT_MOUSE]->Acquire();
+
+			InputState.devices[ZINPUT_KEYBOARD]->masterAquired = true;
+			InputState.devices[ZINPUT_KEYBOARD]->Acquire();
 		}
 
 		InputState.input_blocked = do_block;
