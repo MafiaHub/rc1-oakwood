@@ -15,44 +15,21 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
 
     bool is_local_player = player_id == local_player.entity.id;
 
-    //-- create new frame
-    Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
-    Vector3D default_pos = EXPAND_VEC(position);
-
-    auto player_frame = new MafiaSDK::I3D_Frame();
-    player_frame->SetName("testing_player");
-    player_frame->LoadModel(model);
-    player_frame->SetScale(default_scale);
-    player_frame->SetPos(default_pos);
-
     if (!is_local_player) {
         auto player_ent = librg_entity_fetch(&network_context, player_id);
+
         if (player_ent && player_ent->user_data) {
             auto player = (mafia_player*)player_ent->user_data;
-            auto new_ped = reinterpret_cast<MafiaSDK::C_Human*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Enemy));
-            new_ped->Init(player_frame);
-            new_ped->SetShooting(1.0f);
-            new_ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
-            MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
-
-            new_ped->GetInterface()->health = health;
-            new_ped->GetInterface()->entity.position = default_pos;
-            new_ped->GetInterface()->entity.rotation = EXPAND_VEC(rotation);
-
-            //-- INV 
-            for (size_t i = 0; i < 8; i++) {
-                S_GameItem* item = (S_GameItem*)&inventory.items[i];
-                if (item->weaponId != 0) {
-                    new_ped->G_Inventory_AddItem(*item);
-                }
-            }
-
-            new_ped->G_Inventory_SelectByID(current_wep);
-            new_ped->ChangeWeaponModel();
-
-            if (current_wep == 0)
-                new_ped->Do_Holster();
-            //---
+            
+            auto new_ped = player_spawn(
+                position,
+                rotation,
+                inventory,
+                model,
+                current_wep,
+                health,
+                is_local_player,
+                0);
 
             printf("respawn remote !\n");
 
@@ -71,29 +48,15 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
             player->inter_rot.init(rotation);
         }
     } else {
-        auto new_ped = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Player));
-        new_ped->Init(player_frame);
-        new_ped->SetShooting(1.0f);
-        MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
-        MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
-        new_ped->GetInterface()->humanObject.health = health;
-        new_ped->GetInterface()->humanObject.entity.position = default_pos;
-        new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
-
-        //-- INV 
-        for (size_t i = 0; i < 8; i++) {
-            S_GameItem* item = (S_GameItem*)&inventory.items[i];
-            if (item->weaponId != 0) {
-                new_ped->G_Inventory_AddItem(*item);
-            }
-        }
-
-        new_ped->G_Inventory_SelectByID(current_wep);
-        new_ped->ChangeWeaponModel();
-
-        if (current_wep == 0)
-            new_ped->Do_Holster();
-        //---
+        auto new_ped = player_spawn(
+            position,
+            rotation,
+            inventory,
+            model,
+            current_wep,
+            health,
+            is_local_player,
+            0);
 
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
@@ -125,8 +88,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
     u32 current_wep = librg_data_ru32(msg->data);
     f32 health = librg_data_rf32(msg->data);
 
-    player_spawn(
-        nullptr, 
+    auto ped = player_spawn(
         position, 
         rotation,
         inventory, 
@@ -135,6 +97,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
         health, 
         true, 
         0);
+
+    MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
  librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {

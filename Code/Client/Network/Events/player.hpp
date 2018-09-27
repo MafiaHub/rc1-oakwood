@@ -18,8 +18,7 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	player->inter_pos.init(evnt->entity->position);
 	player->inter_pose.init(player->pose);
 
-	player_spawn(
-		player,
+	player->ped = player_spawn(
 		evnt->entity->position,
 		player->rotation,
 		player->inventory,
