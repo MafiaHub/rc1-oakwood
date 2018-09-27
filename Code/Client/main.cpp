@@ -55,12 +55,6 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "messages.hpp"
 #include "utils.hpp"
 
-/*Bones*/
-auto mod_init()			-> void;
-auto mod_init_patches() -> void;
-auto mod_bind_events()  -> void;
-auto mod_hook_dx()		-> void;
-
 f32 last_delta  = 0.0f;
 f32 last_update = 0.0f;
 
