@@ -54,6 +54,7 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "interpolation.h"
 #include "structs.hpp"
 #include "messages.hpp"
+#include "utils.hpp"
 
 /*Bones*/
 auto mod_init()			-> void;
@@ -212,26 +213,6 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
 
 	return DtaOpen(filename, params);
 }
-
-
-class KeyToggle {
-public:
-	KeyToggle(int key) :mKey(key), mActive(false) {}
-	operator bool() {
-		if (GetAsyncKeyState(mKey)) {
-			if (!mActive) {
-				mActive = true;
-				return true;
-			}
-		}
-		else
-			mActive = false;
-		return false;
-	}
-private:
-	int mKey;
-	bool mActive;
-};
 
 KeyToggle myDebugKey(VK_F2);
 

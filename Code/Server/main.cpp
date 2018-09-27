@@ -26,7 +26,6 @@
 librg_ctx_t ctx = { 0 };
 
 #include "player.hpp"
-#include "weapon_drop.hpp"
 #include "mode.hpp"
 
 struct _request_player_data {
