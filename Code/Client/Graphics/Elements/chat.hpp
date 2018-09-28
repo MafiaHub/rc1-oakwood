@@ -67,7 +67,7 @@ namespace chat {
 			ImGui::SetKeyboardFocusHere(0);
 			ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text));
 			
-			if (key_chat_send) {
+			if (key_chat_send && strlen(add_text)) {
 				input::toggle_block_input();
 
 				librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {

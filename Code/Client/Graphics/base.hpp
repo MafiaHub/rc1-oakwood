@@ -45,7 +45,7 @@ namespace graphics {
 
 		ImGui::StyleColorsDark();
 
-		ImColor mainColor = ImColor(54, 54, 54, 255);
+		ImColor mainColor = ImColor(150, 0, 0, 255);
 		ImColor bodyColor = ImColor(24, 24, 24, 240);
 		ImColor fontColor = ImColor(255, 255, 255, 255);
 
