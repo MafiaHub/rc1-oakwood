@@ -139,6 +139,14 @@ namespace menu {
 					MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
 				}
 			}
+
+			if (component_id >= Component::DummyServer && component_id < Component::DummyServer + servers.size()) {
+				auto server_item_idx = (component_id - Component::DummyServer);
+				GlobalConfig.server_address = std::string(servers.at(server_item_idx).server_ip.c_str());
+				if (!GlobalConfig.server_address.empty()) {
+					MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
+				}
+			}
 		});
 
 		MafiaSDK::GM_Menu_Hooks::HookOnMenuItemHover([&](MafiaSDK::GM_Menu* menu, unsigned long component) {
