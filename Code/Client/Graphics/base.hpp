@@ -40,7 +40,7 @@ namespace graphics {
 		ImGui_ImplWin32_Init(MafiaSDK::GetMainWindow());
 		ImGui_ImplDX9_Init(device);
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("oakwood/Files/ChatFont.ttf", 20);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("ChatFont.ttf", 20);
 		io.FontAllowUserScaling = true;
 
 		ImGui::StyleColorsDark();

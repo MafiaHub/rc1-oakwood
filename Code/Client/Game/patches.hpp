@@ -13,7 +13,7 @@ DtaOpen_t DtaOpen = nullptr;
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
 
 	if (strstr(filename, "mainmenu.mnu")){
-		return DtaOpen("oakwood/Files/main.mnu", params);
+		return DtaOpen("main.mnu", params);
 	}
 
 	return DtaOpen(filename, params);
