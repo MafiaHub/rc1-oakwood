@@ -1,10 +1,43 @@
 #pragma once
 namespace chat {
 
+	struct ChatCommand {
+		std::string command_name;
+		std::function<void(std::vector<std::string>)> command_ptr;
+	};
+
+	std::vector<ChatCommand> chat_commands;
     std::vector<std::string> chat_messages;
     constexpr unsigned int VK_T = 0x54;
 	KeyToggle key_chat_open(VK_T);
 	KeyToggle key_chat_send(VK_RETURN);
+
+	auto register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
+		if(ptr != nullptr) {
+			chat_commands.push_back({name, ptr});
+		}
+	}
+
+	auto get_vector_of_args(std::string command_str) {
+		return split(command_str, " ");
+	}
+
+	auto parse_command(std::string command_str) {
+		if(!command_str.empty()) {
+			for(auto command : chat_commands) {
+				if(command_str.find(command.command_name) != std::string::npos) {
+					if(command.command_ptr != nullptr) 
+						command.command_ptr(get_vector_of_args(command_str));
+				}
+			}
+		}
+	}
+
+	auto init() {
+		register_command("/q", [&](std::vector<std::string> args) {
+			exit(0);
+		});
+	}
 
     auto render() {
 
@@ -41,6 +74,9 @@ namespace chat {
 					librg_data_wu8(&data, zpl_strlen(add_text));
 					librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
 				});
+
+				if(add_text[0] == '/') 
+					parse_command(add_text);
 
 				strcpy(add_text, "");
 			}

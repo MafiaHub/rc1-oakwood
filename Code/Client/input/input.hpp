@@ -11,7 +11,7 @@ namespace input {
 
 	struct InputState_ {
 		CDirectInputDevice8Proxy* devices[4];
-		bool input_blocked;
+		bool input_blocked = false;
 	} InputState;
 }
 
