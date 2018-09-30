@@ -16,6 +16,38 @@ namespace hooks
 	}
 
 	//----------------------------------------------
+	//C_Human::Do_Reload()
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Human_Do_Reload_t)(void* _this);
+	C_Human_Do_Reload_t human_do_reload_original = nullptr;
+
+	bool __fastcall C_Human_Do_Reload(void* _this) {
+		bool to_return = human_do_reload_original(_this);
+
+		if(local_player.ped && reinterpret_cast<MafiaSDK::C_Player*>(_this) == local_player.ped) {
+			local_player_reload();
+		}
+
+		return to_return;
+	}
+
+	//----------------------------------------------
+	//C_Human::Do_Holster()
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Human_Do_Holster_t)(void* _this);
+	C_Human_Do_Holster_t human_do_holster_original = nullptr;
+
+	bool __fastcall C_Human_Do_Holster(void* _this) {
+		bool to_return = human_do_holster_original(_this);
+
+		if(local_player.ped && reinterpret_cast<MafiaSDK::C_Player*>(_this) == local_player.ped) {
+			local_player_holster();
+		}
+
+		return to_return;
+	}
+
+	//----------------------------------------------
 	//G_Inventory::SelectByID(id, Vec*)
 	//----------------------------------------------
 	typedef bool(__thiscall* G_Inventory_SelectByID_t)(void* _this, u32 index, void* items_vec);
@@ -169,5 +201,13 @@ inline auto local_player_init() {
 
 	hooks::human_hit_original = reinterpret_cast<hooks::C_Human_Hit_t>(
 		DetourFunction((PBYTE)0x005762A0, (PBYTE)&hooks::OnHit)
+	);
+
+	hooks::human_do_reload_original = reinterpret_cast<hooks::C_Human_Do_Reload_t>(
+		DetourFunction((PBYTE)0x00585B40, (PBYTE)&hooks::C_Human_Do_Reload)
+	);
+
+	hooks::human_do_holster_original = reinterpret_cast<hooks::C_Human_Do_Holster_t>( 
+		DetourFunction((PBYTE)0x00585C60, (PBYTE)&hooks::C_Human_Do_Holster)
 	);
 }

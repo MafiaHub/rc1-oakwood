@@ -137,6 +137,24 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_messa
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message_t* msg) {
+    librg_entity_id id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, id);
+    if (entity) {
+        auto player = (mafia_player*)entity->user_data;
+        player->ped->Do_Reload();
+    }
+});
+
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message_t* msg) {
+    librg_entity_id id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, id);
+    if (entity) {
+        auto player = (mafia_player*)entity->user_data;
+        player->ped->Do_Holster();
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message_t* msg) {
 
     librg_entity_id id = librg_data_rent(msg->data);

@@ -79,6 +79,15 @@ inline auto local_player_weaponchange(u32 index) -> void {
 	});
 }
 
+//TODO send inventory on each message related with weapons !
+inline auto local_player_reload() -> void {
+	librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});
+}
+
+inline auto local_player_holster() -> void {
+	librg_send(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, data, {});
+}
+
 inline auto local_player_weaponpickup(librg_entity_t* item_entity) -> void {
 
 	librg_send(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, data, {

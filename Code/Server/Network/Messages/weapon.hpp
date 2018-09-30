@@ -39,6 +39,28 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_messa
     });
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message_t* msg) {
+
+    auto entity = librg_entity_find(&network_context, msg->peer);
+    if (!entity) return;
+    
+    //process inventory here :) TODO !
+    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, msg->peer, [&](librg_data_t *data) {
+        librg_data_went(data, entity->id);
+    });
+});
+
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message_t* msg) {
+
+    auto entity = librg_entity_find(&network_context, msg->peer);
+    if (!entity) return;
+    
+    //process inventory here :) TODO !
+    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, msg->peer, [&](librg_data_t *data) {
+        librg_data_went(data, entity->id);
+    });
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message_t* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
