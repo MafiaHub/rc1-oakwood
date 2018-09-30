@@ -5,7 +5,6 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
         librg_data_went(data, sender_ent->id);
     });
 
-    //remove old player entity and make new :) 
     if (sender_ent->user_data) {
         auto player = (mafia_player*)sender_ent->user_data;
 

@@ -37,6 +37,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
             //find new way how to properly remove players :)
             if (player->ped) {
                 player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
+                player->ped = new_ped;
             }
 
             //interpolator init
