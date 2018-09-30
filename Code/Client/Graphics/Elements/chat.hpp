@@ -44,6 +44,15 @@ namespace chat {
 		if(!MafiaSDK::GetMission()->GetGame() ||
 		   !MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) return; 
         
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
+			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
+		}
+		else {
+			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 0);
+		}
+
+
 		ImGui::Begin("Mafia Multiplayer - Chat", nullptr, ImGuiWindowFlags_NoMove);
 		ImGui::SetWindowSize(ImVec2(400, 300));
 		ImGui::SetWindowPos(ImVec2(20, 20));
@@ -67,18 +76,21 @@ namespace chat {
 			ImGui::SetKeyboardFocusHere(0);
 			ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text));
 			
-			if (key_chat_send && strlen(add_text)) {
+			if (key_chat_send) {
+				
+				if (strlen(add_text)) {
+					librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
+						librg_data_wu8(&data, zpl_strlen(add_text));
+						librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
+					});
+
+					if (add_text[0] == '/')
+						parse_command(add_text);
+
+					strcpy(add_text, "");
+				}
+
 				input::toggle_block_input();
-
-				librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-					librg_data_wu8(&data, zpl_strlen(add_text));
-					librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
-				});
-
-				if(add_text[0] == '/') 
-					parse_command(add_text);
-
-				strcpy(add_text, "");
 			}
 		}
 
