@@ -147,35 +147,5 @@ namespace graphics {
 		ImGui::EndFrame();
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-
-	
-		D3DLIGHT9 light;
-		D3DMATERIAL9 material;
-
-		if (MafiaSDK::GetMission()->GetGame() && MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) {
-
-			auto pos = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->GetInterface()->humanObject.entity.position;
-			ZeroMemory(&light, sizeof(light));
-			light.Type = D3DLIGHT_SPOT;    // make the light type 'spot light'
-			light.Diffuse = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-			light.Position = D3DXVECTOR3(pos.x, pos.y, pos.z);
-			light.Direction = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-			light.Range = 100.0f;    // a range of 100
-			light.Attenuation0 = 0.0f;    // no constant inverse attenuation
-			light.Attenuation1 = 0.125f;    // only .125 inverse attenuation
-			light.Attenuation2 = 0.0f;    // no square inverse attenuation
-			light.Phi = D3DXToRadian(40.0f);    // set the outer cone to 30 degrees
-			light.Theta = D3DXToRadian(20.0f);    // set the inner cone to 10 degrees
-			light.Falloff = 1.0f;    // use the typical falloff
-
-			global_device->SetLight(0, &light);
-			global_device->LightEnable(0, TRUE);
-
-			ZeroMemory(&material, sizeof(D3DMATERIAL9));
-			material.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-			material.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-
-			global_device->SetMaterial(&material);
-		}
 	}
 }
