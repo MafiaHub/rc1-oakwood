@@ -19,6 +19,7 @@ inline auto drop_entitycreate(librg_event_t* evnt) -> void {
 	auto weapon_drop = new MafiaSDK::C_Drop_In_Weapon;
 	weapon_drop->Init(player_frame);
 	weapon_drop->GetInterface()->DropItem = { drop->weapon.weaponId, drop->weapon.ammoLoaded, drop->weapon.ammoHidden, NULL };
+	weapon_pickup->SetActive(1);
 	drop->weapon_drop_actor = weapon_drop;
 	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(weapon_drop);
 	evnt->entity->user_data = drop;
