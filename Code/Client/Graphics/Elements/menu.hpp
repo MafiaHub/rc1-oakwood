@@ -52,7 +52,7 @@ namespace menu {
 
 	inline auto fetch_master_server() -> std::string {
 
-		http_t* request = http_get("http://localhost:3000/", NULL);
+		http_t* request = http_get("http://madaraszd.net:3001/", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
 			MessageBoxW(0, L"No to ma pojeb", L"Nebezi ti master ty kokotko", MB_OK);

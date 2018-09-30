@@ -71,12 +71,10 @@ namespace hooks
 	void C_Human_Do_ThrowGrenade(void* _this) {
 
 		if(_this != nullptr) {
-			
 			Vector3D pos = *(Vector3D*)((DWORD)_this + 0x200);
 			if(_this == local_player.ped) {
 				local_player_throwgrenade(pos);
 			}
-			printf("Throw grenade: %f %f %f", pos.x, pos.y, pos.z);
 		}
 	}
 

@@ -4,8 +4,7 @@ auto player_despawn(MafiaSDK::C_Player* player) -> void {
     if(player) {
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(player);
 		auto player_frame = *(DWORD*)((DWORD)player + 0x68);
-		printf("[DEBUG] %X\n", player_frame);;
-
+		
 		if (player_frame) {
 			__asm {
 				mov eax, player_frame
@@ -48,7 +47,7 @@ auto player_spawn(zpl_vec3 position,
         new_ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
 
     new_ped->SetShooting(1.0f);
-
+    new_ped->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
     if (is_local_player)
