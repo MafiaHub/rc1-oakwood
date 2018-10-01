@@ -38,6 +38,10 @@ namespace chat {
 		register_command("/q", [&](std::vector<std::string> args) {
 			exit(0);
 		});
+
+        register_command("/utf", [&](std::vector<std::string> args) {
+            chat_messages.push_back(std::make_pair(ImVec4(1.0 / 250.0 * 150, 1.0f, 1.0f, 1.0f), "Кураторы проекта имеют право на редактирование данных правил в любое время"));
+        });
 	}
 
     auto render() {
