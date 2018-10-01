@@ -186,6 +186,32 @@ namespace hooks
 			jmp filter_create_actor_back
 		}
 	}
+
+	/*
+	* Draw distance hook
+	*/
+	float vd_min = 20.0f;
+	float vd_max = 450.0f;
+	float vd_value = 60000.0f;
+
+	void __declspec(naked)VD_Hook_1_0_ENG() {
+		_asm {
+			ADD[ESP], 0x2;
+			FLD DWORD PTR DS : [ESP + 0x0B8];	
+			FLD DWORD PTR DS : vd_min;			
+			FCOMiP ST, ST(1);						
+			JAE finaly;								
+			FLD DWORD PTR DS : vd_max;				
+			FCOMiP ST, ST(1);						
+			JBE finaly;								
+			FFREE ST;				
+			FLD DWORD PTR DS : vd_value;							
+		finaly:
+			FSTP DWORD PTR DS : [ESP + 0x0B8];
+			MOV ECX, DWORD PTR SS : [ESP + 0x0B8];
+			RETN;
+		}
+	}
 };
 
 inline auto local_player_init() {
@@ -210,4 +236,11 @@ inline auto local_player_init() {
 	hooks::human_do_holster_original = reinterpret_cast<hooks::C_Human_Do_Holster_t>( 
 		DetourFunction((PBYTE)0x00585C60, (PBYTE)&hooks::C_Human_Do_Holster)
 	);
+
+	auto vd_value1 = hooks::vd_value - 50.0f;
+	auto vd_value2 = hooks::vd_value - 20.0f;
+	MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
+	MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)&vd_value2, 4);
+	MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)hooks::VD_Hook_1_0_ENG);
+	MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
 }
