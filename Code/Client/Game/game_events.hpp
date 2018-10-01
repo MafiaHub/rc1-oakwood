@@ -27,7 +27,7 @@ auto mod_bind_events() {
 			cam->LockAt(cam_pos, cam_rot);
 			
 			// welcome msg
-			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Welcome to Mafia DM Alpha 0.1", 0xFF0000);
+			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Welcome to Mafia Oakwood 0.1", 0xFF0000);
 			std::string connect_string = "Connecting to " + GlobalConfig.server_address + " ...";
 			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(connect_string.c_str(), 0xFFFFFF);
 			mod_librg_connect();

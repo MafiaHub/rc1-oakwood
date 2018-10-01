@@ -8,5 +8,3 @@ auto player_spawn(zpl_vec3 position,
                   f32 health,
                   bool is_local_player, 
                   int expectedWeaponId) -> MafiaSDK::C_Player *;
-
-auto player_despawn(MafiaSDK::C_Player* player) -> void;

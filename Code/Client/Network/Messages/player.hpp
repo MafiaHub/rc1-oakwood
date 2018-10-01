@@ -66,6 +66,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
         local_player.dead = false;
         local_player.ped = new_ped;
         MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 500, 0xFFFFFF);
+
+        player_inventory_send();
     }
 });
 
@@ -217,10 +219,23 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg)
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message_t *msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    
+    if (entity) {
+        auto player = (mafia_player *)entity->user_data;
+
+        if (player) {
+            librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
+        }
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg) {
     auto entity_id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, entity_id);
-    if (entity->user_data) {
+    if (entity && entity->user_data) {
         auto player = (mafia_player*)(entity->user_data);
         if (player) {
             //player->ped->Intern_ForceDeath();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "factory.hpp"
+#include "commands.hpp"
 #include "patches.hpp"
 #include "game_events.hpp"
 

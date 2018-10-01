@@ -22,12 +22,30 @@ inline auto get_player_from_base(void* base) -> librg_entity_t* {
 	return nullptr;
 }
 
+
+auto player_inventory_send() {
+    player_inventory inv = {0};
+
+    if (!local_player.ped) {
+        mod_log("[INV SEND] Local player doesn't exist!");
+        return;
+    }
+
+    memcpy(&inv, &((MafiaSDK::C_Human *)local_player.ped)->GetInterface()->inventory, sizeof(player_inventory));
+
+    librg_send(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, data, {
+        librg_data_wptr(&data, &inv, sizeof(player_inventory));
+    });
+}
+
+
 /* 
 * todo add reason killer and so one ...
 */
 inline auto local_player_died() {
 	librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
 }
+
 
 inline auto local_player_hit(
 	MafiaSDK::C_Human* victim,
@@ -70,6 +88,8 @@ inline auto local_player_weapondrop(inventory_item* item, char* model) -> void {
 		librg_data_wptr(&data, item, sizeof(inventory_item));
 		librg_data_wptr(&data, wep_model, sizeof(char) * 32);
 	});
+
+	player_inventory_send();
 }
 
 inline auto local_player_weaponchange(u32 index) -> void {
@@ -77,15 +97,21 @@ inline auto local_player_weaponchange(u32 index) -> void {
 	librg_send(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, data, {
 		librg_data_wu32(&data, index);
 	});
+
+	player_inventory_send();
 }
 
 //TODO send inventory on each message related with weapons !
 inline auto local_player_reload() -> void {
 	librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});
+
+	player_inventory_send();	
 }
 
 inline auto local_player_holster() -> void {
 	librg_send(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, data, {});
+
+	player_inventory_send();
 }
 
 inline auto local_player_weaponpickup(librg_entity_t* item_entity) -> void {
@@ -98,6 +124,8 @@ inline auto local_player_weaponpickup(librg_entity_t* item_entity) -> void {
 	auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
 	local_player.ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
 	local_player.ped->Do_ChangeWeapon(0, 0);
+
+	player_inventory_send();
 }
 
 inline auto local_player_throwgrenade(const Vector3D & pos) {
@@ -105,6 +133,8 @@ inline auto local_player_throwgrenade(const Vector3D & pos) {
 	librg_send(&network_context, NETWORK_PLAYER_THROW_GRENADE, data, {
 		librg_data_wptr(&data, &vec_copy, sizeof(Vector3D));
 	});
+
+	player_inventory_send();
 }
 
 #include "Game/Hooks/local_player.hpp"

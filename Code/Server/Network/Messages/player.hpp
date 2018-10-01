@@ -22,3 +22,15 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
         mode_trigger(MODE_ON_PLAYER_DIED);
     }
 });
+
+librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message_t *msg) {
+    auto sender_ent = librg_entity_find(&network_context, msg->peer);
+
+    if (sender_ent->user_data && sender_ent->type == TYPE_PLAYER) {
+        auto player = (mafia_player *)sender_ent->user_data;
+
+        librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
+
+        player_inventory_send(sender_ent);
+    }
+});

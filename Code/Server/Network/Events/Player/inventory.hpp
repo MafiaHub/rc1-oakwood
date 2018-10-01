@@ -122,3 +122,14 @@ inline auto player_inventory_remove(
 		librg_data_wu32(&data, id);
 	});
 }
+
+auto player_inventory_send(librg_entity_t *player_ent) {
+	auto player = (mafia_player *)player_ent->user_data;
+
+	if (player) {
+		librg_send_except(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, player_ent->client_peer, data, {
+			librg_data_went(&data, player_ent->id);
+			librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
+		});
+	}
+}

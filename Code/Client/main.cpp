@@ -71,6 +71,7 @@ struct _GlobalConfig {
 */
 #include "Input/input.hpp"
 #include "Game/Factory/defs.hpp"
+#include "Game/Commands/defs.hpp"
 #include "Graphics/elements_pre.hpp"
 #include "Network/base.hpp"
 #include "Graphics/base.hpp"
