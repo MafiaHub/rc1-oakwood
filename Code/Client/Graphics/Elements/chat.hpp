@@ -7,7 +7,8 @@ namespace chat {
 	};
 
 	std::vector<ChatCommand> chat_commands;
-    std::vector<std::string> chat_messages;
+	std::vector<std::pair<ImVec4, std::string>> chat_messages;
+
     constexpr unsigned int VK_T = 0x54;
 	KeyToggle key_chat_open(VK_T);
 	KeyToggle key_chat_send(VK_RETURN);
@@ -41,31 +42,37 @@ namespace chat {
 
     auto render() {
 
-		if(!MafiaSDK::GetMission()->GetGame() ||
-		   !MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) return; 
+		if(MafiaSDK::GetGMMenu() || !MafiaSDK::GetMission()->GetGame()) return; 
         
 		ImGuiStyle& style = ImGui::GetStyle();
 		if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
+			style.Colors[ImGuiCol_TitleBg] =  ImColor(150, 0, 0, 200);
 		}
 		else {
-			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 0);
+			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 50);
+			style.Colors[ImGuiCol_TitleBg] = ImColor(150, 0, 0, 70);
 		}
 
+		ImGui::Begin("Mafia Multiplayer - Chat", 
+			nullptr, 
+			ImGuiWindowFlags_NoMove | 
+			ImGuiWindowFlags_NoResize | 
+			ImGuiWindowFlags_NoCollapse |
+			ImGuiWindowFlags_NoScrollbar);
 
-		ImGui::Begin("Mafia Multiplayer - Chat", nullptr, ImGuiWindowFlags_NoMove);
 		ImGui::SetWindowSize(ImVec2(400, 300));
 		ImGui::SetWindowPos(ImVec2(20, 20));
 		
 		ImGui::BeginChild("scrolling");
 		if (!chat_messages.empty()) {
 			for (auto message : chat_messages) {
-				ImGui::TextUnformatted(message.c_str());
+				ImGui::TextColored(message.first, message.second.c_str());
 			}
 		}
-		
+		ImGui::SetScrollHere(1.0f);
 		ImGui::EndChild();
-
+		
 		if (!input::InputState.input_blocked && MafiaSDK::IsWindowFocused() && key_chat_open) {
 			input::toggle_block_input();
 		}
@@ -79,6 +86,7 @@ namespace chat {
 			if (key_chat_send) {
 				
 				if (strlen(add_text)) {
+
 					librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
 						librg_data_wu8(&data, zpl_strlen(add_text));
 						librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
@@ -93,7 +101,6 @@ namespace chat {
 				input::toggle_block_input();
 			}
 		}
-
 		ImGui::SetScrollHere(1.0f);
 		ImGui::End();
     }

@@ -10,9 +10,6 @@ f64 last_time		= 0.0f;
 f64 passed_time		= 2.0f;
 
 std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
-	// Bridge
-	{ {-948.764f, -4.9992f, 149.493f }, {0.930383f, 0.206202f -0.366589f} },
-	{ {-798.439f, 6.98345f, 152.055f}, {-0.634391f, 0.182233f -0.773012f} },
 	// Salieri bar
     { { -1742.34f, 0.316043f, -13.9444f  },{ -0.891282f, -0.00174832f, 0.45345f } },
  	{ { -1793.5f, -4.52254f, -6.82448f },{ 0.800482f, 0.280663f, 0.599357f } },
@@ -77,10 +74,10 @@ auto mod_bind_events() {
 		}
 
 		if (menu_skip == 1) {
+			
 			MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
-			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Welcome to Mafia Oakwood 0.1", 0xFF0000);
-			std::string connect_string = "Connecting to " + GlobalConfig.server_address + " ...";
-			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(connect_string.c_str(), 0xFFFFFF);
+			chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
+			chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
 			mod_librg_connect();
 			menu_skip = 0;
 			return;

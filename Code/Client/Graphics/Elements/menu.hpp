@@ -166,9 +166,14 @@ namespace menu {
 
 			if (menu) {
 				replace_default_texts(menu);
-
-				if (menu->FindComponentByID(Component::ConnectButton))
+				if (menu->FindComponentByID(Component::ConnectButton)) {
 					generate_browser_list(menu);
+					if (servers.size()) {
+						menu->SetText(Component::ServerIP, servers.at(0).server_ip.c_str());
+						menu->SetText(Component::ServerMaxPlayers, servers.at(0).max_players.c_str());
+						menu->SetText(Component::ServerCurPlayers, servers.at(0).current_players.c_str());
+					}
+				}
 			}
 		});
 	}

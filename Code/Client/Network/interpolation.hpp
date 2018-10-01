@@ -16,9 +16,9 @@ public:
 	}
 
 	/* do the interpolation */
-	auto interpolate() -> zpl_vec3 {
+	auto interpolate(f64 dtime = DELTA_TIME) -> zpl_vec3 {
 		zpl_vec3 dest;
-		zpl_vec3_lerp(&dest, last_value, target_val, DELTA_TIME);
+		zpl_vec3_lerp(&dest, last_value, target_val, dtime);
 		last_value = dest;
 		return dest;
 	}
