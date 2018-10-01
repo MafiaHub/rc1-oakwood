@@ -5,6 +5,66 @@ void librg_entites_tick(librg_entity_t* ent) {
 	*(int*)((DWORD)ent->user_data + 0x4A4) = 50;
 }
 
+u32 transition_idx	= 0;
+f64 last_time		= 0.0f;
+f64 passed_time		= 2.0f;
+
+std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
+	// Bridge
+	{ {-948.764f, -4.9992f, 149.493f }, {0.930383f, 0.206202f -0.366589f} },
+	{ {-798.439f, 6.98345f, 152.055f}, {-0.634391f, 0.182233f -0.773012f} },
+	// Salieri bar
+    { { -1742.34f, 0.316043f, -13.9444f  },{ -0.891282f, -0.00174832f, 0.45345f } },
+ 	{ { -1793.5f, -4.52254f, -6.82448f },{ 0.800482f, 0.280663f, 0.599357f } },
+	// Near hospital
+	{ { -947.722f,  11.1498f,  630.033f },{ 0.765135f,  0.0662749f,  0.64387f } },
+	{ { -881.001f,  16.9289f,  686.176f },{ 0.762883f,  0.275639f, 0.646537f } },
+	// Light house
+	{ { 1001.26f, 33.8752f, -921.13f },{ -0.273181f, 0.114938f, 0.961963f } },
+	{ { 856.086f, 77.5979f, -922.258f },{ 0.680891f, -0.392336f, 0.732385f } },
+	// Theatre
+	{ { -997.554f, 4.38823f, -176.89f },{ -0.676999f, -0.0104618f, 0.735984f } },
+	{ { -1080.7f, -4.46511f, -178.232f },{ 0.563889f, 0.297369f, 0.825851f } },
+	//China town 
+	{ { -1558.17f, 17.2702f, 583.109f },{ -0.999885f, 0.069762f, -0.0151395f } },
+	{ { -1806.01f, 19.1066f, 583.164f },{ -0.824788f, 0.258827f, 0.565441f } },
+};
+
+auto interpolate_cam() {
+	auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
+	auto from = camera_follow_points.at(transition_idx);
+	auto to = camera_follow_points.at(transition_idx + 1);
+
+	if (passed_time > 0.8f && passed_time < 0.82f) {
+		MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+	}
+
+	if (passed_time > 1.0f) {		
+		if (transition_idx + 2 > camera_follow_points.size() - 1)
+			transition_idx = 0;
+		else 
+			transition_idx += 2;
+
+		MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+		passed_time = 0.0f;
+	}
+
+	f64 delta_time = zpl_time_now() - last_time;
+
+	zpl_vec3 dest_pos;
+	zpl_vec3_lerp(&dest_pos, from.first, to.first, passed_time);
+
+	zpl_vec3 dest_rot;
+	zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
+
+	Vector3D pos = EXPAND_VEC(dest_pos);
+	Vector3D rot = EXPAND_VEC(dest_rot);
+	cam->LockAt(pos, rot);
+
+	passed_time += delta_time * 0.11f;
+	last_time = zpl_time_now();
+}
+
 //TODO, change menu_skip with mission string comparing !
 int menu_skip = 0;
 auto mod_bind_events() {
@@ -17,16 +77,7 @@ auto mod_bind_events() {
 		}
 
 		if (menu_skip == 1) {
-			// disable traffic
 			MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
-
-			// connecting camera look at the LockAt more cuz it's weird
- 			auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
-			Vector3D cam_pos = { -1788.927612f, -4.542368f,  -9.105090f };
-			Vector3D cam_rot = { 0.982404f,0.520000f, 1.017291f };
-			cam->LockAt(cam_pos, cam_rot);
-			
-			// welcome msg
 			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText("Welcome to Mafia Oakwood 0.1", 0xFF0000);
 			std::string connect_string = "Connecting to " + GlobalConfig.server_address + " ...";
 			MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(connect_string.c_str(), 0xFFFFFF);
@@ -42,7 +93,11 @@ auto mod_bind_events() {
 
 	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 		
+		if(!librg_is_connected(&network_context))
+			interpolate_cam();
+
 		librg_tick(&network_context);
+
 		for (u32 i = 0; i < network_context.max_entities; i++) {
 			
 			librg_entity_t *entity = librg_entity_fetch(&network_context, i);
@@ -64,5 +119,6 @@ auto mod_bind_events() {
 				} break;
 			}
 		}
+
 	});	
 }
