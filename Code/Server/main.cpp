@@ -53,6 +53,10 @@ auto main() -> int {
 	bool running = true;
 	while (running) {
 		librg_tick(&network_context);
+
+		mode_prepare_data();
+		mode_trigger(MODE_ON_SERVER_TICK);
+
 		zpl_sleep_ms(2);
 	}
 

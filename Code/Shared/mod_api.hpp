@@ -39,6 +39,8 @@ enum mod_mode_events {
     MODE_ON_PLAYER_CONNECTED,
     MODE_ON_PLAYER_DISCONNECTED,
     MODE_ON_PLAYER_DIED,
+
+    MODE_ON_SERVER_TICK,
 };
 
 /*
