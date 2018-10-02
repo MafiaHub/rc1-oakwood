@@ -21,6 +21,8 @@ private:
 
 inline auto alloc_console() {
 	AllocConsole();
+	std::setlocale(LC_ALL, "C");
+	SetConsoleOutputCP(CP_UTF8);
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);

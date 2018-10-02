@@ -31,6 +31,7 @@
 #include <functional>
 #include <fstream>
 #include <vector>
+#include <clocale>
 
 /*
 * DX & DInput

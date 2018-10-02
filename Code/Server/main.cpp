@@ -11,6 +11,7 @@
 #include <fstream>
 #include <ostream>
 #include <vector>
+#include <clocale>
 
 #include "librg/librg_ext.h"
 
@@ -32,6 +33,9 @@ zpl_event_pool gamemode_events = { 0 };
 #include "freeride.hpp"
 
 auto main() -> int {
+
+	std::setlocale(LC_ALL, "C");
+	SetConsoleOutputCP(CP_UTF8);
 
 	init_event_handler();
 	freeride_events_add();

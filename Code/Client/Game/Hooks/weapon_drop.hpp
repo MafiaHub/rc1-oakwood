@@ -70,6 +70,6 @@ inline auto drop_init() {
 	MemoryPatcher::InstallJmpHook(0x0057FBA3, (DWORD)&hooks::drop_capture_model);
 	MemoryPatcher::InstallJmpHook(0x00580176, (DWORD)&hooks::drop_in_weapon_init);
 	MemoryPatcher::InstallJmpHook(0x00443650, (DWORD)&hooks::no_phys);
-	MemoryPatcher::InstallJmpHook(0x0058D4C6, 0x0058D553)
+	MemoryPatcher::InstallJmpHook(0x0058D4C6, 0x0058D553);
 	MemoryPatcher::InstallJmpHook(0x00594923, (DWORD)&hooks::weapon_pickup);
 }
