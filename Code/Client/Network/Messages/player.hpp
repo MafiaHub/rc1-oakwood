@@ -57,8 +57,6 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
 
         local_player.dead = false;
         local_player.ped = new_ped;
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 500, 0xFFFFFF);
-
         player_inventory_send();
     }
 });
