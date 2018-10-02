@@ -61,13 +61,16 @@ OAK_MOD_MAIN {
     });
 
     gm->SetOnPlayerDied([=](Player *player) {
-        player->ClearInventory();
+ 
+        player->Fadeout(true, 500, 0xFFFFFF);
 
         auto wep = get_weapon_by_id(player->GetCurrentWeapon());
 
         if (wep) {
             gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
         }
+
+        player->ClearInventory();
 
         player->SetPosition(mode_generate_spawn());
 

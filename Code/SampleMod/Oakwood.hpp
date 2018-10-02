@@ -22,6 +22,8 @@ public:
     void ClearInventory();
     u32 GetCurrentWeapon();
 
+    void Fadeout(bool fadeout, u32 duration, u32 color);
+
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2
 

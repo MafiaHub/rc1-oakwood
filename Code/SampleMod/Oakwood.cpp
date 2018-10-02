@@ -156,6 +156,11 @@ u32 Player::GetCurrentWeapon()
     return ped->current_weapon_id;
 }
 
+void Player::Fadeout(bool fadeout, u32 duration, u32 color)
+{
+    __gm->mod->vtable.player_fadeout(entity, fadeout, duration, color);
+}
+
 void Player::SetHealth(f32 health)
 {
     ped->health = health * 2.0f;
