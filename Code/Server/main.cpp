@@ -26,6 +26,7 @@ librg_ctx_t network_context = { 0 };
 zpl_event_pool gamemode_events = { 0 };
 
 #include "mode.hpp"
+#include "commands.hpp"
 #include "Network/base.hpp"
 
 #include "natives.hpp"

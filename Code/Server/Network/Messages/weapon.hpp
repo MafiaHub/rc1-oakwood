@@ -64,17 +64,15 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_mess
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message_t* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
-    auto new_weapon_drop = new mafia_weapon_drop;
-
-    librg_data_rptr(msg->data, &new_weapon_drop->weapon, sizeof(inventory_item));
-    librg_data_rptr(msg->data, new_weapon_drop->model, sizeof(char) * 32);
+    inventory_item item = {0};
+    char model[32] = "";
     
-    auto new_weapon_entity			= librg_entity_create(&network_context, TYPE_WEAPONDROP);
-    new_weapon_entity->position		= entity->position;
-    new_weapon_entity->position.y	+= 0.7f;
-    new_weapon_entity->user_data	= new_weapon_drop;
-
-    player_inventory_remove(entity, new_weapon_drop->weapon.weaponId, true, true);
+    librg_data_rptr(msg->data, &item, sizeof(inventory_item));
+    librg_data_rptr(msg->data, model, sizeof(char) * 32);
+    
+    spawn_weapon_drop(entity->position, model, item);
+    
+    player_inventory_remove(entity, item.weaponId, true, true);
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message_t* msg) {
