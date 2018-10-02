@@ -6,10 +6,6 @@ extern "C" {
     // General
     //
 
-    void oak_register_event(u64 type, zpl_event_cb cb) {
-        zpl_event_add(&gamemode_events, (u64)type, cb);
-    }
-
     void oak_print_test() {
         printf("It works!");
     }
@@ -54,7 +50,6 @@ extern "C" {
 auto set_up_natives() -> void {
     auto vt = &gm.vtable;
 
-    vt->register_event = oak_register_event;
     vt->print_test = oak_print_test;
     vt->broadcast_msg = oak_broadcast_msg;
     vt->broadcast_msg_color = oak_broadcast_msg_color;

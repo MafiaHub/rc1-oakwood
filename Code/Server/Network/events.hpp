@@ -16,20 +16,13 @@ auto on_librg_connection_accept(librg_event_t* evnt) -> void {
 
 	librg_entity_control_set(evnt->ctx, evnt->entity->id, evnt->peer);
 
-	mode_prepare_data();
-	mode_data.evnt = evnt;
-	mode_data.player_ent = evnt->entity;
-	mode_data.player = ped;
-
-	mode_trigger(MODE_ON_PLAYER_CONNECTED);
+    if (gm.on_player_connected)
+        gm.on_player_connected(evnt, evnt->entity, ped);
 }
 
 auto on_librg_connection_disconnect(librg_event_t* evnt) -> void {
-	mode_prepare_data();
-	mode_data.player_ent = evnt->entity;
-	mode_data.evnt = evnt;
-
-	mode_trigger(MODE_ON_PLAYER_DISCONNECTED);
+    if (gm.on_player_disconnected)
+        gm.on_player_disconnected(evnt, evnt->entity);
 }
 
 auto on_librg_clientstreamer_update(librg_event_t* evnt) -> void {

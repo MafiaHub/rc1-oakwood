@@ -8,13 +8,11 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
     if (sender_ent->user_data) {
         auto player = (mafia_player*)sender_ent->user_data;
 
-        mode_prepare_data();
-        mode_data.player_ent = sender_ent;
-        
         //change health
         player->health = 0.0f;
 
-        mode_trigger(MODE_ON_PLAYER_DIED);
+        if (gm.on_player_died)
+            gm.on_player_died(sender_ent, player);
     }
 });
 

@@ -9,24 +9,8 @@ zpl_dll_handle dll_handle = 0;
 
 auto set_up_natives() -> void;
 
-auto mode_prepare_data() {
-    mode_event data_ = {0};
-    mode_event *dptr = &mode_data;
-    *dptr = data_;
-}
-
-auto mode_trigger(u64 id) -> void {
-    zpl_event_trigger(&gamemode_events, id, (zpl_event_data *)&mode_data);
-}
-
 auto init_api() {
     set_up_natives();
-}
-
-auto init_event_handler() {
-	zpl_event_init(&gamemode_events, zpl_heap());
-
-    init_api();
 }
 
 auto load_dll(const char *name) {
