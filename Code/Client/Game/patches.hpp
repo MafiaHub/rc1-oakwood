@@ -24,14 +24,6 @@ auto mod_init_patches() {
 	menu::init();
 	HMODULE rw_data = GetModuleHandleA("rw_data.dll");
 	DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
-	
-	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
-		nameplates::render();
-
-		if (myDebugKey) {
-			input::toggle_block_input();
-		}
-	});
 
 	MafiaSDK::C_Game_Patches::PatchDisableLogos();
 	MafiaSDK::C_Game_Patches::PatchDisablePleaseWait();

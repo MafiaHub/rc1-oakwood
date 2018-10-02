@@ -1,6 +1,5 @@
 #pragma once
 
-
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();

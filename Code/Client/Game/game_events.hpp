@@ -116,5 +116,6 @@ auto mod_bind_events() {
 		}
 
 		last_time = zpl_time_now();
+		nameplates::render();
 	});	
 }
