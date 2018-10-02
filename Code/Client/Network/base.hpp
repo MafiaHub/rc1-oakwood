@@ -7,7 +7,7 @@
 /*
 *  Librg connect to server
 */
-inline auto mod_librg_connect() {
+inline auto mod_librg_connect() -> void {
 	librg_address_t addr = { 27010, (char*)GlobalConfig.server_address.c_str()};
 	librg_network_start(&network_context, addr);
 }
