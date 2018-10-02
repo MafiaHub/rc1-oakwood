@@ -41,7 +41,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
             }
 
             //interpolator init
-            player->inter_pos.init(position);
+            //player->inter_pos.init(position);
             player->inter_rot.init(rotation);
         }
     } else {

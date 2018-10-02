@@ -16,7 +16,7 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	//feed interpolators
 	player->inter_rot.init(player->rotation);
-	player->inter_pos.init(evnt->entity->position);
+	//player->inter_pos.init(evnt->entity->position);
 	player->inter_pose.init(player->pose);
 
 	player->ped = player_spawn(
@@ -32,15 +32,18 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	evnt->entity->user_data = player;
 }
 
-inline auto player_game_tick(mafia_player* player) -> void {
+inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 
 	//fix shooting ( fixed ammo for now :) )
 	*(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
 	*(BYTE*)((DWORD)player->ped + 0x4A8) = 50;
 
 	//update interpolated stuff :)
+	f32 alpha = player->inter_delta / network_context.timesync.server_delay;
+    player->inter_delta += (f32)delta;
+
 	auto player_int = player->ped->GetInterface();
-	player_int->entity.position = EXPAND_VEC(player->inter_pos.interpolate());
+	player_int->entity.position = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pos, alpha));
 	player_int->entity.rotation = EXPAND_VEC(player->inter_rot.interpolate());
 
 	Vector3D mafia_pose = EXPAND_VEC(player->inter_pose.interpolate());
@@ -60,16 +63,20 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	player->is_crouching = librg_data_ru8(evnt->data);
 	player->is_aiming = librg_data_ru8(evnt->data);
 	player->aiming_time = librg_data_ru64(evnt->data);
+	
+	/* update interpolation tables */
+	cubic_hermite_v3_value(&player->inter_pos, evnt->entity->position);
 
-	//feed interpolators
 	player->inter_rot.set(player->rotation);
-	player->inter_pos.set(evnt->entity->position);
+	//player->inter_pos.set(evnt->entity->position);
 	player->inter_pose.set(player->pose);
 
 	player_int->animState = player->animation_state;
 	player_int->isDucking = player->is_crouching;
 	player_int->isAiming = player->is_aiming;
 	*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
+
+	player->inter_delta = 0.0f;
 }
 
 inline auto player_entityremove(librg_event_t* evnt) -> void {
