@@ -32,6 +32,19 @@ namespace graphics {
 		d3dcreate9_original = (d3dcreate9_t)(DetourFunction(DetourFindFunction((char*)"d3d9.dll", (char*)"Direct3DCreate9"), (PBYTE)d3dcreate9_hook));
 	}
 
+	auto GetCustomGlyphRanges() -> const ImWchar *{
+		static const ImWchar ranges[] =
+		{
+			0x0020, 0x00FF, // Basic Latin + Latin Supplement
+			0x0100, 0x017F, // Latin Extended-A
+			0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
+			0x2DE0, 0x2DFF, // Cyrillic Extended-A
+			0xA640, 0xA69F, // Cyrillic Extended-B
+			0,
+		};
+		return &ranges[0];
+	}
+
 	inline auto setup_imgui(IDirect3DDevice9* device) -> void {
 
 		IMGUI_CHECKVERSION();
@@ -40,7 +53,7 @@ namespace graphics {
 		ImGui_ImplWin32_Init(MafiaSDK::GetMainWindow());
 		ImGui_ImplDX9_Init(device);
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("ChatFont.ttf", 20, NULL, io.Fonts->GetGlyphRangesCyrillic());
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("ChatFont.ttf", 20, NULL, GetCustomGlyphRanges());
 		io.FontAllowUserScaling = true;
 
 		ImGui::StyleColorsDark();
