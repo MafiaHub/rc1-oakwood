@@ -30,6 +30,12 @@ namespace MafiaSDK
             Close = 0x005405E0
         };
 
+		enum MissionID
+		{
+			FREERIDE = 29,
+			FREERIDE_NOC = 30
+		};
+
         enum ObjectTypes
         {
             GhostObject = 1,
@@ -138,6 +144,10 @@ namespace MafiaSDK
     inline C_Mission* GetMission()
     {
         return *reinterpret_cast<C_Mission**>(C_Mission_Enum::FunctionAddresses::CLASS_CMISSION);
+    }
+
+    inline C_Mission_Enum::MissionID GetCurrentMissionID() {
+        return (C_Mission_Enum::MissionID)*(int*)(0x6BD8A8);
     }
 }
 

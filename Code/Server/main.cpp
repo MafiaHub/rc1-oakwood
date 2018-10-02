@@ -26,7 +26,6 @@ librg_ctx_t network_context = { 0 };
 zpl_event_pool gamemode_events = { 0 };
 
 #include "mode.hpp"
-
 #include "Network/base.hpp"
 
 #include "natives.hpp"
@@ -59,6 +58,5 @@ auto main() -> int {
 	librg_network_stop(&network_context);
 	librg_free(&network_context);
 	zpl_event_destroy(&gamemode_events);
-
 	return 0;
 }

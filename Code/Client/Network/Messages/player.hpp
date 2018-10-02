@@ -31,18 +31,10 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
                 is_local_player,
                 0);
 
-            printf("respawn remote !\n");
-
-            //remove old ped
-            //find new way how to properly remove players :)
             if (player->ped) {
                 player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
                 player->ped = new_ped;
             }
-
-            //interpolator init
-            player->inter_pos.init(position);
-            player->inter_rot.init(rotation);
         }
     } else {
         auto new_ped = player_spawn(

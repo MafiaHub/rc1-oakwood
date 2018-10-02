@@ -30,9 +30,10 @@ struct mafia_player {
 	player_inventory inventory;
 	u32 current_weapon_id;
 #ifdef MAFIA_SDK_IMPLEMENTATION
-	Interpolator inter_rot;
-	Interpolator inter_pos;
-	Interpolator inter_pose;
+	f32 inter_delta;
+    interpolate3_hermite_t inter_pos;
+	interpolate3_hermite_t inter_rot;
+	interpolate3_hermite_t inter_pose;
 	MafiaSDK::C_Human* ped;
 	IDirect3DTexture9* nickname_texture;
 #endif
