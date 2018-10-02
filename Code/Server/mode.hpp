@@ -56,6 +56,8 @@ auto load_dll(const char *name) {
     }
 
     proc(&gm);
+
+    zpl_printf("Gamemode '%s' has been loaded!\nAuthor: %s\nVersion: %s\n\n", gm.name.c_str(), gm.author.c_str(), gm.version.c_str());
 }
 
 auto free_dll() {

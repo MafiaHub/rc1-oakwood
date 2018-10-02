@@ -59,5 +59,6 @@ auto main() -> int {
 	librg_network_stop(&network_context);
 	librg_free(&network_context);
 	zpl_event_destroy(&gamemode_events);
+	free_dll();
 	return 0;
 }
