@@ -88,7 +88,7 @@ auto mod_bind_events() {
 	local_player_init();
 	drop_init();
 
-	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
+	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
 		
 		if(!librg_is_connected(&network_context))
 			interpolate_cam();

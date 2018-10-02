@@ -147,6 +147,13 @@ namespace menu {
 					MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
 				}
 			}
+
+			//TODO: change this with confirm yes button later
+			if (component_id == Component::ExitGame) {
+				if(librg_is_connected(&network_context)) {
+					librg_network_stop(&network_context);
+				}
+			}
 		});
 
 		MafiaSDK::GM_Menu_Hooks::HookOnMenuItemHover([&](MafiaSDK::GM_Menu* menu, unsigned long component) {
