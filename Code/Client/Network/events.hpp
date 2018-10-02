@@ -4,13 +4,27 @@
 #include "Events/player.hpp"
 #include "Events/weapon_drop.hpp"
 
+inline auto mod_librg_connect() -> void;
+
 void on_librg_connect(librg_event_t* evnt) {
 	
+	MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
 	MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
+	chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connected to " + GlobalConfig.server_address));
 
 	auto local_player_data = new mafia_player;
 	evnt->entity->user_data = local_player_data;
 	local_player.entity = *evnt->entity;
+}
+
+void on_librg_disconnect(librg_event_t* evnt) {
+
+	chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Disconnected from " + GlobalConfig.server_address + "."));
+	if(local_player.ped) {
+		player_despawn(local_player.ped);
+		local_player.ped = nullptr;
+	}
+	mod_librg_connect();
 }
 
 void on_librg_entity_create(librg_event_t* evnt) {
@@ -58,6 +72,7 @@ void on_librg_clientstreamer_update(librg_event_t* evnt) {
 
 auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CONNECTION_ACCEPT, on_librg_connect);
+	librg_event_add(&network_context, LIBRG_CONNECTION_DISCONNECT, on_librg_disconnect);
 	librg_event_add(&network_context, LIBRG_ENTITY_CREATE, on_librg_entity_create);
 	librg_event_add(&network_context, LIBRG_ENTITY_UPDATE, on_librg_entity_update);
 	librg_event_add(&network_context, LIBRG_ENTITY_REMOVE, on_librg_entity_remove);
