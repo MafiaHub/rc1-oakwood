@@ -18,6 +18,7 @@ auto on_librg_connection_accept(librg_event_t* evnt) -> void {
 
 	mode_prepare_data();
 	mode_data.evnt = evnt;
+	mode_data.player_ent = evnt->entity;
 	mode_data.player = ped;
 
 	mode_trigger(MODE_ON_PLAYER_CONNECTED);
@@ -26,6 +27,7 @@ auto on_librg_connection_accept(librg_event_t* evnt) -> void {
 auto on_librg_connection_disconnect(librg_event_t* evnt) -> void {
 	mode_prepare_data();
 	mode_data.player_ent = evnt->entity;
+	mode_data.evnt = evnt;
 
 	mode_trigger(MODE_ON_PLAYER_DISCONNECTED);
 }

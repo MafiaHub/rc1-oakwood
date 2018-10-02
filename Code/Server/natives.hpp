@@ -41,6 +41,14 @@ extern "C" {
     void oak_player_respawn(librg_entity_t *entity) {
         player_send_respawn(entity);
     }
+
+    //
+    // Weapon drop
+    //
+
+    librg_entity_t* oak_drop_spawn(zpl_vec3 position, char *model, inventory_item item) {
+        return spawn_weapon_drop(position, model, item);
+    }
 }
 
 auto set_up_natives() -> void {
@@ -54,4 +62,6 @@ auto set_up_natives() -> void {
     vt->player_inventory_add = oak_player_inventory_add;
     vt->player_spawn = oak_player_spawn;
     vt->player_respawn = oak_player_respawn;
+
+    vt->drop_spawn = oak_drop_spawn;
 }

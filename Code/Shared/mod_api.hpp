@@ -51,22 +51,28 @@ typedef OAK_REGISTER_EVENT(oak_register_event_ptr);
 #define OAK_PRINT_TEST(name) void name()
 typedef OAK_PRINT_TEST(oak_print_test_ptr);
 
-#define OAK_BROADCAST_MSG(name) void name(const char* text);
+#define OAK_BROADCAST_MSG(name) void name(const char* text)
 typedef OAK_BROADCAST_MSG(oak_broadcast_msg_ptr);
 
-#define OAK_BROADCAST_MSG_COLOR(name) void name(const char* text, u32 color);
+#define OAK_BROADCAST_MSG_COLOR(name) void name(const char* text, u32 color)
 typedef OAK_BROADCAST_MSG_COLOR(oak_broadcast_msg_color_ptr);
 
 //
 
-#define OAK_PLAYER_INVENTORY_ADD(name) void name(librg_entity_t *entity, inventory_item *item);
+#define OAK_PLAYER_INVENTORY_ADD(name) void name(librg_entity_t *entity, inventory_item *item)
 typedef OAK_PLAYER_INVENTORY_ADD(oak_player_inventory_add_ptr);
 
-#define OAK_PLAYER_SPAWN(name) void name(librg_entity_t *entity);
+#define OAK_PLAYER_SPAWN(name) void name(librg_entity_t *entity)
 typedef OAK_PLAYER_SPAWN(oak_player_spawn_ptr);
 
-#define OAK_PLAYER_RESPAWN(name) void name(librg_entity_t *entity);
+#define OAK_PLAYER_RESPAWN(name) void name(librg_entity_t *entity)
 typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
+
+//
+
+#define OAK_DROP_SPAWN(name) librg_entity_t* name(zpl_vec3 position, char *model, inventory_item item)
+typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
+
 
 /*
 * Mod API
@@ -88,6 +94,9 @@ struct oak_api {
         oak_player_spawn_ptr *player_spawn;
         oak_player_respawn_ptr *player_respawn;
         oak_player_inventory_add_ptr *player_inventory_add;
+
+        // Weapon drop
+        oak_drop_spawn_ptr *drop_spawn;
     } vtable;
 };
 

@@ -2,6 +2,7 @@
 
 inline auto drop_entitycreate(librg_event_t* evnt) -> void {
 	auto drop = new mafia_weapon_drop;
+	*drop = {};
 	librg_data_rptr(evnt->data, drop->model, sizeof(char) * 32);
 	librg_data_rptr(evnt->data, &drop->weapon, sizeof(inventory_item));
 
@@ -32,6 +33,8 @@ inline auto drop_entityremove(librg_event_t* evnt) -> void {
 inline auto drop_frame_init(MafiaSDK::C_Human* _this, MafiaSDK::C_Drop_In_Weapon* drop, char* model_name) -> void {
 	if (local_player.ped == _this) {
 		auto item = (inventory_item*)&drop->GetInterface()->DropItem;
+		local_player_weapondrop(item, model_name);
+		mod_log(("Dropping gun: " + std::string(model_name)).c_str());
 		MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(drop);
 	}
 }
