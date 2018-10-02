@@ -58,27 +58,19 @@ auto interpolate_cam(f64 delta_time) {
 	passed_time += delta_time * 0.11f;
 }
 
-//TODO, change menu_skip with mission string comparing !
-int menu_skip = 0;
 auto mod_bind_events() {
 
 	MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
 
-		if (!menu_skip) {
-			menu_skip = 1;
-			return;
-		}
+		auto mission_id = MafiaSDK::GetCurrentMissionID();
+		if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 
+			mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE) {
 
-		if (menu_skip == 1) {
-			
 			MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 			chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
 			chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
 			mod_librg_connect();
-			menu_skip = 0;
-			return;
 		}
-		menu_skip++;
 	});
 
 	local_player_init();
