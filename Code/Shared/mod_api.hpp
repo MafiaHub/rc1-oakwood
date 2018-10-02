@@ -59,6 +59,9 @@ typedef OAK_BROADCAST_MSG_COLOR(oak_broadcast_msg_color_ptr);
 
 //
 
+#define OAK_PLAYER_FADEOUT(name) void name(librg_entity_t* entity, bool fadeout, u32 duration, u32 color);
+typedef OAK_PLAYER_FADEOUT(oak_player_fadeout_ptr);
+
 #define OAK_PLAYER_INVENTORY_ADD(name) void name(librg_entity_t *entity, inventory_item *item)
 typedef OAK_PLAYER_INVENTORY_ADD(oak_player_inventory_add_ptr);
 
@@ -94,6 +97,7 @@ struct oak_api {
         oak_player_spawn_ptr *player_spawn;
         oak_player_respawn_ptr *player_respawn;
         oak_player_inventory_add_ptr *player_inventory_add;
+		oak_player_fadeout_ptr *player_fadeout;
 
         // Weapon drop
         oak_drop_spawn_ptr *drop_spawn;
