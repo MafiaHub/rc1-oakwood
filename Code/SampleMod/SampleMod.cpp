@@ -62,8 +62,8 @@ OAK_MOD_MAIN {
 
     gm->SetOnPlayerDied([=](Player *player) {
  
-        // todo interval
-        //player->Fadeout(true, 500, 0xFFFFFF);
+        player->Fadeout(true, 500, 0xFFFFFF);
+        player->Fadeout(false, 500, 0xFFFFFF);
 
         auto wep = get_weapon_by_id(player->GetCurrentWeapon());
 
@@ -74,6 +74,8 @@ OAK_MOD_MAIN {
         player->ClearInventory();
 
         player->SetPosition(mode_generate_spawn());
+
+        player->SetHealth(100);
 
         add_weapons(player);
 
