@@ -43,7 +43,6 @@ auto main() -> int {
 	librg_address_t addr = { 27010 };
 	librg_network_start(&network_context, addr);
 	mod_log("Server started");
-
 	mod_log("Loading gamemode...");
 
 	// TODO use config system to load DLL

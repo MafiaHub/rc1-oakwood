@@ -141,11 +141,12 @@ namespace graphics {
 	}
 
 	inline auto device_lost(IDirect3DDevice9* device) -> void {
-
+		ImGui_ImplDX9_InvalidateDeviceObjects();
 	}
 
 	inline auto device_reset(IDirect3DDevice9* device) -> void {
-
+		global_device = device;
+		ImGui_ImplDX9_CreateDeviceObjects();
 	}
 
 	inline auto end_scene(IDirect3DDevice9* device) -> void {

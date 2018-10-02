@@ -26,6 +26,14 @@ extern "C" {
     // Player
     //
 
+	void oak_player_fadeout(librg_entity_t *entity, bool fadeout, u32 duration, u32 color) {
+		librg_send_to(&network_context, NETWORK_SEND_FADEOUT, entity->client_peer, data, {
+			librg_data_wu8(&data, fadeout);
+			librg_data_wu32(&data, duration);
+			librg_data_wu32(&data, color);
+		});
+	}
+
     void oak_player_inventory_add(librg_entity_t *entity, inventory_item *item) {
         player_inventory_add(entity, item);
     }
@@ -63,6 +71,7 @@ auto set_up_natives() -> void {
     vt->broadcast_msg = oak_broadcast_msg;
     vt->broadcast_msg_color = oak_broadcast_msg_color;
 
+	vt->player_fadeout = oak_player_fadeout;
     vt->player_inventory_add = oak_player_inventory_add;
     vt->player_spawn = oak_player_spawn;
     vt->player_respawn = oak_player_respawn;
