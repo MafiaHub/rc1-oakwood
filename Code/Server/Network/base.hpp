@@ -4,7 +4,7 @@
 #include "messages.hpp"
 
 inline auto mod_init_networking() {
-    network_context.max_entities		= 16;
+    network_context.max_entities		= 1024;
 	network_context.max_connections		= 16;
 	network_context.mode				= LIBRG_MODE_SERVER;
 	network_context.tick_delay			= 32;

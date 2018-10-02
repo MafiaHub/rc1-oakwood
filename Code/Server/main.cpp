@@ -29,8 +29,7 @@ zpl_event_pool gamemode_events = { 0 };
 
 #include "Network/base.hpp"
 
-// TODO replace by plugin loader
-#include "freeride.hpp"
+#include "natives.hpp"
 
 auto main() -> int {
 
@@ -38,7 +37,6 @@ auto main() -> int {
 	SetConsoleOutputCP(CP_UTF8);
 
 	init_event_handler();
-	freeride_events_add();
 
 	mod_log("Initializing server ...");
 	mod_init_networking();
@@ -46,6 +44,11 @@ auto main() -> int {
 	librg_address_t addr = { 27010 };
 	librg_network_start(&network_context, addr);
 	mod_log("Server started");
+
+	mod_log("Loading gamemode...");
+
+	// TODO use config system to load DLL
+	load_dll("SampleMod.dll");
 
 	bool running = true;
 	while (running) {
