@@ -32,8 +32,8 @@ struct mafia_player {
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	f32 inter_delta;
     interpolate3_hermite_t inter_pos;
-	Interpolator inter_rot;
-	Interpolator inter_pose;
+	interpolate3_hermite_t inter_rot;
+	interpolate3_hermite_t inter_pose;
 	MafiaSDK::C_Human* ped;
 	IDirect3DTexture9* nickname_texture;
 #endif

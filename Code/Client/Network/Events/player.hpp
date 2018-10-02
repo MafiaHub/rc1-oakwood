@@ -14,11 +14,6 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	player->current_weapon_id = librg_data_ru32(evnt->data);
 	player->health = librg_data_rf32(evnt->data);
 
-	//feed interpolators
-	player->inter_rot.init(player->rotation);
-	//player->inter_pos.init(evnt->entity->position);
-	player->inter_pose.init(player->pose);
-
 	player->ped = player_spawn(
 		evnt->entity->position,
 		player->rotation,
@@ -44,9 +39,9 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 
 	auto player_int = player->ped->GetInterface();
 	player_int->entity.position = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pos, alpha));
-	player_int->entity.rotation = EXPAND_VEC(player->inter_rot.interpolate());
+	player_int->entity.rotation = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_rot, alpha));
 
-	Vector3D mafia_pose = EXPAND_VEC(player->inter_pose.interpolate());
+	Vector3D mafia_pose = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pose, alpha));
 	if (player->is_aiming)
 		player->ped->PoseSetPoseAimed(mafia_pose);
 	else 
@@ -66,10 +61,8 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	
 	/* update interpolation tables */
 	cubic_hermite_v3_value(&player->inter_pos, evnt->entity->position);
-
-	player->inter_rot.set(player->rotation);
-	//player->inter_pos.set(evnt->entity->position);
-	player->inter_pose.set(player->pose);
+	cubic_hermite_v3_value(&player->inter_rot, player->rotation);
+	cubic_hermite_v3_value(&player->inter_pose, player->pose);
 
 	player_int->animState = player->animation_state;
 	player_int->isDucking = player->is_crouching;
