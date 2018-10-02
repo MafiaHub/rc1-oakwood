@@ -53,7 +53,8 @@ auto main() -> int {
 	while (running) {
 		librg_tick(&network_context);
 
-
+        if (gm.on_server_tick)
+            gm.on_server_tick();
 
 		zpl_sleep_ms(2);
 	}

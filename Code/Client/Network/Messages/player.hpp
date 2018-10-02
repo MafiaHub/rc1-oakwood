@@ -233,6 +233,14 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message_t* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        librg_data_rptr(msg->data, &entity->position, sizeof(entity->position));
+    }
+});
+
 librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message_t* msg) {
     u32 msg_size	= librg_data_ru32(msg->data);
     u32 msg_color	= librg_data_ru32(msg->data);

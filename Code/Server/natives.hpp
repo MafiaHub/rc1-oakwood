@@ -38,6 +38,15 @@ extern "C" {
         player_send_respawn(entity);
     }
 
+    void oak_player_set_position(librg_entity_t *entity, zpl_vec3 position) {
+        entity->position = position;
+
+        librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wptr(&data, &position, sizeof(position));
+        });
+    }
+
     //
     // Weapon drop
     //
@@ -57,6 +66,7 @@ auto set_up_natives() -> void {
     vt->player_inventory_add = oak_player_inventory_add;
     vt->player_spawn = oak_player_spawn;
     vt->player_respawn = oak_player_respawn;
+    vt->player_set_position = oak_player_set_position;
 
     vt->drop_spawn = oak_drop_spawn;
 }

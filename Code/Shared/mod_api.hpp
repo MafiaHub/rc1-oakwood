@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <functional>
+#include <algorithm>
 #include <fstream>
 #include <ostream>
 #include <vector>
@@ -52,6 +53,9 @@ typedef OAK_PLAYER_SPAWN(oak_player_spawn_ptr);
 #define OAK_PLAYER_RESPAWN(name) void name(librg_entity_t *entity)
 typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
 
+#define OAK_PLAYER_SET_POSITION(name) void name(librg_entity_t *entity, zpl_vec3 position)
+typedef OAK_PLAYER_SET_POSITION(oak_player_set_position_ptr);
+
 //
 
 #define OAK_DROP_SPAWN(name) librg_entity_t* name(zpl_vec3 position, char *model, inventory_item item)
@@ -77,6 +81,7 @@ struct oak_api {
         oak_player_spawn_ptr *player_spawn;
         oak_player_respawn_ptr *player_respawn;
         oak_player_inventory_add_ptr *player_inventory_add;
+        oak_player_set_position_ptr *player_set_position;
 
         // Weapon drop
         oak_drop_spawn_ptr *drop_spawn;
@@ -85,6 +90,7 @@ struct oak_api {
     std::function<void(librg_event_t* evnt, librg_entity_t* entity, mafia_player* ped)> on_player_connected;
     std::function<void(librg_event_t* evnt, librg_entity_t* entity)> on_player_disconnected;
     std::function<void(librg_entity_t* entity, mafia_player* ped)> on_player_died;
+    std::function<void()> on_server_tick;
 };
 
 #define OAK_MOD_ENTRYPOINT_NAME oak_mod_main

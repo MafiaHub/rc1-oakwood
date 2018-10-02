@@ -4,7 +4,7 @@
 
 class Player {
 public:
-    Player();
+    Player(librg_entity_t *entity, mafia_player *ped);
     ~Player();
 
     void Spawn();
@@ -15,8 +15,17 @@ public:
 
     std::string GetName();
 
+    void SetPosition(zpl_vec3 position);
+    zpl_vec3 GetPosition();
+
+    void AddItem(inventory_item *item);
+    void ClearInventory();
+    u32 GetCurrentWeapon();
+
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2
+
+    b32 CompareWith(librg_entity_t *entity);
 
 private:
     mafia_player *ped;
@@ -29,13 +38,22 @@ public:
     ~GameMode();
 
     void BroadcastMessage(std::string text, u32 color = 0xFFFFFF);
+    void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
 
     void SetOnPlayerConnected(std::function<void(Player*)> callback);
+    void SetOnPlayerDisconnected(std::function<void(Player*)> callback);
+    void SetOnPlayerDied(std::function<void(Player*)> callback);
+    void SetOnServerTick(std::function<void()> callback);
 
-private:
     oak_api *mod;
 
+private:
     std::function<void(Player*)> onPlayerConnected;
-    std::vector<Player> players;
+    std::function<void(Player*)> onPlayerDisconnected;
+    std::function<void(Player*)> onPlayerDied;
+    std::function<void()> onServerTick;
+    std::vector<Player*> players;
+
+    Player* GetPlayerByEntity(librg_entity_t *entity);
 };
 
