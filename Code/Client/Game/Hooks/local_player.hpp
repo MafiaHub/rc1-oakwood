@@ -90,7 +90,6 @@ namespace hooks
 			if (!is_alive && !local_player.dead) {
 				local_player_died();
 				local_player.dead = true;
-				MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(true, 500, 0xFFFFFF);
 			}
 		}
 		
