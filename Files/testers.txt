@@ -1,0 +1,36 @@
+﻿I think it's time to test out new Oakwood MP build, now featuring:
+- server browser
+- onfoot sync
+- chat (open by pressing 'T')
+- more crashes
+- chat with UTF-8 support (yes, we can do cyrillic or ščýšč [Latin Extended-A])
+
+Known Issues:
+- loader.exe might fail to start the game on several attempts, just keep re-starting it
+- inventory might be de-synchronised due to known bug
+- chat doesn't wrap text around
+- some writing systems are not included (Japanese, Chinese)
+
+Supported Versions:
+- Boxed 1.2 game
+- GOG
+- Steam (still to be fully verified)
+
+NOTE: Russian version of the game is not supported due to file differences, this might be temporal issue.
+
+Chat commands:
+/q - quits the game
+/utf - prints random unicode string
+
+Downloads:
+Client files: https://dl.dropboxusercontent.com/s/pfe08xsx1y0tq5p/FUwvXywsatuKNj_1538568677.rar
+Server files: https://dl.dropboxusercontent.com/s/s6dsbjn0gw3xfro/AORJotENbpCx2A_1538568747.rar
+
+Instructions:
+1. Extract client files into game directory.
+2. Edit multiplayer.json to change default IP address and username
+3. Launch loader.exe as administrator
+
+Server instructions:
+1. Edit server.json to your likings
+2. Launch Server.exe
