@@ -188,6 +188,16 @@ void Player::Fadeout(bool fadeout, u32 duration, u32 color)
     __gm->mod->vtable.player_fadeout(entity, fadeout, duration, color);
 }
 
+void Player::SetCamera(zpl_vec3 pos, zpl_vec3 rot)
+{
+    __gm->mod->vtable.player_set_camera(entity, pos, rot);
+}
+
+void Player::UnlockCamera()
+{
+    __gm->mod->vtable.player_unlock_camera(entity);
+}
+
 void Player::SetHealth(f32 health)
 {
     ped->health = health * 2.0f;

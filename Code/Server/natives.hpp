@@ -63,6 +63,17 @@ extern "C" {
         });
     }
 
+    void oak_player_set_camera(librg_entity_t *entity, zpl_vec3 pos, zpl_vec3 rot) {
+        librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
+            librg_data_wptr(&data, &pos, sizeof(pos));
+            librg_data_wptr(&data, &rot, sizeof(rot));
+        });
+    }
+
+    void oak_player_unlock_camera(librg_entity_t *entity) {
+        librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+    }
+
     //
     // Weapon drop
     //
@@ -85,6 +96,8 @@ auto set_up_natives() -> void {
     vt->player_spawn = oak_player_spawn;
     vt->player_respawn = oak_player_respawn;
     vt->player_set_position = oak_player_set_position;
+    vt->player_set_camera = oak_player_set_camera;
+    vt->player_unlock_camera = oak_player_unlock_camera;
 
     vt->drop_spawn = oak_drop_spawn;
 }

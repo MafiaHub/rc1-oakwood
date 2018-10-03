@@ -29,6 +29,8 @@ public:
     u32 GetCurrentWeapon();
 
     void Fadeout(bool fadeout, u32 duration, u32 color);
+    void SetCamera(zpl_vec3 pos, zpl_vec3 rot);
+    void UnlockCamera();
 
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2

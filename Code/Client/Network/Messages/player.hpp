@@ -248,6 +248,25 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message_t* 
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message_t* msg) {
+    
+    Vector3D pos, rot;
+    librg_data_rptr(msg->data, &pos, sizeof(pos));
+    librg_data_rptr(msg->data, &rot, sizeof(rot));
+
+    if(MafiaSDK::GetMission()->GetGame()) {
+        auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
+        camera->LockAt(pos, rot);
+    }
+});
+
+librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_message_t* msg) {
+    if(MafiaSDK::GetMission()->GetGame()) {
+        auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
+        camera->Unlock();
+    }
+});
+
 librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message_t* msg) {
     u32 msg_size	= librg_data_ru32(msg->data);
     u32 msg_color	= librg_data_ru32(msg->data);
