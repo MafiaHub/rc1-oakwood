@@ -112,6 +112,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg)
 
     mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data_t *data) {
         librg_data_went(data, sender_ent->id);
+        librg_data_went(data, target_id);
         librg_data_wu32(data, hit_type);
         librg_data_wptr(data, (void*)&unk1, sizeof(zpl_vec3));
         librg_data_wptr(data, (void*)&unk2, sizeof(zpl_vec3));

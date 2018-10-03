@@ -190,7 +190,10 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_messa
 librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg) {
 
     librg_entity_id sender_id = librg_data_rent(msg->data);
+    librg_entity_id victim_id = librg_data_rent(msg->data);
+
     auto sender_ent = librg_entity_fetch(&network_context, sender_id);
+    auto victim_ent = librg_entity_fetch(&network_context, victim_id);
 
     u32 hit_type = librg_data_ru32(msg->data);
     Vector3D unk1, unk2, unk3;
@@ -201,10 +204,14 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg)
     f32 damage = librg_data_rf32(msg->data);
     u32 player_part = librg_data_ru32(msg->data);
 
-    if (sender_ent && sender_ent->user_data && local_player.ped) {
+    if (sender_ent && sender_ent->user_data && 
+        victim_ent && victim_ent->user_data) {
+        
         auto player = (mafia_player*)(sender_ent->user_data);
+        auto victim = (mafia_player*)(victim_ent->user_data);
+
         hit_hook_skip = false;
-        local_player.ped->Hit(hit_type, unk1, unk2, unk3, damage, player->ped, player_part, NULL);
+        victim->ped->Hit(hit_type, unk1, unk2, unk3, damage, player->ped, player_part, NULL);
         hit_hook_skip = true;
     }
 });
