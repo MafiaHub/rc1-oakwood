@@ -38,6 +38,7 @@ public:
     //
 
     b32 CompareWith(librg_entity_t *entity);
+    void SetPed(mafia_player *ped);
 
 private:
     mafia_player *ped;
