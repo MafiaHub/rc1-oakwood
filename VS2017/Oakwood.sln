@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleMod", "SampleMod\SampleMod.vcxproj", "{4B863771-ADE0-40DF-AF58-F91F684F6E32}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaMod", "LuaMod\LuaMod.vcxproj", "{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -66,6 +68,18 @@ Global
 		{4B863771-ADE0-40DF-AF58-F91F684F6E32}.Release|x64.Build.0 = Release|x64
 		{4B863771-ADE0-40DF-AF58-F91F684F6E32}.Release|x86.ActiveCfg = Release|Win32
 		{4B863771-ADE0-40DF-AF58-F91F684F6E32}.Release|x86.Build.0 = Release|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Debug|x64.ActiveCfg = Debug|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Debug|x64.Build.0 = Debug|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Debug|x86.ActiveCfg = Debug|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Debug|x86.Build.0 = Debug|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.DebugOwn|x64.ActiveCfg = Debug|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.DebugOwn|x64.Build.0 = Debug|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.DebugOwn|x86.ActiveCfg = Debug|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.DebugOwn|x86.Build.0 = Debug|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Release|x64.ActiveCfg = Release|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Release|x64.Build.0 = Release|x64
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Release|x86.ActiveCfg = Release|Win32
+		{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
