@@ -73,7 +73,7 @@ auto main() -> int {
         if (gm.on_server_tick)
             gm.on_server_tick();
 
-		zpl_sleep_ms(2);
+		zpl_sleep_ms(1);
 	}
 
 	librg_network_stop(&network_context);

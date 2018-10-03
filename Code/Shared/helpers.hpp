@@ -2,7 +2,7 @@
 #define EXPAND_VEC(VEC) {VEC.x, VEC.y, VEC.z}
 
 inline auto mod_log(const char* msg) -> void {
-	printf("[Oakwood DM] %s\n", msg);
+	printf("[Oakwood MP] %s\n", msg);
 }
 
 inline auto mod_debug(const char* msg) -> void {
