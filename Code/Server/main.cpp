@@ -1,5 +1,4 @@
 #define LIBRG_IMPLEMENTATION
-#define LIBRG_DEBUG
 #include "librg/librg.h"
 
 /*
@@ -37,10 +36,22 @@ librg_ctx_t network_context = { 0 };
 
 #include "natives.hpp"
 
+const char *jebe = R"foo(
+ .88888.   .d888888  dP     dP dP   dP   dP  .88888.   .88888.  888888ba     8888ba.88ba   888888ba  
+d8'   `8b d8'    88  88   .d8' 88   88   88 d8'   `8b d8'   `8b 88    `8b    88  `8b  `8b  88    `8b 
+88     88 88aaaaa88a 88aaa8P'  88  .8P  .8P 88     88 88     88 88     88    88   88   88 a88aaaa8P' 
+88     88 88     88  88   `8b. 88  d8'  d8' 88     88 88     88 88     88    88   88   88  88        
+Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88   88   88  88        
+ `8888P'  88     88  dP     dP 8888' Y88'    `8888P'   `8888P'  8888888P     dP   dP   dP  dP        
+                                                                                                     
+)foo";
+
 auto main() -> int {
 
 	std::setlocale(LC_ALL, "C");
 	SetConsoleOutputCP(CP_UTF8);
+
+	zpl_printf("%s", jebe);
 
 	init_config();
 	init_api();
