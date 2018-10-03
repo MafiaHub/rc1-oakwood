@@ -4,47 +4,30 @@
 
 */
 
+//
+// Mod Includes
+//
+
 #include "Oakwood.hpp"
+#include "weapons.hpp"
 
-
-struct weapon {
-    const char *model;
-    inventory_item item;
-};
-
-weapon colt = { "2c1911.i3d",{ 9, 50, 50, 0 } };
-weapon grenade = { "2grenade.i3d",{ 15, 1, 1, 0 } };
-
-inline auto mode_generate_spawn() -> zpl_vec3 {
-    return { -1984.884277f, -5.032383f, 23.144674f };
-}
-
-weapon *weaponlist[] = {
-    &grenade,
-    &colt,
-};
-
-auto add_weapons(Player *player) {
-    for (int i = 0; i < zpl_count_of(weaponlist); i++) {
-        player->AddItem(&weaponlist[i]->item);
-    }
-}
-
-auto get_weapon_by_id(u32 id) -> weapon* {
-    for (int i = 0; i < zpl_count_of(weaponlist); i++) {
-        if (weaponlist[i]->item.weaponId == id)
-            return weaponlist[i];
-    }
-
-    return nullptr;
-}
+//
+// Entry point
+//
 
 OAK_MOD_MAIN {
+
+    // Set up mod information
+
     mod->name = "freeride";
     mod->author = "Oak Devs";
     mod->version = "v1.0.0";
 
+    // Initialize the GameMode
+
     auto gm = new GameMode(mod);
+
+    // Register several events
 
     gm->SetOnPlayerConnected([=](Player *player) {
         gm->BroadcastMessage("Player " + player->GetName() + " joined the server.");
