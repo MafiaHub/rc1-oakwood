@@ -5,7 +5,7 @@
 
 inline auto mod_init_networking() {
     network_context.max_entities		= 1024;
-	network_context.max_connections		= 16;
+	network_context.max_connections		= GlobalConfig.max_players;
 	network_context.mode				= LIBRG_MODE_SERVER;
 	network_context.tick_delay			= 32;
 	network_context.world_size			= { 5000.0f, 5000.0f, 0.0f };

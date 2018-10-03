@@ -22,8 +22,15 @@
 #include "structs.hpp"
 #include "messages.hpp"
 
+struct _GlobalConfig {
+	i64 port;
+	i64 max_players;
+	std::string gamemode;
+} GlobalConfig;
+
 librg_ctx_t network_context = { 0 };
 
+#include "config.hpp"
 #include "mode.hpp"
 #include "commands.hpp"
 #include "Network/base.hpp"
@@ -35,18 +42,19 @@ auto main() -> int {
 	std::setlocale(LC_ALL, "C");
 	SetConsoleOutputCP(CP_UTF8);
 
+	init_config();
 	init_api();
 
 	mod_log("Initializing server ...");
 	mod_init_networking();
 	
-	librg_address_t addr = { 27010 };
+	librg_address_t addr = { (i32)GlobalConfig.port };
 	librg_network_start(&network_context, addr);
 	mod_log("Server started");
 	mod_log("Loading gamemode...");
 
 	// TODO use config system to load DLL
-	load_dll("SampleMod.dll");
+	load_dll(GlobalConfig.gamemode.c_str());
 
 	bool running = true;
 	while (running) {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "config.hpp"
 #include "events.hpp"
 #include "messages.hpp"
 

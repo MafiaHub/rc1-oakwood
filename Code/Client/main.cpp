@@ -70,6 +70,7 @@ struct _GlobalConfig {
 /*
 * Mod includes 
 */
+#include "config.hpp"
 #include "Input/input.hpp"
 #include "Game/Factory/defs.hpp"
 #include "Game/Commands/defs.hpp"
@@ -82,7 +83,7 @@ struct _GlobalConfig {
 auto mod_init() {
 	mod_pre_init_game();
 	alloc_console();
-	config_get();
+	init_config();
 	mod_init_game();
 	mod_init_networking();
 }
