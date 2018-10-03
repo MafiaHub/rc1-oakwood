@@ -39,6 +39,9 @@ typedef OAK_PRINT_TEST(oak_print_test_ptr);
 #define OAK_BROADCAST_MSG(name) void name(const char* text)
 typedef OAK_BROADCAST_MSG(oak_broadcast_msg_ptr);
 
+#define OAK_CHAT_PRINT(name) void name(const char* text)
+typedef OAK_CHAT_PRINT(oak_chat_print_ptr);
+
 #define OAK_BROADCAST_MSG_COLOR(name) void name(const char* text, u32 color)
 typedef OAK_BROADCAST_MSG_COLOR(oak_broadcast_msg_color_ptr);
 
@@ -78,6 +81,7 @@ struct oak_api {
         // General
         oak_print_test_ptr *print_test;
         oak_broadcast_msg_ptr *broadcast_msg;
+        oak_chat_print_ptr *chat_print;
         oak_broadcast_msg_color_ptr *broadcast_msg_color;
 
         // Player
@@ -94,6 +98,7 @@ struct oak_api {
     std::function<void(librg_event_t* evnt, librg_entity_t* entity, mafia_player* ped)> on_player_connected;
     std::function<void(librg_event_t* evnt, librg_entity_t* entity)> on_player_disconnected;
     std::function<void(librg_entity_t* entity, mafia_player* ped)> on_player_died;
+    std::function<bool(librg_entity_t* entity, std::string msg)> on_player_chat;
     std::function<void()> on_server_tick;
 };
 

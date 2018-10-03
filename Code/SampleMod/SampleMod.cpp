@@ -66,4 +66,10 @@ OAK_MOD_MAIN {
 
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });
+
+    gm->SetOnPlayerChat([=](Player *player, std::string msg) {
+        gm->ChatPrint(player->GetName() + " says: " + msg);
+
+        return true;
+    });
 }

@@ -27,11 +27,15 @@ namespace chat {
 		if(!command_str.empty()) {
 			for(auto command : chat_commands) {
 				if(command_str.find(command.command_name) != std::string::npos) {
-					if(command.command_ptr != nullptr) 
+					if(command.command_ptr != nullptr) {
 						command.command_ptr(get_vector_of_args(command_str));
+						return true;
+					}
 				}
 			}
 		}
+		
+		return false;
 	}
 
 	auto init() {
@@ -91,13 +95,17 @@ namespace chat {
 				
 				if (strlen(add_text)) {
 
-					librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-						librg_data_wu8(&data, zpl_strlen(add_text));
-						librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
-					});
+					bool is_command = false;
 
 					if (add_text[0] == '/')
-						parse_command(add_text);
+						is_command = parse_command(add_text);
+
+					if (!is_command) {
+						librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
+							librg_data_wu16(&data, zpl_strlen(add_text));
+							librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
+						});
+					}
 
 					strcpy(add_text, "");
 				}

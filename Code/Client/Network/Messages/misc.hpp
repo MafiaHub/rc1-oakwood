@@ -1,5 +1,5 @@
 librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message_t* msg) {
-    auto chat_len = librg_data_ru8(msg->data);
+    auto chat_len = librg_data_ru16(msg->data);
 
     zpl_string chat_line = zpl_string_make_reserve(zpl_heap(), chat_len);
     librg_data_rptr(msg->data, chat_line, chat_len);

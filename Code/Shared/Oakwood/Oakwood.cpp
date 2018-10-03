@@ -49,6 +49,23 @@ GameMode::GameMode(oak_api *mod) {
         if (onPlayerDied)
             onPlayerDied(player);
     };
+
+    mod->on_player_chat = [=](librg_entity_t* entity, std::string msg) {
+        auto player = GetPlayerByEntity(entity);
+
+        if (!player) {
+            printf("[OAKWOOD] Unregistered entity sends message !");
+            return false;
+        }
+
+        bool is_handled = false;
+
+        if (onPlayerChat) {
+            is_handled = onPlayerChat(player, msg);
+        }
+        
+        return is_handled;
+    };
 }
 
 GameMode::~GameMode() {
@@ -58,6 +75,11 @@ GameMode::~GameMode() {
 void GameMode::BroadcastMessage(std::string text, u32 color)
 {
     mod->vtable.broadcast_msg_color(text.c_str(), color);
+}
+
+void GameMode::ChatPrint(std::string text)
+{
+    mod->vtable.chat_print(text.c_str());
 }
 
 void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item)
@@ -78,6 +100,11 @@ void GameMode::SetOnPlayerDisconnected(std::function<void(Player*)> callback)
 void GameMode::SetOnPlayerDied(std::function<void(Player*)> callback)
 {
     onPlayerDied = callback;
+}
+
+void GameMode::SetOnPlayerChat(std::function<bool(Player*, std::string msg)> callback)
+{
+    onPlayerChat = callback;
 }
 
 void GameMode::SetOnServerTick(std::function<void()> callback)

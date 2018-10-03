@@ -22,6 +22,14 @@ extern "C" {
         oak_broadcast_msg_color(text, 0xFFFFFF);
     }
 
+    void oak_chat_print(const char* text) {
+        librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
+            auto len = strlen(text);
+            librg_data_wu16(&data, len);
+            librg_data_wptr(&data, (void *)text, len);
+        });
+    }
+
     //
     // Player
     //
@@ -70,6 +78,7 @@ auto set_up_natives() -> void {
     vt->print_test = oak_print_test;
     vt->broadcast_msg = oak_broadcast_msg;
     vt->broadcast_msg_color = oak_broadcast_msg_color;
+    vt->chat_print = oak_chat_print;
 
 	vt->player_fadeout = oak_player_fadeout;
     vt->player_inventory_add = oak_player_inventory_add;
