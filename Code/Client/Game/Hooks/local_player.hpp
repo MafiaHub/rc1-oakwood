@@ -191,7 +191,7 @@ namespace hooks
 	*/
 	float vd_min = 20.0f;
 	float vd_max = 450.0f;
-	float vd_value = GlobalConfig.view_distance;
+	float vd_value = GlobalConfig.view_distance > 0.0f ? GlobalConfig.view_distance : vd_max;
 
 	void __declspec(naked)VD_Hook_1_0_ENG() {
 		_asm {
