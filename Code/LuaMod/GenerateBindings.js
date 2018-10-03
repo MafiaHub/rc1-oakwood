@@ -154,6 +154,6 @@ generateFromDir('../Shared/Oakwood', (generatedFile)=> {
         if(err) {
             return console.log(err);
         }
-        console.log("[Lua Bindings Generator] bingings successfully created !");
+        console.log("[Lua Bindings Generator] bindings successfully created !");
     }); 
 });
