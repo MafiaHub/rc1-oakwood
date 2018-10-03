@@ -18,7 +18,7 @@ OAK_MOD_MAIN{
 	mod->author = "Oak Devs";
 	mod->version = "v1.0.0";
 
-	lua.open_libraries(sol::lib::base);
+	lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
 
 	lua.new_usertype<zpl_vec3>("zpl_vec3",
 		BIND_FUNCTION(zpl_vec3, x),
