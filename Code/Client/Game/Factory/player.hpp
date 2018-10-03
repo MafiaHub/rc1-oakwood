@@ -34,8 +34,11 @@ auto player_spawn(zpl_vec3 position,
     new_ped->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
-    if (is_local_player)
+    if (is_local_player) {
         MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
+        auto local_userdata = (mafia_player*)local_player.entity.user_data;
+        local_userdata->ped = new_ped;
+    }
 
     new_ped->GetInterface()->humanObject.health = health;
     new_ped->GetInterface()->humanObject.entity.position = default_pos;

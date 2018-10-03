@@ -62,11 +62,17 @@ typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
 #define OAK_PLAYER_SET_POSITION(name) void name(librg_entity_t *entity, zpl_vec3 position)
 typedef OAK_PLAYER_SET_POSITION(oak_player_set_position_ptr);
 
+#define OAK_PLAYER_SET_ROTATION(name) void name(librg_entity_t *entity, zpl_vec3 rotation)
+typedef OAK_PLAYER_SET_ROTATION(oak_player_set_rotation_ptr);
+
 #define OAK_PLAYER_SET_CAMERA(name) void name(librg_entity_t *entity, zpl_vec3 pos, zpl_vec3 rot)
 typedef OAK_PLAYER_SET_CAMERA(oak_player_set_camera_ptr);
 
 #define OAK_PLAYER_UNLOCK_CAMERA(name) void name(librg_entity_t *entity)
 typedef OAK_PLAYER_UNLOCK_CAMERA(oak_player_unlock_camera_ptr);
+
+#define OAK_PLAYER_PLAY_ANIMATION(name) void name(librg_entity_t *entity, const char *text)
+typedef OAK_PLAYER_PLAY_ANIMATION(oak_player_play_animation_ptr);
 //
 
 #define OAK_DROP_SPAWN(name) librg_entity_t* name(zpl_vec3 position, char *model, inventory_item item)
@@ -94,9 +100,11 @@ struct oak_api {
         oak_player_respawn_ptr *player_respawn;
         oak_player_inventory_add_ptr *player_inventory_add;
         oak_player_set_position_ptr *player_set_position;
+        oak_player_set_rotation_ptr *player_set_rotation;
 		oak_player_fadeout_ptr *player_fadeout;
         oak_player_set_camera_ptr *player_set_camera;
         oak_player_unlock_camera_ptr *player_unlock_camera;
+        oak_player_play_animation_ptr *player_play_animation;
         
         // Weapon drop
         oak_drop_spawn_ptr *drop_spawn;

@@ -17,13 +17,17 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  GetName),
 	BIND_FUNCTION(Player,  SetPosition),
 	BIND_FUNCTION(Player,  GetPosition),
+	BIND_FUNCTION(Player,  SetRotation),
+	BIND_FUNCTION(Player,  GetRotation),
 	BIND_FUNCTION(Player,  AddItem),
 	BIND_FUNCTION(Player,  ClearInventory),
 	BIND_FUNCTION(Player,  GetCurrentWeapon),
 	BIND_FUNCTION(Player,  Fadeout),
 	BIND_FUNCTION(Player,  SetCamera),
 	BIND_FUNCTION(Player,  UnlockCamera),
+	BIND_FUNCTION(Player,  PlayAnimation),
 	BIND_FUNCTION(Player,  SetHealth),
-	BIND_FUNCTION(Player,  CompareWith)
+	BIND_FUNCTION(Player,  CompareWith),
+	BIND_FUNCTION(Player,  SetPed)
 );
 

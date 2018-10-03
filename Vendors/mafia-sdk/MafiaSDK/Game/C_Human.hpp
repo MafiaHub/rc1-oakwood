@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 Dï¿½vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -94,15 +94,15 @@ namespace MafiaSDK
 		//Thanks for DjBozkosz Documentation
 		enum BehaviorStates : byte
 		{
-			ReactsAll = 0, //Reacts on attacks, shots. Ducks only, moves away if char was hit multiple times – Duck.
-			ReactsAllUnknown = 1, //Reacts on attacks, shots. Ducks only, moves away if char was hit multiple times – ???
-			DoesntReactGuard = 2, //Does not react to anything. Guards the player – No reaction.
-			DoesntReactOnWeapon = 4, //Does not react on anything – No reaction on weapon.
-			ReactsPlayerOnHit = 8, //Reacts on player only, Attacks player – React when hit.
-			ReactsPlayerMovesAway = 16, //Reacts on player, Moves away – Reaction on Player.
-			ReactsOnAttacksAwayOrAttack = 32, //Reacts on attacks to other characters. He either moves away or attacks attacker – React on Attack.
-			ReactsOnAttacksAttack = 64, //Reacts on attacks to other characters. Attacks attacker – React on Attack 2. 
-			ProgrammedReacts = 128 //Used for Little Joe in mission 9 programmed reactions, can add a little variety to non gangster characters – Afra
+			ReactsAll = 0, //Reacts on attacks, shots. Ducks only, moves away if char was hit multiple times ï¿½ Duck.
+			ReactsAllUnknown = 1, //Reacts on attacks, shots. Ducks only, moves away if char was hit multiple times ï¿½ ???
+			DoesntReactGuard = 2, //Does not react to anything. Guards the player ï¿½ No reaction.
+			DoesntReactOnWeapon = 4, //Does not react on anything ï¿½ No reaction on weapon.
+			ReactsPlayerOnHit = 8, //Reacts on player only, Attacks player ï¿½ React when hit.
+			ReactsPlayerMovesAway = 16, //Reacts on player, Moves away ï¿½ Reaction on Player.
+			ReactsOnAttacksAwayOrAttack = 32, //Reacts on attacks to other characters. He either moves away or attacks attacker ï¿½ React on Attack.
+			ReactsOnAttacksAttack = 64, //Reacts on attacks to other characters. Attacks attacker ï¿½ React on Attack 2. 
+			ProgrammedReacts = 128 //Used for Little Joe in mission 9 programmed reactions, can add a little variety to non gangster characters ï¿½ Afra
 		};
 	};
 
@@ -272,8 +272,8 @@ namespace MafiaSDK
 			
 			__asm
 			{
-				push 0
-				push 0
+				push 1
+				push 1
 				push animationName
 				mov ecx, this
 				call funcAddress

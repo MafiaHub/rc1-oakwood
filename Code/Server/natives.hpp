@@ -63,6 +63,18 @@ extern "C" {
         });
     }
 
+    void oak_player_set_rotation(librg_entity_t *entity, zpl_vec3 rotation) {
+        auto player = (mafia_player*)(entity->user_data);
+        if(player) {
+            player->rotation = rotation;
+        }
+
+        librg_send(&network_context, NETWORK_PLAYER_SET_ROT, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wptr(&data, &rotation, sizeof(rotation));
+        });
+    }
+
     void oak_player_set_camera(librg_entity_t *entity, zpl_vec3 pos, zpl_vec3 rot) {
         librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
             librg_data_wptr(&data, &pos, sizeof(pos));
@@ -72,6 +84,17 @@ extern "C" {
 
     void oak_player_unlock_camera(librg_entity_t *entity) {
         librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+    }
+
+    void oak_player_play_animation(librg_entity_t *entity, const char* text) {
+        librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {
+            
+            char animation[32];
+            strcpy(animation, text);
+
+            librg_data_went(&data, entity->id);
+            librg_data_wptr(&data, animation, sizeof(char) * 32);
+        });
     }
 
     //
@@ -96,8 +119,10 @@ auto set_up_natives() -> void {
     vt->player_spawn = oak_player_spawn;
     vt->player_respawn = oak_player_respawn;
     vt->player_set_position = oak_player_set_position;
+    vt->player_set_rotation = oak_player_set_rotation;
     vt->player_set_camera = oak_player_set_camera;
     vt->player_unlock_camera = oak_player_unlock_camera;
+    vt->player_play_animation = oak_player_play_animation;
 
     vt->drop_spawn = oak_drop_spawn;
 }

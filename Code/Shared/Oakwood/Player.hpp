@@ -24,6 +24,9 @@ public:
     void SetPosition(zpl_vec3 position);
     zpl_vec3 GetPosition();
 
+    void SetRotation(zpl_vec3 rotation);
+    zpl_vec3 GetRotation();
+
     void AddItem(inventory_item *item);
     void ClearInventory();
     u32 GetCurrentWeapon();
@@ -31,6 +34,8 @@ public:
     void Fadeout(bool fadeout, u32 duration, u32 color);
     void SetCamera(zpl_vec3 pos, zpl_vec3 rot);
     void UnlockCamera();
+
+    void PlayAnimation(std::string animation);
 
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2

@@ -248,6 +248,20 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message_t* 
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message_t* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    zpl_vec3 rot;
+    librg_data_rptr(msg->data, &rot, sizeof(rot));
+
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        auto player = (mafia_player*)entity->user_data;
+        if(player) {
+            player->rotation = rot;
+        }
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message_t* msg) {
     
     Vector3D pos, rot;
@@ -265,6 +279,20 @@ librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_messa
         auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
         camera->Unlock();
     }
+});
+
+librg_network_add(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, [](librg_message_t* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    char animation[32];
+    librg_data_rptr(msg->data, animation, sizeof(char) * 32);
+
+	auto entity = librg_entity_fetch(&network_context, entity_id);
+	if (entity) {
+		auto player = (mafia_player*)entity->user_data;
+		if (player) {
+			player->ped->Do_PlayAnim(animation);
+		}
+	}
 });
 
 librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message_t* msg) {

@@ -167,6 +167,22 @@ zpl_vec3 Player::GetPosition()
     return entity->position;
 }
 
+void Player::SetRotation(zpl_vec3 rotation)
+{
+    __gm->mod->vtable.player_set_rotation(entity, rotation);
+}
+
+zpl_vec3 Player::GetRotation()
+{
+    auto player = (mafia_player*)(entity->user_data);
+    if(player) {
+        return  player->rotation;
+    }
+
+	return  {0.0f, 0.0f, 0.0f};
+}
+
+
 void Player::AddItem(inventory_item *item)
 {
     __gm->mod->vtable.player_inventory_add(entity, item);
@@ -196,6 +212,11 @@ void Player::SetCamera(zpl_vec3 pos, zpl_vec3 rot)
 void Player::UnlockCamera()
 {
     __gm->mod->vtable.player_unlock_camera(entity);
+}
+
+void Player::PlayAnimation(std::string animation)
+{
+    __gm->mod->vtable.player_play_animation(entity, animation.c_str());
 }
 
 void Player::SetHealth(f32 health)
