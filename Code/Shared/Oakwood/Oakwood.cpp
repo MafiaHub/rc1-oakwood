@@ -212,3 +212,8 @@ b32 Player::CompareWith(librg_entity_t * entity)
 {
     return this->entity == entity;
 }
+
+void Player::SetPed(mafia_player *ped)
+{
+    this->ped = ped;
+}

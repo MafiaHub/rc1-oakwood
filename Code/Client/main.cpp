@@ -65,6 +65,7 @@ bool hit_hook_skip = true;
 struct _GlobalConfig {
 	std::string server_address;
 	std::string username;
+	float view_distance;
 } GlobalConfig;
 
 /*
