@@ -24,4 +24,3 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  SetHealth),
 	BIND_FUNCTION(Player,  CompareWith)
 );
-
