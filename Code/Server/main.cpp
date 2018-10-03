@@ -64,7 +64,6 @@ auto main() -> int {
 	mod_log("Server started");
 	mod_log("Loading gamemode...");
 
-	// TODO use config system to load DLL
 	load_dll(GlobalConfig.gamemode.c_str());
 
 	bool running = true;
