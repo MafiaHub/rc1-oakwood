@@ -26,7 +26,7 @@
     <ClCompile Include="..\..\Code\SampleMod\SampleMod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Code\SampleMod\Oakwood.cpp">
+    <ClCompile Include="..\..\Code\Shared\Oakwood\Oakwood.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
