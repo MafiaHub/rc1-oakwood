@@ -76,8 +76,8 @@ auto mod_bind_events() {
 	local_player_init();
 	drop_init();
 
-	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
-		
+	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
+
 		f64 delta_time = zpl_time_now() - last_time;
 
 		if(!librg_is_connected(&network_context))
@@ -108,6 +108,9 @@ auto mod_bind_events() {
 		}
 
 		last_time = zpl_time_now();
+	});
+
+	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
 		nameplates::render();
 	});	
 }
