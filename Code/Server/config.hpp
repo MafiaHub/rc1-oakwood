@@ -19,7 +19,7 @@ auto init_config() {
     json_apply(json, GlobalConfig.gamemode, gamemode, string, "SampleMod.dll");
     json_apply(json, GlobalConfig.port, port, integer, 27010);
 
-    zpl_printf("\n\nGamemode: %d\n", GlobalConfig.gamemode);
+    zpl_printf("\n\nGamemode: %s\n", GlobalConfig.gamemode.c_str());
     zpl_printf("Max players: %d\n", GlobalConfig.max_players);
     zpl_printf("Port: %d\n", GlobalConfig.port);
 }
