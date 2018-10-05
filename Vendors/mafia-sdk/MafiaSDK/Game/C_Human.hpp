@@ -104,6 +104,26 @@ namespace MafiaSDK
 			ReactsOnAttacksAttack = 64, //Reacts on attacks to other characters. Attacks attacker � React on Attack 2. 
 			ProgrammedReacts = 128 //Used for Little Joe in mission 9 programmed reactions, can add a little variety to non gangster characters � Afra
 		};
+
+		enum Property : unsigned int
+		{
+			Strength = 1,
+			Health,
+			HealthHandL,
+			HealthHandR,
+			HealthLegL,
+			HealthLegR,
+			Reactions,
+			Speed,
+			Aggressivity,
+			Inteligence,
+			Shooting,
+			Sight,
+			Hearing,
+			Driving,
+			Mass,
+			Morale
+		};
 	};
 
 	class C_Human : public C_Actor
@@ -121,6 +141,16 @@ namespace MafiaSDK
 				mov esi, this
 				lea eax, dword ptr ds : [esi + 0x1164]
 			}
+		}
+
+		void SetProperty(C_Human_Enum::Property property, float value) 
+		{
+			*(float*)((unsigned long)this + (0x640 + property * 4)) = value;
+		}
+
+		float GetProperty(C_Human_Enum::Property property)
+		{
+			return *(float*)((unsigned long)this + (0x640 + property * 4));
 		}
 
 		int Hit(int hitType, const Vector3D & unk1, const Vector3D & unk2, const Vector3D & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
