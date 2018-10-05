@@ -114,6 +114,15 @@ namespace MafiaSDK
 			return reinterpret_cast<C_Human_Interface*>(this);
 		}
 
+		ai_action_manager* GetActionManager() 
+		{
+			__asm 
+			{
+				mov esi, this
+				lea eax, dword ptr ds : [esi + 0x1164]
+			}
+		}
+
 		int Hit(int hitType, const Vector3D & unk1, const Vector3D & unk2, const Vector3D & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Hit;

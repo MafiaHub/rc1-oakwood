@@ -42,6 +42,33 @@ namespace chat {
 		register_command("/q", [&](std::vector<std::string> args) {
 			exit(0);
 		});
+
+		register_command("/follower", [&](std::vector<std::string> args) {
+
+			auto me = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
+			Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
+			Vector3D default_pos = me->GetInterface()->humanObject.entity.position;
+
+			auto player_frame = new MafiaSDK::I3D_Frame();
+			player_frame->SetName("Test");
+			player_frame->LoadModel("Tommy.i3d");
+			player_frame->SetScale(default_scale);
+			player_frame->SetPos(default_pos);
+		
+			MafiaSDK::C_Human* new_ped = (MafiaSDK::C_Human*)MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Enemy);
+			new_ped->Init(player_frame);
+			new_ped->SetActive(1);
+			new_ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactGuard);
+			MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
+			new_ped->GetInterface()->entity.position = default_pos;
+
+			auto action = new_ped->GetActionManager()->NewFollow(me, 3.0f, 13, 2, 0, 0);
+			new_ped->GetActionManager()->NewTurnTo(me, action->action_id);
+			new_ped->GetActionManager()->AddJob(action);
+
+			MafiaSDK::GetFollowManager()->AddFollower(new_ped, me);
+			new_ped->ForceAI(0, 1, 0, 0);
+		});
 	}
 
     auto render() {

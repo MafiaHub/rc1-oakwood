@@ -30,4 +30,3 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  CompareWith),
 	BIND_FUNCTION(Player,  SetPed)
 );
-

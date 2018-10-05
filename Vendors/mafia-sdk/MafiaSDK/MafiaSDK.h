@@ -17,6 +17,13 @@
 #include "Engine/IGraph.hpp"
 //#include "Engine/DirectHook.hpp"
 
+namespace MafiaSDK {
+	class C_Actor;
+}
+
+#include "Game/ai_action_manager.hpp"
+#include "Game/ai_follow_manager.hpp"
+
 #include "Game/C_Entity.hpp"
 #include "Game/C_Actor.hpp"
 #include "Game/C_Car.hpp"

@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 Dï¿½vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ namespace MafiaSDK
 		enum FunctionAddresses
 		{
 			Activate = 0x47AFE0,
-			SetActState = 0x406DA0
+			SetActState = 0x406DA0,
+			ForceAI = 0x00523D30,
 		};
 	};
 
@@ -76,7 +77,20 @@ namespace MafiaSDK
 				push active
 				call funcAddress
 			}
+		}
 
+		void ForceAI(unsigned int unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4) 
+		{
+			unsigned long funcAddress = C_Actor_Enum::FunctionAddresses::ForceAI;
+			__asm
+			{
+				push unk4
+				push unk3
+				push unk2
+				push unk1
+				mov ecx, this
+				call funcAddress
+			}
 		}
 	};
 };
