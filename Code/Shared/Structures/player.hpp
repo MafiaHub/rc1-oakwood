@@ -9,6 +9,7 @@ struct body_health {
 
 struct mafia_player {
 	mafia_player() : 
+	streamer_entity_id(-1),
 	current_weapon_id(0) {
 		for (size_t i = 0; i < 8; i++)
 			inventory.items[i] = { -1, 0, 0, 0 };
@@ -17,7 +18,7 @@ struct mafia_player {
 		nickname_texture = nullptr;
 #endif
 	}
-
+	i32 streamer_entity_id;
 	zpl_vec3_t rotation;
 	zpl_vec3_t pose;
 	f32 health;

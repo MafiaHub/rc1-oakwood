@@ -22,6 +22,7 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
+	librg_data_wi32(evnt->data, player->streamer_entity_id);
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
 	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_wptr(evnt->data, player->model, sizeof(char) * 32);

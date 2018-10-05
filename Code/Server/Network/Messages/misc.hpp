@@ -1,3 +1,25 @@
+librg_network_add(&network_context, NETWORK_NPC_CREATE, [](librg_message_t* msg) {
+
+    auto entity = librg_entity_find(&network_context, msg->peer);
+    auto creator_player = (mafia_player *)entity->user_data;
+
+    if(creator_player) {
+        auto new_npc_entity = librg_entity_create(&network_context, TYPE_PLAYER);
+       
+        if(new_npc_entity) {
+
+            auto new_npc_userdata = new mafia_player();
+			new_npc_userdata->streamer_entity_id = entity->id;
+            strcpy(new_npc_userdata->name, "Borat");
+            strcpy(new_npc_userdata->model, "Tommy.i3d");
+			new_npc_entity->user_data = (void*)new_npc_userdata;
+
+            librg_entity_control_set(&network_context, new_npc_entity->id, msg->peer);
+			new_npc_entity->position = entity->position;
+		}
+    }
+});
+
 librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message_t* msg) {
     char text[128] = "";
 

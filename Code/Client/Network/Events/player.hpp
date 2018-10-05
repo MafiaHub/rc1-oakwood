@@ -3,6 +3,8 @@
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();
+	player->streamer_entity_id = librg_data_ri32(evnt->data);
+
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
 	librg_data_rptr(evnt->data, player->model, sizeof(char) * 32);
@@ -22,6 +24,15 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 		player->health,
 		false,
 		-1);
+
+	if(player->streamer_entity_id == local_player.entity.id) {
+		auto me = local_player.ped;
+		auto action = player->ped->GetActionManager()->NewFollow(me, 3.0f, 13, 2, 0, 0);
+        player->ped->GetActionManager()->NewTurnTo(me, action->action_id);
+        player->ped->GetActionManager()->AddJob(action);
+        MafiaSDK::GetFollowManager()->AddFollower(player->ped, me);
+        player->ped->ForceAI(0, 1, 0, 0);
+	}
 
 	evnt->entity->user_data = player;
 }
@@ -81,7 +92,7 @@ inline auto player_entityremove(librg_event_t* evnt) -> void {
 
 inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
-	auto player_int = local_player.ped->GetInterface();
+	auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
 
 	if (!player_int) {
 		librg_event_reject(evnt);
