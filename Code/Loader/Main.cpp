@@ -5,34 +5,30 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-#include "resource.h"
 #include "main.h"
 #include "inject.h"
 
 HINSTANCE g_hIstance = NULL;
 HMODULE RemoteLoadLibrary(HANDLE,const char*);
-bool CheckFileExist(char [255]);
+bool CheckFileExist(const char*);
 bool IsGameRunning();
 char path[MAX_PATH];
 char exename[MAX_PATH];
 char dllname[MAX_PATH];
 
 
-int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )
-{
-	if(!CheckFileExist(dll_name))
-	{
+int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
+	if(!CheckFileExist(dll_name)) {
 		MessageBox(NULL,"File 'client.dll' was not found. Reinstall LH-MP or Mafia game.","Not found",MB_OK|MB_ICONERROR);
 		return 6;
 	}
 
-	if(!CheckFileExist(exe_name))
-	{
+	if(!CheckFileExist(exe_name)) {
 		MessageBox(NULL,"File 'Game.exe' was not found. Reinstall LH-MP or Mafia game.","Not found",MB_OK|MB_ICONERROR);
 		return 5;
 	}
 
-		// aquire full path to exe:
+	// aquire full path to exe:
 	GetModuleFileNameA(0, path, MAX_PATH);
 
 	// find the position of the last backslash and delete whatever follows
@@ -51,7 +47,6 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 	strcat_s(exename," ");
 	strcat_s(exename, lpCmdLine);
 	
-
 	// build path to dll
 	strcpy_s(dllname, path);
 	strcat_s(dllname, dll_name);
@@ -67,6 +62,7 @@ int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdL
 					exename, 0, 0, false,
 					CREATE_SUSPENDED, 0, 0,
 			&siStartupInfo, &piProcessInfo)) {
+
 		char buff[200];
 		DWORD errorID = GetLastError();
 		if (errorID == ERROR_ELEVATION_REQUIRED)
@@ -168,7 +164,7 @@ HMODULE RemoteLoadLibrary(HANDLE hProcess, const char* szLibPath)
     return ( HINSTANCE )( 1 );
 }
 
-bool CheckFileExist(char filename[255])
+bool CheckFileExist(const char* filename)
 {
 	using namespace std;
 	fstream file;
