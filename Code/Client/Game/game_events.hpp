@@ -1,4 +1,8 @@
 #pragma once
+namespace effects {
+	extern bool is_enabled;
+	inline void load(std::string effect_file);
+}
 
 //TODO, remove this hax for forcing ammo
 void librg_entites_tick(librg_entity_t* ent) {
@@ -87,6 +91,9 @@ auto mod_bind_events() {
 			chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
 			chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
 			mod_librg_connect();
+
+			effects::load("Cinematic.fx");
+			effects::is_enabled = true;
 		}
 	});
 

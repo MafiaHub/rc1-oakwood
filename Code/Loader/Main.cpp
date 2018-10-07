@@ -16,7 +16,6 @@ char path[MAX_PATH];
 char exename[MAX_PATH];
 char dllname[MAX_PATH];
 
-
 int WINAPI WinMain ( HINSTANCE _hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
 	if(!CheckFileExist(dll_name)) {
 		MessageBox(NULL,"File 'client.dll' was not found. Reinstall LH-MP or Mafia game.","Not found",MB_OK|MB_ICONERROR);

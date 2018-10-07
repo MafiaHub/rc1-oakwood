@@ -130,14 +130,15 @@ namespace graphics {
 		style.Colors[ImGuiCol_PlotHistogramHovered] = mainColorHovered;
 		style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
 		style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
-
-		chat::init();
 	} 
 
 	inline auto init(IDirect3DDevice9* device) -> void {
 
-		global_device = device;	
+		global_device = device;
 		setup_imgui(device);
+
+		effects::init(device);
+		chat::init(device);
 	}
 
 	inline auto device_lost(IDirect3DDevice9* device) -> void {
@@ -147,6 +148,7 @@ namespace graphics {
 	inline auto device_reset(IDirect3DDevice9* device) -> void {
 		global_device = device;
 		ImGui_ImplDX9_CreateDeviceObjects();
+		effects::reset(device);
 	}
 
 	inline auto end_scene(IDirect3DDevice9* device) -> void {
@@ -156,8 +158,9 @@ namespace graphics {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
+		effects::render();
 		chat::render();
-		
+
 		ImGui::EndFrame();
 		ImGui::Render();
 		ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

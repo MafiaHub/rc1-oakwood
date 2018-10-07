@@ -1,4 +1,9 @@
 #pragma once
+namespace effects {
+	extern bool is_enabled;
+	inline void load(std::string effect_file);
+}
+
 namespace chat {
 
 	struct ChatCommand {
@@ -7,8 +12,8 @@ namespace chat {
 	};
 
 	std::vector<ChatCommand> chat_commands;
-	std::vector<std::pair<ImVec4, std::string>> chat_messages;
-
+	std::vector<std::pair<ImVec4, std::string>> chat_messages;	
+	IDirect3DDevice9* main_device = nullptr;
     constexpr unsigned int VK_T = 0x54;
 	KeyToggle key_chat_open(VK_T);
 	KeyToggle key_chat_send(VK_RETURN);
@@ -38,13 +43,21 @@ namespace chat {
 		return false;
 	}
 
-	auto init() {
+	auto init(IDirect3DDevice9* device) {
+
+		main_device = device;
+	
 		register_command("/q", [&](std::vector<std::string> args) {
 			exit(0);
 		});
 
 		register_command("/npc", [&](std::vector<std::string> args) {
 			librg_send(&network_context, NETWORK_NPC_CREATE, data, {});
+		});
+
+		register_command("/shade", [&](std::vector<std::string> args) {
+			effects::load("Cinematic.fx");
+			effects::is_enabled = true;
 		});
 	}
 
