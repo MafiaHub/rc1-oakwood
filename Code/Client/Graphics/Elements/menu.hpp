@@ -2,8 +2,14 @@
 namespace menu {
 
 	enum Component {
+		//LoadingGame
+		LoadingImage = 101,
+		LoadingText = 200,
+
 		//Game
 		ExitGame = 102,
+		ExitGameYes = 138,
+
 		//Server Window
 		ServerImage = 800,
 		ServerIP = 801,
@@ -48,7 +54,11 @@ namespace menu {
 
 		//game menu
 		set_text_if_found(Component::ExitGame, "Disconnect");
-	}
+
+		//loading
+		set_text_if_found(Component::LoadingText, "Multiplayer");
+		set_string_if_found(Component::LoadingImage, "online.tga");
+	};
 
 	inline auto fetch_master_server() -> std::string {
 
@@ -149,7 +159,7 @@ namespace menu {
 			}
 
 			//TODO: change this with confirm yes button later
-			if (component_id == Component::ExitGame) {
+			if (component_id == Component::ExitGameYes) {
 				if(librg_is_connected(&network_context)) {
 					librg_network_stop(&network_context);
 				}
@@ -173,6 +183,7 @@ namespace menu {
 
 			if (menu) {
 				replace_default_texts(menu);
+
 				if (menu->FindComponentByID(Component::ConnectButton)) {
 					generate_browser_list(menu);
 					if (servers.size()) {

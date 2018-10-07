@@ -16,6 +16,10 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
 		return DtaOpen("main.mnu", params);
 	}
 
+	if (strstr(filename, "online.tga")) {
+		return DtaOpen("online.tga", params);
+	}
+	
 	return DtaOpen(filename, params);
 }
 
