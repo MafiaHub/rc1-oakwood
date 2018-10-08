@@ -34,6 +34,9 @@ librg_ctx_t network_context = { 0 };
 #include "commands.hpp"
 #include "Network/base.hpp"
 
+#define OAKGEN_NATIVE()
+#define OAKGEN_FORWARD()
+
 #include "natives.hpp"
 
 const char *jebe = R"foo(

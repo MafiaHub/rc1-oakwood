@@ -1,0 +1,14 @@
+vt->print_test = oak_print_test;
+vt->broadcast_msg_color = oak_broadcast_msg_color;
+vt->broadcast_msg = oak_broadcast_msg;
+vt->chat_print = oak_chat_print;
+vt->player_fadeout = oak_player_fadeout;
+vt->player_inventory_add = oak_player_inventory_add;
+vt->player_spawn = oak_player_spawn;
+vt->player_respawn = oak_player_respawn;
+vt->player_set_position = oak_player_set_position;
+vt->player_set_rotation = oak_player_set_rotation;
+vt->player_set_camera = oak_player_set_camera;
+vt->player_unlock_camera = oak_player_unlock_camera;
+vt->player_play_animation = oak_player_play_animation;
+vt->drop_spawn = oak_drop_spawn;

@@ -29,54 +29,7 @@
 #include "utils.hpp"
 #endif
 
-/*
-* Prototypes
-*/
-
-#define OAK_PRINT_TEST(name) void name()
-typedef OAK_PRINT_TEST(oak_print_test_ptr);
-
-#define OAK_BROADCAST_MSG(name) void name(const char* text)
-typedef OAK_BROADCAST_MSG(oak_broadcast_msg_ptr);
-
-#define OAK_CHAT_PRINT(name) void name(const char* text)
-typedef OAK_CHAT_PRINT(oak_chat_print_ptr);
-
-#define OAK_BROADCAST_MSG_COLOR(name) void name(const char* text, u32 color)
-typedef OAK_BROADCAST_MSG_COLOR(oak_broadcast_msg_color_ptr);
-
-//
-
-#define OAK_PLAYER_FADEOUT(name) void name(librg_entity_t* entity, bool fadeout, u32 duration, u32 color);
-typedef OAK_PLAYER_FADEOUT(oak_player_fadeout_ptr);
-
-#define OAK_PLAYER_INVENTORY_ADD(name) void name(librg_entity_t *entity, inventory_item *item)
-typedef OAK_PLAYER_INVENTORY_ADD(oak_player_inventory_add_ptr);
-
-#define OAK_PLAYER_SPAWN(name) void name(librg_entity_t *entity)
-typedef OAK_PLAYER_SPAWN(oak_player_spawn_ptr);
-
-#define OAK_PLAYER_RESPAWN(name) void name(librg_entity_t *entity)
-typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
-
-#define OAK_PLAYER_SET_POSITION(name) void name(librg_entity_t *entity, zpl_vec3 position)
-typedef OAK_PLAYER_SET_POSITION(oak_player_set_position_ptr);
-
-#define OAK_PLAYER_SET_ROTATION(name) void name(librg_entity_t *entity, zpl_vec3 rotation)
-typedef OAK_PLAYER_SET_ROTATION(oak_player_set_rotation_ptr);
-
-#define OAK_PLAYER_SET_CAMERA(name) void name(librg_entity_t *entity, zpl_vec3 pos, zpl_vec3 rot)
-typedef OAK_PLAYER_SET_CAMERA(oak_player_set_camera_ptr);
-
-#define OAK_PLAYER_UNLOCK_CAMERA(name) void name(librg_entity_t *entity)
-typedef OAK_PLAYER_UNLOCK_CAMERA(oak_player_unlock_camera_ptr);
-
-#define OAK_PLAYER_PLAY_ANIMATION(name) void name(librg_entity_t *entity, const char *text)
-typedef OAK_PLAYER_PLAY_ANIMATION(oak_player_play_animation_ptr);
-//
-
-#define OAK_DROP_SPAWN(name) librg_entity_t* name(zpl_vec3 position, char *model, inventory_item item)
-typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
+#include "mod_api_types.generated.hpp"
 
 
 /*
@@ -89,25 +42,7 @@ struct oak_api {
     std::string version;
 
     struct {
-        // General
-        oak_print_test_ptr *print_test;
-        oak_broadcast_msg_ptr *broadcast_msg;
-        oak_chat_print_ptr *chat_print;
-        oak_broadcast_msg_color_ptr *broadcast_msg_color;
-
-        // Player
-        oak_player_spawn_ptr *player_spawn;
-        oak_player_respawn_ptr *player_respawn;
-        oak_player_inventory_add_ptr *player_inventory_add;
-        oak_player_set_position_ptr *player_set_position;
-        oak_player_set_rotation_ptr *player_set_rotation;
-		oak_player_fadeout_ptr *player_fadeout;
-        oak_player_set_camera_ptr *player_set_camera;
-        oak_player_unlock_camera_ptr *player_unlock_camera;
-        oak_player_play_animation_ptr *player_play_animation;
-        
-        // Weapon drop
-        oak_drop_spawn_ptr *drop_spawn;
+        #include "mod_api_vtable.generated.hpp"
     } vtable;
 
     std::function<void(librg_event_t* evnt, librg_entity_t* entity, mafia_player* ped)> on_player_connected;

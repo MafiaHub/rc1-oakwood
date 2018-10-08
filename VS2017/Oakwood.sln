@@ -8,8 +8,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{0C2F3489-6E9E-48DF-837D-AE9364B2CE2F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleMod", "SampleMod\SampleMod.vcxproj", "{4B863771-ADE0-40DF-AF58-F91F684F6E32}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0C2F3489-6E9E-48DF-837D-AE9364B2CE2F} = {0C2F3489-6E9E-48DF-837D-AE9364B2CE2F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LuaMod", "LuaMod\LuaMod.vcxproj", "{9D1AB52E-DAAF-4B91-BFF4-3F2DC71B3662}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0C2F3489-6E9E-48DF-837D-AE9364B2CE2F} = {0C2F3489-6E9E-48DF-837D-AE9364B2CE2F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader", "Loader\Loader.vcxproj", "{D18036FE-F3A9-43B3-B694-39CCAF81C19C}"
 EndProject
