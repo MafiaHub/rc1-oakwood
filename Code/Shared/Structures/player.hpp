@@ -7,6 +7,13 @@ struct body_health {
 	f32 right_leg;
 };
 
+#ifdef MAFIA_SDK_IMPLEMENTATION
+struct voip_channel_t {
+	HSTREAM playback_stream;
+	OpusDecoder *decoder;
+};
+#endif
+
 struct mafia_player {
 	mafia_player() : 
 	streamer_entity_id(-1),
@@ -16,6 +23,7 @@ struct mafia_player {
 
 #ifdef MAFIA_SDK_IMPLEMENTATION
 		nickname_texture = nullptr;
+		voice_channel = nullptr;
 #endif
 	}
 	i32 streamer_entity_id;
@@ -37,5 +45,6 @@ struct mafia_player {
 	interpolate3_hermite_t inter_pose;
 	MafiaSDK::C_Human* ped;
 	IDirect3DTexture9* nickname_texture;
+	voip_channel_t* voice_channel;
 #endif
 };

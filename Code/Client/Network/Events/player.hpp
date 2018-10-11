@@ -3,6 +3,7 @@
 inline auto player_entitycreate(librg_event_t* evnt) -> void {
 
 	auto player = new mafia_player();
+	player->voice_channel = voip::create_remote();
 	player->streamer_entity_id = librg_data_ri32(evnt->data);
 
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));

@@ -6,6 +6,8 @@
 #include "librg/librg.h"
 #include "Network/interpolation.hpp"
 
+librg_ctx_t network_context = { 0 };
+
 /*
 * Mafia SDK
 */
@@ -24,6 +26,12 @@
 #include "detours/detours.h"
 
 /*
+* VoIP
+*/
+#include <opus.h>
+#include <bass.h>
+
+/*
 * STD Includes
 */
 #include <iostream>
@@ -32,6 +40,9 @@
 #include <fstream>
 #include <vector>
 #include <clocale>
+#include <queue>
+#include <mutex>
+#include <atomic>
 
 /*
 * DX & DInput
@@ -55,11 +66,10 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "structs.hpp"
 #include "messages.hpp"
 #include "utils.hpp"
+#include "librg/librg_ext.h"
 
 f32 last_delta  = 0.0f;
 f32 last_update = 0.0f;
-
-librg_ctx_t network_context = { 0 };
 bool hit_hook_skip = true;
 
 struct _GlobalConfig {
@@ -72,6 +82,7 @@ struct _GlobalConfig {
 * Mod includes 
 */
 #include "config.hpp"
+#include "Game/VoIP/main.hpp"
 #include "Input/input.hpp"
 #include "Game/Factory/defs.hpp"
 #include "Game/Commands/defs.hpp"
@@ -83,7 +94,7 @@ struct _GlobalConfig {
 
 auto mod_init() {
 	mod_pre_init_game();
-	//alloc_console();
+	alloc_console();
 	init_config();
 	mod_init_game();
 	mod_init_networking();
