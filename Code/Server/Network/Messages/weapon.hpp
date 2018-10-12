@@ -1,29 +1,29 @@
-librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
     
     zpl_vec3 pos;
     auto entity = librg_entity_find(&network_context, msg->peer);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
 
-    mod_message_send_except(&network_context, NETWORK_PLAYER_SHOOT, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_SHOOT, msg->peer, [&](librg_data *data) {
         librg_data_went(data, entity->id);
         librg_data_wptr(data, &pos, sizeof(zpl_vec3));
     });
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message* msg) {
     
     zpl_vec3 pos;
     auto entity = librg_entity_find(&network_context, msg->peer);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
 
     printf("Debug player throw grenade: %f %f %f\n", pos.x, pos.y, pos.z);
-    mod_message_send_except(&network_context, NETWORK_PLAYER_THROW_GRENADE, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_THROW_GRENADE, msg->peer, [&](librg_data *data) {
         librg_data_went(data, entity->id);
         librg_data_wptr(data, &pos, sizeof(zpl_vec3));
     });
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
     if (!entity) return;
@@ -33,35 +33,35 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_messa
     auto player = (mafia_player*)entity->user_data;
     player->current_weapon_id = index;
 
-    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, msg->peer, [&](librg_data *data) {
         librg_data_went(data, entity->id);
         librg_data_wu32(data, index);
     });
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
     if (!entity) return;
     
     //process inventory here :) TODO !
-    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, msg->peer, [&](librg_data *data) {
         librg_data_went(data, entity->id);
     });
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
     if (!entity) return;
     
     //process inventory here :) TODO !
-    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, msg->peer, [&](librg_data *data) {
         librg_data_went(data, entity->id);
     });
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
     inventory_item item = {0};
@@ -75,7 +75,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message
     player_inventory_remove(entity, item.weaponId, true, true);
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message* msg) {
 
     auto player_entity		= librg_entity_find(&network_context, msg->peer);
     librg_entity_id id		= librg_data_rent(msg->data);
@@ -91,7 +91,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_messa
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
     auto sender_ent = librg_entity_find(&network_context, msg->peer);
     librg_entity_id target_id = librg_data_rent(msg->data);
@@ -110,7 +110,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg)
         else player->health -= damage;
     }
 
-    mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data_t *data) {
+    mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data *data) {
         librg_data_went(data, sender_ent->id);
         librg_data_went(data, target_id);
         librg_data_wu32(data, hit_type);

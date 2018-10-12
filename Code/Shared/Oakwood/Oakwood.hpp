@@ -45,6 +45,6 @@ private:
     std::function<void()> onServerTick;
     std::vector<Player*> players;
 
-    Player* GetPlayerByEntity(librg_entity_t *entity);
+    Player* GetPlayerByEntity(librg_entity *entity);
 };
 

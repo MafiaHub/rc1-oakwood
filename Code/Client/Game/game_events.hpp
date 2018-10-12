@@ -5,7 +5,7 @@ namespace effects {
 }
 
 //TODO, remove this hax for forcing ammo
-void librg_entites_tick(librg_entity_t* ent) {
+void librg_entites_tick(librg_entity* ent) {
 	*(int*)((DWORD)ent->user_data + 0x4A4) = 50;
 }
 
@@ -110,7 +110,7 @@ auto mod_bind_events() {
 
 		for (u32 i = 0; i < network_context.max_entities; i++) {
 			
-			librg_entity_t *entity = librg_entity_fetch(&network_context, i);
+			librg_entity *entity = librg_entity_fetch(&network_context, i);
 			if (!entity || entity->id == local_player.entity.id) continue;
 
 			switch (entity->type) {

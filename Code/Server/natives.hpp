@@ -39,7 +39,7 @@ extern "C" {
     //
 
     OAKGEN_NATIVE();
-	void oak_player_fadeout(librg_entity_t *entity, bool fadeout, u32 duration, u32 color) {
+	void oak_player_fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color) {
 		librg_send_to(&network_context, NETWORK_SEND_FADEOUT, entity->client_peer, data, {
 			librg_data_wu8(&data, fadeout);
 			librg_data_wu32(&data, duration);
@@ -48,22 +48,22 @@ extern "C" {
 	}
 
     OAKGEN_NATIVE();
-    void oak_player_inventory_add(librg_entity_t *entity, inventory_item *item) {
+    void oak_player_inventory_add(librg_entity *entity, inventory_item *item) {
         player_inventory_add(entity, item);
     }
 
     OAKGEN_NATIVE();
-    void oak_player_spawn(librg_entity_t *entity) {
+    void oak_player_spawn(librg_entity *entity) {
         player_send_spawn(entity);
     }
 
     OAKGEN_NATIVE();
-    void oak_player_respawn(librg_entity_t *entity) {
+    void oak_player_respawn(librg_entity *entity) {
         player_send_respawn(entity);
     }
 
     OAKGEN_NATIVE();
-    void oak_player_set_position(librg_entity_t *entity, zpl_vec3 position) {
+    void oak_player_set_position(librg_entity *entity, zpl_vec3 position) {
         entity->position = position;
 
         librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
@@ -73,7 +73,7 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
-    void oak_player_set_rotation(librg_entity_t *entity, zpl_vec3 rotation) {
+    void oak_player_set_rotation(librg_entity *entity, zpl_vec3 rotation) {
         auto player = (mafia_player*)(entity->user_data);
         if(player) {
             player->rotation = rotation;
@@ -86,7 +86,7 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
-    void oak_player_set_camera(librg_entity_t *entity, zpl_vec3 pos, zpl_vec3 rot) {
+    void oak_player_set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
         librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
             librg_data_wptr(&data, &pos, sizeof(pos));
             librg_data_wptr(&data, &rot, sizeof(rot));
@@ -94,12 +94,12 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
-    void oak_player_unlock_camera(librg_entity_t *entity) {
+    void oak_player_unlock_camera(librg_entity *entity) {
         librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
     }
 
     OAKGEN_NATIVE();
-    void oak_player_play_animation(librg_entity_t *entity, const char* text) {
+    void oak_player_play_animation(librg_entity *entity, const char* text) {
         librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {
             
             char animation[32];
@@ -115,7 +115,7 @@ extern "C" {
     //
 
     OAKGEN_NATIVE();
-    librg_entity_t* oak_drop_spawn(zpl_vec3 position, char *model, inventory_item item) {
+    librg_entity* oak_drop_spawn(zpl_vec3 position, char *model, inventory_item item) {
         return spawn_weapon_drop(position, model, item);
     }
 }

@@ -7,7 +7,7 @@ GameMode::GameMode(oak_api *mod) {
     this->mod = mod;
     __gm = this;
 
-    mod->on_player_connected = [=](librg_event_t* evnt, librg_entity_t* entity, mafia_player* ped) {
+    mod->on_player_connected = [=](librg_event* evnt, librg_entity* entity, mafia_player* ped) {
         
         Player *player = new Player(entity, ped);
 
@@ -20,7 +20,7 @@ GameMode::GameMode(oak_api *mod) {
         players.push_back(player);
     };
 
-    mod->on_player_disconnected = [=](librg_event_t* evnt, librg_entity_t* entity) {
+    mod->on_player_disconnected = [=](librg_event* evnt, librg_entity* entity) {
 
         auto player = GetPlayerByEntity(entity);
 
@@ -37,7 +37,7 @@ GameMode::GameMode(oak_api *mod) {
         players.erase(std::remove(players.begin(), players.end(), player), players.end());
     };
 
-    mod->on_player_died = [=](librg_entity_t* entity, mafia_player* ped) {
+    mod->on_player_died = [=](librg_entity* entity, mafia_player* ped) {
 
         auto player = GetPlayerByEntity(entity);
 
@@ -50,7 +50,7 @@ GameMode::GameMode(oak_api *mod) {
             onPlayerDied(player);
     };
 
-    mod->on_player_chat = [=](librg_entity_t* entity, std::string msg) {
+    mod->on_player_chat = [=](librg_entity* entity, std::string msg) {
         auto player = GetPlayerByEntity(entity);
 
         if (!player) {
@@ -112,7 +112,7 @@ void GameMode::SetOnServerTick(std::function<void()> callback)
     onServerTick = callback;
 }
 
-Player * GameMode::GetPlayerByEntity(librg_entity_t * entity)
+Player * GameMode::GetPlayerByEntity(librg_entity * entity)
 {
     for (auto player : players) {
         if (player->CompareWith(entity))
@@ -122,7 +122,7 @@ Player * GameMode::GetPlayerByEntity(librg_entity_t * entity)
     return nullptr;
 }
 
-Player::Player(librg_entity_t *entity, mafia_player *ped)
+Player::Player(librg_entity *entity, mafia_player *ped)
 {
     this->entity = entity;
     this->ped = ped;
@@ -229,7 +229,7 @@ f32 Player::GetHealth()
     return ped->health / 2.0f;
 }
 
-b32 Player::CompareWith(librg_entity_t * entity)
+b32 Player::CompareWith(librg_entity * entity)
 {
     return this->entity == entity;
 }

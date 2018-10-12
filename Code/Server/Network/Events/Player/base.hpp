@@ -1,6 +1,6 @@
 #pragma once
 
-inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
+inline auto player_clientstreamer_update(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
@@ -10,7 +10,7 @@ inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 	player->aiming_time = librg_data_ru64(evnt->data);
 }
 
-inline auto player_entityupdate(librg_event_t* evnt) -> void {
+inline auto player_entityupdate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
 	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3_t));
@@ -20,7 +20,7 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	librg_data_wu64(evnt->data, player->aiming_time);
 }
 
-inline auto player_entitycreate(librg_event_t* evnt) -> void {
+inline auto player_entitycreate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	librg_data_wi32(evnt->data, player->streamer_entity_id);
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3_t));
@@ -34,7 +34,7 @@ inline auto player_entitycreate(librg_event_t* evnt) -> void {
 	librg_data_wf32(evnt->data, player->health);
 }
 
-inline auto player_send_spawn(librg_entity_t* player_ent) -> void {
+inline auto player_send_spawn(librg_entity* player_ent) -> void {
 	auto player = (mafia_player*)player_ent->user_data;
 	librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
 		librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3_t));
@@ -46,7 +46,7 @@ inline auto player_send_spawn(librg_entity_t* player_ent) -> void {
 	});
 }
 
-inline auto player_send_message(librg_entity_t* player_ent, char* msg, u32 color = 0xFFFFFF) {
+inline auto player_send_message(librg_entity* player_ent, char* msg, u32 color = 0xFFFFFF) {
 	librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
 		librg_data_wu32(&data, strlen(msg));
 		librg_data_wu32(&data, color);
@@ -54,7 +54,7 @@ inline auto player_send_message(librg_entity_t* player_ent, char* msg, u32 color
 	});
 }
 
-inline auto player_send_respawn(librg_entity_t* player_ent) -> void {
+inline auto player_send_respawn(librg_entity* player_ent) -> void {
 	auto player = (mafia_player*)player_ent->user_data;
 
 	librg_send(&network_context, NETWORK_PLAYER_RESPAWN, data, {

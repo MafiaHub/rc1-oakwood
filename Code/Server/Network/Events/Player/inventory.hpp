@@ -1,4 +1,4 @@
-inline auto player_inventory_debug(librg_entity_t* player_ent) -> void {
+inline auto player_inventory_debug(librg_entity* player_ent) -> void {
 	auto player = (mafia_player*)player_ent->user_data;
 	printf("-----------[INV]-----------\n");
 	for (size_t i = 0; i < 8; i++) {
@@ -9,7 +9,7 @@ inline auto player_inventory_debug(librg_entity_t* player_ent) -> void {
 	printf("-----------[INV]-----------\n");
 }
 
-inline auto player_inventory_full(librg_entity_t* player_ent) -> bool {
+inline auto player_inventory_full(librg_entity* player_ent) -> bool {
 	auto player = (mafia_player*)player_ent->user_data;
 	for (size_t i = 0; i < 8; i++) {
 		if (player->inventory.items[i].weaponId == -1)
@@ -18,7 +18,7 @@ inline auto player_inventory_full(librg_entity_t* player_ent) -> bool {
 	return true;
 }
 
-inline auto player_inventory_exists(librg_entity_t* player_ent, int id) -> bool {
+inline auto player_inventory_exists(librg_entity* player_ent, int id) -> bool {
 	auto player = (mafia_player*)player_ent->user_data;
 	for (size_t i = 0; i < 8; i++) {
 		auto item = player->inventory.items[i];
@@ -30,7 +30,7 @@ inline auto player_inventory_exists(librg_entity_t* player_ent, int id) -> bool 
 }
 
 inline auto player_inventory_add(
-	librg_entity_t* player_ent, 
+	librg_entity* player_ent, 
 	inventory_item* item, 
 	bool announce = false, 
 	bool weapon_picked = false) -> void {
@@ -84,7 +84,7 @@ inline auto player_inventory_add(
 }
 
 inline auto player_inventory_remove(
-	librg_entity_t* player_ent, 
+	librg_entity* player_ent, 
 	int id, 
 	bool announce = false,
 	bool weapon_dropped = false) -> void {
@@ -123,7 +123,7 @@ inline auto player_inventory_remove(
 	});
 }
 
-auto player_inventory_send(librg_entity_t *player_ent) {
+auto player_inventory_send(librg_entity *player_ent) {
 	auto player = (mafia_player *)player_ent->user_data;
 
 	if (player) {

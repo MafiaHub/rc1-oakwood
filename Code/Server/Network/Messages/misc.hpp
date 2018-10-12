@@ -1,4 +1,4 @@
-librg_network_add(&network_context, NETWORK_NPC_CREATE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_NPC_CREATE, [](librg_message* msg) {
 
     auto entity = librg_entity_find(&network_context, msg->peer);
     auto creator_player = (mafia_player *)entity->user_data;
@@ -20,7 +20,7 @@ librg_network_add(&network_context, NETWORK_NPC_CREATE, [](librg_message_t* msg)
     }
 });
 
-librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message* msg) {
     char text[128] = "";
 
     auto entity = librg_entity_find(&network_context, msg->peer);

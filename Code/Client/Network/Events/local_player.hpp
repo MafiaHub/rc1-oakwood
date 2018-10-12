@@ -6,15 +6,15 @@ struct local_player_data {
 		dead(false)  {
 	}
 	MafiaSDK::C_Player* ped;
-	librg_entity_t entity;
+	librg_entity entity;
 	zpl_vec3 pose;
 	bool dead;
 } local_player;
 
-inline auto get_player_from_base(void* base) -> librg_entity_t* {
+inline auto get_player_from_base(void* base) -> librg_entity* {
 
 	for (u32 i = 0; i < network_context.max_entities; i++) {
-		librg_entity_t *entity = librg_entity_fetch(&network_context, i);
+		librg_entity *entity = librg_entity_fetch(&network_context, i);
 		if (!entity || entity->type != TYPE_PLAYER || !entity->user_data) continue;	
 		auto pl = (mafia_player*)(entity->user_data);
 		if (base == pl->ped) return entity;
@@ -114,7 +114,7 @@ inline auto local_player_holster() -> void {
 	player_inventory_send();
 }
 
-inline auto local_player_weaponpickup(librg_entity_t* item_entity) -> void {
+inline auto local_player_weaponpickup(librg_entity* item_entity) -> void {
 
 	librg_send(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, data, {
 		librg_data_went(&data, item_entity->id);

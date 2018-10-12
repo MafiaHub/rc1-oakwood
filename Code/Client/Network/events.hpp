@@ -6,7 +6,7 @@
 
 inline auto mod_librg_connect() -> void;
 
-void on_librg_connect(librg_event_t* evnt) {
+void on_librg_connect(librg_event* evnt) {
 	
 	MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
 	MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
@@ -18,7 +18,7 @@ void on_librg_connect(librg_event_t* evnt) {
 	local_player.entity = *evnt->entity;
 }
 
-void on_librg_disconnect(librg_event_t* evnt) {
+void on_librg_disconnect(librg_event* evnt) {
 
 	chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Disconnected from " + GlobalConfig.server_address + "."));
 	if(local_player.ped) {
@@ -28,7 +28,7 @@ void on_librg_disconnect(librg_event_t* evnt) {
 	mod_librg_connect();
 }
 
-void on_librg_entity_create(librg_event_t* evnt) {
+void on_librg_entity_create(librg_event* evnt) {
 	switch (evnt->entity->type) {
 		case TYPE_PLAYER: {
 			player_entitycreate(evnt);
@@ -39,7 +39,7 @@ void on_librg_entity_create(librg_event_t* evnt) {
 	}
 }
 
-void on_librg_entity_update(librg_event_t* evnt) {
+void on_librg_entity_update(librg_event* evnt) {
 	switch (evnt->entity->type) {
 		case TYPE_PLAYER: {
 			player_entityupdate(evnt);
@@ -50,7 +50,7 @@ void on_librg_entity_update(librg_event_t* evnt) {
 	}
 }
 
-void on_librg_entity_remove(librg_event_t* evnt) {
+void on_librg_entity_remove(librg_event* evnt) {
 	switch (evnt->entity->type) {
 		case TYPE_PLAYER: {
 			player_entityremove(evnt);
@@ -61,7 +61,7 @@ void on_librg_entity_remove(librg_event_t* evnt) {
 	}
 }
 
-void on_librg_clientstreamer_update(librg_event_t* evnt) {
+void on_librg_clientstreamer_update(librg_event* evnt) {
 	switch (evnt->entity->type) {
 		case TYPE_PLAYER: {
 			player_clientstreamer_update(evnt);

@@ -1,4 +1,4 @@
-librg_network_add(&network_context, NETWORK_SEND_VOIP_DATA, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_SEND_VOIP_DATA, [](librg_message* msg) {
 
     u32 entity_id = librg_data_ru32(msg->data);
     u32 encoded_buffer_size = librg_data_ru32(msg->data);

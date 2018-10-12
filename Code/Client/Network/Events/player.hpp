@@ -1,6 +1,6 @@
 #pragma once
 
-inline auto player_entitycreate(librg_event_t* evnt) -> void {
+inline auto player_entitycreate(librg_event* evnt) -> void {
 
 	auto player = new mafia_player();
 	player->voice_channel = voip::create_remote();
@@ -59,7 +59,7 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 		player->ped->PoseSetPoseNormal(mafia_pose);
 }
 
-inline auto player_entityupdate(librg_event_t* evnt) -> void {
+inline auto player_entityupdate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	auto player_int = player->ped->GetInterface();
 
@@ -83,7 +83,7 @@ inline auto player_entityupdate(librg_event_t* evnt) -> void {
 	player->inter_delta = 0.0f;
 }
 
-inline auto player_entityremove(librg_event_t* evnt) -> void {
+inline auto player_entityremove(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	if (player->ped) {
 		player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
@@ -91,7 +91,7 @@ inline auto player_entityremove(librg_event_t* evnt) -> void {
 	}
 }
 
-inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
+inline auto player_clientstreamer_update(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
 
@@ -117,7 +117,7 @@ inline auto player_clientstreamer_update(librg_event_t* evnt) -> void {
 }
 
 auto mod_player_add_events() {
-    librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event_t *evnt) {
+    librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
         // TODO: password sending
         char nickname[32];
         strcpy(nickname, GlobalConfig.username.c_str());

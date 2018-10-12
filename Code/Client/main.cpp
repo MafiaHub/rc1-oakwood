@@ -6,7 +6,7 @@
 #include "librg/librg.h"
 #include "Network/interpolation.hpp"
 
-librg_ctx_t network_context = { 0 };
+librg_ctx network_context = { 0 };
 
 /*
 * Mafia SDK

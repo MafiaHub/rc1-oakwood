@@ -1,6 +1,6 @@
 #pragma once
 
-librg_entity_t *spawn_weapon_drop(zpl_vec3 position, char *model, inventory_item item) {
+librg_entity *spawn_weapon_drop(zpl_vec3 position, char *model, inventory_item item) {
     mafia_weapon_drop *drop = new mafia_weapon_drop();
 
     drop->weapon = item;

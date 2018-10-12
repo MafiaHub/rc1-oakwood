@@ -45,10 +45,10 @@ struct oak_api {
         #include "mod_api_vtable.generated.hpp"
     } vtable;
 
-    std::function<void(librg_event_t* evnt, librg_entity_t* entity, mafia_player* ped)> on_player_connected;
-    std::function<void(librg_event_t* evnt, librg_entity_t* entity)> on_player_disconnected;
-    std::function<void(librg_entity_t* entity, mafia_player* ped)> on_player_died;
-    std::function<bool(librg_entity_t* entity, std::string msg)> on_player_chat;
+    std::function<void(librg_event* evnt, librg_entity* entity, mafia_player* ped)> on_player_connected;
+    std::function<void(librg_event* evnt, librg_entity* entity)> on_player_disconnected;
+    std::function<void(librg_entity* entity, mafia_player* ped)> on_player_died;
+    std::function<bool(librg_entity* entity, std::string msg)> on_player_chat;
     std::function<void()> on_server_tick;
 };
 

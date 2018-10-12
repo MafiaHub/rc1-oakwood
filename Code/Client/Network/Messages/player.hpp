@@ -1,4 +1,4 @@
-librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* msg) {
 
     //read data
     zpl_vec3 position, rotation;
@@ -61,7 +61,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message_t* 
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg) {
     
     zpl_vec3 position, rotation;
     player_inventory inventory;
@@ -89,7 +89,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message_t* ms
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
@@ -104,7 +104,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message_t* ms
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_message* msg) {
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
@@ -117,7 +117,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_messa
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_message* msg) {
     librg_entity_id id = librg_data_rent(msg->data);
     u32 index = librg_data_ru32(msg->data);
     auto entity = librg_entity_fetch(&network_context, id);
@@ -129,7 +129,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, [](librg_messa
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_message* msg) {
     librg_entity_id id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, id);
     if (entity) {
@@ -138,7 +138,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, [](librg_messa
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_message* msg) {
     librg_entity_id id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, id);
     if (entity) {
@@ -147,7 +147,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, [](librg_mess
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message* msg) {
 
     librg_entity_id id = librg_data_rent(msg->data);
     u32 remove_id = librg_data_ru32(msg->data);
@@ -165,7 +165,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message* msg) {
     librg_entity_id id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, id);
     auto player = (mafia_player*)entity->user_data;
@@ -187,7 +187,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_messa
     mod_debug("weapon pickup");
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
     librg_entity_id sender_id = librg_data_rent(msg->data);
     librg_entity_id victim_id = librg_data_rent(msg->data);
@@ -216,7 +216,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message_t* msg)
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message_t *msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
     auto entity_id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, entity_id);
     
@@ -229,7 +229,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_mess
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
     auto entity_id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, entity_id);
     if (entity && entity->user_data) {
@@ -240,7 +240,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message_t* msg)
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* msg) {
     auto entity_id = librg_data_rent(msg->data);
     auto entity = librg_entity_fetch(&network_context, entity_id);
     if (entity) {
@@ -248,7 +248,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message_t* 
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message* msg) {
     auto entity_id = librg_data_rent(msg->data);
     zpl_vec3 rot;
     librg_data_rptr(msg->data, &rot, sizeof(rot));
@@ -262,7 +262,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message_t* 
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message* msg) {
     
     Vector3D pos, rot;
     librg_data_rptr(msg->data, &pos, sizeof(pos));
@@ -274,14 +274,14 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message_
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_message* msg) {
     if(MafiaSDK::GetMission()->GetGame()) {
         auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
         camera->Unlock();
     }
 });
 
-librg_network_add(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, [](librg_message* msg) {
     auto entity_id = librg_data_rent(msg->data);
     char animation[32];
     librg_data_rptr(msg->data, animation, sizeof(char) * 32);
@@ -295,7 +295,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, [](librg_mess
 	}
 });
 
-librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message_t* msg) {
+librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* msg) {
     u32 msg_size	= librg_data_ru32(msg->data);
     u32 msg_color	= librg_data_ru32(msg->data);
     char* text = reinterpret_cast<char*>(malloc(msg_size));

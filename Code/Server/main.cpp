@@ -27,7 +27,7 @@ struct _GlobalConfig {
 	std::string gamemode;
 } GlobalConfig;
 
-librg_ctx_t network_context = { 0 };
+librg_ctx network_context = { 0 };
 
 #include "config.hpp"
 #include "mode.hpp"
@@ -62,7 +62,7 @@ auto main() -> int {
 	mod_log("Initializing server ...");
 	mod_init_networking();
 	
-	librg_address_t addr = { (i32)GlobalConfig.port };
+	librg_address addr = { (i32)GlobalConfig.port };
 	librg_network_start(&network_context, addr);
 	mod_log("Server started");
 	mod_log("Loading gamemode...");

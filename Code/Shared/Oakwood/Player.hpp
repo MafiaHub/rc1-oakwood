@@ -6,7 +6,7 @@
 
 class Player {
 public:
-    Player(librg_entity_t *entity, mafia_player *ped);
+    Player(librg_entity *entity, mafia_player *ped);
     ~Player();
 
     //
@@ -44,10 +44,10 @@ public:
     // Utilities
     //
 
-    b32 CompareWith(librg_entity_t *entity);
+    b32 CompareWith(librg_entity *entity);
     void SetPed(mafia_player *ped);
 
 private:
     mafia_player *ped;
-    librg_entity_t *entity;
+    librg_entity *entity;
 };
