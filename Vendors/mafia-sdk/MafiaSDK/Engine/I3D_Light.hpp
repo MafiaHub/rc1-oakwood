@@ -19,11 +19,6 @@ limitations under the License.
 
 namespace MafiaSDK
 {
-	struct I3D_Light_Interface
-	{
-
-	};
-
 	namespace I3D_Light_Enum
 	{
 		enum FunctionsAddresses
@@ -48,11 +43,6 @@ namespace MafiaSDK
 	class I3D_Light : public I3D_Frame
 	{
 	public:
-		I3D_Light_Interface* GetInterface()
-		{
-			return reinterpret_cast<I3D_Light_Interface*>(this);
-		}
-
 		I3D_Light()
 		{
 			unsigned long funcAddress = I3D_Light_Enum::FunctionsAddresses::Construct;

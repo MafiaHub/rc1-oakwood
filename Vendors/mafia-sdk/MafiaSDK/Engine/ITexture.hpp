@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 Dï¿½vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use currentInstance file except in compliance with the License.
@@ -28,7 +28,7 @@ namespace MafiaSDK
 	{
 		enum FunctionsAddresses : DWORD
 		{
-			Construct = 0x100A3560
+			Construct = 0x10075C10//0x100A3560
 		};
 	};
 
@@ -73,7 +73,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void Create(const char* textureName, const char* textureSomething, int textureDepth, int unk1, int unk2, int unk3)
+		void Create(const char* textureName, const char* textureSomething, int textureDepth, int width, int height, int unk3)
 		{
 			//10075F50;
 			//NOTE(DavoSK): Dirty trick wich force texture to be created as A8R8G8B8 format
@@ -86,8 +86,8 @@ namespace MafiaSDK
 				mov ecx, dword ptr ds : [edi]
 
 				push unk3
-				push unk2
-				push unk1
+				push height
+				push width
 				push textureDepth
 				push textureSomething
 				push textureName

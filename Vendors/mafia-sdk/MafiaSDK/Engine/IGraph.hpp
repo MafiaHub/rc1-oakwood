@@ -21,6 +21,7 @@ namespace MafiaSDK
 {
     constexpr unsigned long MAIN_WINDOW = 0x101C5458;
 	constexpr unsigned long CHILD_WINDOW = 0x101C5408;
+    constexpr unsigned long IGraph_Constance = 0x101C5294;
 
     HWND GetMainWindow() 
     {
@@ -35,6 +36,26 @@ namespace MafiaSDK
     bool IsWindowFocused() 
     {
         return GetMainWindow() == GetActiveWindow();
+    }
+
+    class IGraph 
+    {
+        public:
+        MafiaSDK::ITexture* CreateITexture() 
+        {
+            __asm 
+            {
+                mov eax, this
+                MOV ECX,DWORD PTR DS:[EAX]
+                PUSH EAX
+                CALL DWORD PTR DS:[ECX+0x8]
+            }
+        }
+    };
+
+    IGraph* GetIGraph() 
+    {
+        return *(IGraph**)(IGraph_Constance);
     }
 }
 

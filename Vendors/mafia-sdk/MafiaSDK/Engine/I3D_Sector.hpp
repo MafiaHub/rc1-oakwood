@@ -63,6 +63,30 @@ namespace MafiaSDK
 				call dword ptr ds : [ecx + 0x54]
 			}
 		}
+
+		void AddSound(I3D_Sound* soundToAdd)
+		{
+			__asm
+			{
+				mov eax, this
+				mov ecx, dword ptr ds : [eax]
+				push soundToAdd
+				push eax
+				call dword ptr ds : [ecx + 0x58]
+			}
+		}
+
+		void RemoveSound(I3D_Sound* soundToRemove)
+		{
+			__asm
+			{
+				mov eax, this
+				mov ecx, dword ptr ds : [eax]
+				push soundToRemove
+				push eax
+				call dword ptr ds : [ecx + 0x5C]
+			}
+		}
 	};
 }
 

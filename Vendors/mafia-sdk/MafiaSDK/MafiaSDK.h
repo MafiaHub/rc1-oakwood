@@ -2,6 +2,7 @@
 #define _MAFIA_SDK_
 
 #include <Windows.h>
+#include <DSound.h>
 #include <d3d9.h>
 #include <functional>
 
@@ -13,8 +14,11 @@
 #include "Engine/I3D_Frame.hpp"
 #include "Engine/I3D_Projector.hpp"
 #include "Engine/I3D_Light.hpp"
+#include "Engine/ISND_Source.hpp"
+#include "Engine/I3D_Sound.hpp"
 #include "Engine/I3D_Sector.hpp"
 #include "Engine/IGraph.hpp"
+#include "Engine/I3D_Driver.hpp"
 //#include "Engine/DirectHook.hpp"
 
 namespace MafiaSDK {
