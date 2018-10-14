@@ -27,8 +27,8 @@ struct mafia_player {
 #endif
 	}
 	i32 streamer_entity_id;
-	zpl_vec3_t rotation;
-	zpl_vec3_t pose;
+	zpl_vec3 rotation;
+	zpl_vec3 pose;
 	f32 health;
 	u8 animation_state;
 	u8 is_aiming;
