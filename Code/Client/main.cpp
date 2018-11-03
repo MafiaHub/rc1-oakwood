@@ -2,7 +2,7 @@
 * Librg 
 */
 #define LIBRG_IMPLEMENTATION
-#define LIBRG_DEBUG
+#define LIBRG_NO_DEPRECATIONS
 #include "librg/librg.h"
 #include "Network/interpolation.hpp"
 

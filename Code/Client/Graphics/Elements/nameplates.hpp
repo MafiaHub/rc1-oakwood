@@ -24,6 +24,18 @@ namespace nameplates {
                 auto player = reinterpret_cast<mafia_player*>(entity->user_data);
                 if (player->ped) {
                     auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
+                    auto player_pos_zpl = zpl_vec3f(player_pos.x, player_pos.y, player_pos.z);
+
+                    zpl_vec3 dir;
+                    zpl_vec3_sub(&dir, player_pos_zpl, local_player.entity.position);
+                    zpl_vec3_norm0(&dir, dir);
+
+                    auto fwd = player->ped->GetInterface()->neckFrame->GetInterface()->mRotation;
+                    auto fwd_zpl = zpl_vec3f(fwd.x, fwd.y, fwd.z);
+
+                    if (zpl_vec3_dot(dir, fwd_zpl) <= 0.f)
+                        continue;
+
                     auto screen = world_to_screen({ player_pos.x, player_pos.y + 0.4f, player_pos.z });
                     
                     if(zpl_time_now() - player->last_talked < 5.0f && voip_texture) {
