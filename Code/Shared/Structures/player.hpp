@@ -24,6 +24,7 @@ struct mafia_player {
 #ifdef MAFIA_SDK_IMPLEMENTATION
 		nickname_texture = nullptr;
 		voice_channel = nullptr;
+		last_talked = 0;
 #endif
 	}
 	i32 streamer_entity_id;
@@ -40,6 +41,7 @@ struct mafia_player {
 	u32 current_weapon_id;
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	f32 inter_delta;
+	f32 last_talked;
     interpolate3_hermite_t inter_pos;
 	interpolate3_hermite_t inter_rot;
 	interpolate3_hermite_t inter_pose;

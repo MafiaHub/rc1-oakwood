@@ -2,8 +2,8 @@ namespace voip {
 
     // TODO: sync thoose from server
     constexpr int bitrate 		= 64000;
-    constexpr int sample_rate 	= 48000;
-    constexpr int channel_count = 2;
+    constexpr int sample_rate 	= 24000;
+    constexpr int channel_count = 1;
 
 	constexpr int frame_duration = 600;
 	constexpr int frame_samples_per_channel = (sample_rate * frame_duration) / 10000LL;
@@ -21,10 +21,14 @@ namespace voip {
     int16_t frame_decoded[frame_size];
 	uint8_t frame_to_send[frame_size];
 
+    // Prepare buffer ( actual raw microphone data )
+    constexpr int prepare_buffer_size = 5000;
+    char prepare_buffer[prepare_buffer_size];
+
     /*
     * Function wich decode encoded data and pushes it into streamed output
     */
-    auto decode_and_push(voip_channel_t* player_channel, unsigned char* encoded, u32 encoded_size) {
+    auto decode_and_push(voip_channel_t* player_channel, unsigned char* encoded, u32 encoded_size, float secsex) {
         
         i32 decoded_samples = opus_decode(player_channel->decoder, encoded, encoded_size, frame_decoded, sizeof(frame_decoded), 0);
         if (decoded_samples < 0) {
@@ -33,7 +37,7 @@ namespace voip {
         }
 
 	    i32 decoded_size = frame_samples_per_channel * channel_count * sizeof(int16_t);
-	    BASS_StreamPutData(player_channel->playback_stream, frame_decoded, decoded_size);
+        BASS_StreamPutData(player_channel->playback_stream, frame_decoded, decoded_size);
     }
 
 	/*
@@ -55,14 +59,14 @@ namespace voip {
             });
 		}	
 	}
-
+    
     /*
     * BASS microphone callback
     */ 
-    BOOL prepare_ecnode_buffer(const void *buffer, DWORD length) {
+    void prepare_encode_buffer(const void *buffer, DWORD length) {
 		
-		// allocate buffering buffer 4x for FIFO
-		if (!mic_buffer) mic_buffer = (char*)malloc(length * 4);
+		if (!mic_buffer) 
+            mic_buffer = (char*)malloc(length * 4);
 
 		mic_buffer_size += length;
 		memcpy(mic_buffer + (mic_buffer_size - length), buffer, length);
@@ -76,28 +80,38 @@ namespace voip {
 			mic_buffer_size -= frame_size;
 			memcpy((char*)mic_buffer + (mic_buffer_size - overflow), (char*)mic_buffer + frame_size, overflow);
 		}
-	
-        return TRUE;
     }
 
-    auto network_tick() {
-        
-        u32 offset = 0;
-        u32 avalable = BASS_ChannelGetData(chan, NULL, BASS_DATA_AVAILABLE);
-		void* real_data = malloc(avalable);
-		BASS_ChannelGetData(chan, real_data, avalable);
+    auto is_talking() {
+        return true;
+    }
 
-		while (avalable >= frame_size) {
-			prepare_ecnode_buffer((char*)real_data + offset, frame_size);
-			avalable -= frame_size;
+    /* 
+    * Check if player is talking 
+    * if not buffered data is discarted, also when buffer is overflowing
+    */
+    auto network_tick() {
+
+        u32 offset = 0;
+        u32 available = BASS_ChannelGetData(chan, NULL, BASS_DATA_AVAILABLE);
+		
+        if(available >= prepare_buffer_size || !is_talking()) {
+            BASS_ChannelGetData(chan, NULL, available);
+            return;
+        }
+        else if(available < prepare_buffer_size && is_talking()) {
+            BASS_ChannelGetData(chan, prepare_buffer, available);
+        }
+
+		while (available >= frame_size) {
+			prepare_encode_buffer(prepare_buffer + offset, frame_size);
+			available -= frame_size;
 			offset += frame_size;
 		}
 
-		if (avalable > 0) {
-			prepare_ecnode_buffer((char*)real_data + offset, avalable);
+		if (available > 0) {
+			prepare_encode_buffer(prepare_buffer + offset, available);
 		}
-
-		free(real_data);
     }
 
     /* 
@@ -112,10 +126,12 @@ namespace voip {
 
         BASS_SetConfig(BASS_CONFIG_VISTA_TRUEPOS, 0);
 
-        if (!BASS_Init(-1, sample_rate, NULL, NULL, NULL)) {
+        if (!BASS_Init(-1, sample_rate, BASS_DEVICE_3D, NULL, NULL)) {
             MessageBoxA(NULL, "Unable to init bass audio !", "BASS_Init", MB_ICONERROR | MB_OK);
             return;
         }
+
+		BASS_Set3DFactors(1.0f, 0.2f, 3.0f);
 
         if (!BASS_RecordInit(-1)) {
             MessageBoxA(NULL, "Unable to init record  !", "BASS_RecordInit", MB_ICONERROR | MB_OK);
@@ -141,9 +157,9 @@ namespace voip {
         assert(error_code == OPUS_OK);
 
         /* Create playback stream for one instance*/
-        new_voip->playback_stream = BASS_StreamCreate(sample_rate, channel_count, BASS_STREAM_AUTOFREE, STREAMPROC_PUSH, NULL);
+        new_voip->playback_stream = BASS_StreamCreate(sample_rate, channel_count, BASS_STREAM_AUTOFREE | BASS_SAMPLE_3D, STREAMPROC_PUSH, NULL);
         BASS_ChannelPlay(new_voip->playback_stream, FALSE);
-	    BASS_ChannelSetAttribute(new_voip->playback_stream, BASS_ATTRIB_VOL, 3.0);
+	    BASS_ChannelSetAttribute(new_voip->playback_stream, BASS_ATTRIB_VOL, 5.0);
         
         return new_voip;
     }
