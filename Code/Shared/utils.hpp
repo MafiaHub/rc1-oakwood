@@ -1,5 +1,5 @@
 #pragma once
-
+#ifdef _WIN32
 class KeyToggle {
 public:
 	KeyToggle(int key) :mKey(key), mActive(false) {}
@@ -27,6 +27,7 @@ inline auto alloc_console() {
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONOUT$", "w", stderr);
 }
+#endif
 
 inline auto split(std::string s, std::string delimiter){
     std::vector<std::string> list;

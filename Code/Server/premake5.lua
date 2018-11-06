@@ -9,3 +9,9 @@ project "Server"
         "**.cpp",
         "**.rc"
     }
+
+    configuration "linux or macosx"
+        links {
+            "pthread",
+            "dl"
+        }

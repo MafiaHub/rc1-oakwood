@@ -52,9 +52,11 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
 
 auto main() -> int {
 
-	std::setlocale(LC_ALL, "C");
-	SetConsoleOutputCP(CP_UTF8);
-
+	#ifdef _WIN32  
+		std::setlocale(LC_ALL, "C");
+		SetConsoleOutputCP(CP_UTF8);
+	#endif
+	
 	zpl_printf("%s", jebe);
 
 	init_config();

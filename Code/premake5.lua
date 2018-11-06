@@ -62,7 +62,9 @@ workspace "Oakwood"
         linkoptions "/PDB:\"symbols\\$(ProjectName).pdb\""
 
     filter {"system:windows", "action:vs*"}
-        systemversion(os.winSdkVersion() .. ".0")
+	if os.winSdkVersion() ~= nil then
+        	systemversion(os.winSdkVersion() .. ".0")
+	end
 
     -- Disable deprecation warnings and errors
     -- disabling as less warnings as possible

@@ -36,7 +36,7 @@ struct mafia_player {
 	u8 is_crouching;
 	char model[32];
 	char name[32];
-	DWORD aiming_time;
+	u32 aiming_time;
 	player_inventory inventory;
 	u32 current_weapon_id;
 #ifdef MAFIA_SDK_IMPLEMENTATION

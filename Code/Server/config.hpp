@@ -2,13 +2,20 @@
 
 #include "config_reader.hpp"
 
-constexpr const char* config_file_name = "server.json";
+#ifdef _WIN32 
+    #define default_gamemode "SampleMod.dll"
+#elif __linux__
+    #define default_gamemode "SampleMod.so"
+#elif
+    #define default_gamemode "SampleMod.dylib"
+#endif
 
-static const char *mod_default_config = R"foo(
-max_players = 16
-port = 27010
-gamemode = "SampleMod.dll"
-)foo";
+constexpr const char* config_file_name = "server.json";
+static const char *mod_default_config = "max_players = 16\n"\
+    "port = 27010\n"\
+    "gamemode = \"" default_gamemode "\"";
+
+
 
 auto init_config() {
     mod_log("Loading config...");
