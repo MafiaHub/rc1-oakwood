@@ -54,7 +54,7 @@ namespace chat {
 		register_command("/npc", [&](std::vector<std::string> args) {
 			librg_send(&network_context, NETWORK_NPC_CREATE, data, {});
 		});
-
+		
 		register_command("/shade", [&](std::vector<std::string> args) {
 			effects::load("Cinematic.fx");
 			effects::is_enabled = true;
@@ -64,8 +64,8 @@ namespace chat {
     auto render() {
 
 		if(MafiaSDK::GetGMMenu() || !MafiaSDK::GetMission()->GetGame()) return; 
-        
 		ImGuiStyle& style = ImGui::GetStyle();
+
 		if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 			style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
 			style.Colors[ImGuiCol_TitleBg] =  ImColor(150, 0, 0, 200);
@@ -84,13 +84,14 @@ namespace chat {
 
 		ImGui::SetWindowSize(ImVec2(400, 300));
 		ImGui::SetWindowPos(ImVec2(20, 20));
-		
 		ImGui::BeginChild("scrolling");
+
 		if (!chat_messages.empty()) {
 			for (auto message : chat_messages) {
 				ImGui::TextColored(message.first, message.second.c_str());
 			}
 		}
+		
 		ImGui::SetScrollHere(1.0f);
 		ImGui::EndChild();
 		

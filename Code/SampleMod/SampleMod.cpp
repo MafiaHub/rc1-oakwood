@@ -8,7 +8,7 @@
 // Mod Includes
 //
 
-#include "Oakwood.hpp"
+#include <Oakwood/Oakwood.hpp>
 #include "weapons.hpp"
 
 //
@@ -68,6 +68,13 @@ OAK_MOD_MAIN {
     });
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
+        if(msg.find("/car") != std::string::npos) {
+            auto position = player->GetPosition();
+            position.x += 1.5f;
+			gm->SpawnVehicle(position, player->GetRotation(), "taxi00.i3d");
+			gm->ChatPrint(player->GetName() + " spawned taxi!");
+        }
+
         gm->ChatPrint(player->GetName() + " says: " + msg);
 
         return true;

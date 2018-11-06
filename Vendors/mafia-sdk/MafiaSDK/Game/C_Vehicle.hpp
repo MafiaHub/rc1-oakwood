@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 Dï¿½vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -19,9 +19,36 @@
 
 namespace MafiaSDK
 {
-	struct C_Vehicle_Interface
-	{
-
+	struct C_Vehicle_Interface {
+		PADDING(C_Vehicle_Interface, _pad0 , 0x1B4);
+		float engine_health;
+		PADDING(C_Vehicle_Interface, _pad1 , 0x34);
+		float health;
+		PADDING(C_Vehicle_Interface, _pad2 , 0x130);
+		Vector3D position;
+		PADDING(C_Vehicle_Interface, _pad3 , 0x104);
+		byte horn;
+		byte siren;
+		byte sound_enabled;
+		float hand_break;
+		PADDING(C_Vehicle_Interface, _pad7 , 0x6C);
+		float speed_limit;
+		PADDING(C_Vehicle_Interface, _pad8 , 0xB8);
+		DWORD gear;
+		PADDING(C_Vehicle_Interface, _pad9 , 0x54);
+		float break_val;
+		PADDING(C_Vehicle_Interface, _pad10 , 0x24);
+		float clutch;
+		PADDING(C_Vehicle_Interface, _pad11 , 0x40);
+		float wheel_angle;
+		PADDING(C_Vehicle_Interface, _pad12 , 0x604);
+		byte engine_on;
+		PADDING(C_Vehicle_Interface, _pad13 , 0x3);
+		float fuel;
+		PADDING(C_Vehicle_Interface, _pad14 , 0x8);
+		Vector3D rotation;
+		PADDING(C_Vehicle_Interface, _pad15 , 0x1348);
+		Vector3D speed;
 	};
 
 	namespace C_Vehicle_Enum

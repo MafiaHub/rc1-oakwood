@@ -5,7 +5,7 @@ LuaMod is an example of lua bindings for Oakwood
 */
 
 #include <Oakwood/Oakwood.hpp>
-#include <sol.hpp>
+#include <sol/sol.hpp>
 
 #define BIND_FUNCTION(parent, name)\
 	#name, &ZPL_JOIN3(parent,::,name)

@@ -36,6 +36,7 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	}
 
 	evnt->entity->user_data = player;
+	evnt->entity->flags |= ENTITY_INTERPOLATED;
 }
 
 inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
@@ -49,8 +50,10 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
     player->inter_delta += (f32)delta;
 
 	auto player_int = player->ped->GetInterface();
-	player_int->entity.position = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pos, alpha));
-	player_int->entity.rotation = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_rot, alpha));
+	if(player_int->playersCar == nullptr) {
+		player_int->entity.position = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pos, alpha));
+		player_int->entity.rotation = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_rot, alpha));
+	}
 
 	Vector3D mafia_pose = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pose, alpha));
 	if (player->is_aiming)
@@ -86,8 +89,13 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 inline auto player_entityremove(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	if (player->ped) {
+		evnt->entity->flags &= ~ENTITY_INTERPOLATED;
+		
 		player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
 		player->ped = nullptr;
+
+		free(evnt->user_data);
+		evnt->user_data = nullptr; 
 	}
 }
 
@@ -100,7 +108,9 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
 		return;
 	}
 
-	evnt->entity->position	= EXPAND_VEC(player_int->humanObject.entity.position);
+	auto frame_position = player_int->humanObject.entity.frame->GetInterface()->mPosition;
+
+	evnt->entity->position	= EXPAND_VEC(frame_position);
 	player->rotation		= EXPAND_VEC(player_int->humanObject.entity.rotation);
 	player->pose			= local_player.pose;
 	player->animation_state = player_int->humanObject.animStateLocal;

@@ -22,6 +22,16 @@ inline auto get_player_from_base(void* base) -> librg_entity* {
 	return nullptr;
 }
 
+inline auto get_vehicle_from_base(void* base) -> librg_entity* {
+
+	for (u32 i = 0; i < network_context.max_entities; i++) {
+		librg_entity *entity = librg_entity_fetch(&network_context, i);
+		if (!entity || entity->type != TYPE_VEHICLE || !entity->user_data) continue;	
+		auto pl = (mafia_vehicle*)(entity->user_data);
+		if (base == pl->car) return entity;
+	}
+	return nullptr;
+}
 
 auto player_inventory_send() {
     player_inventory inv = {0};
@@ -136,5 +146,19 @@ inline auto local_player_throwgrenade(const Vector3D & pos) {
 
 	player_inventory_send();
 }
+
+inline auto local_player_useactor(DWORD actor, int action, int seat_id, int unk3) {
+
+	auto vehicle_ent = get_vehicle_from_base((void*)actor);
+	if (!vehicle_ent) return;
+
+	librg_send(&network_context, NETWORK_PLAYER_USE_ACTOR, data, {
+		librg_data_wu32(&data, vehicle_ent->id);
+		librg_data_wi32(&data, action);
+		librg_data_wi32(&data, seat_id);
+		librg_data_wi32(&data, unk3);
+	});
+}
+
 
 #include "Game/Hooks/local_player.hpp"

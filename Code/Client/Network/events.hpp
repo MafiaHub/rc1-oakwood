@@ -3,6 +3,7 @@
 #include "Events/local_player.hpp"
 #include "Events/player.hpp"
 #include "Events/weapon_drop.hpp"
+#include "Events/vehicle.hpp"
 
 inline auto mod_librg_connect() -> void;
 
@@ -36,6 +37,9 @@ void on_librg_entity_create(librg_event* evnt) {
 		case TYPE_WEAPONDROP: {
 			drop_entitycreate(evnt);
 		} break;
+		case TYPE_VEHICLE: {
+			vehicle_entitycreate(evnt);
+		} break;
 	}
 }
 
@@ -46,6 +50,9 @@ void on_librg_entity_update(librg_event* evnt) {
 		} break;
 		case TYPE_WEAPONDROP: {
 			
+		} break;
+		case TYPE_VEHICLE: {
+			vehicle_entityupdate(evnt);
 		} break;
 	}
 }
@@ -58,6 +65,9 @@ void on_librg_entity_remove(librg_event* evnt) {
 		case TYPE_WEAPONDROP: {
 			drop_entityremove(evnt);
 		} break;
+		case TYPE_VEHICLE: {
+			vehicle_entityremove(evnt);
+		} break;
 	}
 }
 
@@ -68,7 +78,18 @@ void on_librg_clientstreamer_update(librg_event* evnt) {
 		} break;
 		case TYPE_WEAPONDROP: {
 		} break;
+		case TYPE_VEHICLE: {
+			vehicle_clientstreamer_update(evnt);
+		} break;
 	}
+}
+
+void on_librg_clientstreamer_add(librg_event* evnt) {
+	evnt->entity->flags &= ~ENTITY_INTERPOLATED;
+}
+
+void on_librg_clientstreamer_remove(librg_event* evnt) {
+	evnt->entity->flags &= ~ENTITY_INTERPOLATED;
 }
 
 auto mod_add_network_events() {
@@ -78,6 +99,7 @@ auto mod_add_network_events() {
 	librg_event_add(&network_context, LIBRG_ENTITY_UPDATE, on_librg_entity_update);
 	librg_event_add(&network_context, LIBRG_ENTITY_REMOVE, on_librg_entity_remove);
 	librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_UPDATE, on_librg_clientstreamer_update);
-
+	librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_ADD, on_librg_clientstreamer_add);
+	librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_REMOVE, on_librg_clientstreamer_remove);
     mod_player_add_events();
 }

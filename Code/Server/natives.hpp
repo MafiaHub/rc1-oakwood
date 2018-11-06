@@ -118,6 +118,15 @@ extern "C" {
     librg_entity* oak_drop_spawn(zpl_vec3 position, char *model, inventory_item item) {
         return spawn_weapon_drop(position, model, item);
     }
+
+    //
+    // Vehicle 
+    // 
+
+    OAKGEN_NATIVE();
+    librg_entity* oak_vehicle_spawn(zpl_vec3 position, zpl_vec3 rotation, char* model) {
+        return spawn_vehicle(position, rotation, model);
+    }
 }
 
 auto set_up_natives() -> void {

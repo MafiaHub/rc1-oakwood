@@ -24,9 +24,9 @@
 
 #include "librg/librg_ext.h"
 
-#include "helpers.hpp"
 #include "messages.hpp"
 #include "utils.hpp"
+#include "helpers.hpp"
 #endif
 
 #include "mod_api_types.generated.hpp"

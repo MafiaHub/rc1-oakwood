@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 Dï¿½vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -24,22 +24,8 @@ namespace MafiaSDK
 	struct C_Car_Interface
 	{
 		C_Entity_Interface		 entity;
-		PADDING(C_Car_Interface, _pad0, 0x1B8);
-		float					engineHealth;
-		PADDING(C_Car_Interface, _pad1, 0x168);
-		Vector3D				position;
-		PADDING(C_Car_Interface, _pad2, 0xF4);
-		float					gasState;
-		PADDING(C_Car_Interface, _pad3, 0x88);
-		bool					hornState;
-		bool					sirenState;
-		PADDING(C_Car_Interface, _pad4, 0x12A);
-		int						speedGear;
-		PADDING(C_Car_Interface, _pad5, 0xC4);
-		float					wheelRotation;
-		PADDING(C_Car_Interface, _pad6, 0x598);
-		Vector3D				rotation;
-		PADDING(C_Car_Interface, _pad7, 0x1A56);
+		PADDING(C_Car_Interface, _pad0, 0x4);
+		C_Vehicle_Interface	vehicle_interface;
 	};
 
 	namespace C_Car_Enum
@@ -47,6 +33,9 @@ namespace MafiaSDK
 		enum FunctionsAddresses
 		{
 			Engine = 0x004E1CE0,
+			SetEngineOn = 0x004CB5B0,
+			SetGear = 0x004CB070,
+			GearSnd = 0x004ED810,
 			GetSeatProperty = 0x0041DC30,
 			GetOwner = 0x0041DEC0
 		};
@@ -76,6 +65,45 @@ namespace MafiaSDK
 				call functionAddress
 			}
 		}
+		
+		/* --- C_Vehicle Function here :) --- */
+		void SetEngineOn(BOOL arg1, BOOL arg2) 
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::SetEngineOn;
+			__asm
+			{
+				mov ecx, this
+				add ecx, 0x70
+
+				push arg2
+				push arg1
+				call functionAddress
+			}
+		}
+
+		void SetGear(int gear) 
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::SetGear;
+			__asm
+			{
+				mov ecx, this
+				add ecx, 0x70
+				push gear
+				call functionAddress
+			}
+		}
+
+		void GearSnd() 
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::GearSnd;
+			__asm
+			{
+				mov ecx, this
+				add ecx, 0x70
+				call functionAddress
+			}
+		}
+
 
 		void Engine(float arg1, float arg2, float arg3)
 		{
@@ -104,8 +132,8 @@ namespace MafiaSDK
 				this->SetActState(0);
 			}
 
-			this->GetInterface()->position = pos;
-			this->GetInterface()->rotation = rot;
+			//this->GetInterface()->position = pos;
+			//this->GetInterface()->rotation = rot;
 		}
 
 		unsigned long GetOwner(int seat_idx)

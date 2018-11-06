@@ -244,22 +244,15 @@ namespace MafiaSDK
 	inline I3D_Frame* FindFrame(const char* frameName)
 	{
 		MafiaSDK::I3D_Frame* returnFrame = nullptr;
-
-		__asm
-		{
+		__asm {
 			//Mission 
 			mov ecx, dword ptr ds : [0x63788C]
-
-			//->GetSomething
 			mov eax, dword ptr ds : [ecx + 0x10]
-
-			//Find Frame
 			mov ecx, dword ptr ds : [eax]
 			push 0x4FFFF
 			push frameName
 			push eax
 			call dword ptr ds : [ecx + 0x58]
-
 			mov returnFrame, eax
 		}
 

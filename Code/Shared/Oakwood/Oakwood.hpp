@@ -3,6 +3,7 @@
 #include "mod_api.hpp"
 
 #include "Player.hpp"
+#include "Vehicle.hpp"
 
 /*
 * Handles initialization and player management.
@@ -20,6 +21,7 @@ public:
     void BroadcastMessage(std::string text, u32 color = 0xFFFFFF);
     void ChatPrint(std::string text);
     void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
+    Vehicle* SpawnVehicle(zpl_vec3 pos, zpl_vec3 rot, const std::string& model);
 
     //
     // Event handling

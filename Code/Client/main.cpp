@@ -28,8 +28,8 @@ librg_ctx network_context = { 0 };
 /*
 * VoIP
 */
-#include <opus.h>
-#include <bass.h>
+#include <opus/include/opus.h>
+#include <bass/bass.h>
 
 /*
 * STD Includes
@@ -48,7 +48,7 @@ librg_ctx network_context = { 0 };
 * DX & DInput
 */
 #include <d3d9.h>
-#include <d3dx9.h>
+#include <d3d9/include/d3dx9.h>
 #include <dinput.h>
 
 /*
@@ -62,9 +62,9 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 /*
 * Shared
 */
-#include "helpers.hpp"
 #include "structs.hpp"
 #include "messages.hpp"
+#include "helpers.hpp"
 #include "utils.hpp"
 #include "librg/librg_ext.h"
 

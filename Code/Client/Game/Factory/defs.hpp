@@ -7,4 +7,9 @@ auto player_spawn(zpl_vec3 position,
                   u32 current_wep,
                   f32 health,
                   bool is_local_player, 
-                  int expectedWeaponId) -> MafiaSDK::C_Player *;
+                  int expectedWeaponId) -> MafiaSDK::C_Player*;
+
+auto vehicle_spawn(zpl_vec3 position,
+                   mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car*;
+
+auto vehicle_remove(mafia_vehicle* vehicle) -> void;

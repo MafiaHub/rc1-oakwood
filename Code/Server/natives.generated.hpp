@@ -12,3 +12,4 @@ vt->player_set_camera = oak_player_set_camera;
 vt->player_unlock_camera = oak_player_unlock_camera;
 vt->player_play_animation = oak_player_play_animation;
 vt->drop_spawn = oak_drop_spawn;
+vt->vehicle_spawn = oak_vehicle_spawn;

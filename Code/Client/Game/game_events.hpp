@@ -76,6 +76,7 @@ auto interpolate_cam(f64 delta_time) {
 	passed_time += delta_time * 0.11f;
 }
 
+f64 delta_time = 0.0f;
 auto mod_bind_events() {
 
 	local_player_init();
@@ -99,26 +100,22 @@ auto mod_bind_events() {
 
 	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 
-		f64 delta_time = zpl_time_now() - last_time;
+		delta_time = zpl_time_now() - last_time;
 
 		if(!librg_is_connected(&network_context))
 			interpolate_cam(delta_time);
 
 		librg_tick(&network_context);
 
-		voip::network_tick();
+		//voip::network_tick();
 
-		for (u32 i = 0; i < network_context.max_entities; i++) {
-			
-			librg_entity *entity = librg_entity_fetch(&network_context, i);
-			if (!entity || entity->id == local_player.entity.id) continue;
-
+		librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx *ctx, librg_entity *entity) {
 			switch (entity->type) {
 				case TYPE_WEAPONDROP: {
 					auto weapon_drop = (mafia_weapon_drop*)entity->user_data;
-					if (weapon_drop && weapon_drop->weapon_drop_actor)
+					if (weapon_drop && weapon_drop->weapon_drop_actor){
 						drop_game_tick(weapon_drop);
-
+					}
 				} break;
 
 				case TYPE_PLAYER: {
@@ -127,9 +124,16 @@ auto mod_bind_events() {
 						player_game_tick(player, delta_time);
 					}
 				} break;
-			}
-		}
 
+				case TYPE_VEHICLE: {
+					auto vehicle = (mafia_vehicle*)entity->user_data;
+					if (vehicle && vehicle->car) {
+						vehicle_game_tick(vehicle, delta_time);
+					}
+				} break;
+			}
+		});
+			
 		last_time = zpl_time_now();
 	});
 

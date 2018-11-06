@@ -89,6 +89,26 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
+    auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto action = librg_data_ri32(msg->data);
+    auto seat_id = librg_data_ri32(msg->data);
+
+    if(sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
+        auto sender = (mafia_player*)sender_ent->user_data;
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+        if(action == 1) {
+            vehicle->seats[seat_id] = sender_ent->id;
+        } else if (action == 2) {
+            vehicle->seats[seat_id] = -1;
+        }
+
+        sender->ped->Use_Actor(vehicle->car, action, seat_id, 0);
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);

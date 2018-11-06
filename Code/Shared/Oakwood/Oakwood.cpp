@@ -87,6 +87,12 @@ void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_i
     mod->vtable.drop_spawn(position, (char *)model.c_str(), item);
 }
 
+Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, zpl_vec3 rot, const std::string& model)
+{
+    auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str());
+	return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+}
+
 void GameMode::SetOnPlayerConnected(std::function<void(Player*)> callback)
 {
     onPlayerConnected = callback;
@@ -112,7 +118,11 @@ void GameMode::SetOnServerTick(std::function<void()> callback)
     onServerTick = callback;
 }
 
-Player * GameMode::GetPlayerByEntity(librg_entity * entity)
+//
+// Player
+//
+
+Player *GameMode::GetPlayerByEntity(librg_entity * entity)
 {
     for (auto player : players) {
         if (player->CompareWith(entity))
@@ -229,7 +239,7 @@ f32 Player::GetHealth()
     return ped->health / 2.0f;
 }
 
-b32 Player::CompareWith(librg_entity * entity)
+b32 Player::CompareWith(librg_entity *entity)
 {
     return this->entity == entity;
 }
@@ -237,4 +247,43 @@ b32 Player::CompareWith(librg_entity * entity)
 void Player::SetPed(mafia_player *ped)
 {
     this->ped = ped;
+}
+
+//
+// Vehicle
+//
+
+Vehicle::Vehicle(librg_entity *entity, mafia_vehicle *vehicle)
+{
+    this->entity = entity;
+    this->vehicle = vehicle;
+}
+
+Vehicle::~Vehicle()
+{
+}
+
+void Vehicle::SetPos(zpl_vec3 pos)
+{
+	
+}
+
+zpl_vec3 Vehicle::GetPos()
+{
+	return entity->position;
+}
+
+void Vehicle::SetDir(zpl_vec3 dir)
+{
+
+}
+
+zpl_vec3 Vehicle::GetDir()
+{
+	auto vehicle = (mafia_vehicle*)entity->user_data;
+	if (vehicle) {
+		return vehicle->rotation;
+	} 
+
+	return  { 0.0f, 0.0f, 0.0f };
 }

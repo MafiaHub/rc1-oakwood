@@ -91,7 +91,7 @@ namespace voip {
     * if not buffered data is discarted, also when buffer is overflowing
     */
     auto network_tick() {
-
+        
         u32 offset = 0;
         u32 available = BASS_ChannelGetData(chan, NULL, BASS_DATA_AVAILABLE);
 		

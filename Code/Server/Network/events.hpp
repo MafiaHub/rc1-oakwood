@@ -2,6 +2,7 @@
 
 #include "event_data.hpp"
 #include "Events/player.hpp"
+#include "Events/vehicle.hpp"
 
 auto on_librg_connection_request(librg_event* evnt) -> void {
 	librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
@@ -30,6 +31,9 @@ auto on_librg_clientstreamer_update(librg_event* evnt) -> void {
 		case TYPE_PLAYER: {
 			player_clientstreamer_update(evnt);
 		} break;
+		case TYPE_VEHICLE: {
+			vehicle_clientstreamer_update(evnt);
+		} break;
 		case TYPE_WEAPONDROP: {
 		} break;
 	}
@@ -40,6 +44,9 @@ auto on_librg_entityupdate(librg_event* evnt) -> void {
 		case TYPE_PLAYER: {
 			player_entityupdate(evnt);
 		} break;
+		case TYPE_VEHICLE: {
+			vehicle_entityupdate(evnt);
+		} break;
 		case TYPE_WEAPONDROP: {
 		} break;
 	}
@@ -49,6 +56,9 @@ auto on_librg_entitycreate(librg_event* evnt) -> void {
 	switch (evnt->entity->type) {
 		case TYPE_PLAYER: {
 			player_entitycreate(evnt);
+		} break;
+		case TYPE_VEHICLE: {
+			vehicle_entitycreate(evnt);
 		} break;
 		case TYPE_WEAPONDROP: {
 			drop_entitycreate(evnt);

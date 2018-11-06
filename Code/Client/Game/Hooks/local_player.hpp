@@ -3,6 +3,9 @@
 
 namespace hooks
 {
+	//----------------------------------------------
+	//C_Human::PoseSetPoseAimed() && C_Human::PoseSetPoseNormal
+	//----------------------------------------------
 	auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, Vector3D pose) -> int {
 		local_player.pose = EXPAND_VEC(pose);
 		_this->PoseSetPoseAimed(pose);
@@ -156,22 +159,69 @@ namespace hooks
 		}
 	}
 
+	//----------------------------------------------
+	//C_human::Use_Actor((C_actor *, int, int, int))
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Human_Use_Actor_t)(void* _this, DWORD actor, int unk1, int unk2, int unk3);
+	C_Human_Use_Actor_t human_use_actor_original = nullptr;
+	bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int unk1, int unk2, int unk3) {
+
+		if (_this == local_player.ped) {
+			local_player_useactor(actor, unk1, unk2, unk3);
+		}
+
+		return human_use_actor_original(_this, actor, unk1, unk2, unk3);
+	}
+	
+	//----------------------------------------------
+	//C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
+	//----------------------------------------------s
+	
+	/*bool __fastcall C_Vehicle_Deform(void* _this, 
+		DWORD edx, 	
+		const Vector3D & pos, 
+		const Vector3D & rot, 
+		float unk1,
+		float unk2,
+		unsigned int unk3,
+		Vector3D* unk4) {
+		
+		//lets debug arguments
+		for (auto current_car : vehicle_deformations) {
+			vehicle_deform_original((void*)current_car, pos, rot, unk1, unk2, unk3, NULL);
+		}
+
+		return vehicle_deform_original(_this, pos, rot, unk1, unk2, unk3, unk4);
+	}*/
+
+	/* 
+	* Simple filtration of forbidden object types 
+	*/
+	using ObjTypes = MafiaSDK::C_Mission_Enum::ObjectTypes;
+	std::vector<ObjTypes> forbidden_objects = {
+		ObjTypes::Car,
+		ObjTypes::Dog,
+		ObjTypes::Enemy,
+		ObjTypes::Pumpar,
+		ObjTypes::Trolley
+	};
+
 	MafiaSDK::C_Actor* Scene_CreateActor_Filter(MafiaSDK::C_Mission_Enum::ObjectTypes type, DWORD frame) {
-		if (type != MafiaSDK::C_Mission_Enum::Car &&
-			type != MafiaSDK::C_Mission_Enum::Dog &&
-			type != MafiaSDK::C_Mission_Enum::Enemy) {
-			return MafiaSDK::GetMission()->CreateActor(type);
+		
+		for(auto forbidden_type : forbidden_objects) {
+			if(type == forbidden_type) {
+				//NOTE(DavoSK): Dont spawn actor but we need to call destructor of frame
+				__asm {
+					mov eax, frame
+					push eax
+					mov ecx, [eax]
+					call dword ptr ds : [ecx]
+				}
+				return nullptr;
+			}
 		}
-
-		//NOTE(DavoSK): Dont spawn actor but we need to call destructor of frame
-		__asm {
-			mov eax, frame
-			push eax
-			mov ecx, [eax]
-			call dword ptr ds : [ecx]
-		}
-
-		return nullptr;
+		
+		return MafiaSDK::GetMission()->CreateActor(type);;
 	}
 
 	DWORD filter_create_actor_back = 0x00544B07;
@@ -214,10 +264,21 @@ namespace hooks
 };
 
 inline auto local_player_init() {
+	
+	//Scene
+	MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
+	
+	auto vd_value1 = hooks::vd_value - 50.0f;
+	auto vd_value2 = hooks::vd_value - 20.0f;
+	MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
+	MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)&vd_value2, 4);
+	MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)hooks::VD_Hook_1_0_ENG);
+	MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
+
+	//Human
 	MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);
 	MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
 	MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);
-	MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
 	MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&hooks::ThrowGrenade);
 
 	hooks::select_by_id_original = reinterpret_cast<hooks::G_Inventory_SelectByID_t>(
@@ -236,10 +297,8 @@ inline auto local_player_init() {
 		DetourFunction((PBYTE)0x00585C60, (PBYTE)&hooks::C_Human_Do_Holster)
 	);
 
-	auto vd_value1 = hooks::vd_value - 50.0f;
-	auto vd_value2 = hooks::vd_value - 20.0f;
-	MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
-	MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)&vd_value2, 4);
-	MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)hooks::VD_Hook_1_0_ENG);
-	MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
+	hooks::human_use_actor_original = reinterpret_cast<hooks::C_Human_Use_Actor_t>(
+		DetourFunction((PBYTE)0x00582180, (PBYTE)&hooks::C_Human_Use_Actor)
+	);
+	//Vehicle
 }

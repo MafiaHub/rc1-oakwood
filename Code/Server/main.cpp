@@ -18,9 +18,9 @@
 /* 
 * Shared
 */
-#include "helpers.hpp"
 #include "structs.hpp"
 #include "messages.hpp"
+#include "helpers.hpp"
 
 struct _GlobalConfig {
 	i64 port;

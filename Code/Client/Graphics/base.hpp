@@ -158,7 +158,7 @@ namespace graphics {
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 
-		effects::render();
+		//effects::render();
 		chat::render();
 
 		ImGui::EndFrame();
