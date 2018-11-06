@@ -23,7 +23,7 @@ INCLUDES += -I../Code -I../Code/Shared -I../Vendors
 FORCE_INCLUDE +=
 ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
 ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-LIBS +=
+LIBS += -lpthread -ldl
 LDDEPS +=
 ALL_LDFLAGS += $(LDFLAGS) -L../Vendors/bass -L../Vendors/d3d9 -L../Vendors/detours -L../Vendors/lua/lib -L../Vendors/opus/lib -shared -Wl,-soname=SampleMod.so
 LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
