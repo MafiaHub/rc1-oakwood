@@ -21,7 +21,7 @@ workspace "Oakwood"
 
     -- Enable position-independent-code generation
     pic "On"
-    startproject "server"
+    startproject "Server"
 
     location "../Build/"
     targetdir "../Bin/%{cfg.buildcfg}/"

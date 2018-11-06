@@ -19,3 +19,6 @@ project "Client"
 		"dxguid",
 		"dinput8",
 	}
+	postbuildcommands {
+		"{COPY} ../Bin/Debug/Client.dll ../../"
+	}
