@@ -18,6 +18,14 @@ namespace chat {
 	KeyToggle key_chat_open(VK_T);
 	KeyToggle key_chat_send(VK_RETURN);
 
+	void add_debug(const std::string & msg)
+	{
+		chat_messages.push_back({
+			ImColor(255, 255, 255, 255),
+			"Debug: "  + msg
+		});
+	}
+
 	auto register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
 		if(ptr != nullptr) {
 			chat_commands.push_back({name, ptr});

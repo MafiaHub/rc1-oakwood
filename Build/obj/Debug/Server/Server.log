@@ -1,0 +1,4 @@
+﻿  main.cpp
+j:\mafia\oakwood\vendors\librg\librg.h(123): warning C4005: '_WINSOCK_DEPRECATED_NO_WARNINGS': macro redefinition
+  j:\mafia\oakwood\vendors\librg\librg.h(123): note: command-line arguments:  see previous definition of '_WINSOCK_DEPRECATED_NO_WARNINGS'
+  Server.vcxproj -> J:\Mafia\oakwood\Build\..\Bin\Debug\Server.exe

@@ -22,6 +22,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 
 inline auto player_entitycreate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
+	librg_data_wi32(evnt->data, player->vehicle_id);
 	librg_data_wi32(evnt->data, player->streamer_entity_id);
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
 	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3));
@@ -32,6 +33,32 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	librg_data_wptr(evnt->data, &player->inventory, sizeof(player_inventory));
 	librg_data_wu32(evnt->data, player->current_weapon_id);
 	librg_data_wf32(evnt->data, player->health);
+}
+
+inline auto player_connection_disconnect(librg_event* evnt) -> void {
+	
+	if (evnt->entity && evnt->entity->user_data) {
+		auto player = (mafia_player*)evnt->entity->user_data;
+		if (player->vehicle_id != -1) {
+			auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+			if (vehicle_ent && vehicle_ent->user_data) {
+				auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+				for (int i = 0; i < 4; i++) {
+					if (vehicle->seats[i] == evnt->entity->id) {
+						vehicle->seats[i] = -1;
+
+						if (i == 0) {
+							auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position, evnt->entity->id);
+							if (streamer != nullptr)
+								librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
+							else 
+								librg_entity_control_remove(&network_context, vehicle_ent->id);
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 inline auto player_send_spawn(librg_entity* player_ent) -> void {

@@ -22,7 +22,11 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
-    if (gm.on_player_disconnected)
+
+	if(evnt->entity && evnt->entity->type == TYPE_PLAYER)
+		player_connection_disconnect(evnt);
+
+	if (gm.on_player_disconnected)
         gm.on_player_disconnected(evnt, evnt->entity);
 }
 

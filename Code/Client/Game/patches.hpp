@@ -35,4 +35,5 @@ auto mod_init_patches() {
 	MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
 	MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
 	MafiaSDK::C_Game_Patches::PatchRemovePlayer();
+	
 }

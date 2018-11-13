@@ -14,22 +14,27 @@ struct voip_channel_t {
 };
 #endif
 
+enum {
+	CLIENTSIDE_PLAYER_WAITING_FOR_VEH = (1 << 10)
+};
+
 struct mafia_player {
 	mafia_player() : 
 	streamer_entity_id(-1),
+	vehicle_id(-1),
 	current_weapon_id(0) {
 		for (size_t i = 0; i < 8; i++)
 			inventory.items[i] = { -1, 0, 0, 0 };
-
 #ifdef MAFIA_SDK_IMPLEMENTATION
-		nickname_texture = nullptr;
-		voice_channel = nullptr;
-		last_talked = 0;
+		nickname_texture		= nullptr;
+		voice_channel			= nullptr;
+		last_talked				= 0;
+		clientside_flags		= 0;
 #endif
 	}
 	i32 streamer_entity_id;
 	zpl_vec3 rotation;
-	zpl_vec3 pose;
+	zpl_vec3 pose = { 1.0f, 1.0f, 1.0f };
 	f32 health;
 	u8 animation_state;
 	u8 is_aiming;
@@ -39,12 +44,19 @@ struct mafia_player {
 	u32 aiming_time;
 	player_inventory inventory;
 	u32 current_weapon_id;
+	i32 vehicle_id;
 #ifdef MAFIA_SDK_IMPLEMENTATION
+	//Interpolation
 	f32 inter_delta;
+	zpl_vec3 target_pos;
+	zpl_vec3 target_rot;
+	zpl_vec3 target_pose;
+	zpl_vec3 last_pos;
+	zpl_vec3 last_rot;
+	zpl_vec3 last_pose;
+
+	u64 clientside_flags;
 	f32 last_talked;
-    interpolate3_hermite_t inter_pos;
-	interpolate3_hermite_t inter_rot;
-	interpolate3_hermite_t inter_pose;
 	MafiaSDK::C_Human* ped;
 	IDirect3DTexture9* nickname_texture;
 	voip_channel_t* voice_channel;

@@ -37,7 +37,8 @@ namespace MafiaSDK
 			SetGear = 0x004CB070,
 			GearSnd = 0x004ED810,
 			GetSeatProperty = 0x0041DC30,
-			GetOwner = 0x0041DEC0
+			GetOwner = 0x0041DEC0,
+			Update = 0x0041FAC0,
 		};
 	};
 
@@ -49,7 +50,29 @@ namespace MafiaSDK
 			return reinterpret_cast<C_Car_Interface*>(this);
 		}
 
-		
+		void Update(float dt) 
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::Update;
+
+			__asm
+			{
+				push dt
+				mov ecx, this
+				call functionAddress
+			}
+		}
+
+		void AI(float dt)
+		{
+			__asm
+			{
+				mov ecx, this
+				mov eax, dword ptr ds : [ecx]
+				push dt				
+				call dword ptr ds :[eax + 0x34]
+			}
+		}
+
 		void GetSeatProperty(int seat_idx, bool & unk1, bool & unk2, bool & unk3, bool & unk4)
 		{
 			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::GetSeatProperty;

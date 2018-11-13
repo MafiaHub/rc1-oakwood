@@ -9,6 +9,8 @@ project "Server"
         "**.cpp",
         "**.rc"
     }
+	configuration "Debug"
+		debugdir "Bin/Debug"
 
     configuration "linux or macosx"
         links {

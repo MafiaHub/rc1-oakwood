@@ -89,7 +89,7 @@ void on_librg_clientstreamer_add(librg_event* evnt) {
 }
 
 void on_librg_clientstreamer_remove(librg_event* evnt) {
-	evnt->entity->flags &= ~ENTITY_INTERPOLATED;
+	evnt->entity->flags |= ENTITY_INTERPOLATED;
 }
 
 auto mod_add_network_events() {

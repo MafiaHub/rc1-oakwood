@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Commands">
+      <UniqueIdentifier>{17269CB7-03F3-F6C2-2C0C-E56A18382C51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{8F6A0D6C-FB49-8C07-0462-17DE70C0F268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Events">
+      <UniqueIdentifier>{93BFCDC1-7F8D-C1C7-6821-32EE548E9D2C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Events\Player">
+      <UniqueIdentifier>{4F8D35C5-BBF9-F0BF-84ED-881DF0181328}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Events\Vehicle">
+      <UniqueIdentifier>{E263E629-CE5D-0F7C-B7CA-A58CA36375E8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Messages">
+      <UniqueIdentifier>{16B1A4D2-02AA-C324-2BDC-A8A91734A330}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Server\Commands\vehicle.hpp">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Commands\weapon_drop.hpp">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\Player\base.hpp">
+      <Filter>Network\Events\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\Player\inventory.hpp">
+      <Filter>Network\Events\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\Player\weapon_drop.hpp">
+      <Filter>Network\Events\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\Vehicle\base.hpp">
+      <Filter>Network\Events\Vehicle</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\player.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Events\vehicle.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Messages\misc.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Messages\player.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Messages\voip.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\Messages\weapon.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\base.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\event_data.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\events.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\Network\messages.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Server\commands.hpp" />
+    <ClInclude Include="..\Code\Server\config.hpp" />
+    <ClInclude Include="..\Code\Server\mode.hpp" />
+    <ClInclude Include="..\Code\Server\natives.generated.hpp" />
+    <ClInclude Include="..\Code\Server\natives.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Server\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Code\Server\premake5.lua" />
+  </ItemGroup>
+</Project>

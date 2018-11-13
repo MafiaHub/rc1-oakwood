@@ -101,8 +101,10 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 
         if(action == 1) {
             vehicle->seats[seat_id] = sender_ent->id;
+			sender->vehicle_id = vehicle_ent->id;
         } else if (action == 2) {
             vehicle->seats[seat_id] = -1;
+			sender->vehicle_id = -1;
         }
 
         sender->ped->Use_Actor(vehicle->car, action, seat_id, 0);

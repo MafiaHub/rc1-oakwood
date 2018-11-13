@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Game">
+      <UniqueIdentifier>{7FA9857C-6BE0-860D-14CD-6C1000E3020F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Commands">
+      <UniqueIdentifier>{A063F3FB-0C24-6F32-D55E-B8AF41DEB30E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Factory">
+      <UniqueIdentifier>{C6CCE277-B22F-721C-5BB5-AAD247F73D9F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Hooks">
+      <UniqueIdentifier>{12AB7CE1-FE62-BE2E-676A-978A5341591F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\VoIP">
+      <UniqueIdentifier>{0CFB397B-7865-EEF1-C1A3-9F972D4DCC46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics">
+      <UniqueIdentifier>{1653CE33-0220-293F-2B39-17E717655ECD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\Elements">
+      <UniqueIdentifier>{22A9339F-8EBF-3135-D736-BD56438C02BD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\d3d9">
+      <UniqueIdentifier>{79EC9597-E5AC-11CE-AEE7-5A4B1A6756AA}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Graphics\imgui">
+      <UniqueIdentifier>{00D9CD8A-ECA6-C190-D53A-32B7C1A79DF5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{8F6A0D6C-FB49-8C07-0462-17DE70C0F268}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Events">
+      <UniqueIdentifier>{93BFCDC1-7F8D-C1C7-6821-32EE548E9D2C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Network\Messages">
+      <UniqueIdentifier>{16B1A4D2-02AA-C324-2BDC-A8A91734A330}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{B54AA90F-215F-D1C0-EAE0-742056B4CDF1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Code\Client\Game\Commands\defs.hpp">
+      <Filter>Game\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Commands\player.hpp">
+      <Filter>Game\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Factory\defs.hpp">
+      <Filter>Game\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Factory\player.hpp">
+      <Filter>Game\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Factory\vehicle.hpp">
+      <Filter>Game\Factory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Hooks\local_player.hpp">
+      <Filter>Game\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\Hooks\weapon_drop.hpp">
+      <Filter>Game\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\VoIP\main.hpp">
+      <Filter>Game\VoIP</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\base.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\commands.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\factory.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\game_events.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Game\patches.hpp">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\Elements\chat.hpp">
+      <Filter>Graphics\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\Elements\effects.hpp">
+      <Filter>Graphics\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\Elements\menu.hpp">
+      <Filter>Graphics\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\Elements\nameplates.hpp">
+      <Filter>Graphics\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\base.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\d3d9\CDirect3D9Proxy.h">
+      <Filter>Graphics\d3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\d3d9\CDirect3DDevice9Proxy.h">
+      <Filter>Graphics\d3d9</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\elements_post.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\elements_pre.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imconfig.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imgui.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imgui_impl_dx9.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imgui_impl_win32.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imgui_internal.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imstb_rectpack.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imstb_textedit.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\imgui\imstb_truetype.h">
+      <Filter>Graphics\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Graphics\utils.hpp">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Events\local_player.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Events\player.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Events\vehicle.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Events\weapon_drop.hpp">
+      <Filter>Network\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Messages\misc.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Messages\player.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Messages\vehicle.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\Messages\voip.hpp">
+      <Filter>Network\Messages</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\base.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\events.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\interpolation.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\Network\messages.hpp">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\config.hpp" />
+    <ClInclude Include="..\Code\Client\input\CDirectInput8Proxy.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\input\CDirectInputDevice8Proxy.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\input\input.hpp">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Code\Client\stub.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Code\Client\Graphics\imgui\imgui.cpp">
+      <Filter>Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Client\Graphics\imgui\imgui_draw.cpp">
+      <Filter>Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Client\Graphics\imgui\imgui_impl_dx9.cpp">
+      <Filter>Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Client\Graphics\imgui\imgui_impl_win32.cpp">
+      <Filter>Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Client\Graphics\imgui\imgui_widgets.cpp">
+      <Filter>Graphics\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Code\Client\main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Code\Client\premake5.lua" />
+  </ItemGroup>
+</Project>

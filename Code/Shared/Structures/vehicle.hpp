@@ -1,13 +1,16 @@
 struct mafia_vehicle {
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
-	f32 inter_delta;
-	interpolate3_hermite_t inter_pos;
-	interpolate3_hermite_t inter_rot;
-	interpolate3_hermite_t inter_speed;
+	f64 inter_delta;
+	zpl_vec3 target_pos;
+	zpl_vec3 target_rot;
+	zpl_vec3 target_rot_second;
+	zpl_vec3 last_pos;
+	zpl_vec3 last_rot;
+	zpl_vec3 last_rot_second;
 #endif
 	char model[32];
-    i32 seats[4] = {0};
+    i32 seats[4] = {-1, -1, -1, -1};
     float engine_health;
     float health;
     u8 horn;
@@ -21,6 +24,8 @@ struct mafia_vehicle {
     float wheel_angle;
     u8 engine_on;
     float fuel;
+	float accelerating;
     zpl_vec3 rotation;
+	zpl_vec3 rotation_second;
 	zpl_vec3 speed;
 };

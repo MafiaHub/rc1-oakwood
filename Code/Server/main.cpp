@@ -72,12 +72,33 @@ auto main() -> int {
 
 	load_dll(GlobalConfig.gamemode.c_str());
 
+	f64 last_streamers_selection = 0.0f;
+
 	bool running = true;
 	while (running) {
 		librg_tick(&network_context);
 
-        if (gm.on_server_tick)
-            gm.on_server_tick();
+		if (gm.on_server_tick)
+			gm.on_server_tick();
+
+		// if noone is in vehicle 
+		// set streamer to closest player
+		if (zpl_time_now() - last_streamers_selection > 2.0f) {
+			librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | TYPE_VEHICLE), [](librg_ctx *ctx, librg_entity *entity) {
+				if (entity->user_data && entity->type & TYPE_VEHICLE) {
+					auto vehicle = (mafia_vehicle*)entity->user_data;
+					
+					if (vehicle->seats[0] == -1) {
+						auto streamer = mod_get_nearest_player(&network_context, entity->position);
+						if (streamer != nullptr && entity->control_peer != streamer->client_peer) {
+							librg_entity_control_set(&network_context, entity->id, streamer->client_peer);
+						}
+					}
+				}
+			});
+
+			last_streamers_selection = zpl_time_now();
+		}
 
 		zpl_sleep_ms(1);
 	}

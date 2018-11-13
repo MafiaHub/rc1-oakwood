@@ -13,12 +13,20 @@ auto vehicle_spawn(zpl_vec3 position,
     MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
     new_car->Init(vehicle_frame);
     new_car->SetActive(1);
+
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
 
-    auto veh_inter = &new_car->GetInterface()->vehicle_interface;
-    veh_inter->health           = spawn_struct->health;
-    veh_inter->position         = EXPAND_VEC(position);
-	veh_inter->rotation         = EXPAND_VEC(spawn_struct->rotation);
+
+	auto veh_inter = &new_car->GetInterface()->vehicle_interface;
+    
+	if (veh_inter->engine_on) {
+		new_car->SetEngineOn(spawn_struct->engine_on, spawn_struct->engine_on);
+	}
+
+	veh_inter->health           = spawn_struct->health;
+	veh_inter->position			= EXPAND_VEC(position);
+	veh_inter->rotation			= EXPAND_VEC(spawn_struct->rotation);
+	veh_inter->rotation_second	= EXPAND_VEC(spawn_struct->rotation_second);
     veh_inter->speed            = EXPAND_VEC(spawn_struct->speed);
 	veh_inter->engine_health    = spawn_struct->engine_health;
 	veh_inter->health           = spawn_struct->health;
@@ -33,6 +41,8 @@ auto vehicle_spawn(zpl_vec3 position,
 	veh_inter->wheel_angle      = spawn_struct->wheel_angle;
 	veh_inter->engine_on        = spawn_struct->engine_on;
 	veh_inter->fuel             = spawn_struct->fuel;
+	veh_inter->accelerating		= spawn_struct->accelerating;
+
     return new_car;
 }
 

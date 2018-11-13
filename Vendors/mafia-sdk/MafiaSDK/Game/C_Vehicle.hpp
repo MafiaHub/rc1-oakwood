@@ -20,34 +20,38 @@
 namespace MafiaSDK
 {
 	struct C_Vehicle_Interface {
-		PADDING(C_Vehicle_Interface, _pad0 , 0x1B4);
+		PADDING(C_Vehicle_Interface, _pad0, 0x1B4);
 		float engine_health;
-		PADDING(C_Vehicle_Interface, _pad1 , 0x34);
+		PADDING(C_Vehicle_Interface, _pad1, 0x34);
 		float health;
-		PADDING(C_Vehicle_Interface, _pad2 , 0x130);
+		PADDING(C_Vehicle_Interface, _pad2, 0x130);
 		Vector3D position;
-		PADDING(C_Vehicle_Interface, _pad3 , 0x104);
+		PADDING(C_Vehicle_Interface, _pad3, 0x104);
 		byte horn;
 		byte siren;
 		byte sound_enabled;
 		float hand_break;
-		PADDING(C_Vehicle_Interface, _pad7 , 0x6C);
+		PADDING(C_Vehicle_Interface, _pad7, 0x6C);
 		float speed_limit;
-		PADDING(C_Vehicle_Interface, _pad8 , 0xB8);
+		PADDING(C_Vehicle_Interface, _pad8, 0x98);
+		float accelerating;
+		PADDING(C_Vehicle_Interface, _pad9, 0x1C);
 		DWORD gear;
-		PADDING(C_Vehicle_Interface, _pad9 , 0x54);
+		PADDING(C_Vehicle_Interface, _pad10, 0x54);
 		float break_val;
-		PADDING(C_Vehicle_Interface, _pad10 , 0x24);
+		PADDING(C_Vehicle_Interface, _pad11, 0x24);
 		float clutch;
-		PADDING(C_Vehicle_Interface, _pad11 , 0x40);
+		PADDING(C_Vehicle_Interface, _pad12, 0x40);
 		float wheel_angle;
-		PADDING(C_Vehicle_Interface, _pad12 , 0x604);
+		PADDING(C_Vehicle_Interface, _pad13, 0x604);
 		byte engine_on;
-		PADDING(C_Vehicle_Interface, _pad13 , 0x3);
+		PADDING(C_Vehicle_Interface, _pad14, 0x3);
 		float fuel;
-		PADDING(C_Vehicle_Interface, _pad14 , 0x8);
+		PADDING(C_Vehicle_Interface, _pad15, 0x8);
 		Vector3D rotation;
-		PADDING(C_Vehicle_Interface, _pad15 , 0x1348);
+		PADDING(C_Vehicle_Interface, _pad16, 0xC);
+		Vector3D rotation_second;
+		PADDING(C_Vehicle_Interface, _pad17, 0x1330);
 		Vector3D speed;
 	};
 

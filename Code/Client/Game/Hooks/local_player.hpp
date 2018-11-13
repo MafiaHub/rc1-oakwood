@@ -7,13 +7,19 @@ namespace hooks
 	//C_Human::PoseSetPoseAimed() && C_Human::PoseSetPoseNormal
 	//----------------------------------------------
 	auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, Vector3D pose) -> int {
-		local_player.pose = EXPAND_VEC(pose);
+	
+		if(_this == local_player.ped) 
+			local_player.pose = EXPAND_VEC(pose);
+
 		_this->PoseSetPoseAimed(pose);
 		return 0;
 	}
 
 	auto __fastcall PoseSetPoseNormal(MafiaSDK::C_Human* _this, Vector3D pose) -> int {
-		local_player.pose = EXPAND_VEC(pose);
+
+		if(_this == local_player.ped)
+			local_player.pose = EXPAND_VEC(pose);
+
 		_this->PoseSetPoseNormal(pose);
 		return 0;
 	}
@@ -300,5 +306,6 @@ inline auto local_player_init() {
 	hooks::human_use_actor_original = reinterpret_cast<hooks::C_Human_Use_Actor_t>(
 		DetourFunction((PBYTE)0x00582180, (PBYTE)&hooks::C_Human_Use_Actor)
 	);
+
 	//Vehicle
 }

@@ -2,9 +2,13 @@
 
 inline auto player_entitycreate(librg_event* evnt) -> void {
 
-	auto player = new mafia_player();
-	player->voice_channel = voip::create_remote();
-	player->streamer_entity_id = librg_data_ri32(evnt->data);
+	auto player					= new mafia_player();
+	player->voice_channel		= voip::create_remote();
+	player->vehicle_id			= librg_data_ri32(evnt->data);
+	player->streamer_entity_id	= librg_data_ri32(evnt->data);
+	if (player->vehicle_id != -1) {
+		player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+	}
 
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
@@ -51,37 +55,61 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 
 	auto player_int = player->ped->GetInterface();
 	if(player_int->playersCar == nullptr) {
-		player_int->entity.position = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pos, alpha));
-		player_int->entity.rotation = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_rot, alpha));
-	}
+		
+		zpl_vec3 inter_pos, inter_rot;
+		zpl_vec3_lerp(&inter_pos, player->last_pos, player->target_pos, alpha);
+		zpl_vec3_lerp(&inter_rot, player->last_rot, player->target_rot, alpha);
+		zpl_vec3_lerp(&player->pose, player->last_pose, player->target_pose, alpha);
 
-	Vector3D mafia_pose = EXPAND_VEC(cubic_hermite_v3_interpolate(&player->inter_pose, alpha));
-	if (player->is_aiming)
-		player->ped->PoseSetPoseAimed(mafia_pose);
-	else 
-		player->ped->PoseSetPoseNormal(mafia_pose);
+		player_int->entity.position = EXPAND_VEC(inter_pos);
+		player_int->entity.rotation = EXPAND_VEC(inter_rot);
+		Vector3D mafia_pose			= EXPAND_VEC(player->pose);
+
+		if (player->is_aiming)
+			player->ped->PoseSetPoseAimed(mafia_pose);
+		else 
+			player->ped->PoseSetPoseNormal(mafia_pose);
+	}
 }
 
 inline auto player_entityupdate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	auto player_int = player->ped->GetInterface();
-
+	zpl_vec3 target_pose;
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
-	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
-	player->animation_state = librg_data_ru8(evnt->data);
-	player->is_crouching = librg_data_ru8(evnt->data);
-	player->is_aiming = librg_data_ru8(evnt->data);
-	player->aiming_time = librg_data_ru64(evnt->data);
+	librg_data_rptr(evnt->data, &target_pose, sizeof(zpl_vec3));
+	player->animation_state		= librg_data_ru8(evnt->data);
+	player->is_crouching		= librg_data_ru8(evnt->data);
+	player->is_aiming			= librg_data_ru8(evnt->data);
+	player->aiming_time			= librg_data_ru64(evnt->data);
 	
-	/* update interpolation tables */
-	cubic_hermite_v3_value(&player->inter_pos, evnt->entity->position);
-	cubic_hermite_v3_value(&player->inter_rot, player->rotation);
-	cubic_hermite_v3_value(&player->inter_pose, player->pose);
+	player->target_pos			= EXPAND_VEC(evnt->entity->position);
+	player->target_rot			= EXPAND_VEC(player->rotation);
+	player->target_pose			= target_pose;
 
-	player_int->animState = player->animation_state;
-	player_int->isDucking = player->is_crouching;
-	player_int->isAiming = player->is_aiming;
+	player->last_pos			= EXPAND_VEC(player_int->entity.position);
+	player->last_rot			= EXPAND_VEC(player_int->entity.rotation);
+	player->last_pose			= EXPAND_VEC(player->pose);
+
+	player_int->animState		= player->animation_state;
+	player_int->isDucking		= player->is_crouching;
+	player_int->isAiming		= player->is_aiming;
 	*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
+
+	if (player->vehicle_id != -1 && player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH) {
+		auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+		if (vehicle_ent && vehicle_ent->user_data) {
+			auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+			player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+			
+			for (int i = 0; i < 4; i++) {
+				if (vehicle->seats[i] == evnt->entity->id) {
+					player->ped->Intern_UseCar(vehicle->car, i);
+					break;
+				}
+			}
+		}
+	}
 
 	player->inter_delta = 0.0f;
 }

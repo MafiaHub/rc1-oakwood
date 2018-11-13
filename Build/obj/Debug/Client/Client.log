@@ -1,0 +1,9 @@
+﻿  main.cpp
+j:\mafia\oakwood\vendors\librg\librg.h(123): warning C4005: '_WINSOCK_DEPRECATED_NO_WARNINGS': macro redefinition
+  j:\mafia\oakwood\vendors\librg\librg.h(123): note: command-line arguments:  see previous definition of '_WINSOCK_DEPRECATED_NO_WARNINGS'
+j:\mafia\oakwood\vendors\mafia-sdk\mafiasdk\game\c_human.hpp(301): warning C4409: illegal instruction size
+j:\mafia\oakwood\vendors\http\http.h(17): warning C4005: '_CRT_SECURE_NO_WARNINGS': macro redefinition
+  j:\mafia\oakwood\vendors\http\http.h(17): note: command-line arguments:  see previous definition of '_CRT_SECURE_NO_WARNINGS'
+  c:\program files (x86)\windows kits\10\include\10.0.17134.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+j:\mafia\oakwood\code\client\network\messages\misc.hpp(6): warning C4305: 'argument': truncation from 'double' to 'float'
+  Client.vcxproj -> J:\Mafia\oakwood\Build\..\Bin\Debug\Client.dll
