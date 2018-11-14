@@ -136,8 +136,4 @@ auto mod_bind_events() {
 			
 		last_time = zpl_time_now();
 	});
-
-	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([&]() {
-		nameplates::render();
-	});	
 }

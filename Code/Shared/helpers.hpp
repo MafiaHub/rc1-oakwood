@@ -1,5 +1,6 @@
 #pragma once
 #define EXPAND_VEC(VEC) {VEC.x, VEC.y, VEC.z}
+#define EXPLODE_VEC(VEC) VEC.x, VEC.y, VEC.z
 
 inline auto mod_log(const char* msg) -> void {
 	printf("[Oakwood MP] %s\n", msg);
