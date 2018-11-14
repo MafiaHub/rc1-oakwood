@@ -7,6 +7,10 @@ IDirect3DDevice9* global_device	= nullptr;
 
 #include "utils.hpp"
 
+namespace nameplates {
+    extern void render();
+}
+
 namespace graphics {
 	
 	typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);
@@ -159,6 +163,7 @@ namespace graphics {
 		ImGui::NewFrame();
 
 		//effects::render();
+        nameplates::render();
 		chat::render();
 
 		ImGui::EndFrame();

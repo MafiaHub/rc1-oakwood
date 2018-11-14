@@ -61,7 +61,7 @@ namespace menu {
 	};
 
 	inline auto fetch_master_server() -> std::string {
-
+        return "";
 		http_t* request = http_get("http://madaraszd.net:3001/", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
