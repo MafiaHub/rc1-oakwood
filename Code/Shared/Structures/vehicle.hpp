@@ -5,9 +5,14 @@ struct mafia_vehicle {
 	zpl_vec3 target_pos;
 	zpl_vec3 target_rot;
 	zpl_vec3 target_rot_second;
+
 	zpl_vec3 last_pos;
 	zpl_vec3 last_rot;
 	zpl_vec3 last_rot_second;
+	
+	zpl_vec3 interpolated_pos;
+	zpl_vec3 interpolated_rot;
+	zpl_vec3 interpolated_rot_second;
 #endif
 	char model[32];
     i32 seats[4] = {-1, -1, -1, -1};

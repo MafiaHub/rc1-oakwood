@@ -178,6 +178,20 @@ namespace hooks
 
 		return human_use_actor_original(_this, actor, unk1, unk2, unk3);
 	}
+
+	//----------------------------------------------
+	//C_human::Do_ThrowCocotFromCar(C_car *, int)
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Human_Do_ThrowCocotFromCar_t)(void* _this, DWORD car, int seat);
+	C_Human_Do_ThrowCocotFromCar_t human_do_throw_cocot_from_car_original = nullptr;
+	bool __fastcall C_Human_Do_ThrowCocotFromCar(void* _this, DWORD edx, DWORD car, int seat) {
+
+		if (_this == local_player.ped) {
+			local_player_hijack(car, seat);
+		}
+
+		return human_do_throw_cocot_from_car_original(_this, car, seat);
+	}
 	
 	//----------------------------------------------
 	//C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
@@ -269,6 +283,156 @@ namespace hooks
 	}
 };
 
+BOOL streamed_udate = FALSE;
+mafia_vehicle* streamed_vehicle = nullptr;
+
+void check_for_streamed(DWORD car) {
+	auto veh = get_vehicle_from_base((void*)car);
+	streamed_udate = veh && veh->flags & ENTITY_INTERPOLATED;
+
+	if (streamed_udate && veh->user_data) {
+		streamed_vehicle = (mafia_vehicle*)veh->user_data;
+	}
+}
+
+void update_interpolated(S_vector* esi, int type) {
+
+	if (streamed_vehicle) {
+		
+		switch (type) {
+			case 0: {
+				esi->x = streamed_vehicle->interpolated_pos.x;
+				esi->y = streamed_vehicle->interpolated_pos.y;
+				esi->z = streamed_vehicle->interpolated_pos.z;
+			} break;
+
+			case 1: {
+				esi->x = streamed_vehicle->interpolated_rot.x;
+				esi->y = streamed_vehicle->interpolated_rot.y;
+				esi->z = streamed_vehicle->interpolated_rot.z;
+			} break;
+
+			case 2: {
+				esi->x = streamed_vehicle->interpolated_rot_second.x;
+				esi->y = streamed_vehicle->interpolated_rot_second.y;
+				esi->z = streamed_vehicle->interpolated_rot_second.z;
+			} break;
+		}
+	}
+}
+
+DWORD jump_back_update_rot = 0x004E5257;
+__declspec(naked) void ChangeUpdateCarRot() {
+	__asm {
+		pushad
+			push ebp
+			call check_for_streamed
+			add esp, 0x4
+		popad
+		
+		cmp streamed_udate, 1
+		je interpolated_update
+
+		FLD ST
+		FMUL DWORD PTR DS : [EBX]
+		FSTP DWORD PTR DS : [EBX]
+		FLD ST
+		FMUL DWORD PTR DS : [EBX + 0x4]
+		FSTP DWORD PTR DS : [EBX + 0x4]
+		FMUL DWORD PTR DS : [EBX + 0x8]
+		FSTP DWORD PTR DS : [EBX + 0x8]
+
+		jmp jump_back_update_rot
+
+	interpolated_update :
+		push 1
+		push ebx
+		call update_interpolated
+		add esp, 0x8
+
+		jmp jump_back_update_rot
+	}
+}
+
+DWORD jump_back_update_rot_second = 0x004E5158;
+__declspec(naked) void ChangeUpdateCarRotSecond() {
+	__asm {
+		pushad
+			push ebp
+			call check_for_streamed
+			add esp, 0x4
+		popad
+
+		cmp streamed_udate, 1
+		je interpolated_update
+
+		FLD ST
+		FMUL DWORD PTR DS : [EDI]
+		FSTP DWORD PTR DS : [EDI]
+		FLD ST
+		FMUL DWORD PTR DS : [EDI + 0x4]
+		FSTP DWORD PTR DS : [EDI + 0x4]
+		FMUL DWORD PTR DS : [EDI + 0x8]
+		FSTP DWORD PTR DS : [EDI + 0x8]
+		
+		jmp jump_back_update_rot_second
+
+	interpolated_update:
+		push 2
+		push edi
+		call update_interpolated
+		add esp, 0x8
+
+		jmp jump_back_update_rot_second
+	}
+}
+
+DWORD jump_back_update_pos = 0x004E5290;
+__declspec(naked) void ChangeUpdateCarPos() {
+	__asm {
+		pushad
+			push ebp
+			call check_for_streamed
+			add esp, 0x4
+		popad
+
+		cmp streamed_udate, 1
+		je interpolated_update
+
+		fld dword ptr ss : [esp + 0xC8] 
+		fadd dword ptr ds : [esi]
+		fstp dword ptr ds : [esi]
+		
+		fld dword ptr ss : [esp + 0xCC]
+		fadd dword ptr ds : [esi + 0x4]
+		fstp dword ptr ds : [esi + 0x4]
+		
+		fld dword ptr ss : [esp + 0xD0]
+		fadd dword ptr ds : [esi + 0x8]
+		fstp dword ptr ds : [esi + 0x8]
+
+		jmp jump_back_update_pos
+
+	interpolated_update:
+	
+		push 0
+		push esi
+		call update_interpolated
+		add esp, 0x8
+
+		/*fld dword ptr ds : [esi]
+		fstp dword ptr ds : [esi]
+
+		fld dword ptr ds : [esi + 0x4]
+		fstp dword ptr ds : [esi + 0x4]
+
+		fld dword ptr ds : [esi + 0x8]
+		fstp dword ptr ds : [esi + 0x8]*/
+
+		jmp jump_back_update_pos
+	}
+}
+
 inline auto local_player_init() {
 	
 	//Scene
@@ -307,5 +471,12 @@ inline auto local_player_init() {
 		DetourFunction((PBYTE)0x00582180, (PBYTE)&hooks::C_Human_Use_Actor)
 	);
 
+	hooks::human_do_throw_cocot_from_car_original = reinterpret_cast<hooks::C_Human_Do_ThrowCocotFromCar_t>(
+		DetourFunction((PBYTE)0x00587D70, (PBYTE)&hooks::C_Human_Do_ThrowCocotFromCar)
+	);
+
 	//Vehicle
+	MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
+	//MemoryPatcher::InstallJmpHook(0x004E5243, (DWORD)&ChangeUpdateCarRot);
+	//MemoryPatcher::InstallJmpHook(0x004E5144, (DWORD)&ChangeUpdateCarRotSecond);
 }

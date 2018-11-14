@@ -68,8 +68,8 @@ extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam
 #include "utils.hpp"
 #include "librg/librg_ext.h"
 
-f32 last_delta  = 0.0f;
-f32 last_update = 0.0f;
+f64 last_delta  = 0.0f;
+f64 last_update = 0.0f;
 bool hit_hook_skip = true;
 
 struct _GlobalConfig {
@@ -97,7 +97,6 @@ auto mod_init() {
 	init_config();
 	mod_init_game();
 	mod_init_networking();
-	alloc_console();
 }
 
 #include "stub.hpp"

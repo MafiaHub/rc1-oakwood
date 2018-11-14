@@ -160,5 +160,15 @@ inline auto local_player_useactor(DWORD actor, int action, int seat_id, int unk3
 	});
 }
 
+inline auto local_player_hijack(DWORD car, int seat) {
+
+	auto vehicle_ent = get_vehicle_from_base((void*)car);
+	if (!vehicle_ent) return;
+
+	librg_send(&network_context, NETWORK_PLAYER_HIJACK, data, {
+		librg_data_wu32(&data, vehicle_ent->id);
+		librg_data_wi32(&data, seat);
+	});
+}
 
 #include "Game/Hooks/local_player.hpp"

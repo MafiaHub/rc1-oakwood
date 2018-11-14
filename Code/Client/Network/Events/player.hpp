@@ -6,6 +6,7 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	player->voice_channel		= voip::create_remote();
 	player->vehicle_id			= librg_data_ri32(evnt->data);
 	player->streamer_entity_id	= librg_data_ri32(evnt->data);
+	
 	if (player->vehicle_id != -1) {
 		player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
 	}
@@ -14,11 +15,16 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
 	librg_data_rptr(evnt->data, player->model, sizeof(char) * 32);
 	librg_data_rptr(evnt->data, player->name, sizeof(char) * 32);
+
 	player->is_crouching = librg_data_ru8(evnt->data);
 	player->is_aiming = librg_data_ru8(evnt->data);
 	librg_data_rptr(evnt->data, &player->inventory, sizeof(player_inventory));
 	player->current_weapon_id = librg_data_ru32(evnt->data);
 	player->health = librg_data_rf32(evnt->data);
+
+	player->target_pos = evnt->entity->position;
+	player->target_rot = player->rotation;
+	player->target_pose = player->pose;
 
 	player->ped = player_spawn(
 		evnt->entity->position,
@@ -50,8 +56,8 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 	*(BYTE*)((DWORD)player->ped + 0x4A8) = 50;
 
 	//update interpolated stuff :)
-	f32 alpha = player->inter_delta / network_context.timesync.server_delay;
-    player->inter_delta += (f32)delta;
+	f32 alpha = (f32)player->inter_delta / network_context.timesync.server_delay;
+    player->inter_delta += delta;
 
 	auto player_int = player->ped->GetInterface();
 	if(player_int->playersCar == nullptr) {

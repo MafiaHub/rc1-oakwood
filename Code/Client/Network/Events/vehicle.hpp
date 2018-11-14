@@ -10,6 +10,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     librg_data_rptr(evnt->data, &position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, vehicle->model, sizeof(char) * 32);
     librg_data_rptr(evnt->data, vehicle->seats, sizeof(i32) * 4);
+
     vehicle->engine_health      = librg_data_rf32(evnt->data);
     vehicle->health             = librg_data_rf32(evnt->data);
     vehicle->horn               = librg_data_ru8(evnt->data);
@@ -42,9 +43,16 @@ inline auto vehicle_game_tick(mafia_vehicle* vehicle, f64 delta) {
 	zpl_vec3_lerp(&lerped_rot, vehicle->last_rot, vehicle->target_rot, alpha);
 	zpl_vec3_lerp(&lerped_rot_second, vehicle->last_rot_second, vehicle->target_rot_second, alpha);
 
+	vehicle->interpolated_pos			= lerped_pos;
+	vehicle->interpolated_rot			= lerped_rot;
+	//vehicle->interpolated_rot_second	= lerped_rot_second;
+	
 	vehicle_int->position			= EXPAND_VEC(lerped_pos);
     vehicle_int->rotation			= EXPAND_VEC(lerped_rot);
 	vehicle_int->rotation_second	= EXPAND_VEC(lerped_rot_second);
+
+	MafiaSDK::C_Actor* car_act = (MafiaSDK::C_Actor*)vehicle->car;
+	car_act->SetActState(0);
 }
 
 inline auto vehicle_entityupdate(librg_event* evnt) {
@@ -85,6 +93,7 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     if(vehicle_int->engine_on != vehicle->engine_on) {
         vehicle->car->SetEngineOn(vehicle->engine_on, vehicle->engine_on);
     }
+	vehicle_int->engine_on = vehicle->engine_on;
 
     if(vehicle_int->gear != vehicle->gear) {
         vehicle->car->SetGear(vehicle->gear);

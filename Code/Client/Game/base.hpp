@@ -10,6 +10,7 @@ inline auto mod_pre_init_game() {
 	input::hook();
 	Sleep(300);
 	input::hook_window();
+	alloc_console();
 	//voip::init();
 }
 

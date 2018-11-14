@@ -24,6 +24,42 @@ librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_mess
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
+	auto sender_ent = librg_entity_find(&network_context, msg->peer);
+	auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+	auto seat = librg_data_ri32(msg->data);
+
+	if (sender_ent->user_data && vehicle_ent) {
+		auto vehicle = (mafia_vehicle *)vehicle_ent->user_data;
+		auto sender = (mafia_player*)sender_ent->user_data;
+
+		// remove driver from vehicle !
+		if (vehicle->seats[seat] != -1) {
+			
+			mod_message_send(&network_context, NETWORK_PLAYER_HIJACK, [&](librg_data *data) {
+				librg_data_went(data, sender_ent->id);
+				librg_data_went(data, vehicle_ent->id);
+				librg_data_wi32(data, seat);
+			});
+
+			auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
+			if (driver_ent && driver_ent->user_data) {
+				auto driver = (mafia_player*)driver_ent->user_data;
+				driver->vehicle_id = -1;
+			}
+
+			vehicle->seats[seat] = -1;
+
+			if (seat == 0) {
+				auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position);
+				if (streamer != nullptr) {
+					librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
+				}
+			}
+		}
+	}
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
     auto sender_ent = librg_entity_find(&network_context, msg->peer);
     auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
@@ -43,7 +79,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 			sender->vehicle_id = -1;
         }
 
-        mod_message_send_except(&network_context, NETWORK_PLAYER_USE_ACTOR, msg->peer, [&](librg_data *data) {
+        mod_message_send(&network_context, NETWORK_PLAYER_USE_ACTOR, [&](librg_data *data) {
             librg_data_went(data, sender_ent->id);
             librg_data_went(data, vehicle_ent->id);
             librg_data_wi32(data, action);
