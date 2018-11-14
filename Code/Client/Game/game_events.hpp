@@ -98,6 +98,10 @@ auto mod_bind_events() {
 		}
 	});
 
+	MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([]() {
+		nameplates::render();
+	});
+
 	MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 
 		delta_time = zpl_time_now() - last_time;

@@ -71,6 +71,8 @@ inline auto local_player_hit(
 
 	if (!victim_ent) return;
 	
+	victim->GetInterface()->health -= damage;
+
 	librg_send(&network_context, NETWORK_PLAYER_HIT, data, {
 		librg_data_went(&data, victim_ent->id);
 		librg_data_wu32(&data, hit_type);

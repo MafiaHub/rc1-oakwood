@@ -43,10 +43,9 @@ inline auto vehicle_game_tick(mafia_vehicle* vehicle, f64 delta) {
 	zpl_vec3_lerp(&lerped_rot, vehicle->last_rot, vehicle->target_rot, alpha);
 	zpl_vec3_lerp(&lerped_rot_second, vehicle->last_rot_second, vehicle->target_rot_second, alpha);
 
-	vehicle->interpolated_pos			= lerped_pos;
-	vehicle->interpolated_rot			= lerped_rot;
-	//vehicle->interpolated_rot_second	= lerped_rot_second;
-	
+	vehicle->interpolated_pos		= lerped_pos;
+	vehicle->interpolated_rot		= lerped_rot;
+
 	vehicle_int->position			= EXPAND_VEC(lerped_pos);
     vehicle_int->rotation			= EXPAND_VEC(lerped_rot);
 	vehicle_int->rotation_second	= EXPAND_VEC(lerped_rot_second);

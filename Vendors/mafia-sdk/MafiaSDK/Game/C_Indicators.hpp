@@ -39,6 +39,8 @@ namespace MafiaSDK
 			PlayerSetWingmanLives = 0x5F88E0,
 			PlayerSetWingmanAmmo = 0x5F8910,
 			OutText = 0x00604700,
+			Rectangle = 0x005E8E00,
+			FilledRectangle = 0x005E9080,
 			TextSize = 0x006036D0,
             ParaheliaSetFov = 0x00604890,
             RadarSetPlayerCar = 0x005FA500
@@ -239,6 +241,36 @@ namespace MafiaSDK
 			}
 		}
 		
+		void Rectangle(float x, float y, float width, float height, DWORD color)
+		{
+			unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::Rectangle;
+
+			__asm {
+				push height
+				push width
+				push y
+				push x
+				mov  ecx, color
+				call funcAddress
+			}
+		}
+
+		void FilledRectangle(float x, float y, float width, float height, DWORD fill, float percent)
+		{
+			unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::FilledRectangle;
+
+			__asm {
+				push percent
+				push height
+				push width
+				push y
+				push x
+				mov  ecx, fill
+				mov  edx, 0x006BD8C8 //<- ITexture*
+				call funcAddress
+			}
+		}
+
 		void OutText(const char* text, float x, float y, float width, float height, int color, int underlined, int fontType)
 		{
 			unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::OutText;

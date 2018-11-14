@@ -163,7 +163,6 @@ namespace graphics {
 		ImGui::NewFrame();
 
 		//effects::render();
-        nameplates::render();
 		chat::render();
 
 		ImGui::EndFrame();

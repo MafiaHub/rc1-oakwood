@@ -419,17 +419,42 @@ __declspec(naked) void ChangeUpdateCarPos() {
 		push esi
 		call update_interpolated
 		add esp, 0x8
-
-		/*fld dword ptr ds : [esi]
-		fstp dword ptr ds : [esi]
-
-		fld dword ptr ds : [esi + 0x4]
-		fstp dword ptr ds : [esi + 0x4]
-
-		fld dword ptr ds : [esi + 0x8]
-		fstp dword ptr ds : [esi + 0x8]*/
-
 		jmp jump_back_update_pos
+	}
+}
+
+DWORD jump_back_update_pos_coll = 0x004E5ECD;
+__declspec(naked) void ChangeUpdateCarPosCollision() {
+	__asm {
+		pushad
+			push ebp
+			call check_for_streamed
+			add esp, 0x4
+		popad
+
+		cmp streamed_udate, 1
+		je interpolated_update
+
+		FLD DWORD PTR SS : [ESP + 0x138]
+		FADD DWORD PTR DS : [ESI]
+		MOV AL, BYTE PTR SS : [ESP + 0x9B]
+		TEST AL, AL
+		FSTP DWORD PTR DS : [ESI]
+		FLD DWORD PTR SS : [ESP + 0x13C]
+		FADD DWORD PTR DS : [ESI + 0x4]
+		FSTP DWORD PTR DS : [ESI + 0x4]
+		FLD DWORD PTR SS : [ESP + 0x140]
+		FADD DWORD PTR DS : [ESI + 0x8]
+		FSTP DWORD PTR DS : [ESI + 0x8]
+
+		jmp jump_back_update_pos_coll
+		interpolated_update :
+
+		push 0
+		push esi
+		call update_interpolated
+		add esp, 0x8
+		jmp jump_back_update_pos_coll
 	}
 }
 
@@ -477,6 +502,8 @@ inline auto local_player_init() {
 
 	//Vehicle
 	MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
+	MemoryPatcher::InstallJmpHook(0x004E5E9F, (DWORD)&ChangeUpdateCarPosCollision);
+
 	//MemoryPatcher::InstallJmpHook(0x004E5243, (DWORD)&ChangeUpdateCarRot);
 	//MemoryPatcher::InstallJmpHook(0x004E5144, (DWORD)&ChangeUpdateCarRotSecond);
 }

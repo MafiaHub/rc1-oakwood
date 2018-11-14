@@ -1,7 +1,7 @@
 struct mafia_vehicle {
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
-	f64 inter_delta;
+	f32 inter_delta;
 	zpl_vec3 target_pos;
 	zpl_vec3 target_rot;
 	zpl_vec3 target_rot_second;
