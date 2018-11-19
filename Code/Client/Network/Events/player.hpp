@@ -99,10 +99,12 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 	player->last_rot			= EXPAND_VEC(player_int->entity.rotation);
 	player->last_pose			= EXPAND_VEC(player->pose);
 
-	player_int->animState		= player->animation_state;
-	player_int->isDucking		= player->is_crouching;
-	player_int->isAiming		= player->is_aiming;
-	*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
+	if (!player_int->carLeavingOrEntering) {
+		player_int->animState = player->animation_state;
+		player_int->isDucking = player->is_crouching;
+		player_int->isAiming = player->is_aiming;
+		*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
+	}
 
 	if (player->vehicle_id != -1 && player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH) {
 		auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
