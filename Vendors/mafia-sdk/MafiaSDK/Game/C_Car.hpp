@@ -35,6 +35,8 @@ namespace MafiaSDK
 			Engine = 0x004E1CE0,
 			SetEngineOn = 0x004CB5B0,
 			SetGear = 0x004CB070,
+			SetPower = 0x004CB130,
+			MotorForce = 0x004E15B0,
 			GearSnd = 0x004ED810,
 			GetSeatProperty = 0x0041DC30,
 			GetOwner = 0x0041DEC0,
@@ -112,6 +114,32 @@ namespace MafiaSDK
 				mov ecx, this
 				add ecx, 0x70
 				push gear
+				call functionAddress
+			}
+		}
+
+		void MotorForce(float unk1, float unk2)
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::MotorForce;
+			__asm
+			{
+				mov ecx, this
+				add ecx, 0x70
+				push unk2
+				push unk1
+				call functionAddress
+			}
+		}
+
+		void SetPower(float power, BOOL unk)
+		{
+			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::SetPower;
+			__asm
+			{
+				mov ecx, this
+				add ecx, 0x70
+				push power
+				push unk
 				call functionAddress
 			}
 		}

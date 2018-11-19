@@ -500,10 +500,9 @@ inline auto local_player_init() {
 		DetourFunction((PBYTE)0x00587D70, (PBYTE)&hooks::C_Human_Do_ThrowCocotFromCar)
 	);
 
-	//Vehicle
-	MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
-	MemoryPatcher::InstallJmpHook(0x004E5E9F, (DWORD)&ChangeUpdateCarPosCollision);
-
-	//MemoryPatcher::InstallJmpHook(0x004E5243, (DWORD)&ChangeUpdateCarRot);
-	//MemoryPatcher::InstallJmpHook(0x004E5144, (DWORD)&ChangeUpdateCarRotSecond);
+	// Vehicle
+	// MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
+	// MemoryPatcher::InstallJmpHook(0x004E5E9F, (DWORD)&ChangeUpdateCarPosCollision);
+	// MemoryPatcher::InstallJmpHook(0x004E5243, (DWORD)&ChangeUpdateCarRot);
+	// MemoryPatcher::InstallJmpHook(0x004E5144, (DWORD)&ChangeUpdateCarRotSecond);
 }

@@ -36,4 +36,8 @@ auto mod_init_patches() {
 	MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
 	MafiaSDK::C_Game_Patches::PatchRemovePlayer();
 	
+	// 0004E034A
+	// Force update car physics
+	BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";
+	MemoryPatcher::PatchAddress(0x0004E034A, patchCarPhysics, sizeof(patchCarPhysics));
 }

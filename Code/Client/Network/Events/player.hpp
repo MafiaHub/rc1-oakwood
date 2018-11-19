@@ -60,22 +60,19 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
     player->inter_delta += delta;
 
 	auto player_int = player->ped->GetInterface();
-	if(player_int->playersCar == nullptr) {
-		
-		zpl_vec3 inter_pos, inter_rot;
-		zpl_vec3_lerp(&inter_pos, player->last_pos, player->target_pos, alpha);
-		zpl_vec3_lerp(&inter_rot, player->last_rot, player->target_rot, alpha);
-		zpl_vec3_lerp(&player->pose, player->last_pose, player->target_pose, alpha);
+	zpl_vec3 inter_pos, inter_rot;
+	zpl_vec3_lerp(&inter_pos, player->last_pos, player->target_pos, alpha);
+	zpl_vec3_lerp(&inter_rot, player->last_rot, player->target_rot, alpha);
+	zpl_vec3_lerp(&player->pose, player->last_pose, player->target_pose, alpha);
 
-		player_int->entity.position = EXPAND_VEC(inter_pos);
-		player_int->entity.rotation = EXPAND_VEC(inter_rot);
-		Vector3D mafia_pose			= EXPAND_VEC(player->pose);
+	player_int->entity.position = EXPAND_VEC(inter_pos);
+	player_int->entity.rotation = EXPAND_VEC(inter_rot);
+	Vector3D mafia_pose			= EXPAND_VEC(player->pose);
 
-		if (player->is_aiming)
-			player->ped->PoseSetPoseAimed(mafia_pose);
-		else 
-			player->ped->PoseSetPoseNormal(mafia_pose);
-	}
+	if (player->is_aiming)
+		player->ped->PoseSetPoseAimed(mafia_pose);
+	else 
+		player->ped->PoseSetPoseNormal(mafia_pose);
 }
 
 inline auto player_entityupdate(librg_event* evnt) -> void {

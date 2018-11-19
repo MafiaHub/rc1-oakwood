@@ -25,8 +25,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     vehicle->engine_on          = librg_data_ru8(evnt->data);
     vehicle->fuel               = librg_data_rf32(evnt->data);
 	vehicle->accelerating		= librg_data_rf32(evnt->data);
-
-    vehicle->car = vehicle_spawn(position, vehicle);
+    vehicle->car				= vehicle_spawn(position, vehicle);
 
     evnt->entity->user_data = (void*)vehicle;
     evnt->entity->flags |= ENTITY_INTERPOLATED;
@@ -59,6 +58,7 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     librg_data_rptr(evnt->data, &vehicle->target_rot, sizeof(zpl_vec3));
 	librg_data_rptr(evnt->data, &vehicle->target_rot_second, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
+
 	vehicle->engine_health 		= librg_data_rf32(evnt->data);
 	vehicle->wheel_angle 		= librg_data_rf32(evnt->data);
 	vehicle->fuel 				= librg_data_rf32(evnt->data);
@@ -92,6 +92,8 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     if(vehicle_int->engine_on != vehicle->engine_on) {
         vehicle->car->SetEngineOn(vehicle->engine_on, vehicle->engine_on);
     }
+
+	vehicle->car->MotorForce(vehicle->accelerating, vehicle->accelerating);
 	vehicle_int->engine_on = vehicle->engine_on;
 
     if(vehicle_int->gear != vehicle->gear) {

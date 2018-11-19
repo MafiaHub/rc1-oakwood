@@ -4,8 +4,6 @@
 * Renders simple nicknames 
 * TODO(DavoSK): Render to texture with antialasing to dont see nicknames behind walls
 */
-
-
 namespace nameplates {
     MafiaSDK::ITexture* voip_texture = nullptr;
 
