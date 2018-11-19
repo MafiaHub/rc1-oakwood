@@ -60,6 +60,10 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
     player->inter_delta += delta;
 
 	auto player_int = player->ped->GetInterface();
+
+	if (player_int->playersCar || player_int->carLeavingOrEntering)
+		return;
+
 	zpl_vec3 inter_pos, inter_rot;
 	zpl_vec3_lerp(&inter_pos, player->last_pos, player->target_pos, alpha);
 	zpl_vec3_lerp(&inter_rot, player->last_rot, player->target_rot, alpha);
