@@ -56,6 +56,7 @@ namespace chat {
 		main_device = device;
 	
 		register_command("/q", [&](std::vector<std::string> args) {
+			librg_network_stop(&network_context);
 			exit(0);
 		});
 

@@ -29,7 +29,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
                 current_wep,
                 health,
                 is_local_player,
-                0);
+                0,
+				false);
 
             if (player->ped) {
                 player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
@@ -45,7 +46,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
             current_wep,
             health,
             is_local_player,
-            0);
+            0,
+			false);
 
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
@@ -82,7 +84,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
         current_wep, 
         health, 
         true, 
-        0);
+        0,
+		false);
 
     local_player.ped = ped;
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);

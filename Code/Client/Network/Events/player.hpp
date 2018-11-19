@@ -34,7 +34,8 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 		player->current_weapon_id,
 		player->health,
 		false,
-		-1);
+		-1,
+		player->vehicle_id != -1);
 
 	if(player->streamer_entity_id == local_player.entity.id) {
 		auto me = local_player.ped;
@@ -61,7 +62,7 @@ inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
 
 	auto player_int = player->ped->GetInterface();
 
-	if (player_int->playersCar || player_int->carLeavingOrEntering)
+	if (player_int->playersCar || player_int->carLeavingOrEntering || player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
 		return;
 
 	zpl_vec3 inter_pos, inter_rot;
