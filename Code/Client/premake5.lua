@@ -22,3 +22,6 @@ project "Client"
 	postbuildcommands {
 		"{COPY} ../Bin/Debug/Client.dll ../../"
 	}
+    linkoptions {
+        "/SAFESEH:NO"
+    }
