@@ -64,12 +64,12 @@ inline auto local_player_hit(
 	const Vector3D* unk2, 
 	const Vector3D* unk3,
 	float damage, 
-	MafiaSDK::C_Actor* atacker, 
+	MafiaSDK::C_Actor* attacker, 
 	unsigned int player_part) -> void {
 
 	auto victim_ent = get_player_from_base(victim);
-
-	if (!victim_ent) return;
+	
+	if (!victim_ent || victim == attacker) return;
 	
 	victim->GetInterface()->health -= damage;
 

@@ -20,7 +20,7 @@ project "Client"
 		"dinput8",
 	}
 	postbuildcommands {
-		"{COPY} ../Bin/Debug/Client.dll ../../"
+		"{COPY} ../Bin/%{cfg.buildcfg}/Client.dll ../../"
 	}
     linkoptions {
         "/SAFESEH:NO"
