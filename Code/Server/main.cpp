@@ -93,6 +93,9 @@ auto main() -> int {
 						if (streamer != nullptr && entity->control_peer != streamer->client_peer) {
 							librg_entity_control_set(&network_context, entity->id, streamer->client_peer);
 						}
+						else {
+							librg_entity_control_remove(&network_context, entity->id);
+						}
 					}
 				}
 			});

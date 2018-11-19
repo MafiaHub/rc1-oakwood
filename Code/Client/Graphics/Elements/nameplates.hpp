@@ -14,6 +14,8 @@ namespace nameplates {
             voip_texture->Create("gramafon.tga", "", 8, 100, 100, 0);
         }
 
+		auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera()->GetInterface()->cameraFrame;
+
         for (u32 i = 0; i < network_context.max_entities; i++) {
 
             librg_entity *entity = librg_entity_fetch(&network_context, i);

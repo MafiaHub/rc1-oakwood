@@ -21,7 +21,7 @@ namespace MafiaSDK
 {
 	struct C_Camera_Interface
 	{
-        
+		I3D_Frame cameraFrame;
 	};
 
 	namespace C_Camera_Enum
