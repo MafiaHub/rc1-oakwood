@@ -106,7 +106,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 		*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
 	}
 
-	if (player->vehicle_id != -1 && player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH) {
+	if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
 		auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
 		if (vehicle_ent && vehicle_ent->user_data) {
 			auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;

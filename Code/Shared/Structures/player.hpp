@@ -23,8 +23,15 @@ struct mafia_player {
 	streamer_entity_id(-1),
 	vehicle_id(-1),
 	current_weapon_id(0) {
+		zpl_zero_item(this);
+		streamer_entity_id = -1;
+		vehicle_id = -1;
+		pose = { 1.0f, 1.0f, 1.0f };
+		rotation = { 0.0f, 0.0f, -1.0f };
+
 		for (size_t i = 0; i < 8; i++)
 			inventory.items[i] = { -1, 0, 0, 0 };
+
 #ifdef MAFIA_SDK_IMPLEMENTATION
 		nickname_texture		= nullptr;
 		voice_channel			= nullptr;
@@ -34,7 +41,7 @@ struct mafia_player {
 	}
 	i32 streamer_entity_id;
 	zpl_vec3 rotation;
-	zpl_vec3 pose = { 1.0f, 1.0f, 1.0f };
+	zpl_vec3 pose;
 	f32 health;
 	u8 animation_state;
 	u8 is_aiming;

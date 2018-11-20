@@ -1,4 +1,10 @@
 struct mafia_vehicle {
+	mafia_vehicle() {
+		zpl_zero_item(this);
+
+		for (int i = 0; i < 4; i++)
+			seats[i] = -1;
+	}
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
 	f32 inter_delta;
@@ -15,7 +21,7 @@ struct mafia_vehicle {
 	zpl_vec3 interpolated_rot_second;
 #endif
 	char model[32];
-    i32 seats[4] = {-1, -1, -1, -1};
+	i32 seats[4];
     float engine_health;
     float health;
     u8 horn;

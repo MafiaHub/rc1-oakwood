@@ -121,6 +121,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
     auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
     auto action = librg_data_ri32(msg->data);
     auto seat_id = librg_data_ri32(msg->data);
+	auto unk3 = librg_data_ri32(msg->data);
 
     if(sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
         auto sender = (mafia_player*)sender_ent->user_data;
@@ -135,7 +136,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
         }
 
 		if(sender_ent->id != local_player.entity.id)
-			sender->ped->Use_Actor(vehicle->car, action, seat_id, 0);
+			sender->ped->Use_Actor(vehicle->car, action, seat_id, unk3);
     }
 });
 

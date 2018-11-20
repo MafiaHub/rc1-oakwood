@@ -65,6 +65,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
     auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
     auto action = librg_data_ri32(msg->data);
     auto seat_id = librg_data_ri32(msg->data);
+	auto unk3 = librg_data_ri32(msg->data);
 
    if (sender_ent->user_data && vehicle_ent) {
 
@@ -84,6 +85,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
             librg_data_went(data, vehicle_ent->id);
             librg_data_wi32(data, action);
             librg_data_wi32(data, seat_id);
+			librg_data_wi32(data, unk3);
         });
 
         if (seat_id == 0 && action == 1) {
@@ -92,6 +94,9 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 			auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position);
 			if (streamer != nullptr) {
 				librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
+			}
+			else {
+				librg_entity_control_remove(&network_context, vehicle_ent->id);
 			}
         }
     }

@@ -93,7 +93,7 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
         vehicle->car->SetEngineOn(vehicle->engine_on, vehicle->engine_on);
     }
 
-	vehicle->car->MotorForce(vehicle->accelerating, vehicle->accelerating);
+	//vehicle->car->MotorForce(vehicle->accelerating, vehicle->accelerating);
 	vehicle_int->engine_on = vehicle->engine_on;
 
     if(vehicle_int->gear != vehicle->gear) {
