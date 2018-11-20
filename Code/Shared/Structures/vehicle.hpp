@@ -8,7 +8,7 @@ struct mafia_vehicle {
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
 	f32 inter_delta;
-	zpl_vec3 target_pos;
+	/*zpl_vec3 target_pos;
 	zpl_vec3 target_rot;
 	zpl_vec3 target_rot_second;
 
@@ -18,7 +18,30 @@ struct mafia_vehicle {
 	
 	zpl_vec3 interpolated_pos;
 	zpl_vec3 interpolated_rot;
-	zpl_vec3 interpolated_rot_second;
+	zpl_vec3 interpolated_rot_second;*/
+
+	/* interpolation table */
+	struct {
+		struct {
+			zpl_vec3 start;
+			zpl_vec3 target;
+			zpl_vec3 error;
+			f32  lastAlpha;
+			f64  startTime;
+			f64  finishTime;
+		} pos;
+
+		struct rot_data {
+			zpl_vec3 start;
+			zpl_vec3 target;
+			zpl_vec3 error;
+			f32  lastAlpha;
+			f64  startTime;
+			f64  finishTime;
+		} rot, rot_second;
+
+		u32 forceLocalZCounter;
+	} interp;
 #endif
 	char model[32];
 	i32 seats[4];

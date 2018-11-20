@@ -251,7 +251,6 @@ namespace hooks
 			push eax
 			call Scene_CreateActor_Filter
 			add esp, 0x8
-
 			jmp filter_create_actor_back
 		}
 	}
@@ -359,7 +358,6 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
 		fstp dword ptr ds : [esi + 0x4]
 		fld dword ptr ds : [esi + 0x8]
 		fstp dword ptr ds : [esi + 0x8]
-
 		jmp jump_back_update_pos_coll
 	}
 }
