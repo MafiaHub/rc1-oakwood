@@ -7,6 +7,14 @@
 namespace nameplates {
     MafiaSDK::ITexture* voip_texture = nullptr;
 
+	MafiaSDK::I3D_Frame* get_current_i3dcamera() {
+		__asm {
+			mov eax, dword ptr ds : [63788Ch]
+			mov ecx, dword ptr ds : [eax + 10h]
+			mov eax, dword ptr ds : [ecx + 17Ch]
+		}
+	}
+
     void render() {
         
         if(!voip_texture) {
@@ -14,8 +22,7 @@ namespace nameplates {
             voip_texture->Create("gramafon.tga", "", 8, 100, 100, 0);
         }
 
-		auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera()->GetInterface()->cameraFrame;
-
+		
         for (u32 i = 0; i < network_context.max_entities; i++) {
 
             librg_entity *entity = librg_entity_fetch(&network_context, i);
@@ -28,14 +35,15 @@ namespace nameplates {
 					auto player_health = player->ped->GetInterface()->health;
 					
 					bool in_same_car = false;
-					Vector3D local_player_pos;
+					Vector3D camera_pos = get_current_i3dcamera()->GetInterface()->mPosition;
+
                     {
                         auto local_player_int = local_player.ped;
 
                         if (!local_player_int)
                             break;
 
-                        local_player_pos = local_player_int->GetInterface()->humanObject.neckFrame->GetInterface()->mPosition;
+                        //local_player_pos = local_player_int->GetInterface()->humanObject.neckFrame->GetInterface()->mPosition;
 						in_same_car = (local_player_int->GetInterface()->humanObject.playersCar == player->ped->GetInterface()->playersCar) && player->ped->GetInterface()->playersCar != nullptr;
 					}
 
@@ -46,12 +54,13 @@ namespace nameplates {
                             voip_texture->Draw2D(screen.x - (100 / 2),  screen.y - 150);
 
                         zpl_vec3 vec = {};
-                        zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(local_player_pos));
+                        zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(camera_pos));
                         auto dist = zpl_vec3_mag(vec);
 						auto dist_sq = zpl_sqrt(dist);
 
-						if (in_same_car)
+						/*if (in_same_car)
 							dist_sq = 2.0f;
+						*/
 
                         constexpr auto orig_font_size = 20.0f;
 						auto font_size = orig_font_size / dist_sq;
