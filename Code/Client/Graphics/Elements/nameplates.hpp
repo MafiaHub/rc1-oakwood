@@ -58,9 +58,6 @@ namespace nameplates {
                         auto dist = zpl_vec3_mag(vec);
 						auto dist_sq = zpl_sqrt(dist);
 
-						/*if (in_same_car)
-							dist_sq = 2.0f;
-						*/
 
                         constexpr auto orig_font_size = 20.0f;
 						auto font_size = orig_font_size / dist_sq;
@@ -71,9 +68,7 @@ namespace nameplates {
                         auto render_x = screen.x - (size / 2);
                         auto render_y = screen.y;
                         
-                        //draw 8x more smoother ?
-                        for(int i = 0; i < 8; i++) 
-                            MafiaSDK::GetMission()->GetGame()->GetIndicators()->OutText(player->name, screen.x - (size / 2), screen.y, size, font_size, 0xFFFFFFFF, 0, 1);
+                        MafiaSDK::GetMission()->GetGame()->GetIndicators()->OutText(player->name, screen.x - (size / 2), screen.y, size, font_size, 0xFFFFFFFF, 0, 1);
                         
 						constexpr auto health_width = 135.0f;
 						constexpr auto health_height = 15.0f;
