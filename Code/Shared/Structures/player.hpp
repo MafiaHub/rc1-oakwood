@@ -53,15 +53,16 @@ struct mafia_player {
 	u32 current_weapon_id;
 	i32 vehicle_id;
 #ifdef MAFIA_SDK_IMPLEMENTATION
-	//Interpolation
-	f32 inter_delta;
-	zpl_vec3 target_pos;
-	zpl_vec3 target_rot;
-	zpl_vec3 target_pose;
-	zpl_vec3 last_pos;
-	zpl_vec3 last_rot;
-	zpl_vec3 last_pose;
-
+	struct {
+		struct {
+			zpl_vec3 start;
+			zpl_vec3 target;
+			f32  lastAlpha;
+			f64  startTime;
+			f64  finishTime;
+		} pos, rot, pose;
+	} interp;
+	
 	u64 clientside_flags;
 	f32 last_talked;
 	MafiaSDK::C_Human* ped;

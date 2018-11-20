@@ -1,4 +1,5 @@
 #pragma once
+#define TICKRATE_SERVER 30
 
 inline auto player_entitycreate(librg_event* evnt) -> void {
 
@@ -22,9 +23,9 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	player->current_weapon_id = librg_data_ru32(evnt->data);
 	player->health = librg_data_rf32(evnt->data);
 
-	player->target_pos = evnt->entity->position;
+	/*player->target_pos = evnt->entity->position;
 	player->target_rot = player->rotation;
-	player->target_pose = player->pose;
+	player->target_pose = player->pose;*/
 
 	player->ped = player_spawn(
 		evnt->entity->position,
@@ -50,59 +51,112 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	evnt->entity->flags |= ENTITY_INTERPOLATED;
 }
 
-inline auto player_game_tick(mafia_player* player, f64 delta) -> void {
+inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 
-	//fix shooting ( fixed ammo for now :) )
-	*(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
-	*(BYTE*)((DWORD)player->ped + 0x4A8) = 50;
+	// TODO(DavoSK): Move it to MafiaSDK
+	// fix shooting ( fixed ammo for now :) )
+	*(BYTE*)((DWORD)ped->ped + 0x4A4) = 50;
+	*(BYTE*)((DWORD)ped->ped + 0x4A8) = 50;
 
-	//update interpolated stuff :)
-	f32 alpha = (f32)player->inter_delta / network_context.timesync.server_delay;
-    player->inter_delta += delta;
-
-	auto player_int = player->ped->GetInterface();
-
-	if (player_int->playersCar || player_int->carLeavingOrEntering || player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
+	auto player_int = ped->ped->GetInterface();
+	if (player_int->playersCar || player_int->carLeavingOrEntering || ped->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
 		return;
 
-	zpl_vec3 inter_pos, inter_rot;
-	zpl_vec3_lerp(&inter_pos, player->last_pos, player->target_pos, alpha);
-	zpl_vec3_lerp(&inter_rot, player->last_rot, player->target_rot, alpha);
-	zpl_vec3_lerp(&player->pose, player->last_pose, player->target_pose, alpha);
+	f64	currentTime = zpl_time_now();
+	printf("%f\n", delta);
 
-	player_int->entity.position = EXPAND_VEC(inter_pos);
-	player_int->entity.rotation = EXPAND_VEC(inter_rot);
-	Vector3D mafia_pose			= EXPAND_VEC(player->pose);
+	// Position interpolation
+	{
+		f32 alpha = zpl_unlerp(currentTime, ped->interp.pos.startTime, ped->interp.pos.finishTime);
+		alpha = zpl_clamp(0.0f, alpha, 1.5f);
 
-	if (player->is_aiming)
-		player->ped->PoseSetPoseAimed(mafia_pose);
-	else 
-		player->ped->PoseSetPoseNormal(mafia_pose);
+		f32 currentAlpha = alpha - ped->interp.pos.lastAlpha;
+		ped->interp.pos.lastAlpha = alpha;
+
+		zpl_vec3 compensation;
+		zpl_vec3_lerp(&compensation, ped->interp.pos.start, ped->interp.pos.target, alpha);
+
+		if (alpha == 1.5f) ped->interp.pos.finishTime = 0;
+
+		ped->ped->GetInterface()->entity.position = EXPAND_VEC(compensation);
+	}
+
+	// Rotation interpolation
+	{
+		f32 alpha = zpl_unlerp(currentTime, ped->interp.rot.startTime, ped->interp.rot.finishTime);
+		alpha = zpl_clamp(0.0f, alpha, 1.5f);
+
+		f32 currentAlpha = alpha - ped->interp.rot.lastAlpha;
+		ped->interp.rot.lastAlpha = alpha;
+
+		zpl_vec3 compensation;
+		zpl_vec3_lerp(&compensation, ped->interp.rot.start, ped->interp.rot.target, alpha);
+
+		if (alpha == 1.5f) ped->interp.rot.finishTime = 0;
+
+		ped->ped->GetInterface()->entity.rotation = EXPAND_VEC(compensation);
+	}
+
+	// Pose interpolation
+	{
+		f32 alpha = zpl_unlerp(currentTime, ped->interp.pose.startTime, ped->interp.pose.finishTime);
+		alpha = zpl_clamp(0.0f, alpha, 1.5f);
+
+		f32 currentAlpha = alpha - ped->interp.pose.lastAlpha;
+		ped->interp.pose.lastAlpha = alpha;
+
+		zpl_vec3 compensation;
+		zpl_vec3_lerp(&compensation, ped->interp.pose.start, ped->interp.pose.target, alpha);
+
+		if (alpha == 1.5f) ped->interp.pose.finishTime = 0;
+
+		Vector3D mafia_pose = EXPAND_VEC(compensation);
+
+		if (ped->is_aiming)
+			ped->ped->PoseSetPoseAimed(mafia_pose);
+		else
+			ped->ped->PoseSetPoseNormal(mafia_pose);
+	}
 }
 
 inline auto player_entityupdate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	auto player_int = player->ped->GetInterface();
-	zpl_vec3 target_pose;
-	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
-	librg_data_rptr(evnt->data, &target_pose, sizeof(zpl_vec3));
+
+	zpl_vec3 recv_pose, recv_rotation;
+	librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
+	librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
 	player->animation_state		= librg_data_ru8(evnt->data);
 	player->is_crouching		= librg_data_ru8(evnt->data);
 	player->is_aiming			= librg_data_ru8(evnt->data);
 	player->aiming_time			= librg_data_ru64(evnt->data);
 	
-	player->target_pos			= EXPAND_VEC(evnt->entity->position);
-	player->target_rot			= EXPAND_VEC(player->rotation);
-	player->target_pose			= target_pose;
+	// Position interpolation
+	player->interp.pos.startTime	= zpl_time_now();
+	player->interp.pos.finishTime	= player->interp.pos.startTime + (1.0f / TICKRATE_SERVER);
+	player->interp.pos.lastAlpha	= 0.0f;
+	player->interp.pos.start		= player->interp.pos.target;
+	player->interp.pos.target		= evnt->entity->position;
 
-	player->last_pos			= EXPAND_VEC(player_int->entity.position);
-	player->last_rot			= EXPAND_VEC(player_int->entity.rotation);
-	player->last_pose			= EXPAND_VEC(player->pose);
+	// Rotation interpolation
+	player->interp.rot.startTime	= zpl_time_now();
+	player->interp.rot.finishTime	= player->interp.rot.startTime + (1.0f / TICKRATE_SERVER);
+	player->interp.rot.lastAlpha	= 0.0f;
+	player->interp.rot.start		= player->interp.rot.target;
+	player->interp.rot.target		= recv_rotation;
+
+	// Pose interpolation
+	player->interp.pose.startTime	= zpl_time_now();
+	player->interp.pose.finishTime	= player->interp.pose.startTime + (1.0f / TICKRATE_SERVER);
+	player->interp.pose.lastAlpha	= 0.0f;
+	player->interp.pose.start		= player->interp.pose.target;
+	player->interp.pose.target		= recv_pose;
+
 
 	if (!player_int->carLeavingOrEntering) {
-		player_int->animState = player->animation_state;
-		player_int->isDucking = player->is_crouching;
-		player_int->isAiming = player->is_aiming;
+		player_int->animState	= player->animation_state;
+		player_int->isDucking	= player->is_crouching;
+		player_int->isAiming	= player->is_aiming;
 		*(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
 	}
 
@@ -120,8 +174,6 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 			}
 		}
 	}
-
-	player->inter_delta = 0.0f;
 }
 
 inline auto player_entityremove(librg_event* evnt) -> void {
