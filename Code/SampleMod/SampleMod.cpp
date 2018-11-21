@@ -112,8 +112,7 @@ OAK_MOD_MAIN {
 			gm->SpawnVehicle(position, player->GetRotation(), "taxi00.i3d");
 			gm->ChatPrint(player->GetName() + " spawned taxi!");
         }
-
-		if (msg.find("/savepos") != std::string::npos) {
+        else if (msg.find("/savepos") != std::string::npos) {
 			std::ofstream pos_file("positions.txt");
 			auto position = player->GetPosition();
 			auto rot = player->GetRotation();
@@ -121,8 +120,7 @@ OAK_MOD_MAIN {
 			pos_file << position.x << " " << position.y << " " << position.z << ", " << rot.x << " " << rot.y << " " << rot.z << std::endl;
 
 		}
-
-        gm->ChatPrint(player->GetName() + " says: " + msg);
+        else gm->ChatPrint(player->GetName() + " says: " + msg);
 
         return true;
     });

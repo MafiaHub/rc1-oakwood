@@ -56,7 +56,7 @@ workspace "Oakwood"
 
     filter "configurations:Release"
         -- staticruntime "On"
-        optimize "Speed"
+        optimize "Off" -- Optimization is disabled due to client issues
 
     filter {"system:windows", "configurations:Release", "kind:not StaticLib"}
         linkoptions "/PDB:\"symbols\\$(ProjectName).pdb\""
