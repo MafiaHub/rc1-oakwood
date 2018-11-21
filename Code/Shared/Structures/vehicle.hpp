@@ -7,19 +7,6 @@ struct mafia_vehicle {
 	}
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
-	f32 inter_delta;
-	/*zpl_vec3 target_pos;
-	zpl_vec3 target_rot;
-	zpl_vec3 target_rot_second;
-
-	zpl_vec3 last_pos;
-	zpl_vec3 last_rot;
-	zpl_vec3 last_rot_second;
-	
-	zpl_vec3 interpolated_pos;
-	zpl_vec3 interpolated_rot;
-	zpl_vec3 interpolated_rot_second;*/
-
 	/* interpolation table */
 	struct {
 		struct {
@@ -58,6 +45,7 @@ struct mafia_vehicle {
     float wheel_angle;
     u8 engine_on;
     float fuel;
+	float engine_rpm;
 	float accelerating;
     zpl_vec3 rotation;
 	zpl_vec3 rotation_second;

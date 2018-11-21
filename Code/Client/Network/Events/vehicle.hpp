@@ -220,6 +220,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     librg_data_rptr(evnt->data, vehicle->model, sizeof(char) * 32);
     librg_data_rptr(evnt->data, vehicle->seats, sizeof(i32) * 4);
 
+	vehicle->engine_rpm			= librg_data_rf32(evnt->data);
     vehicle->engine_health      = librg_data_rf32(evnt->data);
     vehicle->health             = librg_data_rf32(evnt->data);
     vehicle->horn               = librg_data_ru8(evnt->data);
@@ -247,6 +248,9 @@ inline auto vehicle_game_tick(mafia_vehicle* vehicle, f64 delta) {
 
 	MafiaSDK::C_Actor* car_act = (MafiaSDK::C_Actor*)vehicle->car;
 	car_act->SetActState(0);
+
+	auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
+	vehicle_int->engine_rpm = vehicle->engine_rpm;
 }
 
 inline auto vehicle_entityupdate(librg_event* evnt) {
@@ -258,6 +262,7 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
 	librg_data_rptr(evnt->data, &target_rot_second, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
 
+	vehicle->engine_rpm			= librg_data_rf32(evnt->data);
 	vehicle->engine_health 		= librg_data_rf32(evnt->data);
 	vehicle->wheel_angle 		= librg_data_rf32(evnt->data);
 	vehicle->fuel 				= librg_data_rf32(evnt->data);
@@ -279,7 +284,6 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     vehicle_int->hand_break         = vehicle->hand_break;
     vehicle_int->break_val          = vehicle->break_val;
     vehicle_int->clutch             = vehicle->clutch;
-    vehicle_int->gear               = vehicle->gear;
     vehicle_int->horn               = vehicle->horn;
     vehicle_int->siren              = vehicle->siren;
 	vehicle_int->speed				= EXPAND_VEC(vehicle->speed);
@@ -287,11 +291,10 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     if(vehicle_int->engine_on != vehicle->engine_on) {
         vehicle->car->SetEngineOn(vehicle->engine_on, vehicle->engine_on);
     }
-
 	vehicle_int->engine_on = vehicle->engine_on;
+	
     if(vehicle_int->gear != vehicle->gear) {
         vehicle->car->SetGear(vehicle->gear);
-        vehicle->car->GearSnd();
     }
 
 	car_target_rotation_set(vehicle, target_rot, target_rot_second, 0.1f);
@@ -300,14 +303,11 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
 
 inline auto vehicle_entityremove(librg_event* evnt) {
 	auto vehicle = (mafia_vehicle*)evnt->entity->user_data;
-	if (vehicle->car) {
+	if (vehicle && vehicle->car) {
 		evnt->entity->flags &= ~ENTITY_INTERPOLATED;
-
         vehicle_remove(vehicle);
-		vehicle->car = nullptr;
-
         free(vehicle);
-        vehicle = nullptr;
+        evnt->entity->user_data = nullptr;
     }
 }
 
@@ -324,6 +324,7 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     librg_data_wptr(evnt->data, &vehicle_int.rotation, sizeof(zpl_vec3));
 	librg_data_wptr(evnt->data, &vehicle_int.rotation_second, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle_int.speed, sizeof(zpl_vec3));
+	librg_data_wf32(evnt->data, vehicle_int.engine_rpm);
 	librg_data_wf32(evnt->data, vehicle_int.engine_health);
     librg_data_wf32(evnt->data, vehicle_int.wheel_angle);
     librg_data_wf32(evnt->data, vehicle_int.fuel);

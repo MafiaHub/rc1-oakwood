@@ -23,10 +23,6 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
 	player->current_weapon_id = librg_data_ru32(evnt->data);
 	player->health = librg_data_rf32(evnt->data);
 
-	/*player->target_pos = evnt->entity->position;
-	player->target_rot = player->rotation;
-	player->target_pose = player->pose;*/
-
 	player->ped = player_spawn(
 		evnt->entity->position,
 		player->rotation,
@@ -63,7 +59,6 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 		return;
 
 	f64	currentTime = zpl_time_now();
-	printf("%f\n", delta);
 
 	// Position interpolation
 	{
@@ -178,14 +173,13 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 
 inline auto player_entityremove(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
-	if (player->ped) {
+	if (player && player->ped) {
 		evnt->entity->flags &= ~ENTITY_INTERPOLATED;
 		
 		player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
-		player->ped = nullptr;
 
-		free(evnt->user_data);
-		evnt->user_data = nullptr; 
+		free(player);
+		evnt->entity->user_data = nullptr; 
 	}
 }
 

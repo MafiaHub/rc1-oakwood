@@ -266,7 +266,7 @@ namespace MafiaSDK
 				push y
 				push x
 				mov  ecx, fill
-				mov  edx, 0x006BD8C8 //<- ITexture*
+				mov  edx, 0x006BD8D0 //<- ITexture*
 				call funcAddress
 			}
 		}

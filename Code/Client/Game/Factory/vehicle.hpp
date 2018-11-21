@@ -42,12 +42,27 @@ auto vehicle_spawn(zpl_vec3 position,
 	veh_inter->engine_on        = spawn_struct->engine_on;
 	veh_inter->fuel             = spawn_struct->fuel;
 	veh_inter->accelerating		= spawn_struct->accelerating;
-
+	veh_inter->engine_rpm		= spawn_struct->engine_rpm;
     return new_car;
 }
 
 auto vehicle_remove(mafia_vehicle* vehicle) -> void {
     if(vehicle->car) {
+
+		for (int i = 0; i < 4; i++) {
+			auto seat = vehicle->seats[i];
+			if (seat != -1) {
+				auto player_ent = librg_entity_fetch(&network_context, seat);
+				if (player_ent && player_ent->user_data) {
+					auto player = (mafia_player*)player_ent->user_data;
+					player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
+					
+					free(player);
+					player_ent->user_data = nullptr;
+				}
+			}
+		}
+
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
     }
 }
