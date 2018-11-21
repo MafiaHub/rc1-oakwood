@@ -42,9 +42,12 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
         MafiaSDK::GetFollowManager()->AddFollower(player->ped, me);
         player->ped->ForceAI(0, 1, 0, 0);
 	}
+	else {
+		evnt->entity->flags |= ENTITY_INTERPOLATED;
+	}
 
 	evnt->entity->user_data = player;
-	evnt->entity->flags |= ENTITY_INTERPOLATED;
+	
 }
 
 inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
@@ -57,6 +60,10 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 	auto player_int = ped->ped->GetInterface();
 	if (player_int->playersCar || player_int->carLeavingOrEntering || ped->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
 		return;
+
+	// Disable animation bug
+	if (player_int->isInAnimWithCar)
+		player_int->isInAnimWithCar = 0;
 
 	f64	currentTime = zpl_time_now();
 
