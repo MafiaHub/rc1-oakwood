@@ -337,4 +337,38 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     librg_data_wu8(evnt->data, vehicle_int.horn);
     librg_data_wu8(evnt->data, vehicle_int.siren);
     librg_data_wu8(evnt->data, vehicle_int.engine_on);
+
+	// NOTE(DavoSK): check for vehicle tyre change
+	// we will send flat tyres and health changes only when they changes 
+	// also we sending only particular flag for now only is tyre is flat
+	constexpr DWORD FLAT_TYRE_FLAG = 0x80000000;
+
+	if (vehicle->car) {
+		for (int i = 0; i < 4; i++) {
+
+			auto mafia_tyre = vehicle->tyres[i];
+			auto vehicle_tyre = vehicle->car->GetCarTyre(i);
+			
+			DWORD tyre_entity_flags = *(DWORD*)(vehicle_tyre + 0x120);
+			float tyre_health = *(float*)((DWORD)vehicle_tyre + 0x18C);
+
+			if ( ( (tyre_entity_flags & FLAT_TYRE_FLAG) && !(mafia_tyre.flags & FLAT_TYRE_FLAG)) ||
+				mafia_tyre.health != tyre_health) {
+				librg_send(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, data, {
+					
+					DWORD tyre_flag = 0x0;
+					if (tyre_entity_flags & FLAT_TYRE_FLAG)
+						tyre_flag = FLAT_TYRE_FLAG;
+
+					librg_data_wu32(&data, evnt->entity->id);
+					librg_data_wu32(&data, (u32)i);
+					librg_data_wu32(&data, tyre_flag);
+					librg_data_wf32(&data, tyre_health);
+				});
+
+				mafia_tyre.flags = tyre_entity_flags;
+				mafia_tyre.health = tyre_health;
+			}
+		}
+	}
 }

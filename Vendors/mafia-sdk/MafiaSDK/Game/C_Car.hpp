@@ -147,21 +147,6 @@ namespace MafiaSDK
 			}
 		}
 
-		/* Just our custom function why not*/
-		void UpdatePos(const Vector3D & pos, const Vector3D & rot)
-		{
-			//Get state of actor and if actor is in sleeping mode or non active 
-			//We make the actor as an active one
-			int vehicle_state = *(int*)((DWORD)this + 0x1C);
-			if (vehicle_state)
-			{
-				this->SetActState(0);
-			}
-
-			//this->GetInterface()->position = pos;
-			//this->GetInterface()->rotation = rot;
-		}
-
 		unsigned long GetOwner(int seat_idx)
 		{
 			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::GetOwner;
@@ -214,12 +199,15 @@ namespace MafiaSDK
 		/*
 		* TODO(DavoSK): Create tyre interface and dont do bullsheet offsets !
 		*/
-		DWORD GetCarTyre(unsigned int tyre_idx) {
+		DWORD GetCarTyre(unsigned int tyre_idx) 
+		{
 			return *(DWORD*)(*(DWORD*)((DWORD)this + 0xCA8) + 0x4 * tyre_idx);
 		}
 
-		void RemoveTyre(unsigned int tyre_idx) {
+		void RemoveTyre(unsigned int tyre_idx) 
+		{
 			auto vehicle_tyre = GetCarTyre(tyre_idx);
+			
 			if (vehicle_tyre) {
 				// Remove tyre frame
 				if (vehicle_tyre) {

@@ -12,7 +12,7 @@ struct mafia_vehicle {
 
 		for (int i = 0; i < 4; i++) {
 			tyres[i].health = 100.0f;
-			tyres[i].flags = 0x1;
+			tyres[i].flags = 0x0;
 		}
 	}
 #ifdef MAFIA_SDK_IMPLEMENTATION

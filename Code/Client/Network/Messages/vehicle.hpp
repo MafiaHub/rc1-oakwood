@@ -17,3 +17,27 @@ librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, [](librg_mess
 		}
 	}
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, [](librg_message* msg) {
+
+	u32 vehicle_id = librg_data_ru32(msg->data);
+	u32 tyre_idx = librg_data_ru32(msg->data);
+	u32 tyre_flags = librg_data_ru32(msg->data);
+	float tyre_health = librg_data_rf32(msg->data);
+
+	auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+	if (vehicle_ent && vehicle_ent->user_data) {
+		auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+		if (vehicle->car) {
+			vehicle->tyres[tyre_idx].health	= tyre_health;
+			vehicle->tyres[tyre_idx].flags		= tyre_flags;
+			
+			auto vehicle_tyre = vehicle->car->GetCarTyre(tyre_idx);
+			if (vehicle_tyre) {
+				*(float*)((DWORD)vehicle_tyre + 0x18C) = tyre_health;
+				*(DWORD*)(vehicle_tyre + 0x120) = tyre_flags;
+			}
+		}
+	}
+});

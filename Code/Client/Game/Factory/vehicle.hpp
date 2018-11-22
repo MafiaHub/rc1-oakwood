@@ -48,7 +48,7 @@ auto vehicle_spawn(zpl_vec3 position,
 
 		if (tyre == NULL) continue;
 
-		*(DWORD*)((DWORD)tyre + 0x120) = mafia_tyre.flags;
+		*(DWORD*)((DWORD)tyre + 0x120) |= mafia_tyre.flags;
 		*(float*)((DWORD)tyre + 0x18C) = mafia_tyre.health;
 
 		if (mafia_tyre.health <= 0.0f) {
