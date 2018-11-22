@@ -41,7 +41,7 @@ namespace nameplates {
                 auto player = reinterpret_cast<mafia_player*>(entity->user_data);
                 if (player->ped) {
                     auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
-					auto player_health = player->ped->GetInterface()->health;
+					auto player_health = player->health;
 					
 					Vector3D camera_pos = get_current_i3dcamera()->GetInterface()->mPosition;
 
