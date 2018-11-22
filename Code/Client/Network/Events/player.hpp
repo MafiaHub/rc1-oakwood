@@ -128,6 +128,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 	zpl_vec3 recv_pose, recv_rotation;
 	librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
 	librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
+	//player->health              = librg_data_rf32(evnt->data);
 	player->animation_state		= librg_data_ru8(evnt->data);
 	player->is_crouching		= librg_data_ru8(evnt->data);
 	player->is_aiming			= librg_data_ru8(evnt->data);
