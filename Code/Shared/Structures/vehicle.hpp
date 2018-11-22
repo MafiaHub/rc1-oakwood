@@ -17,6 +17,8 @@ struct mafia_vehicle {
 	}
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
+	b32 wants_explode;
+
 	/* interpolation table */
 	struct {
 		struct {

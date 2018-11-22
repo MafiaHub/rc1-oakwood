@@ -12,12 +12,14 @@ DtaOpen_t DtaOpen = nullptr;
 
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
 
-	if (strstr(filename, "mainmenu.mnu")){
-		return DtaOpen("main.mnu", params);
-	}
+	if (filename) {
+		if (strstr(filename, "mainmenu.mnu")) {
+			return DtaOpen("main.mnu", params);
+		}
 
-	if (strstr(filename, "online.tga")) {
-		return DtaOpen("online.tga", params);
+		if (strstr(filename, "online.tga")) {
+			return DtaOpen("online.tga", params);
+		}
 	}
 	
 	return DtaOpen(filename, params);

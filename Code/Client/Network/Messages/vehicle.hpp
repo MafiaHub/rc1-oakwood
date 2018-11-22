@@ -61,3 +61,19 @@ librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, [](librg_messa
 		}
 	}
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* msg) {
+
+	u32 vehicle_id = librg_data_ru32(msg->data);
+	auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+	if (vehicle_ent && vehicle_ent->user_data) {
+
+		auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+		vehicle->wants_explode = false;
+
+		if (vehicle->car) {
+			hooks::c_car_carexplosion_original(vehicle->car, 200);
+		}
+	}
+});

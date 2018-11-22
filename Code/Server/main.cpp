@@ -90,7 +90,7 @@ auto main() -> int {
 					
 					if (vehicle->seats[0] == -1) {
 						auto streamer = mod_get_nearest_player(&network_context, entity->position);
-						if (streamer != nullptr && entity->control_peer != streamer->client_peer) {
+						if (streamer != nullptr) {
 							librg_entity_control_set(&network_context, entity->id, streamer->client_peer);
 						}
 						else {

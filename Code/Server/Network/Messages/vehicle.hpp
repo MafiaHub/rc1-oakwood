@@ -86,3 +86,23 @@ librg_network_add(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, [](librg_
 		}
 	}
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* msg) {
+
+	auto vehicle_id = librg_data_ru32(msg->data);
+	auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+	if (vehicle_ent && vehicle_ent->user_data) {
+
+		auto sender_ent = librg_entity_find(&network_context, msg->peer);
+		auto control_peer = librg_entity_control_get(&network_context, vehicle_ent->id);
+		
+		if (sender_ent && sender_ent->client_peer == control_peer && control_peer != nullptr) {
+
+			auto sender_vehicle = (mafia_vehicle*)vehicle_ent->user_data;	
+			mod_message_send(&network_context, NETWORK_VEHICLE_EXPLODE, [&](librg_data *data) {
+				librg_data_wu32(data, vehicle_ent->id);
+			});
+		}
+	}
+});

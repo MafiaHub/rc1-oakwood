@@ -244,6 +244,30 @@ namespace hooks
 	}
 	
 	//----------------------------------------------
+	//C_car::CarExplosion
+	//----------------------------------------------
+	typedef bool(__thiscall* C_car_CarExplosion_t)(void* _this, unsigned int tick);
+	C_car_CarExplosion_t c_car_carexplosion_original = nullptr;
+
+	bool __fastcall C_car_CarExplosion(void* _this, DWORD edx, unsigned int tick) {
+		
+		auto vehicle_ent = get_vehicle_from_base((void*)_this);
+		if (!vehicle_ent) return false;
+
+		auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+		//NOTE(DavoSK): prevents spamming network when vehicle is not yet exploded
+		if (vehicle && !vehicle->wants_explode) {
+			librg_send(&network_context, NETWORK_VEHICLE_EXPLODE, data, {
+				librg_data_wu32(&data, vehicle_ent->id);
+			});
+			vehicle->wants_explode = true;
+		}
+
+		return false;
+	}
+
+	//----------------------------------------------
 	//C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
 	//----------------------------------------------s
 	
@@ -465,4 +489,9 @@ inline auto local_player_init() {
 	hooks::car_prepare_dropout_original = reinterpret_cast<hooks::C_car_Prepare_DropOut_t>(
 		DetourFunction((PBYTE)0x00426EC0, (PBYTE)&hooks::C_car_Prepare_DropOut)
 	);
+
+	hooks::c_car_carexplosion_original = reinterpret_cast<hooks::C_car_CarExplosion_t>(
+		DetourFunction((PBYTE)0x00421D60, (PBYTE)&hooks::C_car_CarExplosion)
+	);
+
 }
