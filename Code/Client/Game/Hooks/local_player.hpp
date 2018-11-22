@@ -267,9 +267,10 @@ namespace hooks
 
 	//----------------------------------------------
 	//C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
-	//----------------------------------------------s
-	
-	/*bool __fastcall C_Vehicle_Deform(void* _this, 
+	//----------------------------------------------
+	typedef bool(__thiscall* C_Vehicle_Deform_t)(void* _this, const Vector3D& unk1, const Vector3D& unk2, float unk3, float unk4, unsigned int unk5, Vector3D* unk6);
+	C_Vehicle_Deform_t c_vehicle_deform_original = nullptr;
+	bool __fastcall C_Vehicle_Deform(void* _this, 
 		DWORD edx, 	
 		const Vector3D & pos, 
 		const Vector3D & rot, 
@@ -278,13 +279,18 @@ namespace hooks
 		unsigned int unk3,
 		Vector3D* unk4) {
 		
-		//lets debug arguments
-		for (auto current_car : vehicle_deformations) {
-			vehicle_deform_original((void*)current_car, pos, rot, unk1, unk2, unk3, NULL);
+		printf("ARG1, %f %f %f\n", EXPLODE_VEC(pos));
+		printf("ARG2, %f %f %f\n", EXPLODE_VEC(rot));
+		printf("ARG3, %f\n", unk1);
+		printf("ARG4, %f\n", unk2);
+		printf("ARG5, %d\n", unk3);
+
+		if (unk4) {
+			printf("ARG6, %f %f %f\n", unk4->x, unk4->y, unk4->z);
 		}
 
-		return vehicle_deform_original(_this, pos, rot, unk1, unk2, unk3, unk4);
-	}*/
+		return c_vehicle_deform_original(_this, pos, rot, unk1, unk2, unk3, unk4);
+	}
 
 	/* 
 	* Simple filtration of forbidden object types 
@@ -435,10 +441,10 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
 }
 
 inline auto local_player_init() {
-	
+
 	//Scene
 	MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
-	
+
 	auto vd_value1 = hooks::vd_value - 50.0f;
 	auto vd_value2 = hooks::vd_value - 20.0f;
 	MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
@@ -464,7 +470,7 @@ inline auto local_player_init() {
 		DetourFunction((PBYTE)0x00585B40, (PBYTE)&hooks::C_Human_Do_Reload)
 	);
 
-	hooks::human_do_holster_original = reinterpret_cast<hooks::C_Human_Do_Holster_t>( 
+	hooks::human_do_holster_original = reinterpret_cast<hooks::C_Human_Do_Holster_t>(
 		DetourFunction((PBYTE)0x00585C60, (PBYTE)&hooks::C_Human_Do_Holster)
 	);
 
@@ -492,4 +498,8 @@ inline auto local_player_init() {
 		DetourFunction((PBYTE)0x00421D60, (PBYTE)&hooks::C_car_CarExplosion)
 	);
 
+	//Deform
+	hooks::c_vehicle_deform_original = reinterpret_cast<hooks::C_Vehicle_Deform_t>(
+		((PBYTE)0x004D5610, (PBYTE)&hooks::C_Vehicle_Deform)
+	);
 }

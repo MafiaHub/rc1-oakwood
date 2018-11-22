@@ -74,6 +74,7 @@ namespace MafiaSDK
 		{
 			// Never loading the FreeRide setup player
 			MemoryPatcher::InstallNopPatch(0x5BF06E, 5);
+			MemoryPatcher::InstallNopPatch(0x5BF0E2, 5);
 		}
 
 		inline void PatchDisableGameMenu()

@@ -86,7 +86,7 @@ auto mod_bind_events() {
 
 		auto mission_id = MafiaSDK::GetCurrentMissionID();
 		if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 
-			mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE) {
+			mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE_NOC) {
 
 			MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
 			chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
