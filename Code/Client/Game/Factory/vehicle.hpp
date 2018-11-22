@@ -13,6 +13,7 @@ auto vehicle_spawn(zpl_vec3 position,
     MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
     new_car->Init(vehicle_frame);
     new_car->SetActive(1);
+	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
 
 	auto veh_inter = &new_car->GetInterface()->vehicle_interface;
     
@@ -47,15 +48,13 @@ auto vehicle_spawn(zpl_vec3 position,
 
 		if (tyre == NULL) continue;
 
+		*(DWORD*)((DWORD)tyre + 0x120) = mafia_tyre.flags;
+		*(float*)((DWORD)tyre + 0x18C) = mafia_tyre.health;
+
 		if (mafia_tyre.health <= 0.0f) {
 			new_car->RemoveTyre(i);
 		}
-
-		*(DWORD*)((DWORD)tyre + 0x120) = mafia_tyre.flags;
-		*(float*)((DWORD)tyre + 0x18C) = mafia_tyre.health;
 	}
-
-	MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
 
     return new_car;
 }
