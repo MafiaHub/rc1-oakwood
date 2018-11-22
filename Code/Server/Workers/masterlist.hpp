@@ -89,3 +89,13 @@ void masterlist_push() {
 		break;
 	}
 }
+
+void masterlist_update() {
+	zpl_local_persist f64 last_masterlist_update = 0.0f;
+
+	if (GlobalConfig.visible && zpl_time_now() - last_masterlist_update > MASTERLIST_POLL_TIME) {
+		last_masterlist_update = zpl_time_now();
+
+		masterlist_push();
+	}
+}

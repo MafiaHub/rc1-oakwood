@@ -49,7 +49,9 @@ librg_ctx network_context = { 0 };
 #define OAKGEN_NATIVE()
 #define OAKGEN_FORWARD()
 
-#include "masterlist.hpp"
+#include "Workers/masterlist.hpp"
+#include "Workers/webserver.hpp"
+#include "Workers/misc.hpp"
 #include "natives.hpp"
 
 const char *jebe = R"foo(
@@ -61,8 +63,6 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
  `8888P'  88     88  dP     dP 8888' Y88'    `8888P'   `8888P'  8888888P     dP   dP   dP  dP        
                                                                                                      
 )foo";
-
-#define VEHICLE_SELECTION_TIME 2.0f
 
 auto main() -> int {
 
@@ -79,7 +79,7 @@ auto main() -> int {
 	mod_log("Initializing server ...");
 	mod_init_networking();
 	
-	librg_address addr = { (i32)GlobalConfig.port };//, (GlobalConfig.host.empty()) ? nullptr : (char *)GlobalConfig.host.c_str() };
+	librg_address addr = { (i32)GlobalConfig.port };
 	librg_network_start(&network_context, addr);
 	GlobalConfig.players = 0;
 	mod_log("Server started");
@@ -87,19 +87,7 @@ auto main() -> int {
 
 	load_dll(GlobalConfig.gamemode.c_str());
 
-	f64 last_streamers_selection = 0.0f;
-	f64 last_masterlist_update = 0.0f;
-
-	auto web_context = mg_start();
-	auto port_str = std::to_string(GlobalConfig.port);
-	mg_set_option(web_context, "ports", port_str.c_str());
-
-	if (!zpl_file_exists("static"))
-		zpl_path_mkdir("static", 0600);
-
-	mg_set_option(web_context, "root", "static");
-
-	// TODO(zaklaus): Refactor this into pieces or use zpl_timer
+	webserver_start();
 
 	bool running = true;
 	while (running) {
@@ -108,38 +96,13 @@ auto main() -> int {
 		if (gm.on_server_tick)
 			gm.on_server_tick();
 
-		if (GlobalConfig.visible && zpl_time_now() - last_masterlist_update > MASTERLIST_POLL_TIME) {
-			last_masterlist_update = zpl_time_now();
-
-			masterlist_push();
-		}
-
-		// if noone is in vehicle 
-		// set streamer to closest player
-		if (zpl_time_now() - last_streamers_selection > VEHICLE_SELECTION_TIME) {
-			last_streamers_selection = zpl_time_now();
-
-			librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | TYPE_VEHICLE), [](librg_ctx *ctx, librg_entity *entity) {
-				if (entity->user_data && entity->type & TYPE_VEHICLE) {
-					auto vehicle = (mafia_vehicle*)entity->user_data;
-					
-					if (vehicle->seats[0] == -1) {
-						auto streamer = mod_get_nearest_player(&network_context, entity->position);
-						if (streamer != nullptr) {
-							librg_entity_control_set(&network_context, entity->id, streamer->client_peer);
-						}
-						else {
-							librg_entity_control_remove(&network_context, entity->id);
-						}
-					}
-				}
-			});
-		}
+		masterlist_update();
+		vehicles_streamer_update();
 
 		zpl_sleep_ms(1);
 	}
 
-	mg_stop(web_context);
+	webserver_stop();
 	librg_network_stop(&network_context);
 	librg_free(&network_context);
 	free_dll();
