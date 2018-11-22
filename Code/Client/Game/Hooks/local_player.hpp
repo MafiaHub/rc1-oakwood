@@ -84,16 +84,14 @@ namespace hooks
 	//----------------------------------------------
 	typedef bool(__thiscall* C_Human_Hit_t)(void* _this, int hitType, Vector3D* unk1, Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame);
 	C_Human_Hit_t human_hit_original = nullptr;
-	bool __fastcall OnHit(void* _this, DWORD edx, int type, Vector3D* unk1,Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
+	bool __fastcall OnHit(void* _this, DWORD edx, int type, Vector3D* unk1,Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* attacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
 		
-		if (atacker == local_player.ped) {
-			local_player_hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, atacker, player_part);
-		}
+		if (hit_hook_skip && (_this != local_player.ped)) return 0;
 
-		if (hit_hook_skip) return 0;
+		bool ret_val = human_hit_original(_this, type, unk1, unk2, unk3, damage, attacker, player_part, frame);
 
-		bool ret_val = human_hit_original(_this, type, unk1, unk2, unk3, damage, atacker, player_part, frame);
 		if (_this == local_player.ped) {
+			local_player_hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, attacker, player_part);
 			auto player_int = local_player.ped->GetInterface();
 			bool is_alive = player_int->humanObject.entity.isActive;
 			if (!is_alive && !local_player.dead) {

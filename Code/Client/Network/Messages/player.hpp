@@ -240,8 +240,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_messa
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
-    librg_entity_id sender_id = librg_data_rent(msg->data);
     librg_entity_id victim_id = librg_data_rent(msg->data);
+    librg_entity_id sender_id = librg_data_rent(msg->data);
 
     auto sender_ent = librg_entity_fetch(&network_context, sender_id);
     auto victim_ent = librg_entity_fetch(&network_context, victim_id);
