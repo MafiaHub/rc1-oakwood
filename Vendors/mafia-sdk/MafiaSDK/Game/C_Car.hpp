@@ -1,5 +1,5 @@
 /*
-Copyright 2017 D�vid Svitana
+Copyright 2018 Dávid Svitana
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -208,6 +208,34 @@ namespace MafiaSDK
 				push tick_time
 				mov ecx, this
 				call functionAddress
+			}
+		}
+
+		/*
+		* TODO(DavoSK): Create tyre interface and dont do bullsheet offsets !
+		*/
+		DWORD GetCarTyre(unsigned int tyre_idx) {
+			return *(DWORD*)(*(DWORD*)((DWORD)this + 0xCA8) + 0x4 * tyre_idx);
+		}
+
+		void RemoveTyre(unsigned int tyre_idx) {
+			auto vehicle_tyre = GetCarTyre(tyre_idx);
+			if (vehicle_tyre) {
+				// Remove tyre frame
+				if (vehicle_tyre) {
+					I3D_Frame* tyre_frame = *(I3D_Frame**)((DWORD)vehicle_tyre + 0x4);
+					__asm {
+						mov eax, tyre_frame
+						push eax
+						mov ecx, [eax]
+						call dword ptr ds : [ecx]
+					}
+				}
+
+				// Mark entity to remove
+				DWORD tyre_entity_flags = *(DWORD*)(vehicle_tyre + 0x120);
+				tyre_entity_flags |= 0x40000000;
+				*(DWORD*)(vehicle_tyre + 0x120) = tyre_entity_flags;
 			}
 		}
 	};

@@ -192,6 +192,31 @@ namespace hooks
 
 		return human_do_throw_cocot_from_car_original(_this, car, seat);
 	}
+
+	//----------------------------------------------
+	//C_car::Prepare_DropOut_Wheel
+	//----------------------------------------------
+	typedef bool(__fastcall* C_car_Prepare_DropOut_Wheel_t)(void* _this, int idx, const Vector3D& speed, const Vector3D* unk);
+	C_car_Prepare_DropOut_Wheel_t car_prepare_dropout_wheel_original = nullptr;
+	bool __fastcall C_car_Prepare_DropOut_Wheel(void* _this, int idx, const Vector3D& speed, const Vector3D* unk) {
+
+		auto vehicle_ent = get_vehicle_from_base((void*)_this);
+		if (!vehicle_ent) return false;
+
+		zpl_vec3 send_speed = EXPAND_VEC(speed);
+		zpl_vec3 send_unk = { 0.0f, 0.0f, 0.0f };
+
+		if (unk) send_unk = EXPAND_VEC((*unk));
+
+		librg_send(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, data, {
+			librg_data_wu32(&data, vehicle_ent->id);
+			librg_data_wu32(&data, idx);
+			librg_data_wptr(&data, (void*)&send_speed, sizeof(zpl_vec3));
+			librg_data_wptr(&data, (void*)&send_unk, sizeof(zpl_vec3));
+		});
+
+		return false;
+	}
 	
 	//----------------------------------------------
 	//C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
@@ -407,4 +432,8 @@ inline auto local_player_init() {
 	// Vehicle
 	MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
 	MemoryPatcher::InstallJmpHook(0x004E5E9F, (DWORD)&ChangeUpdateCarPosCollision);
+
+	hooks::car_prepare_dropout_wheel_original = reinterpret_cast<hooks::C_car_Prepare_DropOut_Wheel_t>(
+		DetourFunction((PBYTE)0x00426DD0, (PBYTE)&hooks::C_car_Prepare_DropOut_Wheel)
+	);
 }

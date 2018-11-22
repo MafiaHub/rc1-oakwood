@@ -1,9 +1,19 @@
+struct mafia_vehicle_tyre {
+	u32 flags;
+	f32 health;
+};
+
 struct mafia_vehicle {
 	mafia_vehicle() {
 		zpl_zero_item(this);
 
 		for (int i = 0; i < 4; i++)
 			seats[i] = -1;
+
+		for (int i = 0; i < 4; i++) {
+			tyres[i].health = 100.0f;
+			tyres[i].flags = 0x1;
+		}
 	}
 #ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
@@ -50,4 +60,5 @@ struct mafia_vehicle {
     zpl_vec3 rotation;
 	zpl_vec3 rotation_second;
 	zpl_vec3 speed;
+	mafia_vehicle_tyre tyres[4];
 };
