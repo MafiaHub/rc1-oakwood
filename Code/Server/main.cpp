@@ -94,6 +94,11 @@ auto main() -> int {
 	auto port_str = std::to_string(GlobalConfig.port);
 	mg_set_option(web_context, "ports", port_str.c_str());
 
+	if (!zpl_file_exists("static"))
+		zpl_path_mkdir("static", 0600);
+
+	mg_set_option(web_context, "root", "static");
+
 	// TODO(zaklaus): Refactor this into pieces or use zpl_timer
 
 	bool running = true;
