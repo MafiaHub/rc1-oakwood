@@ -103,6 +103,8 @@ librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* m
 			mod_message_send(&network_context, NETWORK_VEHICLE_EXPLODE, [&](librg_data *data) {
 				librg_data_wu32(data, vehicle_ent->id);
 			});
+
+			librg_entity_destroy(&network_context, vehicle_ent->id);
 		}
 	}
 });
