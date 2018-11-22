@@ -67,14 +67,12 @@ inline auto local_player_hit(
 	MafiaSDK::C_Actor* attacker, 
 	unsigned int player_part) -> void {
 
-	auto victim_ent = get_player_from_base(victim);
+	auto attacker_ent = get_player_from_base(attacker);
 	
-	if (!victim_ent || victim == attacker) return;
+	if (!victim || !attacker_ent) return;
 	
-	victim->GetInterface()->health -= damage;
-
 	librg_send(&network_context, NETWORK_PLAYER_HIT, data, {
-		librg_data_went(&data, victim_ent->id);
+		librg_data_went(&data, attacker_ent->id);
 		librg_data_wu32(&data, hit_type);
 		librg_data_wptr(&data, (void*)unk1, sizeof(zpl_vec3));
 		librg_data_wptr(&data, (void*)unk2, sizeof(zpl_vec3));
