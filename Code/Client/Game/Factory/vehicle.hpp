@@ -42,6 +42,7 @@ auto vehicle_spawn(zpl_vec3 position,
 	veh_inter->accelerating		= spawn_struct->accelerating;
 	veh_inter->engine_rpm		= spawn_struct->engine_rpm;
 
+	// NOTE(DavoSK): Update tyres
 	for (int i = 0; i < 4; i++) {
 		auto mafia_tyre = spawn_struct->tyres[i];
 		auto tyre = new_car->GetCarTyre(i);
@@ -53,6 +54,13 @@ auto vehicle_spawn(zpl_vec3 position,
 
 		if (mafia_tyre.health <= 0.0f) {
 			new_car->RemoveTyre(i);
+		}
+	}
+	
+	// NOTE(DavoSK): Update components
+	for (int i = 0; i < 15; i++) {
+		if (spawn_struct->destroyed_components[i]) {
+			new_car->RemoveComponent(i);
 		}
 	}
 

@@ -61,4 +61,5 @@ struct mafia_vehicle {
 	zpl_vec3 rotation_second;
 	zpl_vec3 speed;
 	mafia_vehicle_tyre tyres[4];
+	u8 destroyed_components[15];
 };

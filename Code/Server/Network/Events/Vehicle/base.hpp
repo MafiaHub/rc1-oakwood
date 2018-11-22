@@ -47,6 +47,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
 	librg_data_wptr(evnt->data, vehicle->model, sizeof(char) * 32);
 	librg_data_wptr(evnt->data, vehicle->seats, sizeof(i32) * 4);
 	librg_data_wptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
+	librg_data_wptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
 	librg_data_wf32(evnt->data, vehicle->engine_rpm);
 	librg_data_wf32(evnt->data, vehicle->engine_health);

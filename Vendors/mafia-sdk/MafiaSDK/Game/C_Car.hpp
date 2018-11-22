@@ -199,6 +199,11 @@ namespace MafiaSDK
 		/*
 		* TODO(DavoSK): Create tyre interface and dont do bullsheet offsets !
 		*/
+		DWORD GetCarComponentFrame(unsigned int tyre_idx)
+		{
+			return *(DWORD*)(*(DWORD*)((DWORD)this + 0x288) + 52 * tyre_idx);
+		}
+		
 		DWORD GetCarTyre(unsigned int tyre_idx) 
 		{
 			return *(DWORD*)(*(DWORD*)((DWORD)this + 0xCA8) + 0x4 * tyre_idx);
@@ -224,6 +229,21 @@ namespace MafiaSDK
 				DWORD tyre_entity_flags = *(DWORD*)(vehicle_tyre + 0x120);
 				tyre_entity_flags |= 0x40000000;
 				*(DWORD*)(vehicle_tyre + 0x120) = tyre_entity_flags;
+			}
+		}
+
+		void RemoveComponent(unsigned int component_idx)
+		{
+			auto component = GetCarComponentFrame(component_idx);
+			if (component) {
+
+				*(BYTE*)(component + 0x0E) |= 1;
+				__asm {
+					mov eax, dword ptr ds : [component]
+					push eax
+					mov ecx, [eax]
+					call dword ptr ds : [ecx]
+				}
 			}
 		}
 	};

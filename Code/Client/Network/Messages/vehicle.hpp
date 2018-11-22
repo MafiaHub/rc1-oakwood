@@ -1,3 +1,23 @@
+librg_network_add(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, [](librg_message* msg) {
+
+	u32 vehicle_id = librg_data_ru32(msg->data);
+	u32 component_idx = librg_data_ru32(msg->data);
+	Vector3D speed, unk;
+
+	librg_data_rptr(msg->data, &speed, sizeof(zpl_vec3));
+	librg_data_rptr(msg->data, &unk, sizeof(zpl_vec3));
+
+	auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+	if (vehicle_ent && vehicle_ent->user_data) {
+		auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+		if (vehicle->car) {
+			vehicle->destroyed_components[component_idx] = 1;
+			hooks::car_prepare_dropout_original(vehicle->car, component_idx, speed, &unk);
+		}
+	}
+});
+
 librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, [](librg_message* msg) {
 
 	u32 vehicle_id = librg_data_ru32(msg->data);
