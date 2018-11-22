@@ -10,6 +10,8 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
 
 auto on_librg_connection_accept(librg_event* evnt) -> void {
 	evnt->entity->type = TYPE_PLAYER;
+	GlobalConfig.players++;
+
 	auto ped = new mafia_player;
 	strcpy(ped->name, request_player_data.name);
 
@@ -23,11 +25,14 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
 
-	if(evnt->entity && evnt->entity->type == TYPE_PLAYER)
+	if (evnt->entity && evnt->entity->type == TYPE_PLAYER)
+	{
 		player_connection_disconnect(evnt);
+		GlobalConfig.players--;
 
-	if (gm.on_player_disconnected)
-        gm.on_player_disconnected(evnt, evnt->entity);
+		if (gm.on_player_disconnected)
+			gm.on_player_disconnected(evnt, evnt->entity);
+	}
 }
 
 auto on_librg_clientstreamer_update(librg_event* evnt) -> void {

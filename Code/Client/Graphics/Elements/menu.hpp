@@ -65,11 +65,10 @@ namespace menu {
 	};
 
 	inline auto fetch_master_server() -> std::string {
-        return "";
-		http_t* request = http_get("http://madaraszd.net:3001/", NULL);
+		http_t* request = http_get("http://oakmaster.madaraszd.net/fetch", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
-			MessageBoxW(0, L"No to ma pojeb", L"Nebezi ti master ty kokotko", MB_OK);
+			MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
 			exit(EXIT_FAILURE);
 			return "";
 		}
@@ -85,7 +84,7 @@ namespace menu {
 
 		if (status == HTTP_STATUS_FAILED) {
 			printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
-            MessageBoxW(0, L"No to ma pojeb", L"Nebezi ti master ty kokotko", MB_OK);
+			MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
             exit(EXIT_FAILURE);
 			http_release(request);
 			return "";
@@ -106,12 +105,16 @@ namespace menu {
 			u8 failed = 0;
 			zpl_string json_config_data = zpl_string_make(zpl_heap(), fetched_list.c_str());
 			zpl_json_object json_master_data = { 0 };
+
 			zpl_json_parse(&json_master_data, zpl_string_length(json_config_data), json_config_data, zpl_heap(), true, &failed);
 
 			if (!failed) {
 
 				zpl_json_object *server_property;
-				zpl_json_find(&json_master_data, "servers", false, &server_property);
+				zpl_json_find(&json_master_data, "server", false, &server_property);
+
+				if (!server_property)
+					return;
 
 				for (i32 i = 0, comp_id = Component::DummyServer - 1; 
 					i < zpl_array_count(server_property->nodes); ++i, ++comp_id) {
@@ -128,13 +131,13 @@ namespace menu {
 					menu->PridejComponentPod(comp_id, next_id, 0, 0, 0, 0);
 					menu->SetText(next_id, server_property->string);
 					
-					zpl_json_find(server_node, "ip", false, &server_property);
+					zpl_json_find(server_node, "host", false, &server_property);
 					new_server_data.server_ip = std::string(server_property->string);
 					
-					zpl_json_find(server_node, "players_max", false, &server_property);
+					zpl_json_find(server_node, "maxPlayers", false, &server_property);
 					new_server_data.max_players = "Max players: " + std::to_string(server_property->integer);
 
-					zpl_json_find(server_node, "players_now", false, &server_property);
+					zpl_json_find(server_node, "players", false, &server_property);
 					new_server_data.current_players = "Players: " + std::to_string(server_property->integer);
 
 					servers.push_back(new_server_data);

@@ -15,6 +15,12 @@
 
 #include "librg/librg_ext.h"
 
+/*
+* HTTP lib
+*/
+#define HTTP_IMPLEMENTATION
+#include "http/http.h" 
+
 /* 
 * Shared
 */
@@ -23,9 +29,12 @@
 #include "helpers.hpp"
 
 struct _GlobalConfig {
+	std::string name;
 	i64 port;
+	i64 players;
 	i64 max_players;
 	std::string gamemode;
+	b32 visible;
 } GlobalConfig;
 
 librg_ctx network_context = { 0 };
@@ -38,6 +47,7 @@ librg_ctx network_context = { 0 };
 #define OAKGEN_NATIVE()
 #define OAKGEN_FORWARD()
 
+#include "masterlist.hpp"
 #include "natives.hpp"
 
 const char *jebe = R"foo(
@@ -50,13 +60,15 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
                                                                                                      
 )foo";
 
+#define VEHICLE_SELECTION_TIME 2.0f
+
 auto main() -> int {
 
 	#ifdef _WIN32  
 		std::setlocale(LC_ALL, "C");
 		SetConsoleOutputCP(CP_UTF8);
 	#endif
-	
+
 	zpl_printf("%s", jebe);
 
 	init_config();
@@ -67,12 +79,16 @@ auto main() -> int {
 	
 	librg_address addr = { (i32)GlobalConfig.port };
 	librg_network_start(&network_context, addr);
+	GlobalConfig.players = 0;
 	mod_log("Server started");
 	mod_log("Loading gamemode...");
 
 	load_dll(GlobalConfig.gamemode.c_str());
 
 	f64 last_streamers_selection = 0.0f;
+	f64 last_masterlist_update = 0.0f;
+
+	// TODO(zaklaus): Refactor this into pieces or use zpl_timer
 
 	bool running = true;
 	while (running) {
@@ -81,9 +97,17 @@ auto main() -> int {
 		if (gm.on_server_tick)
 			gm.on_server_tick();
 
+		if (GlobalConfig.visible && zpl_time_now() - last_masterlist_update > MASTERLIST_POLL_TIME) {
+			last_masterlist_update = zpl_time_now();
+
+			masterlist_push();
+		}
+
 		// if noone is in vehicle 
 		// set streamer to closest player
-		if (zpl_time_now() - last_streamers_selection > 2.0f) {
+		if (zpl_time_now() - last_streamers_selection > VEHICLE_SELECTION_TIME) {
+			last_streamers_selection = zpl_time_now();
+
 			librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | TYPE_VEHICLE), [](librg_ctx *ctx, librg_entity *entity) {
 				if (entity->user_data && entity->type & TYPE_VEHICLE) {
 					auto vehicle = (mafia_vehicle*)entity->user_data;
@@ -99,8 +123,6 @@ auto main() -> int {
 					}
 				}
 			});
-
-			last_streamers_selection = zpl_time_now();
 		}
 
 		zpl_sleep_ms(1);
