@@ -2,6 +2,10 @@
 namespace menu {
 
 	enum Component {
+
+		//Profile select
+		FirstProfile = 100,
+
 		//LoadingGame
 		LoadingImage = 101,
 		LoadingText = 200,
@@ -142,6 +146,23 @@ namespace menu {
 	inline auto init() {
 
 		MafiaSDK::GM_Menu_Hooks::HookOnMenuItemClick([&](unsigned int component_id) {
+
+			if (component_id >= (int)Component::FirstProfile && 
+				component_id <= ((int)Component::FirstProfile + 5)) {
+
+				DWORD profile_ptr = 0x006D4628;
+				auto first_elm = *(WORD*)(profile_ptr + 0x8);
+				auto last_elm = *(WORD*)(profile_ptr + 0x4);
+				u32 profile_count = (first_elm - last_elm) / 84;
+			
+				if (component_id <= Component::FirstProfile + profile_count) {
+					auto text = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(component_id));
+					
+					if (GlobalConfig.username.empty()) {
+						GlobalConfig.username = text;
+					}
+				}
+			}
 
 			if (component_id == Component::ConnectButton) {
 				GlobalConfig.server_address = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));

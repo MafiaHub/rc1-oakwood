@@ -3,7 +3,7 @@
 
 constexpr const char* config_file_name = "multiplayer.json";
 static const char *mod_default_config = R"foo(
-username = "CHANGEME"
+username = ""
 ip = "127.0.0.1"
 view_distance = 0
 )foo";
