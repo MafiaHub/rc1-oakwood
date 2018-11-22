@@ -1681,7 +1681,7 @@ extern "C" {
             librg_table_init(&ctx->network.connected_peers, ctx->allocator);
             ENetAddress address = {0};
 
-            if (addr.host && zpl_strcmp(addr.host, "localhost") == 0) {
+            if (addr.host && zpl_strcmp(addr.host, "localhost") != 0) {
                 enet_address_set_host(&address, addr.host);
             } else {
                 address.host = ENET_HOST_ANY;

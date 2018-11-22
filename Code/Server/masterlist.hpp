@@ -4,6 +4,7 @@
 #define MASTERLIST_PUSH_TIME 30.0f
 #define MASTERLIST_POLL_TIME 1.0f
 #define MASTERLIST_FORMAT R"FOO({
+	"host": "%s",
 	"name": "%s",
 	"players": %d,
 	"maxPlayers": %d,
@@ -15,6 +16,7 @@ http_t* masterlist_form_request() {
 	zpl_local_persist char buf[512] = { 0 };
 
 	snprintf(buf, 512, MASTERLIST_FORMAT,
+		GlobalConfig.host.c_str(),
 		GlobalConfig.name.c_str(),
 		(int)GlobalConfig.players,
 		(int)GlobalConfig.max_players,

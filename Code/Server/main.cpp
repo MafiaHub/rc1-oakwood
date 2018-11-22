@@ -19,7 +19,8 @@
 * HTTP lib
 */
 #define HTTP_IMPLEMENTATION
-#include "http/http.h" 
+#include "http/http.h"
+#include "http/mongoose.h"
 
 /* 
 * Shared
@@ -30,6 +31,7 @@
 
 struct _GlobalConfig {
 	std::string name;
+	std::string host;
 	i64 port;
 	i64 players;
 	i64 max_players;
@@ -77,7 +79,7 @@ auto main() -> int {
 	mod_log("Initializing server ...");
 	mod_init_networking();
 	
-	librg_address addr = { (i32)GlobalConfig.port };
+	librg_address addr = { (i32)GlobalConfig.port };//, (GlobalConfig.host.empty()) ? nullptr : (char *)GlobalConfig.host.c_str() };
 	librg_network_start(&network_context, addr);
 	GlobalConfig.players = 0;
 	mod_log("Server started");
@@ -87,6 +89,10 @@ auto main() -> int {
 
 	f64 last_streamers_selection = 0.0f;
 	f64 last_masterlist_update = 0.0f;
+
+	auto web_context = mg_start();
+	auto port_str = std::to_string(GlobalConfig.port);
+	mg_set_option(web_context, "ports", port_str.c_str());
 
 	// TODO(zaklaus): Refactor this into pieces or use zpl_timer
 
@@ -128,6 +134,7 @@ auto main() -> int {
 		zpl_sleep_ms(1);
 	}
 
+	mg_stop(web_context);
 	librg_network_stop(&network_context);
 	librg_free(&network_context);
 	free_dll();

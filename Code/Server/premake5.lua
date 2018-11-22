@@ -7,7 +7,9 @@ project "Server"
         "**.h",
         "**.hpp",
         "**.cpp",
-        "**.rc"
+        "**.rc",
+        "../../Vendors/http/mongoose.c",
+        "../../Vendors/http/mongoose.h"
     }
 	configuration "Debug"
 		debugdir "Bin/Debug"
