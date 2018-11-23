@@ -158,6 +158,9 @@ OAK_MOD_MAIN {
 
 			player->SetModelByID(modelID);
 		}
+		else if (msg.find("/healme") != std::string::npos) {
+			player->SetHealth(100.0f);
+		}
         else gm->ChatPrint(player->GetName() + " says: " + msg);
 
         return true;

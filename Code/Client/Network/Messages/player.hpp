@@ -302,6 +302,27 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* ms
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_SET_HEALTH, [](librg_message* msg) {
+	auto entity_id = librg_data_rent(msg->data);
+	auto entity = librg_entity_fetch(&network_context, entity_id);
+	if (entity) {
+		auto health = librg_data_rf32(msg->data);
+
+		auto player = (mafia_player*)entity->user_data;
+
+		if (player) {
+			player->health = health;
+
+			if (player->ped) {
+				auto player_int = player->ped->GetInterface();
+				MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
+
+				player_int->health = health;
+			}
+		}
+	}
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message* msg) {
     auto entity_id = librg_data_rent(msg->data);
     zpl_vec3 rot;

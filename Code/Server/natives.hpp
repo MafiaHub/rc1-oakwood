@@ -85,6 +85,19 @@ extern "C" {
         });
     }
 
+	OAKGEN_NATIVE();
+	void oak_player_set_health(librg_entity *entity, float health) {
+		if (!entity->user_data || entity->type != TYPE_PLAYER) return;
+
+		auto player = (mafia_player*)entity->user_data;
+		player->health = health;
+
+		librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
+			librg_data_went(&data, entity->id);
+			librg_data_wf32(&data, health);
+		});
+	}
+
     OAKGEN_NATIVE();
     void oak_player_set_rotation(librg_entity *entity, zpl_vec3 rotation) {
         auto player = (mafia_player*)(entity->user_data);

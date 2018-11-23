@@ -36,9 +36,11 @@ lua.new_usertype<Player>("Player",
 );
 
 lua.new_usertype<Vehicle>("Vehicle",
-	BIND_FUNCTION(Vehicle,  SetPos),
-	BIND_FUNCTION(Vehicle,  GetPos),
-	BIND_FUNCTION(Vehicle,  SetDir),
-	BIND_FUNCTION(Vehicle,  GetDir)
+	BIND_FUNCTION(Vehicle,  SetPosition),
+	BIND_FUNCTION(Vehicle,  GetPosition),
+	BIND_FUNCTION(Vehicle,  SetDirection),
+	BIND_FUNCTION(Vehicle,  GetDirection),
+	BIND_FUNCTION(Vehicle,  SetHeadingRotation),
+	BIND_FUNCTION(Vehicle,  GetHeadingRotation)
 );
 

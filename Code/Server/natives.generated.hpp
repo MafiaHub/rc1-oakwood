@@ -8,6 +8,7 @@ vt->player_inventory_add = oak_player_inventory_add;
 vt->player_spawn = oak_player_spawn;
 vt->player_respawn = oak_player_respawn;
 vt->player_set_position = oak_player_set_position;
+vt->player_set_health = oak_player_set_health;
 vt->player_set_rotation = oak_player_set_rotation;
 vt->player_set_camera = oak_player_set_camera;
 vt->player_unlock_camera = oak_player_unlock_camera;

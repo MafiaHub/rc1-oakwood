@@ -8,6 +8,7 @@ oak_player_inventory_add_ptr *player_inventory_add;
 oak_player_spawn_ptr *player_spawn;
 oak_player_respawn_ptr *player_respawn;
 oak_player_set_position_ptr *player_set_position;
+oak_player_set_health_ptr *player_set_health;
 oak_player_set_rotation_ptr *player_set_rotation;
 oak_player_set_camera_ptr *player_set_camera;
 oak_player_unlock_camera_ptr *player_unlock_camera;

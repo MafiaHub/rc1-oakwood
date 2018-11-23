@@ -28,6 +28,9 @@ typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
 #define OAK_PLAYER_SET_POSITION(name) void name(librg_entity *entity, zpl_vec3 position)
 typedef OAK_PLAYER_SET_POSITION(oak_player_set_position_ptr);
 
+#define OAK_PLAYER_SET_HEALTH(name) void name(librg_entity *entity, float health)
+typedef OAK_PLAYER_SET_HEALTH(oak_player_set_health_ptr);
+
 #define OAK_PLAYER_SET_ROTATION(name) void name(librg_entity *entity, zpl_vec3 rotation)
 typedef OAK_PLAYER_SET_ROTATION(oak_player_set_rotation_ptr);
 
