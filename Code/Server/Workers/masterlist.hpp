@@ -2,6 +2,7 @@
 
 #define MASTERLIST_HOST "http://oakmaster.madaraszd.net/push"
 #define MASTERLIST_PUSH_TIME 30.0f
+#define MASTERLIST_PUSH_TIMEOUT 5.0f
 #define MASTERLIST_POLL_TIME 1.0f
 #define MASTERLIST_FORMAT R"FOO({
 	"host": "%s",
@@ -52,17 +53,24 @@ std::string masterlist_response(http_t *res) {
 
 void masterlist_push() {
 	zpl_local_persist http_t *req = nullptr;
-	zpl_local_persist f64 last_push_time = - MASTERLIST_PUSH_TIME;
+	zpl_local_persist f64 last_push_time = -MASTERLIST_PUSH_TIME;
 	zpl_local_persist b32 was_push_successful = false;
+	zpl_local_persist f32 push_time = 0.0f;
 
 	if (zpl_time_now() - last_push_time > MASTERLIST_PUSH_TIME) {
 		last_push_time = zpl_time_now();
 		req = masterlist_form_request();
+		push_time = zpl_time_now();
 	}
 
 	if (!req) return;
 
 	auto status = http_process(req);
+
+	if (status == HTTP_STATUS_PENDING && (zpl_time_now() - push_time > MASTERLIST_PUSH_TIMEOUT)) {
+		// Force the server to re-send the request if it takes too long for the existing request to be processed.
+		last_push_time = -MASTERLIST_PUSH_TIME;
+	}
 
 	switch (status) {
 	case HTTP_STATUS_FAILED:
