@@ -54,6 +54,14 @@ GameMode::GameMode(oak_api *mod) {
             onPlayerDied(player);
     };
 
+    mod->on_player_hit = [=](librg_entity *attacker_ent, librg_entity *victim_ent, float damage) {
+        auto attacker = GetPlayerByEntity(attacker_ent);
+        auto victim = GetPlayerByEntity(victim_ent);
+
+        if (attacker && victim && onPlayerHit)
+            onPlayerHit(attacker, victim, damage);
+    };
+
     mod->on_player_chat = [=](librg_entity* entity, std::string msg) {
         auto player = GetPlayerByEntity(entity);
 
@@ -132,6 +140,11 @@ void GameMode::SetOnPlayerDisconnected(std::function<void(Player*)> callback)
 void GameMode::SetOnPlayerDied(std::function<void(Player*)> callback)
 {
     onPlayerDied = callback;
+}
+
+void GameMode::SetOnPlayerHit(std::function<void(Player*,Player*,float)> callback)
+{
+    onPlayerHit = callback;
 }
 
 void GameMode::SetOnPlayerChat(std::function<bool(Player*, std::string msg)> callback)

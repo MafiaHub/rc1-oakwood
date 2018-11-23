@@ -39,9 +39,14 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
 	auto player = (mafia_player*)sender_ent->user_data;
 
+	float current_health = player->health;
+
 	if (player) {
 		player->health = health;
 	}
+
+	if (gm.on_player_hit)
+		gm.on_player_hit(librg_entity_fetch(&network_context, attacker_id), sender_ent, current_health - health);
 
 	mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data *data) {
 		librg_data_went(data, sender_ent->id);

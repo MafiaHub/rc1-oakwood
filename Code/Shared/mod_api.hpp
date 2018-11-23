@@ -49,6 +49,7 @@ struct oak_api {
     std::function<void(librg_event* evnt, librg_entity* entity)> on_player_disconnected;
     std::function<void(librg_entity* entity, mafia_player* ped)> on_player_died;
     std::function<bool(librg_entity* entity, std::string msg)> on_player_chat;
+    std::function<void(librg_entity* attacker, librg_entity* victim, float damage)> on_player_hit;
     std::function<void()> on_server_tick;
 };
 

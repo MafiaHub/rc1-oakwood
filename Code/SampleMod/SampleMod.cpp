@@ -108,6 +108,10 @@ OAK_MOD_MAIN {
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });
 
+	gm->SetOnPlayerHit([=](Player *attacker, Player *victim, float damage) {
+		// do something cool when player is hit
+	});
+
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
         if(msg.find("/car") != std::string::npos) {
 			auto parts = split_string(msg);
