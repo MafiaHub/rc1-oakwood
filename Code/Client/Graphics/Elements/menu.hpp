@@ -64,7 +64,12 @@ namespace menu {
 		set_string_if_found(Component::LoadingImage, "online.tga");
 	};
 
+#define MASTER_PULL_TIMEOUT 3.0f
+#define MASTER_RETRIES_MAX 3
+
 	inline auto fetch_master_server() -> std::string {
+		zpl_local_persist f32 fetch_time = 0.0f;
+		zpl_local_persist u8 retries_count = 0;
 		http_t* request = http_get("http://oakmaster.madaraszd.net/fetch", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
@@ -73,12 +78,28 @@ namespace menu {
 			return "";
 		}
 
+		fetch_time = zpl_time_now();
+
 		http_status_t status = HTTP_STATUS_PENDING;
 		int prev_size = -1;
 		while (status == HTTP_STATUS_PENDING) {
 			status = http_process(request);
 			if (prev_size != (int)request->response_size) {
 				prev_size = (int)request->response_size;
+			}
+
+			if (zpl_time_now() - fetch_time > MASTER_PULL_TIMEOUT) {
+				if (retries_count >= MASTER_RETRIES_MAX) {
+					printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
+					MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
+					exit(EXIT_FAILURE);
+					http_release(request);
+					return "";
+				}
+
+				retries_count++;
+
+				return fetch_master_server();
 			}
 		}
 
@@ -89,6 +110,9 @@ namespace menu {
 			http_release(request);
 			return "";
 		}
+
+		fetch_time = 0.0f;
+		retries_count = 0;
 
 		auto to_return = std::string(static_cast<const char*>(request->response_data));
 		http_release(request);

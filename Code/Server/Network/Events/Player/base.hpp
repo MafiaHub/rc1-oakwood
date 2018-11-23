@@ -4,6 +4,7 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
 	librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
+	player->health = librg_data_rf32(evnt->data);
 	player->animation_state = librg_data_ru8(evnt->data);
 	player->is_crouching = librg_data_ru8(evnt->data);
 	player->is_aiming = librg_data_ru8(evnt->data);
@@ -14,7 +15,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 	auto player = (mafia_player *)evnt->entity->user_data;
 	librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
 	librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3));
-	//librg_data_wf32(evnt->data, player->health);
+	librg_data_wf32(evnt->data, player->health);
 	librg_data_wu8(evnt->data, player->animation_state);
 	librg_data_wu8(evnt->data, player->is_crouching);
 	librg_data_wu8(evnt->data, player->is_aiming);

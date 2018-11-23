@@ -18,20 +18,28 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 	evnt->entity->user_data = ped;
 
 	librg_entity_control_set(evnt->ctx, evnt->entity->id, evnt->peer);
+	enet_peer_timeout(evnt->peer, 10, 5000, 10000);
 
     if (gm.on_player_connected)
         gm.on_player_connected(evnt, evnt->entity, ped);
+
+	printf("Player '%s' has been connected!\n", ped->name);
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
 
 	if (evnt->entity && evnt->entity->type == TYPE_PLAYER)
 	{
-		player_connection_disconnect(evnt);
-		GlobalConfig.players--;
+		if (evnt->entity->user_data) {
+			auto player = (mafia_player*)evnt->entity->user_data;
+			printf("Player '%s' has been disconnected!\n", player->name);
+		}
 
 		if (gm.on_player_disconnected)
 			gm.on_player_disconnected(evnt, evnt->entity);
+
+		player_connection_disconnect(evnt);
+		GlobalConfig.players--;
 	}
 }
 
