@@ -68,13 +68,13 @@ HRESULT STDMETHODCALLTYPE CDirectInput8Proxy::CreateDevice(REFGUID rguid, LPDIRE
 
         *lplpDirectInputDevice = new CDirectInputDevice8Proxy( *lplpDirectInputDevice, type );
     
-		if (type == DIDEVICE_TYPE_MOUSE) {
-			input::InputState.devices[input::ZINPUT_MOUSE] = (CDirectInputDevice8Proxy *)*lplpDirectInputDevice;
-		}
-		else if (type == DIDEVICE_TYPE_KEYBOARD) {
-			input::InputState.devices[input::ZINPUT_KEYBOARD] = (CDirectInputDevice8Proxy *)*lplpDirectInputDevice;
-		}
-	}
+        if (type == DIDEVICE_TYPE_MOUSE) {
+            input::InputState.devices[input::ZINPUT_MOUSE] = (CDirectInputDevice8Proxy *)*lplpDirectInputDevice;
+        }
+        else if (type == DIDEVICE_TYPE_KEYBOARD) {
+            input::InputState.devices[input::ZINPUT_KEYBOARD] = (CDirectInputDevice8Proxy *)*lplpDirectInputDevice;
+        }
+    }
 
     return hResult;
 }

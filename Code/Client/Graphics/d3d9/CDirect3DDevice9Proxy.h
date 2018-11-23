@@ -8,9 +8,9 @@
 ***************************************************************/
 
 namespace graphics {
-	inline auto end_scene(IDirect3DDevice9*) -> void;
-	inline auto device_reset(IDirect3DDevice9*) -> void;
-	inline auto device_lost(IDirect3DDevice9*) -> void;
+    inline auto end_scene(IDirect3DDevice9*) -> void;
+    inline auto device_reset(IDirect3DDevice9*) -> void;
+    inline auto device_lost(IDirect3DDevice9*) -> void;
 }
 
 
@@ -151,7 +151,7 @@ public:
 
 CDirect3DDevice9Proxy::CDirect3DDevice9Proxy(IDirect3D9 * pD3D, IDirect3DDevice9 * pDevice) {
     m_pD3D = pD3D;
-	m_pD3DDevice = pDevice;
+    m_pD3DDevice = pDevice;
 }
 
 HRESULT STDMETHODCALLTYPE CDirect3DDevice9Proxy::QueryInterface(REFIID riid, void ** ppvObj) {
@@ -354,7 +354,7 @@ HRESULT STDMETHODCALLTYPE CDirect3DDevice9Proxy::BeginScene( ) {
 
 HRESULT STDMETHODCALLTYPE CDirect3DDevice9Proxy::EndScene( ) {
 
-	graphics::end_scene(m_pD3DDevice);
+    graphics::end_scene(m_pD3DDevice);
     return m_pD3DDevice->EndScene();
 }
 

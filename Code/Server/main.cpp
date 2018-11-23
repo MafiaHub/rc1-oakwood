@@ -31,13 +31,13 @@
 #include "helpers.hpp"
 
 struct _GlobalConfig {
-	std::string name;
-	std::string host;
-	i64 port;
-	i64 players;
-	i64 max_players;
-	std::string gamemode;
-	b32 visible;
+    std::string name;
+    std::string host;
+    i64 port;
+    i64 players;
+    i64 max_players;
+    std::string gamemode;
+    b32 visible;
 } GlobalConfig;
 
 librg_ctx network_context = { 0 };
@@ -67,45 +67,45 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
 
 auto main() -> int {
 
-	#ifdef _WIN32  
-		std::setlocale(LC_ALL, "C");
-		SetConsoleOutputCP(CP_UTF8);
-	#endif
+    #ifdef _WIN32  
+        std::setlocale(LC_ALL, "C");
+        SetConsoleOutputCP(CP_UTF8);
+    #endif
 
-	zpl_printf("%s", jebe);
+    zpl_printf("%s", jebe);
 
-	init_config();
-	init_api();
+    init_config();
+    init_api();
 
-	mod_log("Initializing server ...");
-	mod_init_networking();
-	
-	librg_address addr = { (i32)GlobalConfig.port };
-	librg_network_start(&network_context, addr);
-	GlobalConfig.players = 0;
-	mod_log("Server started");
-	mod_log("Loading gamemode...");
+    mod_log("Initializing server ...");
+    mod_init_networking();
+    
+    librg_address addr = { (i32)GlobalConfig.port };
+    librg_network_start(&network_context, addr);
+    GlobalConfig.players = 0;
+    mod_log("Server started");
+    mod_log("Loading gamemode...");
 
-	load_dll(GlobalConfig.gamemode.c_str());
+    load_dll(GlobalConfig.gamemode.c_str());
 
-	webserver_start();
+    webserver_start();
 
-	bool running = true;
-	while (running) {
-		librg_tick(&network_context);
+    bool running = true;
+    while (running) {
+        librg_tick(&network_context);
 
-		if (gm.on_server_tick)
-			gm.on_server_tick();
+        if (gm.on_server_tick)
+            gm.on_server_tick();
 
-		masterlist_update();
-		vehicles_streamer_update();
+        masterlist_update();
+        vehicles_streamer_update();
 
-		zpl_sleep_ms(1);
-	}
+        zpl_sleep_ms(1);
+    }
 
-	webserver_stop();
-	librg_network_stop(&network_context);
-	librg_free(&network_context);
-	free_dll();
-	return 0;
+    webserver_stop();
+    librg_network_stop(&network_context);
+    librg_free(&network_context);
+    free_dll();
+    return 0;
 }

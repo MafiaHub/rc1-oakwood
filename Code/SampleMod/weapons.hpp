@@ -16,7 +16,7 @@ inline auto mode_generate_spawn() -> zpl_vec3 {
 weapon *weaponlist[] = {
     &grenade,
     &colt,
-	&palka
+    &palka
 };
 
 auto add_weapons(Player *player) {

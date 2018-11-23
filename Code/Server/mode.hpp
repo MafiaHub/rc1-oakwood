@@ -16,7 +16,7 @@ auto init_api() {
 auto load_dll(const char *name) {
     if (!zpl_file_exists(name)) {
         zpl_printf("Gamemode '%s' not found! Exiting...\n", name);
-		getchar();
+        getchar();
         zpl_exit(1);
     }
 
@@ -24,7 +24,7 @@ auto load_dll(const char *name) {
 
     if (!dll_handle) {
         zpl_printf("Gamemode '%s' has corrupted DLL file! Exiting...\n", name);
-		getchar();
+        getchar();
         zpl_exit(1);
     }
 

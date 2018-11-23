@@ -8,7 +8,7 @@ auto player_spawn(zpl_vec3 position,
                   f32 health,
                   bool is_local_player, 
                   int expectedWeaponId,
-				  bool is_in_car) -> MafiaSDK::C_Player *{
+                  bool is_in_car) -> MafiaSDK::C_Player *{
                       
     Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
     Vector3D default_pos = EXPAND_VEC(position);
@@ -43,10 +43,10 @@ auto player_spawn(zpl_vec3 position,
 
     new_ped->GetInterface()->humanObject.health = health;
 
-	if (!is_in_car) {
-		new_ped->GetInterface()->humanObject.entity.position = default_pos;
-		new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
-	}
+    if (!is_in_car) {
+        new_ped->GetInterface()->humanObject.entity.position = default_pos;
+        new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
+    }
 
     for (size_t i = 0; i < 8; i++) {
         S_GameItem* item = (S_GameItem*)&inventory.items[i];

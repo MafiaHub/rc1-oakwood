@@ -12,8 +12,8 @@ inline f32 cubic_hermite_f32(float A, float B, float C, float D, float t)
 }
 
 struct interpolate3_hermite_t {
-	zpl_vec3 A;
-	zpl_vec3 B;
+    zpl_vec3 A;
+    zpl_vec3 B;
     zpl_vec3 C;
     zpl_vec3 D;
 };
@@ -25,8 +25,8 @@ inline void cubic_hermite_v3_value(interpolate3_hermite_t *src, zpl_vec3 value) 
     src->D = value;
 
     if (src->C.x == 0.0f  && 
-		src->C.y == 0.0f  && 
-		src->C.z == 0.0f) {
+        src->C.y == 0.0f  && 
+        src->C.z == 0.0f) {
         src->A = src->D;
         src->B = src->D;
         src->C = src->D;
@@ -34,11 +34,11 @@ inline void cubic_hermite_v3_value(interpolate3_hermite_t *src, zpl_vec3 value) 
 }
 
 inline zpl_vec3 cubic_hermite_v3(zpl_vec3 A, zpl_vec3 B, zpl_vec3 C, zpl_vec3 D, f32 t) {
-	return {
-		cubic_hermite_f32(A.x, B.x, C.x, D.x, t),
-		cubic_hermite_f32(A.y, B.y, C.y, D.y, t),
-		cubic_hermite_f32(A.z, B.z, C.z, D.z, t)
-	};
+    return {
+        cubic_hermite_f32(A.x, B.x, C.x, D.x, t),
+        cubic_hermite_f32(A.y, B.y, C.y, D.y, t),
+        cubic_hermite_f32(A.z, B.z, C.z, D.z, t)
+    };
 }
 
 inline zpl_vec3 cubic_hermite_v3_interpolate(interpolate3_hermite_t *inter, f32 t) {

@@ -20,7 +20,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
 
         if (player_ent && player_ent->user_data) {
             auto player = (mafia_player*)player_ent->user_data;
-			strncpy(player->model, model, 32);
+            strncpy(player->model, model, 32);
             
             auto new_ped = player_spawn(
                 position,
@@ -31,7 +31,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
                 health,
                 is_local_player,
                 0,
-				false);
+                false);
 
             if (player->ped) {
                 player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
@@ -48,19 +48,19 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
             health,
             is_local_player,
             0,
-			false);
+            false);
 
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
         MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives(100);
 
         if (local_player.ped) {
-			player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
+            player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
         }
 
         local_player.dead = false;
         local_player.ped = new_ped;
-		strncpy(((mafia_player*)(local_player.entity.user_data))->model, model, 32);
+        strncpy(((mafia_player*)(local_player.entity.user_data))->model, model, 32);
 
         player_inventory_send();
     }
@@ -88,35 +88,35 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
         health, 
         true, 
         0,
-		false);
+        false);
 
     local_player.ped = ped;
     MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
-	auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
-	auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
-	auto seat = librg_data_ri32(msg->data);
+    auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto seat = librg_data_ri32(msg->data);
 
-	if (sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
-		auto sender = (mafia_player*)sender_ent->user_data;
-		auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+    if (sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
+        auto sender = (mafia_player*)sender_ent->user_data;
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
 
-		if (vehicle->seats[seat] != -1) {
+        if (vehicle->seats[seat] != -1) {
 
-			auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
-			if (driver_ent && driver_ent->user_data) {
-				auto driver = (mafia_player*)driver_ent->user_data;
-				driver->vehicle_id = -1;
-			}
+            auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
+            if (driver_ent && driver_ent->user_data) {
+                auto driver = (mafia_player*)driver_ent->user_data;
+                driver->vehicle_id = -1;
+            }
 
-			vehicle->seats[seat] = -1;
+            vehicle->seats[seat] = -1;
 
-			if(vehicle->car && sender_ent->id != local_player.entity.id)
-				sender->ped->Do_ThrowCocotFromCar(vehicle->car, seat);
-		}
-	}
+            if(vehicle->car && sender_ent->id != local_player.entity.id)
+                sender->ped->Do_ThrowCocotFromCar(vehicle->car, seat);
+        }
+    }
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
@@ -124,7 +124,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
     auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
     auto action = librg_data_ri32(msg->data);
     auto seat_id = librg_data_ri32(msg->data);
-	auto unk3 = librg_data_ri32(msg->data);
+    auto unk3 = librg_data_ri32(msg->data);
 
     if(sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
         auto sender = (mafia_player*)sender_ent->user_data;
@@ -132,14 +132,14 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 
         if(action == 1) {
             vehicle->seats[seat_id] = sender_ent->id;
-			sender->vehicle_id = vehicle_ent->id;
+            sender->vehicle_id = vehicle_ent->id;
         } else if (action == 2) {
             vehicle->seats[seat_id] = -1;
-			sender->vehicle_id = -1;
+            sender->vehicle_id = -1;
         }
 
-		if(sender_ent->id != local_player.entity.id)
-			sender->ped->Use_Actor(vehicle->car, action, seat_id, unk3);
+        if(sender_ent->id != local_player.entity.id)
+            sender->ped->Use_Actor(vehicle->car, action, seat_id, unk3);
     }
 });
 
@@ -256,7 +256,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
     librg_data_rptr(msg->data, (void*)&unk3, sizeof(zpl_vec3));
 
     f32 damage = librg_data_rf32(msg->data);
-	f32 health = librg_data_rf32(msg->data);
+    f32 health = librg_data_rf32(msg->data);
     u32 player_part = librg_data_ru32(msg->data);
 
     if (sender_ent && sender_ent->user_data && 
@@ -269,7 +269,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
         victim->ped->Hit(hit_type, unk1, unk2, unk3, damage, player->ped, player_part, NULL);
         hit_hook_skip = true;
 
-		victim->ped->GetInterface()->health = victim->health = health;
+        victim->ped->GetInterface()->health = victim->health = health;
     }
 });
 
@@ -306,45 +306,45 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* ms
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_SET_HEALTH, [](librg_message* msg) {
-	auto entity_id = librg_data_rent(msg->data);
-	auto entity = librg_entity_fetch(&network_context, entity_id);
-	if (entity) {
-		auto health = librg_data_rf32(msg->data);
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        auto health = librg_data_rf32(msg->data);
 
-		auto player = (mafia_player*)entity->user_data;
+        auto player = (mafia_player*)entity->user_data;
 
-		if (player) {
-			player->health = health;
+        if (player) {
+            player->health = health;
 
-			if (player->ped) {
-				auto player_int = player->ped->GetInterface();
-				MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
+            if (player->ped) {
+                auto player_int = player->ped->GetInterface();
+                MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
 
-				player_int->health = health;
-			}
-		}
-	}
+                player_int->health = health;
+            }
+        }
+    }
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_SET_MODEL, [](librg_message* msg) {
-	auto entity_id = librg_data_rent(msg->data);
-	auto entity = librg_entity_fetch(&network_context, entity_id);
-	if (entity) {
-		char modelName[32] = { 0 };
-		librg_data_rptr(msg->data, modelName, sizeof(char) * 32);
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        char modelName[32] = { 0 };
+        librg_data_rptr(msg->data, modelName, sizeof(char) * 32);
 
-		auto player = (mafia_player*)entity->user_data;
+        auto player = (mafia_player*)entity->user_data;
 
-		if (player) {
-			strncpy(player->model, modelName, 32);
+        if (player) {
+            strncpy(player->model, modelName, 32);
 
-			if (player->ped) {
-				auto player_int = player->ped->GetInterface();
+            if (player->ped) {
+                auto player_int = player->ped->GetInterface();
 
-				player_int->entity.frame->LoadModel(modelName);
-			}
-		}
-	}
+                player_int->entity.frame->LoadModel(modelName);
+            }
+        }
+    }
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message* msg) {
@@ -385,13 +385,13 @@ librg_network_add(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, [](librg_mess
     char animation[32];
     librg_data_rptr(msg->data, animation, sizeof(char) * 32);
 
-	auto entity = librg_entity_fetch(&network_context, entity_id);
-	if (entity) {
-		auto player = (mafia_player*)entity->user_data;
-		if (player) {
-			player->ped->Do_PlayAnim(animation);
-		}
-	}
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        auto player = (mafia_player*)entity->user_data;
+        if (player) {
+            player->ped->Do_PlayAnim(animation);
+        }
+    }
 });
 
 librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* msg) {

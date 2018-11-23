@@ -20,35 +20,35 @@
 //
 
 struct VehicleSpawn {
-	zpl_vec3 pos;
-	float rot;
-	const char* model;
+    zpl_vec3 pos;
+    float rot;
+    const char* model;
 };
 
 std::vector<VehicleSpawn> vehicle_spawns = {
-	{
-		{-1991.89f, -5.09753f, 10.4476f},
-		0.0f,
-		"alfa00.i3d"
-	},
+    {
+        {-1991.89f, -5.09753f, 10.4476f},
+        0.0f,
+        "alfa00.i3d"
+    },
 
-	{
-		{ -1974.2f, -4.8862f, 22.5578f },
-		0.0f,
-		"FordHOT00.i3d"
-	},
+    {
+        { -1974.2f, -4.8862f, 22.5578f },
+        0.0f,
+        "FordHOT00.i3d"
+    },
 
-	{
-		{ -1981.11f, -4.98206f, 22.7471f },
-		0.0f,
-		"FThot00.i3d"
-	},
+    {
+        { -1981.11f, -4.98206f, 22.7471f },
+        0.0f,
+        "FThot00.i3d"
+    },
 
-	{
-		{ -1991.69f, -5.12453f, 22.3242f },
-		0.0f,
-		"TBirdold00.i3d"
-	},
+    {
+        { -1991.69f, -5.12453f, 22.3242f },
+        0.0f,
+        "TBirdold00.i3d"
+    },
 };
 
 OAK_MOD_MAIN {
@@ -63,10 +63,10 @@ OAK_MOD_MAIN {
 
     auto gm = new GameMode(mod);
 
-	// Spawn default vehicles
-	for (auto vehicle_spawn : vehicle_spawns) {
-		gm->SpawnVehicle(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.model);
-	}
+    // Spawn default vehicles
+    for (auto vehicle_spawn : vehicle_spawns) {
+        gm->SpawnVehicle(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.model);
+    }
 
     // Register several events
 
@@ -108,52 +108,52 @@ OAK_MOD_MAIN {
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });
 
-	gm->SetOnPlayerHit([=](Player *attacker, Player *victim, float damage) {
-		// do something cool when player is hit
-	});
+    gm->SetOnPlayerHit([=](Player *attacker, Player *victim, float damage) {
+        // do something cool when player is hit
+    });
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
-		gm->ChatPrint(player->GetName() + " says: " + msg);
+        gm->ChatPrint(player->GetName() + " says: " + msg);
 
         return true;
     });
 
-	gm->AddCommandHandler("car", [=](Player *player, ArgumentList args) {
-		if (args.size() < 2) {
-			gm->SendMessageToPlayer("Usage: /car [modelID]", player);
-			return true;
-		}
+    gm->AddCommandHandler("car", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("Usage: /car [modelID]", player);
+            return true;
+        }
 
-		auto modelID = std::stoi(args[1]);
+        auto modelID = std::stoi(args[1]);
 
-		auto position = player->GetPosition();
-		auto dir = ComputeDirVector(player->GetRotation());
-		zpl_vec3_muleq(&dir, 1.5f);
-		zpl_vec3_addeq(&position, dir);
-		auto rot = player->GetRotation() - 90.0f;
-		gm->SpawnVehicleByID(position, rot, modelID);
+        auto position = player->GetPosition();
+        auto dir = ComputeDirVector(player->GetRotation());
+        zpl_vec3_muleq(&dir, 1.5f);
+        zpl_vec3_addeq(&position, dir);
+        auto rot = player->GetRotation() - 90.0f;
+        gm->SpawnVehicleByID(position, rot, modelID);
 
-		return true;
-	});
+        return true;
+    });
 
-	gm->AddCommandHandler("skin", [=](Player *player, ArgumentList args) {
-		if (args.size() < 2) {
-			gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
-			return true;
-		}
+    gm->AddCommandHandler("skin", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
+            return true;
+        }
 
-		auto modelID = std::stoi(args[1]);
+        auto modelID = std::stoi(args[1]);
 
-		player->SetModelByID(modelID);
+        player->SetModelByID(modelID);
 
-		// TODO: Temp fix for getting weapons back after SetModel was called
-		add_weapons(player);
+        // TODO: Temp fix for getting weapons back after SetModel was called
+        add_weapons(player);
 
-		return true;
-	});
+        return true;
+    });
 
-	gm->AddCommandHandler("healme", [=](Player *player, ArgumentList args) {
-		player->SetHealth(100.0f);
-		return true;
-	});
+    gm->AddCommandHandler("healme", [=](Player *player, ArgumentList args) {
+        player->SetHealth(100.0f);
+        return true;
+    });
 }

@@ -98,13 +98,13 @@ void GameMode::BroadcastMessage(std::string text, u32 color)
 
 void GameMode::SendMessageToPlayer(std::string text, Player *receiver, u32 color)
 {
-	if (!receiver)
-		return;
+    if (!receiver)
+        return;
 
-	if (!receiver->entity)
-		return;
+    if (!receiver->entity)
+        return;
 
-	mod->vtable.send_msg(text.c_str(), receiver->entity);
+    mod->vtable.send_msg(text.c_str(), receiver->entity);
 }
 
 void GameMode::ChatPrint(std::string text)
@@ -119,19 +119,19 @@ void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_i
 
 Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model)
 {
-	auto rot = ComputeDirVector(angle);
+    auto rot = ComputeDirVector(angle);
     auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str());
-	return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+    return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
 }
 
 Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
 {
-	if (modelID < 0 || modelID >= zpl_count_of(VehicleCatalogue))
-		return nullptr;
+    if (modelID < 0 || modelID >= zpl_count_of(VehicleCatalogue))
+        return nullptr;
 
-	auto modelName = std::string(VehicleCatalogue[modelID]) + ".i3d";
+    auto modelName = std::string(VehicleCatalogue[modelID]) + ".i3d";
 
-	return SpawnVehicle(pos, angle, modelName);
+    return SpawnVehicle(pos, angle, modelName);
 }
 
 void GameMode::SetOnPlayerConnected(std::function<void(Player*)> callback)
@@ -205,16 +205,16 @@ void Player::Respawn()
 
 void Player::SetModel(std::string name)
 {
-	__gm->mod->vtable.player_set_model(entity, (char *)name.c_str());
+    __gm->mod->vtable.player_set_model(entity, (char *)name.c_str());
 }
 
 void Player::SetModelByID(int modelID)
 {
-	if (modelID < 0 || modelID >= zpl_count_of(PlayerModelCatalogue))
-		return;
+    if (modelID < 0 || modelID >= zpl_count_of(PlayerModelCatalogue))
+        return;
 
-	auto modelName = std::string(PlayerModelCatalogue[modelID]) + ".i3d";
-	SetModel(modelName);
+    auto modelName = std::string(PlayerModelCatalogue[modelID]) + ".i3d";
+    SetModel(modelName);
 }
 
 std::string Player::GetModel()
@@ -239,7 +239,7 @@ zpl_vec3 Player::GetPosition()
 
 void Player::SetRotation(float angle)
 {
-	auto dir = ComputeDirVector(angle);
+    auto dir = ComputeDirVector(angle);
     __gm->mod->vtable.player_set_rotation(entity, dir);
 }
 
@@ -250,7 +250,7 @@ float Player::GetRotation()
         return  DirToRotation180(player->rotation);
     }
 
-	return 0.0f;
+    return 0.0f;
 }
 
 
@@ -292,7 +292,7 @@ void Player::PlayAnimation(std::string animation)
 
 void Player::SetHealth(f32 health)
 {
-	__gm->mod->vtable.player_set_health(entity, health * 2.0f);
+    __gm->mod->vtable.player_set_health(entity, health * 2.0f);
 }
 
 f32 Player::GetHealth()
@@ -326,12 +326,12 @@ Vehicle::~Vehicle()
 
 void Vehicle::SetPosition(zpl_vec3 pos)
 {
-	
+    
 }
 
 zpl_vec3 Vehicle::GetPosition()
 {
-	return entity->position;
+    return entity->position;
 }
 
 void Vehicle::SetDirection(zpl_vec3 dir)
@@ -341,12 +341,12 @@ void Vehicle::SetDirection(zpl_vec3 dir)
 
 zpl_vec3 Vehicle::GetDirection()
 {
-	auto vehicle = (mafia_vehicle*)entity->user_data;
-	if (vehicle) {
-		return vehicle->rotation;
-	} 
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    if (vehicle) {
+        return vehicle->rotation;
+    } 
 
-	return  { 0.0f, 0.0f, 0.0f };
+    return  { 0.0f, 0.0f, 0.0f };
 }
 
 void Vehicle::SetHeadingRotation(float angle)
@@ -356,5 +356,5 @@ void Vehicle::SetHeadingRotation(float angle)
 
 float Vehicle::GetHeadingRotation()
 {
-	return 0.0f;
+    return 0.0f;
 }

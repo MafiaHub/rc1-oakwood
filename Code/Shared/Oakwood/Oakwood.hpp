@@ -23,11 +23,11 @@ public:
     //
 
     void BroadcastMessage(std::string text, u32 color = 0xFFFFFF);
-	void SendMessageToPlayer(std::string text, Player *receiver, u32 color = 0xFFFFFF);
+    void SendMessageToPlayer(std::string text, Player *receiver, u32 color = 0xFFFFFF);
     void ChatPrint(std::string text);
     void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
     Vehicle* SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model);
-	Vehicle* SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID);
+    Vehicle* SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID);
 
     //
     // Event handling
@@ -70,9 +70,9 @@ private:
 
 static std::vector<std::string> SplitStringByNewline(const std::string& subject)
 {
-	std::istringstream ss{ subject };
-	using StrIt = std::istream_iterator<std::string>;
-	std::vector<std::string> container{ StrIt{ss}, StrIt{} };
-	return container;
+    std::istringstream ss{ subject };
+    using StrIt = std::istream_iterator<std::string>;
+    std::vector<std::string> container{ StrIt{ss}, StrIt{} };
+    return container;
 }
 

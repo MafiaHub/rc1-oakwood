@@ -73,9 +73,9 @@ f64 last_update = 0.0f;
 bool hit_hook_skip = true;
 
 struct _GlobalConfig {
-	std::string server_address;
-	std::string username;
-	float view_distance;
+    std::string server_address;
+    std::string username;
+    float view_distance;
 } GlobalConfig;
 
 /*
@@ -93,10 +93,10 @@ struct _GlobalConfig {
 #include "Game/base.hpp"
 
 auto mod_init() {
-	mod_pre_init_game();
-	init_config();
-	mod_init_game();
-	mod_init_networking();
+    mod_pre_init_game();
+    init_config();
+    mod_init_game();
+    mod_init_networking();
 }
 
 #include "stub.hpp"

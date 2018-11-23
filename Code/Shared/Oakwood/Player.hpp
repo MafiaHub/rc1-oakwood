@@ -8,7 +8,7 @@ class GameMode;
 
 class Player {
 public:
-	friend class GameMode;
+    friend class GameMode;
     Player(librg_entity *entity, mafia_player *ped);
     ~Player();
 
@@ -20,7 +20,7 @@ public:
     void Respawn();
     
     void SetModel(std::string name);
-	void SetModelByID(int modelID);
+    void SetModelByID(int modelID);
     std::string GetModel();
 
     std::string GetName();
@@ -52,7 +52,7 @@ public:
     void SetPed(mafia_player *ped);
 
 protected:
-	librg_entity *entity;
+    librg_entity *entity;
 
 private:
     mafia_player *ped;

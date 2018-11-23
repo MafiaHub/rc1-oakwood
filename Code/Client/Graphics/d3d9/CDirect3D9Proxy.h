@@ -8,7 +8,7 @@
 ***************************************************************/
 
 namespace graphics {
-	inline auto init(IDirect3DDevice9*) -> void;
+    inline auto init(IDirect3DDevice9*) -> void;
 }
 
 class CDirect3D9Proxy : public IDirect3D9
@@ -118,7 +118,7 @@ HRESULT STDMETHODCALLTYPE CDirect3D9Proxy::CreateDevice(UINT Adapter, D3DDEVTYPE
     HRESULT hr = m_pD3D->CreateDevice( Adapter, DeviceType, hFocusWindow, BehaviorFlags, pPresentationParameters, ppReturnedDeviceInterface );
 
     if (SUCCEEDED(hr)) {
-		graphics::init(*ppReturnedDeviceInterface);
+        graphics::init(*ppReturnedDeviceInterface);
         *ppReturnedDeviceInterface = new CDirect3DDevice9Proxy( this, *ppReturnedDeviceInterface );
     }
 
