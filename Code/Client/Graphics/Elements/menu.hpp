@@ -73,7 +73,7 @@ namespace menu {
 		http_t* request = http_get("http://oakmaster.madaraszd.net/fetch", NULL);
 		if (!request) {
 			mod_log("[ServerBrowser] Invalid request.\n");
-			MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
+			MessageBoxW(0, L"Please, contact the developers! It could also be a connectivity issue between the server and you, make sure your connection is stable.", L"Master server is down!", MB_OK);
 			exit(EXIT_FAILURE);
 			return "";
 		}
@@ -91,7 +91,7 @@ namespace menu {
 			if (zpl_time_now() - fetch_time > MASTER_PULL_TIMEOUT) {
 				if (retries_count >= MASTER_RETRIES_MAX) {
 					printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
-					MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
+					MessageBoxW(0, L"Please, contact the developers! It could also be a connectivity issue between the server and you, make sure your connection is stable.", L"Master server is down!", MB_OK);
 					exit(EXIT_FAILURE);
 					http_release(request);
 					return "";
