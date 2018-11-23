@@ -180,7 +180,7 @@ void Player::Respawn()
 
 void Player::SetModel(std::string name)
 {
-    sprintf(ped->model, "%s", name.c_str());
+	__gm->mod->vtable.player_set_model(entity, (char *)name.c_str());
 }
 
 void Player::SetModelByID(int modelID)
@@ -190,7 +190,6 @@ void Player::SetModelByID(int modelID)
 
 	auto modelName = std::string(PlayerModelCatalogue[modelID]) + ".i3d";
 	SetModel(modelName);
-	Respawn();
 }
 
 std::string Player::GetModel()

@@ -157,6 +157,9 @@ OAK_MOD_MAIN {
 			auto modelID = std::stoi(parts[1]);
 
 			player->SetModelByID(modelID);
+
+			// TODO: Temp fix for getting weapons back after SetModel was called
+			add_weapons(player);
 		}
 		else if (msg.find("/healme") != std::string::npos) {
 			player->SetHealth(100.0f);

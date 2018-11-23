@@ -25,6 +25,9 @@ typedef OAK_PLAYER_SPAWN(oak_player_spawn_ptr);
 #define OAK_PLAYER_RESPAWN(name) void name(librg_entity *entity)
 typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
 
+#define OAK_PLAYER_SET_MODEL(name) void name(librg_entity *entity, char *modelName)
+typedef OAK_PLAYER_SET_MODEL(oak_player_set_model_ptr);
+
 #define OAK_PLAYER_SET_POSITION(name) void name(librg_entity *entity, zpl_vec3 position)
 typedef OAK_PLAYER_SET_POSITION(oak_player_set_position_ptr);
 
