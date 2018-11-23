@@ -4,6 +4,7 @@ LuaMod is an example of lua bindings for Oakwood
 
 */
 
+#define ZPL_IMPLEMENTATION
 #include <Oakwood/Oakwood.hpp>
 #include <sol/sol.hpp>
 

@@ -9,7 +9,11 @@ project "Server"
         "**.cpp",
         "**.rc",
         "../../Vendors/http/mongoose.c",
-        "../../Vendors/http/mongoose.h"
+        "../../Vendors/http/mongoose.h",
+        "../../Vendors/*.h",
+        "../../Vendors/*.hpp",
+        "../Shared/*.hpp",
+        "../Shared/*.cpp"
     }
 	configuration "Debug"
 		debugdir "Bin/Debug"

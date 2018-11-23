@@ -7,7 +7,11 @@ project "Client"
         "**.h",
         "**.hpp",
         "**.cpp",
-        "**.rc"
+        "**.rc",
+        "../../Vendors/*.h",
+        "../../Vendors/*.hpp",
+        "../Shared/*.hpp",
+        "../Shared/*.cpp"
     }
 	links {
 		"bass",

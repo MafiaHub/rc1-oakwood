@@ -88,7 +88,8 @@ workspace "Oakwood"
     include "Loader"
     include "LuaMod"
     include "SampleMod"
-    include "Server"    
+    include "Server"
+    include "Oakgen"
 
 -- Cleanup
 if _ACTION == "clean" then
