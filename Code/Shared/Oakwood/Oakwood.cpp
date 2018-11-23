@@ -269,6 +269,8 @@ void Player::PlayAnimation(std::string animation)
 void Player::SetHealth(f32 health)
 {
     ped->health = health * 2.0f;
+
+	// TODO(zaklaus): call native method that will send out the message to all players instead.
 }
 
 f32 Player::GetHealth()

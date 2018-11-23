@@ -120,8 +120,6 @@ OAK_MOD_MAIN {
 			auto modelID = std::stoi(parts[1]);
 
             auto position = player->GetPosition();
-			float forward_offset = 1.5f;
-			zpl_vec3 offset = {};
 			auto dir = ComputeDirVector(player->GetRotation());
 			zpl_vec3_muleq(&dir, 1.5f);
 			zpl_vec3_addeq(&position, dir);

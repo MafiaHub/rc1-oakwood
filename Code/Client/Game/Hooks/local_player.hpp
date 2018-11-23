@@ -87,8 +87,13 @@ namespace hooks
 	bool __fastcall OnHit(void* _this, DWORD edx, int type, Vector3D* unk1,Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* attacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
 		
 		if (hit_hook_skip && (_this != local_player.ped)) return 0;
+		auto victim = reinterpret_cast<MafiaSDK::C_Human*>(_this);
 
+		float current_health = victim->GetInterface()->health;
 		bool ret_val = human_hit_original(_this, type, unk1, unk2, unk3, damage, attacker, player_part, frame);
+		float new_health = victim->GetInterface()->health;
+
+		damage = (current_health - new_health);
 
 		if (_this == local_player.ped) {
 			local_player_hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, attacker, player_part);

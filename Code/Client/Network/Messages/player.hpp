@@ -253,6 +253,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
     librg_data_rptr(msg->data, (void*)&unk3, sizeof(zpl_vec3));
 
     f32 damage = librg_data_rf32(msg->data);
+	f32 health = librg_data_rf32(msg->data);
     u32 player_part = librg_data_ru32(msg->data);
 
     if (sender_ent && sender_ent->user_data && 
@@ -264,6 +265,8 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
         hit_hook_skip = false;
         victim->ped->Hit(hit_type, unk1, unk2, unk3, damage, player->ped, player_part, NULL);
         hit_hook_skip = true;
+
+		victim->ped->GetInterface()->health = victim->health = health;
     }
 });
 

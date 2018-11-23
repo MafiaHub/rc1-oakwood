@@ -1,5 +1,6 @@
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
+#define LIBRG_DEBUG
 #include "librg/librg.h"
 
 /*

@@ -63,7 +63,7 @@ inline auto local_player_hit(
 	const Vector3D* unk1, 
 	const Vector3D* unk2, 
 	const Vector3D* unk3,
-	float damage, 
+	float damage,
 	MafiaSDK::C_Actor* attacker, 
 	unsigned int player_part) -> void {
 
@@ -78,6 +78,7 @@ inline auto local_player_hit(
 		librg_data_wptr(&data, (void*)unk2, sizeof(zpl_vec3));
 		librg_data_wptr(&data, (void*)unk3, sizeof(zpl_vec3));
 		librg_data_wf32(&data, damage);
+		librg_data_wf32(&data, victim->GetInterface()->health);
 		librg_data_wu32(&data, player_part);
 	});
 }
