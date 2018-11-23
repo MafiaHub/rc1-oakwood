@@ -130,14 +130,6 @@ OAK_MOD_MAIN {
 			auto rot = player->GetRotation() - 90.0f;
 			gm->SpawnVehicleByID(position, rot, modelID);
         }
-        else if (msg.find("/savepos") != std::string::npos) {
-			std::ofstream pos_file("positions.txt");
-			auto position = player->GetPosition();
-			auto rot = player->GetRotation();
-
-			pos_file << position.x << " " << position.y << " " << position.z << ", " << rot << std::endl;
-
-		}
 		else if (msg.find("/car") != std::string::npos) {
 			auto parts = split_string(msg);
 

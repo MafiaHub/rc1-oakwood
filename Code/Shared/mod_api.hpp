@@ -19,13 +19,13 @@
 */
 
 #include "structs.hpp"
+#include "utils.hpp"
 
 #ifndef OAK_INTERNAL
 
 #include "librg/librg_ext.h"
 
 #include "messages.hpp"
-#include "utils.hpp"
 #include "helpers.hpp"
 #endif
 

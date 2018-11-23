@@ -40,3 +40,25 @@ inline auto split(std::string s, std::string delimiter){
     }
     return list;
 }
+
+
+static zpl_vec3 ComputeDirVector(float angle) {
+	zpl_vec3 dir = { 0 };
+	dir.x = (float)(::sin(zpl_to_radians(angle)));
+	dir.z = (float)(::cos(zpl_to_radians(angle)));
+	return dir;
+}
+
+static float DirToRotation180(zpl_vec3 dir) {
+	return zpl_to_degrees(::atan2f(dir.x, dir.z));
+}
+
+static float DirToRotation360(zpl_vec3 dir) {
+	auto val = zpl_to_degrees(::atan2f(dir.x, dir.z));
+
+	if (val < 0) {
+		val += 360.0f;
+	}
+
+	return val;
+}
