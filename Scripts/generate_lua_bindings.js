@@ -99,6 +99,9 @@ function extractClassName(line) {
         for(let i = 0; i < afterClassName.length; i++) {
             if(afterClassName[i] == ' ' || afterClassName[i] == '{' || afterClassName[i] == '\n')
                 break;
+
+            if (afterClassName[i] == ';')
+                return '';
             
             className += afterClassName[i];
         }

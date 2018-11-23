@@ -34,6 +34,19 @@ extern "C" {
         });
     }
 
+	OAKGEN_NATIVE();
+	void oak_send_msg(const char* text, librg_entity *receiver) {
+		if (!receiver->client_peer)
+			return;
+
+		librg_send_to(&network_context, NETWORK_SEND_CHAT_MSG, receiver->client_peer, data, {
+			auto len = strlen(text);
+			librg_data_wu16(&data, len);
+			librg_data_wptr(&data, (void *)text, len);
+		});
+	}
+
+
     //
     // Player
     //

@@ -3,8 +3,12 @@
 /* 
 * Vehicle 
 */
+
+class GameMode;
+
 class Vehicle {
 public:
+	friend class GameMode;
     Vehicle(librg_entity *entity, mafia_vehicle *vehicle);
     ~Vehicle();
 
@@ -12,12 +16,18 @@ public:
     // Natives
     //
     
-	void SetPos(zpl_vec3 pos);
-	zpl_vec3 GetPos();
+	void SetPosition(zpl_vec3 pos);
+	zpl_vec3 GetPosition();
 	
-	void SetDir(zpl_vec3 dir);
-	zpl_vec3 GetDir();
+	void SetDirection(zpl_vec3 dir);
+	zpl_vec3 GetDirection();
+
+	void SetHeadingRotation(float angle);
+	float GetHeadingRotation();
+
+protected:
+	librg_entity *entity;
+
 private:
     mafia_vehicle *vehicle;
-    librg_entity *entity;
 };

@@ -8,6 +8,9 @@
 // Mod Includes
 //
 
+#define ZPL_IMPLEMENTATION
+#include "librg/zpl.h"
+
 #include <Oakwood/Oakwood.hpp>
 #include <iostream>
 #include "weapons.hpp"
@@ -18,32 +21,32 @@
 
 struct VehicleSpawn {
 	zpl_vec3 pos;
-	zpl_vec3 rot;
+	float rot;
 	const char* model;
 };
 
 std::vector<VehicleSpawn> vehicle_spawns = {
 	{
 		{-1991.89f, -5.09753f, 10.4476f},
-		{0.00678947f, 0.0f, -0.999977f},
+		0.0f,
 		"alfa00.i3d"
 	},
 
 	{
 		{ -1974.2f, -4.8862f, 22.5578f },
-		{ 0.00678947f, 0.0f, 0.999977f },
+		0.0f,
 		"FordHOT00.i3d"
 	},
 
 	{
 		{ -1981.11f, -4.98206f, 22.7471f },
-		{ 0.00678947f, 0.0f, 0.999977f },
+		0.0f,
 		"FThot00.i3d"
 	},
 
 	{
 		{ -1991.69f, -5.12453f, 22.3242f },
-		{ 0.00678947f, 0.0f, 0.999977f },
+		0.0f,
 		"TBirdold00.i3d"
 	},
 };
@@ -107,18 +110,55 @@ OAK_MOD_MAIN {
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
         if(msg.find("/car") != std::string::npos) {
+			auto parts = split_string(msg);
+
+			if (parts.size() < 2) {
+				gm->SendMessageToPlayer("Usage: /car [modelID]", player);
+				return true;
+			}
+
+			auto modelID = std::stoi(parts[1]);
+
             auto position = player->GetPosition();
-            position.x += 1.5f;
-			gm->SpawnVehicle(position, player->GetRotation(), "taxi00.i3d");
-			gm->ChatPrint(player->GetName() + " spawned taxi!");
+			float forward_offset = 1.5f;
+			zpl_vec3 offset = {};
+			auto dir = ComputeDirVector(player->GetRotation());
+			zpl_vec3_muleq(&dir, 1.5f);
+			zpl_vec3_addeq(&position, dir);
+			auto rot = player->GetRotation() - 90.0f;
+			gm->SpawnVehicleByID(position, rot, modelID);
         }
         else if (msg.find("/savepos") != std::string::npos) {
 			std::ofstream pos_file("positions.txt");
 			auto position = player->GetPosition();
 			auto rot = player->GetRotation();
 
-			pos_file << position.x << " " << position.y << " " << position.z << ", " << rot.x << " " << rot.y << " " << rot.z << std::endl;
+			pos_file << position.x << " " << position.y << " " << position.z << ", " << rot << std::endl;
 
+		}
+		else if (msg.find("/car") != std::string::npos) {
+			auto parts = split_string(msg);
+
+			if (parts.size() < 2) {
+				gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
+				return true;
+			}
+
+			auto modelID = std::stoi(parts[1]);
+
+			player->SetModelByID(modelID);
+		}
+		else if (msg.find("/skin") != std::string::npos) {
+			auto parts = split_string(msg);
+
+			if (parts.size() < 2) {
+				gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
+				return true;
+			}
+
+			auto modelID = std::stoi(parts[1]);
+
+			player->SetModelByID(modelID);
 		}
         else gm->ChatPrint(player->GetName() + " says: " + msg);
 

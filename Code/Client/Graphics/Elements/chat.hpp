@@ -130,7 +130,7 @@ namespace chat {
 
 		if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 			
-			static char add_text[128] = "";
+			static char add_text[4096] = "";
 			ImGui::SetKeyboardFocusHere(0);
 			ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text));
 			

@@ -1,7 +1,10 @@
 lua.new_usertype<GameMode>("GameMode",
 	BIND_FUNCTION(GameMode,  BroadcastMessage),
+	BIND_FUNCTION(GameMode,  SendMessageToPlayer),
 	BIND_FUNCTION(GameMode,  ChatPrint),
 	BIND_FUNCTION(GameMode,  SpawnWeaponDrop),
+	BIND_FUNCTION(GameMode,  SpawnVehicle),
+	BIND_FUNCTION(GameMode,  SpawnVehicleByID),
 	BIND_FUNCTION(GameMode,  SetOnPlayerConnected),
 	BIND_FUNCTION(GameMode,  SetOnPlayerDisconnected),
 	BIND_FUNCTION(GameMode,  SetOnPlayerDied),
@@ -13,6 +16,7 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  Spawn),
 	BIND_FUNCTION(Player,  Respawn),
 	BIND_FUNCTION(Player,  SetModel),
+	BIND_FUNCTION(Player,  SetModelByID),
 	BIND_FUNCTION(Player,  GetModel),
 	BIND_FUNCTION(Player,  GetName),
 	BIND_FUNCTION(Player,  SetPosition),
@@ -29,5 +33,12 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  SetHealth),
 	BIND_FUNCTION(Player,  CompareWith),
 	BIND_FUNCTION(Player,  SetPed)
+);
+
+lua.new_usertype<Vehicle>("Vehicle",
+	BIND_FUNCTION(Vehicle,  SetPos),
+	BIND_FUNCTION(Vehicle,  GetPos),
+	BIND_FUNCTION(Vehicle,  SetDir),
+	BIND_FUNCTION(Vehicle,  GetDir)
 );
 

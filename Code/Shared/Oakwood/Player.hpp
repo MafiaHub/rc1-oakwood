@@ -4,8 +4,11 @@
 * Describes character controlled by player.
 */
 
+class GameMode;
+
 class Player {
 public:
+	friend class GameMode;
     Player(librg_entity *entity, mafia_player *ped);
     ~Player();
 
@@ -17,6 +20,7 @@ public:
     void Respawn();
     
     void SetModel(std::string name);
+	void SetModelByID(int modelID);
     std::string GetModel();
 
     std::string GetName();
@@ -24,8 +28,8 @@ public:
     void SetPosition(zpl_vec3 position);
     zpl_vec3 GetPosition();
 
-    void SetRotation(zpl_vec3 rotation);
-    zpl_vec3 GetRotation();
+    void SetRotation(float rotation);
+    float GetRotation();
 
     void AddItem(inventory_item *item);
     void ClearInventory();
@@ -47,7 +51,9 @@ public:
     b32 CompareWith(librg_entity *entity);
     void SetPed(mafia_player *ped);
 
+protected:
+	librg_entity *entity;
+
 private:
     mafia_player *ped;
-    librg_entity *entity;
 };

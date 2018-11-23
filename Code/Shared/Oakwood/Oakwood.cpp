@@ -1,6 +1,10 @@
 #define OAK_INTERNAL
 #include "Oakwood.hpp"
 
+// Listings
+#include "VehicleListing.hpp"
+#include "PlayerModelListing.hpp"
+
 GameMode *__gm = nullptr;
 
 GameMode::GameMode(oak_api *mod) {
@@ -77,6 +81,17 @@ void GameMode::BroadcastMessage(std::string text, u32 color)
     mod->vtable.broadcast_msg_color(text.c_str(), color);
 }
 
+void GameMode::SendMessageToPlayer(std::string text, Player *receiver, u32 color)
+{
+	if (!receiver)
+		return;
+
+	if (!receiver->entity)
+		return;
+
+	mod->vtable.send_msg(text.c_str(), receiver->entity);
+}
+
 void GameMode::ChatPrint(std::string text)
 {
     mod->vtable.chat_print(text.c_str());
@@ -87,10 +102,21 @@ void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_i
     mod->vtable.drop_spawn(position, (char *)model.c_str(), item);
 }
 
-Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, zpl_vec3 rot, const std::string& model)
+Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model)
 {
+	auto rot = ComputeDirVector(angle);
     auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str());
 	return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+}
+
+Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
+{
+	if (modelID < 0 || modelID >= zpl_count_of(VehicleCatalogue))
+		return nullptr;
+
+	auto modelName = std::string(VehicleCatalogue[modelID]) + ".i3d";
+
+	return SpawnVehicle(pos, angle, modelName);
 }
 
 void GameMode::SetOnPlayerConnected(std::function<void(Player*)> callback)
@@ -157,6 +183,16 @@ void Player::SetModel(std::string name)
     sprintf(ped->model, "%s", name.c_str());
 }
 
+void Player::SetModelByID(int modelID)
+{
+	if (modelID < 0 || modelID >= zpl_count_of(PlayerModelCatalogue))
+		return;
+
+	auto modelName = std::string(PlayerModelCatalogue[modelID]) + ".i3d";
+	SetModel(modelName);
+	Respawn();
+}
+
 std::string Player::GetModel()
 {
     return std::string(ped->model);
@@ -177,19 +213,20 @@ zpl_vec3 Player::GetPosition()
     return entity->position;
 }
 
-void Player::SetRotation(zpl_vec3 rotation)
+void Player::SetRotation(float angle)
 {
-    __gm->mod->vtable.player_set_rotation(entity, rotation);
+	auto dir = ComputeDirVector(angle);
+    __gm->mod->vtable.player_set_rotation(entity, dir);
 }
 
-zpl_vec3 Player::GetRotation()
+float Player::GetRotation()
 {
     auto player = (mafia_player*)(entity->user_data);
     if(player) {
-        return  player->rotation;
+        return  DirToRotation180(player->rotation);
     }
 
-	return  {0.0f, 0.0f, 0.0f};
+	return 0.0f;
 }
 
 
@@ -263,22 +300,22 @@ Vehicle::~Vehicle()
 {
 }
 
-void Vehicle::SetPos(zpl_vec3 pos)
+void Vehicle::SetPosition(zpl_vec3 pos)
 {
 	
 }
 
-zpl_vec3 Vehicle::GetPos()
+zpl_vec3 Vehicle::GetPosition()
 {
 	return entity->position;
 }
 
-void Vehicle::SetDir(zpl_vec3 dir)
+void Vehicle::SetDirection(zpl_vec3 dir)
 {
 
 }
 
-zpl_vec3 Vehicle::GetDir()
+zpl_vec3 Vehicle::GetDirection()
 {
 	auto vehicle = (mafia_vehicle*)entity->user_data;
 	if (vehicle) {
@@ -286,4 +323,14 @@ zpl_vec3 Vehicle::GetDir()
 	} 
 
 	return  { 0.0f, 0.0f, 0.0f };
+}
+
+void Vehicle::SetHeadingRotation(float angle)
+{
+
+}
+
+float Vehicle::GetHeadingRotation()
+{
+	return 0.0f;
 }

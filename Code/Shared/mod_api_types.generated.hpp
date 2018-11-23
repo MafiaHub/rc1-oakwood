@@ -10,6 +10,9 @@ typedef OAK_BROADCAST_MSG(oak_broadcast_msg_ptr);
 #define OAK_CHAT_PRINT(name) void name(const char* text)
 typedef OAK_CHAT_PRINT(oak_chat_print_ptr);
 
+#define OAK_SEND_MSG(name) void name(const char* text, librg_entity *receiver)
+typedef OAK_SEND_MSG(oak_send_msg_ptr);
+
 #define OAK_PLAYER_FADEOUT(name) void name(librg_entity *entity, bool fadeout, u32 duration, u32 color)
 typedef OAK_PLAYER_FADEOUT(oak_player_fadeout_ptr);
 
