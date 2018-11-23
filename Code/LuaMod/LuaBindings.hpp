@@ -8,6 +8,7 @@ lua.new_usertype<GameMode>("GameMode",
 	BIND_FUNCTION(GameMode,  SetOnPlayerConnected),
 	BIND_FUNCTION(GameMode,  SetOnPlayerDisconnected),
 	BIND_FUNCTION(GameMode,  SetOnPlayerDied),
+	BIND_FUNCTION(GameMode,  SetOnPlayerHit),
 	BIND_FUNCTION(GameMode,  SetOnPlayerChat),
 	BIND_FUNCTION(GameMode,  SetOnServerTick)
 );

@@ -1,6 +1,3 @@
-#define OAK_PRINT_TEST(name) void name()
-typedef OAK_PRINT_TEST(oak_print_test_ptr);
-
 #define OAK_BROADCAST_MSG_COLOR(name) void name(const char* text, u32 color)
 typedef OAK_BROADCAST_MSG_COLOR(oak_broadcast_msg_color_ptr);
 

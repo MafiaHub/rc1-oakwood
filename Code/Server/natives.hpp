@@ -7,11 +7,6 @@ extern "C" {
     //
 
     OAKGEN_NATIVE();
-    void oak_print_test() {
-        printf("It works!");
-    }
-
-    OAKGEN_NATIVE();
     void oak_broadcast_msg_color(const char* text, u32 color) {
         librg_send(&network_context, NETWORK_SEND_CONSOLE_MSG, data, {
             librg_data_wu32(&data, strlen(text));

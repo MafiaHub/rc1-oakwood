@@ -1,4 +1,3 @@
-oak_print_test_ptr *print_test;
 oak_broadcast_msg_color_ptr *broadcast_msg_color;
 oak_broadcast_msg_ptr *broadcast_msg;
 oak_chat_print_ptr *chat_print;

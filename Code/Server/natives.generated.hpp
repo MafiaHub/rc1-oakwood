@@ -1,4 +1,3 @@
-vt->print_test = oak_print_test;
 vt->broadcast_msg_color = oak_broadcast_msg_color;
 vt->broadcast_msg = oak_broadcast_msg;
 vt->chat_print = oak_chat_print;
