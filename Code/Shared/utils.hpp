@@ -41,7 +41,6 @@ inline auto split(std::string s, std::string delimiter){
     return list;
 }
 
-
 static zpl_vec3 ComputeDirVector(float angle) {
 	zpl_vec3 dir = { 0 };
 	dir.x = (float)(::sin(zpl_to_radians(angle)));

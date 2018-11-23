@@ -66,13 +66,20 @@ GameMode::GameMode(oak_api *mod) {
         auto player = GetPlayerByEntity(entity);
 
         if (!player) {
-            printf("[OAKWOOD] Unregistered entity sends message !");
+            printf("[OAKWOOD] Unregistered entity sends message!");
             return false;
         }
+        
+        auto args = SplitStringByNewline(msg);
 
         bool is_handled = false;
 
-        if (onPlayerChat) {
+        auto cmd = commands.find(args[0]);
+
+        if (cmd != commands.end()) {
+            is_handled = cmd->second(player, args);
+        }
+        else if (onPlayerChat) {
             is_handled = onPlayerChat(player, msg);
         }
         
@@ -155,6 +162,11 @@ void GameMode::SetOnPlayerChat(std::function<bool(Player*, std::string msg)> cal
 void GameMode::SetOnServerTick(std::function<void()> callback)
 {
     onServerTick = callback;
+}
+
+void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*,std::vector<std::string>)> callback)
+{
+    commands["/"+command] = callback;
 }
 
 //

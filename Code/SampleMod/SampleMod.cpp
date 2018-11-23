@@ -113,55 +113,47 @@ OAK_MOD_MAIN {
 	});
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
-        if(msg.find("/car") != std::string::npos) {
-			auto parts = split_string(msg);
-
-			if (parts.size() < 2) {
-				gm->SendMessageToPlayer("Usage: /car [modelID]", player);
-				return true;
-			}
-
-			auto modelID = std::stoi(parts[1]);
-
-            auto position = player->GetPosition();
-			auto dir = ComputeDirVector(player->GetRotation());
-			zpl_vec3_muleq(&dir, 1.5f);
-			zpl_vec3_addeq(&position, dir);
-			auto rot = player->GetRotation() - 90.0f;
-			gm->SpawnVehicleByID(position, rot, modelID);
-        }
-		else if (msg.find("/car") != std::string::npos) {
-			auto parts = split_string(msg);
-
-			if (parts.size() < 2) {
-				gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
-				return true;
-			}
-
-			auto modelID = std::stoi(parts[1]);
-
-			player->SetModelByID(modelID);
-		}
-		else if (msg.find("/skin") != std::string::npos) {
-			auto parts = split_string(msg);
-
-			if (parts.size() < 2) {
-				gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
-				return true;
-			}
-
-			auto modelID = std::stoi(parts[1]);
-
-			player->SetModelByID(modelID);
-
-			// TODO: Temp fix for getting weapons back after SetModel was called
-			add_weapons(player);
-		}
-		else if (msg.find("/healme") != std::string::npos) {
-			player->SetHealth(100.0f);
-		}
-        else gm->ChatPrint(player->GetName() + " says: " + msg);
+		gm->ChatPrint(player->GetName() + " says: " + msg);
 
         return true;
     });
+
+	gm->AddCommandHandler("car", [=](Player *player, ArgumentList args) {
+		if (args.size() < 2) {
+			gm->SendMessageToPlayer("Usage: /car [modelID]", player);
+			return true;
+		}
+
+		auto modelID = std::stoi(args[1]);
+
+		auto position = player->GetPosition();
+		auto dir = ComputeDirVector(player->GetRotation());
+		zpl_vec3_muleq(&dir, 1.5f);
+		zpl_vec3_addeq(&position, dir);
+		auto rot = player->GetRotation() - 90.0f;
+		gm->SpawnVehicleByID(position, rot, modelID);
+
+		return true;
+	});
+
+	gm->AddCommandHandler("skin", [=](Player *player, ArgumentList args) {
+		if (args.size() < 2) {
+			gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
+			return true;
+		}
+
+		auto modelID = std::stoi(args[1]);
+
+		player->SetModelByID(modelID);
+
+		// TODO: Temp fix for getting weapons back after SetModel was called
+		add_weapons(player);
+
+		return true;
+	});
+
+	gm->AddCommandHandler("healme", [=](Player *player, ArgumentList args) {
+		player->SetHealth(100.0f);
+		return true;
+	});
 }

@@ -9,6 +9,10 @@
 * Handles initialization and player management.
 */
 
+#include <unordered_map>
+
+using ArgumentList = std::vector<std::string>;
+
 class GameMode {
 public:
     GameMode(oak_api *mod);
@@ -42,6 +46,12 @@ public:
 
     oak_api *mod;
 
+    //
+    // Command handler
+    //
+
+    void AddCommandHandler(std::string command, std::function<bool(Player*,ArgumentList)> callback);
+
 private:
     std::function<void(Player*)> onPlayerConnected;
     std::function<void(Player*)> onPlayerDisconnected;
@@ -50,6 +60,19 @@ private:
     std::function<bool(Player*,std::string msg)> onPlayerChat;
     std::function<void()> onServerTick;
     std::vector<Player*> players;
+    std::unordered_map<std::string, std::function<bool(Player*,ArgumentList)>> commands;
 
     Player* GetPlayerByEntity(librg_entity *entity);
 };
+
+#include <sstream>
+#include <iterator>
+
+static std::vector<std::string> SplitStringByNewline(const std::string& subject)
+{
+	std::istringstream ss{ subject };
+	using StrIt = std::istream_iterator<std::string>;
+	std::vector<std::string> container{ StrIt{ss}, StrIt{} };
+	return container;
+}
+
