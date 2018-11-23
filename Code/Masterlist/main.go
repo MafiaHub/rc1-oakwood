@@ -99,18 +99,24 @@ func AddServer(writer http.ResponseWriter, request *http.Request) {
 		server.ServerHost = host
 	}
 
-	port, _ := strconv.Atoi(server.ServerPort)
-	tcpConn, tcpErr := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", server.ServerHost, port), time.Second*4.0)
+	checkAddr := server.ServerHost
 
-	if server.ServerHost != "madaraszd.net" {
-		if tcpErr != nil {
-			writer.WriteHeader(400)
-			json.NewEncoder(writer).Encode(Response{true, "Your server is not visible to the masterlist!", nil})
-			log.Printf("Server %s:%s with name '%s' is not visible!\n", server.ServerHost, server.ServerPort, server.Name)
-			return
-		} else {
-			tcpConn.Close()
-		}
+	// Alias servers running under OpenVPN tunnel to its real client.
+	if server.ServerHost == "madaraszd.net@openvpn" {
+		checkAddr = "10.8.0.6"
+		server.ServerHost = "madaraszd.net"
+	}
+
+	port, _ := strconv.Atoi(server.ServerPort)
+	tcpConn, tcpErr := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", checkAddr, port), time.Second*4.0)
+
+	if tcpErr != nil {
+		writer.WriteHeader(400)
+		json.NewEncoder(writer).Encode(Response{true, "Your server is not visible to the masterlist!", nil})
+		log.Printf("Server %s:%s with name '%s' is not visible!\n", checkAddr, server.ServerPort, server.Name)
+		return
+	} else {
+		tcpConn.Close()
 	}
 
 	server.updatedAt = time.Now().Unix() + defaultTimeout
