@@ -7,11 +7,6 @@ namespace effects {
     inline void load(std::string effect_file);
 }
 
-//TODO, remove this hax for forcing ammo
-void librg_entites_tick(librg_entity* ent) {
-    *(int*)((DWORD)ent->user_data + 0x4A4) = 50;
-}
-
 u32 transition_idx	= 0;
 f64 last_time		= 0.0f;
 f64 passed_time		= 2.0f;
