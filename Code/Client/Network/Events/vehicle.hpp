@@ -373,3 +373,5 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
         }
     }
 }
+
+#include "Game/Hooks/vehicle.hpp"

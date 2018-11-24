@@ -80,6 +80,7 @@ f64 delta_time = 0.0f;
 auto mod_bind_events() {
 
     local_player_init();
+    vehicle_init();
     drop_init();
 
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
