@@ -56,7 +56,7 @@ librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, [](librg_messa
             auto vehicle_tyre = vehicle->car->GetCarTyre(tyre_idx);
             if (vehicle_tyre) {
                 *(float*)((DWORD)vehicle_tyre + 0x18C) = tyre_health;
-                *(DWORD*)(vehicle_tyre + 0x120) = tyre_flags;
+                *(DWORD*)(vehicle_tyre + 0x120) |= tyre_flags;
             }
         }
     }
