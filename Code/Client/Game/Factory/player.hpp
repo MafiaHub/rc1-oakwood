@@ -37,6 +37,12 @@ auto player_spawn(zpl_vec3 position,
 
     if (is_local_player) {
         MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
+        auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
+        if (camera) {
+            camera->SetCar(NULL);
+            camera->SetPlayer(new_ped);
+        }
+
         auto local_userdata = (mafia_player*)local_player.entity.user_data;
         local_userdata->ped = new_ped;
     }

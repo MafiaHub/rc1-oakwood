@@ -197,6 +197,12 @@ inline auto player_entityremove(librg_event* evnt) -> void {
 
 inline auto player_clientstreamer_update(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
+    
+    if (!player) {
+        librg_event_reject(evnt);
+        return;
+    }
+
     auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
 
     if (!player_int) {

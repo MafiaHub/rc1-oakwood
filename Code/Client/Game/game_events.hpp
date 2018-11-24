@@ -98,6 +98,11 @@ auto mod_bind_events() {
         }
     });
 
+    MafiaSDK::C_Game_Hooks::HookLocalPlayerFallDown([&]() {
+        local_player_died();
+        local_player.dead = true;
+    });
+
     MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([]() {
         nameplates::render();
     });
