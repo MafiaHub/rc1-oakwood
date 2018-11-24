@@ -1,4 +1,7 @@
 #pragma once
+
+#include "Game/Hooks/scene.hpp"
+
 namespace effects {
     extern bool is_enabled;
     inline void load(std::string effect_file);
@@ -79,6 +82,7 @@ auto interpolate_cam(f64 delta_time) {
 f64 delta_time = 0.0f;
 auto mod_bind_events() {
 
+    scene_init();
     local_player_init();
     vehicle_init();
     drop_init();

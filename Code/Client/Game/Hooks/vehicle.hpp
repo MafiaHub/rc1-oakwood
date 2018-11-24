@@ -105,6 +105,86 @@ namespace hooks
     }
 }
 
+BOOL streamed_udate = FALSE;
+void check_for_streamed(DWORD car) {
+    auto veh = get_vehicle_from_base((void*)car);
+    streamed_udate = veh && veh->flags & ENTITY_INTERPOLATED;
+}
+
+DWORD jump_back_update_pos = 0x004E5290;
+__declspec(naked) void ChangeUpdateCarPos() {
+    __asm {
+        pushad
+            push ebp
+            call check_for_streamed
+            add esp, 0x4
+        popad
+
+        cmp streamed_udate, 1
+        je interpolated_update
+
+        fld dword ptr ss : [esp + 0xC8] 
+        fadd dword ptr ds : [esi]
+        fstp dword ptr ds : [esi]
+        fld dword ptr ss : [esp + 0xCC]
+        fadd dword ptr ds : [esi + 0x4]
+        fstp dword ptr ds : [esi + 0x4]
+        fld dword ptr ss : [esp + 0xD0]
+        fadd dword ptr ds : [esi + 0x8]
+        fstp dword ptr ds : [esi + 0x8]
+        jmp jump_back_update_pos
+
+    interpolated_update:
+        
+        fld dword ptr ds : [esi]
+        fstp dword ptr ds : [esi]
+        fld dword ptr ds : [esi + 0x4]
+        fstp dword ptr ds : [esi + 0x4]
+        fld dword ptr ds : [esi + 0x8]
+        fstp dword ptr ds : [esi + 0x8]
+        jmp jump_back_update_pos
+    }
+}
+
+DWORD jump_back_update_pos_coll = 0x004E5ECD;
+__declspec(naked) void ChangeUpdateCarPosCollision() {
+    __asm {
+        pushad
+            push ebp
+            call check_for_streamed
+            add esp, 0x4
+        popad
+
+        cmp streamed_udate, 1
+        je interpolated_update
+
+        fld dword ptr ss : [esp + 0x138]
+        fadd dword ptr ds : [esi]
+        mov al, byte ptr ss : [esp + 0x9b]
+        test al, al
+        fstp dword ptr ds : [esi]
+        fld dword ptr ss : [esp + 0x13c]
+        fadd dword ptr ds : [esi + 0x4]
+        fstp dword ptr ds : [esi + 0x4]
+        fld dword ptr ss : [esp + 0x140]
+        fadd dword ptr ds : [esi + 0x8]
+        fstp dword ptr ds : [esi + 0x8]
+
+        jmp jump_back_update_pos_coll
+        interpolated_update :
+
+        fld dword ptr ds : [esi]
+        mov al, byte ptr ss : [esp + 0x9b]
+        test al, al
+        fstp dword ptr ds : [esi]
+        fld dword ptr ds : [esi + 0x4]
+        fstp dword ptr ds : [esi + 0x4]
+        fld dword ptr ds : [esi + 0x8]
+        fstp dword ptr ds : [esi + 0x8]
+        jmp jump_back_update_pos_coll
+    }
+}
+
  void vehicle_init() {
     // Vehicle
     MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
