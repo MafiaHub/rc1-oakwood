@@ -347,14 +347,14 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     if (vehicle->car) {
         for (int i = 0; i < 4; i++) {
 
-            auto mafia_tyre = vehicle->tyres[i];
+            auto mafia_tyre = &vehicle->tyres[i];
             auto vehicle_tyre = vehicle->car->GetCarTyre(i);
             
             DWORD tyre_entity_flags = *(DWORD*)(vehicle_tyre + 0x120);
             float tyre_health = *(float*)((DWORD)vehicle_tyre + 0x18C);
 
-            if ( ( (tyre_entity_flags & FLAT_TYRE_FLAG) && !(mafia_tyre.flags & FLAT_TYRE_FLAG)) ||
-                mafia_tyre.health != tyre_health) {
+            if ( ( (tyre_entity_flags & FLAT_TYRE_FLAG) && !(mafia_tyre->flags & FLAT_TYRE_FLAG)) ||
+                mafia_tyre->health != tyre_health) {
                 librg_send(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, data, {
                     
                     DWORD tyre_flag = 0x0;
@@ -367,8 +367,8 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
                     librg_data_wf32(&data, tyre_health);
                 });
 
-                mafia_tyre.flags = tyre_entity_flags;
-                mafia_tyre.health = tyre_health;
+                mafia_tyre->flags = tyre_entity_flags;
+                mafia_tyre->health = tyre_health;
             }
         }
     }
