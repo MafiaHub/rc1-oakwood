@@ -14,9 +14,18 @@ namespace chat {
     std::vector<ChatCommand> chat_commands;
     std::vector<std::pair<ImVec4, std::string>> chat_messages;	
     IDirect3DDevice9* main_device = nullptr;
+
+    std::vector<std::string> chat_history;
+    i64 chat_history_index;
+    unsigned int chat_current_msg;
+
     constexpr unsigned int VK_T = 0x54;
     KeyToggle key_chat_open(VK_T);
     KeyToggle key_chat_send(VK_RETURN);
+    KeyToggle key_chat_history_prev(VK_UP);
+    KeyToggle key_chat_history_next(VK_DOWN);
+    KeyToggle key_chat_caret_prev(VK_LEFT);
+    KeyToggle key_chat_caret_next(VK_RIGHT);
 
     void add_debug(const std::string & msg)
     {
@@ -55,6 +64,8 @@ namespace chat {
     auto init(IDirect3DDevice9* device) {
 
         main_device = device;
+        chat_history_index = -1;
+        chat_current_msg = 0;
     
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
@@ -104,6 +115,44 @@ namespace chat {
         });
     }
 
+    static char add_text[4096] = {0};
+    static char backup_text[4096] = {0};
+
+    void input_text_replace(ImGuiInputTextCallbackData *data, const char *str) {
+        data->DeleteChars(0, data->BufTextLen);
+        data->InsertChars(0, str);
+    }
+
+    int inputTextHandler(ImGuiInputTextCallbackData *data) {
+        b32 hist_prev = key_chat_history_prev;
+        b32 hist_next = key_chat_history_next;
+            
+        if (hist_prev || hist_next) {
+            if (!chat_history.empty()) {
+                if (chat_history_index == 0 && hist_next)
+                {
+                    input_text_replace(data, backup_text);
+                }
+                else
+                {
+                    if (hist_prev && chat_history_index != chat_history.size()-1) {
+                        if (chat_history_index == -1) {
+                            strcpy(backup_text, data->Buf);
+                        }
+
+                        chat_history_index++;
+                    }
+                    else if (hist_next && chat_history_index > 0)
+                        chat_history_index--;
+                    
+                    input_text_replace(data, chat_history[chat_history_index].c_str());
+                }
+            }
+        }
+
+        return FALSE;
+    }
+
     auto render() {
 
         if(MafiaSDK::GetGMMenu() || !MafiaSDK::GetMission()->GetGame()) return; 
@@ -143,11 +192,9 @@ namespace chat {
         }
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
-            
-            static char add_text[4096] = "";
             ImGui::SetKeyboardFocusHere(0);
-            ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text));
-            
+            ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
+
             if (key_chat_send) {
                 
                 if (strlen(add_text)) {
@@ -164,6 +211,8 @@ namespace chat {
                         });
                     }
 
+                    chat_history.insert(chat_history.begin(), std::string(add_text));
+                    chat_history_index = -1;
                     strcpy(add_text, "");
                 }
 
