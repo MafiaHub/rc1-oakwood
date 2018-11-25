@@ -14,6 +14,11 @@ namespace chat {
     std::vector<ChatCommand> chat_commands;
     std::vector<std::pair<ImVec4, std::string>> chat_messages;	
     IDirect3DDevice9* main_device = nullptr;
+
+    std::vector<const char*> chat_history;
+    unsigned int chat_history_index;
+    unsigned int chat_current_msg;
+
     constexpr unsigned int VK_T = 0x54;
     KeyToggle key_chat_open(VK_T);
     KeyToggle key_chat_send(VK_RETURN);
@@ -148,6 +153,30 @@ namespace chat {
             ImGui::SetKeyboardFocusHere(0);
             ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text));
             
+            if (key_chat_history_prev) {
+                if (!chat_history.empty()) {
+                    if (chat_history_index == 0) {
+                        chat_history_index--;
+                    }
+                    else {
+                        chat_history_index = chat_history.size();
+                    }
+                    strcpy(add_text, (const char*)chat_history[chat_history_index]);
+                }
+            }
+
+            if (key_chat_history_next) {
+                if (!chat_history.empty()) {
+                    if (chat_history_index == chat_history.size()) {
+                        chat_history_index++;
+                    }
+                    else {
+                        chat_history_index = 0;
+                    }
+                    strcpy(add_text, (const char*)chat_history[chat_history_index]);
+                }
+            }
+
             if (key_chat_send) {
                 
                 if (strlen(add_text)) {
@@ -164,6 +193,7 @@ namespace chat {
                         });
                     }
 
+                    chat_history.push_back(add_text);
                     strcpy(add_text, "");
                 }
 
