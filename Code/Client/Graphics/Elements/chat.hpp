@@ -22,6 +22,10 @@ namespace chat {
     constexpr unsigned int VK_T = 0x54;
     KeyToggle key_chat_open(VK_T);
     KeyToggle key_chat_send(VK_RETURN);
+    KeyToggle key_chat_history_prev(VK_UP);
+    KeyToggle key_chat_history_next(VK_UP);
+    KeyToggle key_chat_caret_prev(VK_LEFT);
+    KeyToggle key_chat_caret_next(VK_RIGHT);
 
     void add_debug(const std::string & msg)
     {
