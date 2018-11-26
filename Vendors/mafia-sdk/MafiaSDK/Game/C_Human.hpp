@@ -196,7 +196,6 @@ namespace MafiaSDK
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Intern_UseCar;
 			
-
 			__asm
 			{
 				push seatID
