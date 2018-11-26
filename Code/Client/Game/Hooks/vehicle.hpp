@@ -60,6 +60,8 @@ namespace hooks
                 librg_data_wptr(&data, (void*)&send_speed, sizeof(zpl_vec3));
                 librg_data_wptr(&data, (void*)&send_unk, sizeof(zpl_vec3));
             });
+
+            return true;
         }
 
         return false;

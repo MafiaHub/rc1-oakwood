@@ -78,6 +78,8 @@ auto vehicle_spawn(zpl_vec3 position,
         }
     }
 
+    MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
+
     return new_car;
 }
 
@@ -95,6 +97,8 @@ auto vehicle_remove(mafia_vehicle* vehicle) -> void {
             }
         }
 
+        MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
+        vehicle->car = nullptr;
     }
 }

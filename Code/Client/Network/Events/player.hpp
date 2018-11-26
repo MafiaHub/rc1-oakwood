@@ -186,13 +186,12 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 
 inline auto player_entityremove(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
+
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
-        
-        player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
-
+        player_despawn(player->ped);
         free(player);
-        evnt->entity->user_data = nullptr; 
+        evnt->entity->user_data = nullptr;
     }
 }
 
