@@ -208,7 +208,7 @@ namespace MafiaSDK
 		void Intern_FromCar(void)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Intern_FromCar;
-			I3D_Frame* vehicleFrame  = *(I3D_Frame**)((unsigned long)this->GetInterface()->playersCar + 0x68);
+			I3D_Frame* vehicleFrame  = *(I3D_Frame**)((unsigned long)this + 0x68);
 			
 			__asm
 			{
