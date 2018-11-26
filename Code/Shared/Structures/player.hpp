@@ -28,6 +28,7 @@ struct mafia_player {
 		vehicle_id = -1;
 		pose = { 1.0f, 1.0f, 1.0f };
 		rotation = { 0.0f, 0.0f, -1.0f };
+		strcpy(model, "Tommy.i3d");
 
 		for (size_t i = 0; i < 8; i++)
 			inventory.items[i] = { -1, 0, 0, 0 };
