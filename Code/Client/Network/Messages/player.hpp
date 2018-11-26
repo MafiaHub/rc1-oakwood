@@ -318,7 +318,9 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_HEALTH, [](librg_message*
 
             if (player->ped) {
                 auto player_int = player->ped->GetInterface();
-                MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
+
+                if (player->ped == local_player.ped)
+                    MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
 
                 player_int->health = health;
             }
