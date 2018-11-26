@@ -111,38 +111,37 @@ auto mod_bind_events() {
 
         delta_time = zpl_time_now() - last_time;
 
-        if(!librg_is_connected(&network_context))
+        if (!librg_is_connected(&network_context))
             interpolate_cam(delta_time);
 
         librg_tick(&network_context);
-
         //voip::network_tick();
 
         librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx *ctx, librg_entity *entity) {
             switch (entity->type) {
-                case TYPE_WEAPONDROP: {
-                    auto weapon_drop = (mafia_weapon_drop*)entity->user_data;
-                    if (weapon_drop && weapon_drop->weapon_drop_actor){
-                        drop_game_tick(weapon_drop);
-                    }
-                } break;
+            case TYPE_WEAPONDROP: {
+                auto weapon_drop = (mafia_weapon_drop*)entity->user_data;
+                if (weapon_drop && weapon_drop->weapon_drop_actor) {
+                    drop_game_tick(weapon_drop);
+                }
+            } break;
 
-                case TYPE_PLAYER: {
-                    auto player = (mafia_player*)entity->user_data;
-                    if (player && player->ped && player->streamer_entity_id != local_player.entity.id) {
-                        player_game_tick(player, delta_time);
-                    }
-                } break;
+            case TYPE_PLAYER: {
+                auto player = (mafia_player*)entity->user_data;
+                if (player && player->ped && player->streamer_entity_id != local_player.entity.id) {
+                    player_game_tick(player, delta_time);
+                }
+            } break;
 
-                case TYPE_VEHICLE: {
-                    auto vehicle = (mafia_vehicle*)entity->user_data;
-                    if (vehicle && vehicle->car) {
-                        vehicle_game_tick(vehicle, delta_time);
-                    }
-                } break;
+            case TYPE_VEHICLE: {
+                auto vehicle = (mafia_vehicle*)entity->user_data;
+                if (vehicle && vehicle->car) {
+                    vehicle_game_tick(vehicle, delta_time);
+                }
+            } break;
             }
         });
-            
+
         last_time = zpl_time_now();
     });
 }

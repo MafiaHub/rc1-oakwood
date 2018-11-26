@@ -20,6 +20,8 @@
 #include "Engine/I3D_Sector.hpp"
 #include "Engine/IGraph.hpp"
 #include "Engine/I3D_Driver.hpp"
+#include "Engine/I3D_Mesh_Object.hpp"
+#include "Engine/I3D_Mesh_Level.hpp"
 //#include "Engine/DirectHook.hpp"
 
 namespace MafiaSDK {

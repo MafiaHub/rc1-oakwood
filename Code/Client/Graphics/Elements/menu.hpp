@@ -194,7 +194,7 @@ namespace menu {
             if (component_id == Component::ConnectButton) {
                 GlobalConfig.server_address = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
                 if (!GlobalConfig.server_address.empty()) {
-                    MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(30);
+                    MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }
             }
 
@@ -202,7 +202,7 @@ namespace menu {
                 auto server_item_idx = (component_id - Component::DummyServer);
                 GlobalConfig.server_address = std::string(servers.at(server_item_idx).server_ip.c_str());
                 if (!GlobalConfig.server_address.empty()) {
-                    MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(30);
+                    MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }
             }
 

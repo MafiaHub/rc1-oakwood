@@ -19,43 +19,46 @@
 
 namespace MafiaSDK
 {
-	struct C_Vehicle_Interface {
-		PADDING(C_Vehicle_Interface, _pad0, 0x1B4);
-		float engine_health;
-		PADDING(C_Vehicle_Interface, _pad1, 0x34);
-		float health;
-		PADDING(C_Vehicle_Interface, _pad2, 0x130);
-		Vector3D position;
-		PADDING(C_Vehicle_Interface, _pad3, 0x104);
-		byte horn;
-		byte siren;
-		byte sound_enabled;
-		float hand_break;
-		PADDING(C_Vehicle_Interface, _pad7, 0x6C);
-		float speed_limit;
-		PADDING(C_Vehicle_Interface, _pad8, 0x98);
-		float accelerating;
-		PADDING(C_Vehicle_Interface, _pad9, 0x4);
-		float engine_rpm;
-		PADDING(C_Vehicle_Interface, _pad10, 0x14);
-		DWORD gear;
-		PADDING(C_Vehicle_Interface, _pad11, 0x54);
-		float break_val;
-		PADDING(C_Vehicle_Interface, _pad12, 0x24);
-		float clutch;
-		PADDING(C_Vehicle_Interface, _pad13, 0x40);
-		float wheel_angle;
-		PADDING(C_Vehicle_Interface, _pad14, 0x604);
-		byte engine_on;
-		PADDING(C_Vehicle_Interface, _pad15, 0x3);
-		float fuel;
-		PADDING(C_Vehicle_Interface, _pad16, 0x8);
-		Vector3D rotation;
-		PADDING(C_Vehicle_Interface, _pad17, 0xC);
-		Vector3D rotation_second;
-		PADDING(C_Vehicle_Interface, _pad18, 0x1330);
-		Vector3D speed;
-	};
+    struct C_Vehicle_Interface {
+        PADDING(C_Vehicle_Interface, _pad0, 0x1B4);
+        float engine_health;
+        PADDING(C_Vehicle_Interface, _pad1, 0x34);
+        float health;
+        PADDING(C_Vehicle_Interface, _pad2, 0x28);
+        DWORD first_mesh;
+        DWORD last_mesh;
+        PADDING(C_Vehicle_Interface, _pad4, 0x100);
+        Vector3D position;
+        PADDING(C_Vehicle_Interface, _pad5, 0x104);
+        byte horn;
+        byte siren;
+        byte sound_enabled;
+        float hand_break;
+        PADDING(C_Vehicle_Interface, _pad9, 0x6C);
+        float speed_limit;
+        PADDING(C_Vehicle_Interface, _pad10, 0x98);
+        float accelerating;
+        PADDING(C_Vehicle_Interface, _pad11, 0x4);
+        float engine_rpm;
+        PADDING(C_Vehicle_Interface, _pad12, 0x14);
+        DWORD gear;
+        PADDING(C_Vehicle_Interface, _pad13, 0x54);
+        float break_val;
+        PADDING(C_Vehicle_Interface, _pad14, 0x24);
+        float clutch;
+        PADDING(C_Vehicle_Interface, _pad15, 0x40);
+        float wheel_angle;
+        PADDING(C_Vehicle_Interface, _pad16, 0x604);
+        byte engine_on;
+        PADDING(C_Vehicle_Interface, _pad17, 0x3);
+        float fuel;
+        PADDING(C_Vehicle_Interface, _pad18, 0x8);
+        Vector3D rotation;
+        PADDING(C_Vehicle_Interface, _pad19, 0xC);
+        Vector3D rotation_second;
+        PADDING(C_Vehicle_Interface, _pad20, 0x1330);
+        Vector3D speed;
+    };
 
 	namespace C_Vehicle_Enum
 	{

@@ -48,7 +48,7 @@ namespace MafiaSDK
 	class C_Car : public C_Actor
 	{
 	public:
-		C_Car_Interface * GetInterface()
+		C_Car_Interface* GetInterface()
 		{
 			return reinterpret_cast<C_Car_Interface*>(this);
 		}
@@ -199,9 +199,9 @@ namespace MafiaSDK
 		/*
 		* TODO(DavoSK): Create tyre interface and dont do bullsheet offsets !
 		*/
-		DWORD GetCarComponentFrame(unsigned int tyre_idx)
+		DWORD* GetCarComponent(unsigned int comp_idx)
 		{
-			return *(DWORD*)(*(DWORD*)((DWORD)this + 0x288) + 52 * tyre_idx);
+			return (DWORD*)(*(DWORD *)((DWORD)this + 0x288) + 52 * comp_idx);
 		}
 		
 		DWORD GetCarTyre(unsigned int tyre_idx) 
@@ -216,13 +216,11 @@ namespace MafiaSDK
 			if (vehicle_tyre) {
 				// Remove tyre frame
 				if (vehicle_tyre) {
-					I3D_Frame* tyre_frame = *(I3D_Frame**)((DWORD)vehicle_tyre + 0x4);
-					__asm {
-						mov eax, tyre_frame
-						push eax
-						mov ecx, [eax]
-						call dword ptr ds : [ecx]
-					}
+			        I3D_Frame* tyre_frame = *(I3D_Frame**)((DWORD)vehicle_tyre + 0x4);
+                    if (tyre_frame) {
+                        tyre_frame->SetOn(FALSE);
+                        tyre_frame->UpdateMatrix();
+                    }
 				}
 
 				// Mark entity to remove
@@ -234,18 +232,38 @@ namespace MafiaSDK
 
 		void RemoveComponent(unsigned int component_idx)
 		{
-			auto component = GetCarComponentFrame(component_idx);
+			auto component = this->GetCarComponent(component_idx);
+            printf("This: %X, Component: %X\n", this, component);
 			if (component) {
 
-				*(BYTE*)(component + 0x0E) |= 1;
-				__asm {
-					mov eax, dword ptr ds : [component]
-					push eax
-					mov ecx, [eax]
-					call dword ptr ds : [ecx]
-				}
-			}
+                *(BYTE*)(component + 0x0E) |= 1;
+                I3D_Frame* comp_frame = *(I3D_Frame**)(component);
+                if (comp_frame) {
+                    comp_frame->SetOn(FALSE);
+                    comp_frame->UpdateMatrix();
+                }			
+            }
 		}
+
+        void EnumerateVehicleMeshes(std::function<void(I3D_mesh_object*)> functionPtr)
+        {
+            if (functionPtr != nullptr) {
+                
+                auto inter = &GetInterface()->vehicle_interface;
+                DWORD meshCount = (inter->last_mesh - inter->first_mesh) / I3D_mesh_object_size;
+
+                for (int i = 0; i < meshCount; i++) {
+                    I3D_mesh_object* currentMesh = *(I3D_mesh_object**)((I3D_mesh_object_size * i) + inter->first_mesh + 0x4);
+                    functionPtr(currentMesh);
+                }
+            }
+        }
+
+        I3D_mesh_object* GetMeshByIndex(unsigned int idx) 
+        {
+            auto inter = &GetInterface()->vehicle_interface;
+            return *(I3D_mesh_object**)((I3D_mesh_object_size * idx) + inter->first_mesh + 0x4);
+        }
 	};
 };
 

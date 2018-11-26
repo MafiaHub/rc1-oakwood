@@ -57,6 +57,20 @@ auto vehicle_spawn(zpl_vec3 position,
         }
     }
     
+    // Apply deformation deltas
+    for (auto delta : spawn_struct->deform_deltas) {
+        auto mesh = new_car->GetMeshByIndex(delta.mesh_index);
+        if (mesh) {
+            auto mesh_lod = mesh->GetLOD(0);
+            if (mesh_lod) {
+                auto vertices = mesh_lod->LockVertices(0);
+                vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
+                vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
+                mesh_lod->UnlockVertices();
+            }
+        }
+    }
+
     // NOTE(DavoSK): Update components
     for (int i = 0; i < 15; i++) {
         if (spawn_struct->destroyed_components[i]) {

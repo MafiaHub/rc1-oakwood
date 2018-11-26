@@ -77,3 +77,37 @@ librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* m
         }
     }
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_message* msg) {
+
+    u32 vehicle_id = librg_data_ru32(msg->data);
+    u32 deltas_count = librg_data_ru32(msg->data);
+    std::vector<mafia_vehicle_deform> deltas_recv;
+
+    for (u32 i = 0; i < deltas_count; i++) {
+        mafia_vehicle_deform delta;
+        librg_data_rptr(msg->data, &delta, sizeof(mafia_vehicle_deform));
+        deltas_recv.push_back(delta);
+    }
+
+    auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+    if (vehicle_ent && vehicle_ent->user_data) {
+
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+        if (vehicle->car) {
+            
+            for (auto delta : deltas_recv) {
+                auto mesh = vehicle->car->GetMeshByIndex(delta.mesh_index);
+                if (mesh) {
+                    auto mesh_lod = mesh->GetLOD(0);
+                    if (mesh_lod) {
+                        auto vertices = mesh_lod->LockVertices(0);
+                        vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
+                        vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
+                        mesh_lod->UnlockVertices();
+                    }
+                }
+            }
+        }
+    }
+});

@@ -38,20 +38,33 @@ namespace hooks
         auto vehicle_ent = get_vehicle_from_base((void*)_this);
         if (!vehicle_ent) return false;
 
-        zpl_vec3 send_speed = EXPAND_VEC(speed);
-        zpl_vec3 send_unk = { 0.0f, 0.0f, 0.0f };
+        auto car = (MafiaSDK::C_Car*)(_this);
+        auto component = car->GetCarComponent(idx);
 
-        if (unk) send_unk = EXPAND_VEC((*unk));
+        if (!car || !component) return false;
+        auto check = *((unsigned __int16 *)component + 6);
+        if (check == 2 ||
+            check == 4 ||
+            check == 5 ||
+            check == 6 ||
+            check == 7 ||
+            check == 8) {
+            zpl_vec3 send_speed = EXPAND_VEC(speed);
+            zpl_vec3 send_unk = { 0.0f, 0.0f, 0.0f };
 
-        librg_send(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, data, {
-            librg_data_wu32(&data, vehicle_ent->id);
-            librg_data_wu32(&data, idx);
-            librg_data_wptr(&data, (void*)&send_speed, sizeof(zpl_vec3));
-            librg_data_wptr(&data, (void*)&send_unk, sizeof(zpl_vec3));
-        });
+            if (unk) send_unk = EXPAND_VEC((*unk));
+
+            librg_send(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, data, {
+                librg_data_wu32(&data, vehicle_ent->id);
+                librg_data_wu32(&data, idx);
+                librg_data_wptr(&data, (void*)&send_speed, sizeof(zpl_vec3));
+                librg_data_wptr(&data, (void*)&send_unk, sizeof(zpl_vec3));
+            });
+        }
 
         return false;
     }
+
     
     //----------------------------------------------
     //C_car::CarExplosion
@@ -82,26 +95,94 @@ namespace hooks
     //----------------------------------------------
     typedef bool(__thiscall* C_Vehicle_Deform_t)(void* _this, const Vector3D& unk1, const Vector3D& unk2, float unk3, float unk4, unsigned int unk5, Vector3D* unk6);
     C_Vehicle_Deform_t c_vehicle_deform_original = nullptr;
-    bool __fastcall C_Vehicle_Deform(void* _this, 
-        DWORD edx, 	
-        const Vector3D & pos, 
-        const Vector3D & rot, 
+    bool __fastcall C_Vehicle_Deform(void* _this,
+        DWORD edx,
+        const Vector3D & pos,
+        const Vector3D & rot,
         float unk1,
         float unk2,
         unsigned int unk3,
         Vector3D* unk4) {
-        
-        printf("ARG1, %f %f %f\n", EXPLODE_VEC(pos));
-        printf("ARG2, %f %f %f\n", EXPLODE_VEC(rot));
-        printf("ARG3, %f\n", unk1);
-        printf("ARG4, %f\n", unk2);
-        printf("ARG5, %d\n", unk3);
 
-        if (unk4) {
-            printf("ARG6, %f %f %f\n", unk4->x, unk4->y, unk4->z);
+        //NOTE(DavoSK): Get car from C_Vehicle, be carefull if is something else RIP, CRASH, CRY
+        MafiaSDK::C_Car* current_car = reinterpret_cast<MafiaSDK::C_Car*>((char*)_this - 0x70);
+        if (!_this || !current_car) return false;
+
+        auto vehicle_ent = get_vehicle_from_base(current_car);
+        if (!vehicle_ent) return false;
+
+        //GET current vertices from car
+        struct mesh_data {
+            std::vector<MafiaSDK::I3D_vertex_mesh> vertices;
+        };
+
+        auto get_mesh_data = [](MafiaSDK::C_Car* car) {
+            std::vector<mesh_data> car_before;
+            car->EnumerateVehicleMeshes([&](MafiaSDK::I3D_mesh_object* mesh) {
+
+                mesh_data new_mesh;
+
+                auto lod = mesh->GetLOD(0);
+                auto vertices = lod->LockVertices(0);
+
+                MafiaSDK::I3D_stats_mesh mesh_info;
+                lod->GetStats(mesh_info);
+
+                for (int i = 0; i < mesh_info.vertex_count; i++) {
+                    new_mesh.vertices.push_back(vertices[i]);
+                }
+
+                lod->UnlockVertices();
+                car_before.push_back(new_mesh);
+            });
+
+            return car_before;
+        };
+
+        auto data_before = get_mesh_data(current_car);
+        auto result      = c_vehicle_deform_original(_this, pos, rot, unk1, unk2, unk3, unk4);
+        auto data_after  = get_mesh_data(current_car);
+
+        // NOTE(DavoSK): Now after deformating vehicle we need to compare 
+        // each vertex data to get delta 
+        std::vector<mafia_vehicle_deform> deform_deltas;
+
+        for (u32 i = 0; i < data_before.size(); i++) {
+            auto before_mesh = data_before.at(i);
+            auto after_mesh = data_after.at(i);
+
+            for (u32 j = 0; j < before_mesh.vertices.size(); j++) {
+                auto before_vertex = before_mesh.vertices.at(j);
+                auto after_vertex = after_mesh.vertices.at(j);
+
+                // NOTE(DavoSK): Compare vertex
+                if (before_vertex.n.x != after_vertex.n.x ||
+                    before_vertex.n.y != after_vertex.n.y ||
+                    before_vertex.n.z != after_vertex.n.z ||
+
+                    before_vertex.p.x != after_vertex.p.x ||
+                    before_vertex.p.y != after_vertex.p.y ||
+                    before_vertex.p.z != after_vertex.p.z) {
+                    
+                    deform_deltas.push_back({
+                        i,
+                        j,
+                        EXPAND_VEC(after_vertex.n),
+                        EXPAND_VEC(after_vertex.p)
+                    });
+                }
+            }
         }
 
-        return c_vehicle_deform_original(_this, pos, rot, unk1, unk2, unk3, unk4);
+        if (deform_deltas.size()) {
+            librg_send(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, data, {
+                librg_data_wu32(&data, vehicle_ent->id);
+                librg_data_wu32(&data, deform_deltas.size());
+                librg_data_wptr(&data, deform_deltas.data(), sizeof(mafia_vehicle_deform) * deform_deltas.size());
+            });
+        }
+
+        return result;
     }
 }
 
@@ -204,6 +285,6 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
 
     //Deform
     hooks::c_vehicle_deform_original = reinterpret_cast<hooks::C_Vehicle_Deform_t>(
-        ((PBYTE)0x004D5610, (PBYTE)&hooks::C_Vehicle_Deform)
+        DetourFunction((PBYTE)0x004D5610, (PBYTE)&hooks::C_Vehicle_Deform)
     );
 }

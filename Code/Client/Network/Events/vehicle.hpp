@@ -222,6 +222,17 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     librg_data_rptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_rptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
+    u32 deltas_count = librg_data_ru32(evnt->data);
+
+    if(!vehicle->deform_deltas.empty()) 
+        vehicle->deform_deltas.clear();
+
+    for (u32 i = 0; i < deltas_count; i++) {
+        mafia_vehicle_deform delta;
+        librg_data_rptr(evnt->data, &delta, sizeof(mafia_vehicle_deform));
+        vehicle->deform_deltas.push_back(delta);
+    }
+
     vehicle->engine_rpm			= librg_data_rf32(evnt->data);
     vehicle->engine_health      = librg_data_rf32(evnt->data);
     vehicle->health             = librg_data_rf32(evnt->data);
@@ -315,6 +326,12 @@ inline auto vehicle_entityremove(librg_event* evnt) {
 
 inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     auto vehicle = (mafia_vehicle*)evnt->entity->user_data;
+    
+    if (!vehicle) {
+        librg_event_reject(evnt);
+        return;
+    }
+
     auto car_int = reinterpret_cast<MafiaSDK::C_Car*>(vehicle->car)->GetInterface();
     if (!car_int) {
         librg_event_reject(evnt);

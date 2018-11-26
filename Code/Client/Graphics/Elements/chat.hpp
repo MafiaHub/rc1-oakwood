@@ -87,8 +87,6 @@ namespace chat {
             new_car->SetActive(1);
             MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
             new_car->GetInterface()->entity.position = local_player->GetInterface()->humanObject.entity.position;
-        
-            
         });
 
         register_command("/npc", [&](std::vector<std::string> args) {

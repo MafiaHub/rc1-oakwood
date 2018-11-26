@@ -13,6 +13,7 @@
 #include <ostream>
 #include <vector>
 #include <clocale>
+#include <vector>
 
 #include "librg/librg_ext.h"
 

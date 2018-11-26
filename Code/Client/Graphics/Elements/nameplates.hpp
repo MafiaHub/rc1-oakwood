@@ -24,14 +24,15 @@ namespace nameplates {
         return color;
     }
 
+    
     void render() {
         
         if(!voip_texture) {
             voip_texture = MafiaSDK::GetIGraph()->CreateITexture();
             voip_texture->Create("gramafon.tga", "", 8, 100, 100, 0);
         }
-
         
+
         for (u32 i = 0; i < network_context.max_entities; i++) {
 
             librg_entity *entity = librg_entity_fetch(&network_context, i);

@@ -49,6 +49,12 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     librg_data_wptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_wptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
+    auto deltas_count = vehicle->deform_deltas.size();
+    librg_data_wu32(evnt->data, deltas_count);
+
+    if(deltas_count)
+        librg_data_wptr(evnt->data, vehicle->deform_deltas.data(), sizeof(mafia_vehicle_deform) *  vehicle->deform_deltas.size());
+
     librg_data_wf32(evnt->data, vehicle->engine_rpm);
     librg_data_wf32(evnt->data, vehicle->engine_health);
     librg_data_wf32(evnt->data, vehicle->health);

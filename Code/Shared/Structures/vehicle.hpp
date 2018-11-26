@@ -3,6 +3,13 @@ struct mafia_vehicle_tyre {
 	f32 health;
 };
 
+struct mafia_vehicle_deform {
+    u32 mesh_index;
+    u32 vertex_index;
+    zpl_vec3 normal;
+    zpl_vec3 position;
+};
+
 struct mafia_vehicle {
 	mafia_vehicle() {
 		zpl_zero_item(this);
@@ -64,4 +71,5 @@ struct mafia_vehicle {
 	zpl_vec3 speed;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
+    std::vector<mafia_vehicle_deform> deform_deltas;
 };

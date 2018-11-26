@@ -5,6 +5,13 @@
 #pragma once
 
 class S_matrix;
+
+struct S_vector2
+{
+    float x;
+    float y;
+};
+
 class S_vector
 {
 public:
