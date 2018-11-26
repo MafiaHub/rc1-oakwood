@@ -146,9 +146,6 @@ OAK_MOD_MAIN {
 
         player->SetModelByID(modelID);
 
-        // TODO: Temp fix for getting weapons back after SetModel was called
-        add_weapons(player);
-
         return true;
     });
 

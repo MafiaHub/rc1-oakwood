@@ -81,16 +81,10 @@ extern "C" {
         if (player && modelName) {
             strncpy(player->model, modelName, 32);
 
-            // TODO: Fix client-side SetModel to use this snippet
-            /*
             librg_send(&network_context, NETWORK_PLAYER_SET_MODEL, data, {
                 librg_data_went(&data, entity->id);
                 librg_data_wptr(&data, (void*)player->model, sizeof(char) * 32);
             });
-            */
-
-            // TODO: Get rid of this
-            player_send_respawn(entity);
         }
     }
 
