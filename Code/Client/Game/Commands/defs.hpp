@@ -1,3 +1,3 @@
 #pragma once
 
-auto player_despawn(MafiaSDK::C_Player* player) -> void;
+auto player_despawn(MafiaSDK::C_Human* player) -> void;

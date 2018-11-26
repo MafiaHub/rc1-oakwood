@@ -233,15 +233,24 @@ namespace MafiaSDK
 		void RemoveComponent(unsigned int component_idx)
 		{
 			auto component = this->GetCarComponent(component_idx);
-            printf("This: %X, Component: %X\n", this, component);
+  
 			if (component) {
 
-                *(BYTE*)(component + 0x0E) |= 1;
-                I3D_Frame* comp_frame = *(I3D_Frame**)(component);
-                if (comp_frame) {
-                    comp_frame->SetOn(FALSE);
-                    comp_frame->UpdateMatrix();
-                }			
+                auto check = *((unsigned __int16 *)component + 6);
+                if (check == 2 ||
+                    check == 4 ||
+                    check == 5 ||
+                    check == 6 ||
+                    check == 7 ||
+                    check == 8) {
+
+                    *(BYTE*)(component + 0x0E) |= 1;
+                    I3D_Frame* comp_frame = *(I3D_Frame**)(component);
+                    if (comp_frame) {
+                        comp_frame->SetOn(FALSE);
+                        comp_frame->UpdateMatrix();
+                    }
+                }
             }
 		}
 

@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 DÃ¡vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use mov ecx, this file except in compliance with the License.
@@ -43,7 +43,9 @@ namespace MafiaSDK
 			FilledRectangle = 0x005E9080,
 			TextSize = 0x006036D0,
             ParaheliaSetFov = 0x00604890,
-            RadarSetPlayerCar = 0x005FA500
+            RadarSetPlayerCar = 0x005FA500,
+            RadarAddCar =  0x005FA510,
+            RadarRemoveCar = 0x005FA720
 		};
 	};
 
@@ -172,6 +174,31 @@ namespace MafiaSDK
             __asm
             {
                 push player
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void RadarAddCar(C_Car* car, unsigned int color)
+        {
+            unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::RadarAddCar;
+
+            __asm
+            {
+                push color
+                push car
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void RadarRemoveCar(C_Car* car)
+        {
+            unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::RadarRemoveCar;
+
+            __asm
+            {
+                push car
                 mov ecx, this
                 call funcAddress
             }

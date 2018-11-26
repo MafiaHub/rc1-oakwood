@@ -341,9 +341,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_MODEL, [](librg_message* 
             strncpy(player->model, modelName, 32);
 
             if (player->ped) {
-                auto player_int = player->ped->GetInterface();
-
-                player_int->entity.frame->LoadModel(modelName);
+                ((MafiaSDK::C_Human*)player->ped)->Intern_ChangeModel(modelName);
             }
         }
     }

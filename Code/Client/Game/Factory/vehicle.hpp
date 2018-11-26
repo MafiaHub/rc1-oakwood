@@ -78,6 +78,8 @@ auto vehicle_spawn(zpl_vec3 position,
         }
     }
 
+    MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
+
     return new_car;
 }
 
@@ -90,14 +92,13 @@ auto vehicle_remove(mafia_vehicle* vehicle) -> void {
                 auto player_ent = librg_entity_fetch(&network_context, seat);
                 if (player_ent && player_ent->user_data) {
                     auto player = (mafia_player*)player_ent->user_data;
-                    player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
-                    
-                    free(player);
-                    player_ent->user_data = nullptr;
+                    player->ped->Intern_FromCar();
                 }
             }
         }
 
+        MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
+        vehicle->car = nullptr;
     }
 }

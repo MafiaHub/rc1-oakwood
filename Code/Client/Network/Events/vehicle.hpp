@@ -321,6 +321,7 @@ inline auto vehicle_entityremove(librg_event* evnt) {
         vehicle_remove(vehicle);
         free(vehicle);
         evnt->entity->user_data = nullptr;
+        printf("vehicle_entityremove(%d)\n", evnt->entity->id);
     }
 }
 

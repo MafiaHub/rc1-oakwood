@@ -122,9 +122,8 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 }
 
 inline auto player_entityupdate(librg_event* evnt) -> void {
+    
     auto player = (mafia_player *)evnt->entity->user_data;
-    auto player_int = player->ped->GetInterface();
-
     zpl_vec3 recv_pose, recv_rotation;
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
@@ -133,7 +132,9 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     player->is_crouching		= librg_data_ru8(evnt->data);
     player->is_aiming			= librg_data_ru8(evnt->data);
     player->aiming_time			= librg_data_ru64(evnt->data);
-    
+   
+    auto player_int = player->ped->GetInterface();
+  
     // Position interpolation
     player->interp.pos.startTime	= zpl_time_now();
     player->interp.pos.finishTime	= player->interp.pos.startTime + (1.0f / TICKRATE_SERVER);
@@ -185,13 +186,12 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
 
 inline auto player_entityremove(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
+
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
-        
-        player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
-
+        player_despawn(player->ped);
         free(player);
-        evnt->entity->user_data = nullptr; 
+        evnt->entity->user_data = nullptr;
     }
 }
 

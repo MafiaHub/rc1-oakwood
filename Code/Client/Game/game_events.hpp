@@ -11,6 +11,11 @@ u32 transition_idx	= 0;
 f64 last_time		= 0.0f;
 f64 passed_time		= 2.0f;
 
+std::vector<std::string> forbidden_bridges = {
+    "LLsklap01",
+    "sklapx01"
+};
+
 std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
     { { -272.304f, 17.6089f, -352.958f },{ -0.0996391f, 0.575007f, 0.995024f } },
     { { -273.665f, 17.4891f, -351.581f },{ -0.159734f, 0.20108f, 0.98716f } },
@@ -89,6 +94,14 @@ auto mod_bind_events() {
             mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE_NOC) {
 
             MafiaSDK::GetMission()->GetGame()->SetTrafficVisible(false);
+
+            for (auto bridge_name : forbidden_bridges) {
+                auto bridge = (MafiaSDK::C_Bridge*)MafiaSDK::GetMission()->FindActorByName(bridge_name.c_str());
+                if (bridge) {
+                    bridge->Shutdown(TRUE);
+                }
+            }
+
             chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
             chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
             mod_librg_connect();
