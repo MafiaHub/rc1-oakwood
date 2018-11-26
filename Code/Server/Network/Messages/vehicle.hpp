@@ -153,8 +153,10 @@ librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_messa
 
             mod_message_send(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [&](librg_data *data) {
                 librg_data_wu32(data, vehicle_ent->id);
-                librg_data_wu32(data, deltas_count);
-                librg_data_wptr(data, deltas_recv.data(), deltas_count * sizeof(mafia_vehicle_deform));
+
+                auto deltas_count_srv = sender_vehicle->deform_deltas.size();
+                librg_data_wu32(data, deltas_count_srv);
+                librg_data_wptr(data, sender_vehicle->deform_deltas.data(), deltas_count_srv * sizeof(mafia_vehicle_deform));
             });
         }
     }
