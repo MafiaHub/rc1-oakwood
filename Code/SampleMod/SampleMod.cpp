@@ -118,7 +118,7 @@ OAK_MOD_MAIN {
         return true;
     });
 
-    gm->AddCommandHandler("car", [=](Player *player, ArgumentList args) {
+    gm->AddCommandHandler("/car", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
             gm->SendMessageToPlayer("Usage: /car [modelID]", player);
             return true;
@@ -136,7 +136,7 @@ OAK_MOD_MAIN {
         return true;
     });
 
-    gm->AddCommandHandler("skin", [=](Player *player, ArgumentList args) {
+    gm->AddCommandHandler("/skin", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
             gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
             return true;
@@ -152,8 +152,13 @@ OAK_MOD_MAIN {
         return true;
     });
 
-    gm->AddCommandHandler("healme", [=](Player *player, ArgumentList args) {
+    gm->AddCommandHandler("/healme", [=](Player *player, ArgumentList args) {
         player->SetHealth(100.0f);
+        return true;
+    });
+
+    gm->AddCommandHandler("%42", [=](Player *player, ArgumentList args) {
+        gm->ChatPrint("Be careful!");
         return true;
     });
 }
