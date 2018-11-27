@@ -205,7 +205,8 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
 
     auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
 
-    if (!player_int) {
+    if (!player_int || !player_int->humanObject.entity.frame || 
+        !player_int->humanObject.entity.frame->GetInterface()) {
         librg_event_reject(evnt);
         return;
     }

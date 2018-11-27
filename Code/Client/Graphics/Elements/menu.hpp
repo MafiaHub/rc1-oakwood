@@ -194,6 +194,14 @@ namespace menu {
             if (component_id == Component::ConnectButton) {
                 GlobalConfig.server_address = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
                 if (!GlobalConfig.server_address.empty()) {
+                    
+                    if (local_player.entity.user_data) {
+                        auto player = (mafia_player*)local_player.entity.user_data;
+                        zpl_zero_item(player);
+                    }
+
+                    zpl_zero_item(&local_player);
+
                     MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }
             }
@@ -211,6 +219,7 @@ namespace menu {
                 if(librg_is_connected(&network_context)) {
                     librg_network_stop(&network_context);
                 }
+                
             }
         });
 
