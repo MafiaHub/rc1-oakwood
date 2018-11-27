@@ -60,7 +60,6 @@ namespace chat {
         return false;
     }
 
-    MafiaSDK::C_Car* new_car = nullptr;
     auto init(IDirect3DDevice9* device) {
 
         main_device = device;
@@ -70,23 +69,6 @@ namespace chat {
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             exit(0);
-        });
-
-        register_command("/test", [&](std::vector<std::string> args) {
-            auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
-            Vector3D frame_scale = { 1.0f, 1.0f, 1.0f };
-
-            auto new_frame = new MafiaSDK::I3D_Frame();
-            new_frame->SetScale(frame_scale);
-            new_frame->SetPos(local_player->GetInterface()->humanObject.entity.position);
-            new_frame->LoadModel("taxi00.i3d");
-            new_frame->SetName("TestingPed");
-
-            new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
-            new_car->Init(new_frame);
-            new_car->SetActive(1);
-            MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
-            new_car->GetInterface()->entity.position = local_player->GetInterface()->humanObject.entity.position;
         });
 
         register_command("/npc", [&](std::vector<std::string> args) {
@@ -152,18 +134,6 @@ namespace chat {
     }
 
     auto render() {
-
-        if(MafiaSDK::GetGMMenu() || !MafiaSDK::GetMission()->GetGame()) return; 
-        ImGuiStyle& style = ImGui::GetStyle();
-
-        if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
-            style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
-            style.Colors[ImGuiCol_TitleBg] =  ImColor(150, 0, 0, 200);
-        }
-        else {
-            style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 50);
-            style.Colors[ImGuiCol_TitleBg] = ImColor(150, 0, 0, 70);
-        }
 
         ImGui::Begin("Mafia Multiplayer - Chat", 
             nullptr, 

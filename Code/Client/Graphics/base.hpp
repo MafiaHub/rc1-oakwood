@@ -4,12 +4,7 @@ IDirect3DDevice9* global_device	= nullptr;
 
 #include "Graphics/d3d9/CDirect3DDevice9Proxy.h"
 #include "Graphics/d3d9/CDirect3D9Proxy.h"
-
 #include "utils.hpp"
-
-namespace nameplates {
-    extern void render();
-}
 
 namespace graphics {
     
@@ -163,7 +158,24 @@ namespace graphics {
         ImGui::NewFrame();
 
         //effects::render();
-        chat::render();
+        if (!MafiaSDK::GetGMMenu()) {
+            ImGuiStyle& style = ImGui::GetStyle();
+
+            if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused() || 
+                playerlist::playerListKey) {
+                style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
+                style.Colors[ImGuiCol_TitleBg]  = ImColor(150, 0, 0, 200);
+            }
+            else {
+                style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 50);
+                style.Colors[ImGuiCol_TitleBg]  = ImColor(150, 0, 0, 70);
+            }
+            
+            if(!playerlist::playerListKey)
+                chat::render();
+
+            playerlist::render();
+        }
 
         ImGui::EndFrame();
         ImGui::Render();

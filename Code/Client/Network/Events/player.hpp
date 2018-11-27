@@ -131,8 +131,8 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     player->animation_state		= librg_data_ru8(evnt->data);
     player->is_crouching		= librg_data_ru8(evnt->data);
     player->is_aiming			= librg_data_ru8(evnt->data);
-    player->aiming_time			= librg_data_ru64(evnt->data);
-   
+    player->aiming_time			= librg_data_ru32(evnt->data);
+    player->ping                = librg_data_ru32(evnt->data);
     auto player_int = player->ped->GetInterface();
   
     // Position interpolation

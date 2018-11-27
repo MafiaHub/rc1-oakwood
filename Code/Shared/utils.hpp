@@ -19,6 +19,16 @@ private:
     bool mActive;
 };
 
+class KeyHeld {
+public:
+    KeyHeld(int key) :mKey(key) {}
+    operator bool() {
+        return GetAsyncKeyState(mKey);
+    }
+private:
+    int mKey;
+};
+
 inline auto alloc_console() {
     AllocConsole();
     std::setlocale(LC_ALL, "C");

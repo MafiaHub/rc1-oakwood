@@ -53,6 +53,7 @@ struct mafia_player {
 	player_inventory inventory;
 	u32 current_weapon_id;
 	i32 vehicle_id;
+    u32 ping;
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	struct {
 		struct {

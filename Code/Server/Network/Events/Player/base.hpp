@@ -19,7 +19,8 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     librg_data_wu8(evnt->data, player->animation_state);
     librg_data_wu8(evnt->data, player->is_crouching);
     librg_data_wu8(evnt->data, player->is_aiming);
-    librg_data_wu64(evnt->data, player->aiming_time);
+    librg_data_wu32(evnt->data, player->aiming_time);
+    librg_data_wu32(evnt->data, evnt->peer->lastRoundTripTime);
 }
 
 inline auto player_entitycreate(librg_event* evnt) -> void {

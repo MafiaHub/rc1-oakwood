@@ -45,6 +45,7 @@ auto player_spawn(zpl_vec3 position,
 
         auto local_userdata = (mafia_player*)local_player.entity.user_data;
         local_userdata->ped = new_ped;
+        strcpy(local_userdata->name, GlobalConfig.username.c_str());
     }
 
     new_ped->GetInterface()->humanObject.health = health;

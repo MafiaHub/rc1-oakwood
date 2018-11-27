@@ -201,7 +201,8 @@ namespace menu {
                     }
 
                     zpl_zero_item(&local_player);
-
+                    librg_free(&network_context);
+                    mod_init_networking();
                     MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }
             }
@@ -218,6 +219,8 @@ namespace menu {
             if (component_id == Component::ExitGameYes) {
                 if(librg_is_connected(&network_context)) {
                     librg_network_stop(&network_context);
+                    librg_free(&network_context);
+                    mod_init_networking();
                 }
                 
             }
