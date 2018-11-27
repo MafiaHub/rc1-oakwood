@@ -190,7 +190,7 @@ inline auto player_entityremove(librg_event* evnt) -> void {
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         player_despawn(player->ped);
-        free(player);
+        zpl_zero_item(player);
         evnt->entity->user_data = nullptr;
     }
 }

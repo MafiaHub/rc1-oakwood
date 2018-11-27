@@ -319,9 +319,8 @@ inline auto vehicle_entityremove(librg_event* evnt) {
     if (vehicle && vehicle->car) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle_remove(vehicle);
-        free(vehicle);
+        zpl_zero_item(vehicle);
         evnt->entity->user_data = nullptr;
-        printf("vehicle_entityremove(%d)\n", evnt->entity->id);
     }
 }
 

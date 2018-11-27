@@ -27,6 +27,7 @@ inline auto drop_entityremove(librg_event* evnt) -> void {
     auto drop = (mafia_weapon_drop *)evnt->entity->user_data;
     if (drop) {
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(drop->weapon_drop_actor);
+        zpl_zero_item(drop);
     }
 }
  
