@@ -62,6 +62,15 @@ DWORD WINAPI GetModuleFileNameA_Hook(HMODULE hModule, LPSTR lpFilename, DWORD nS
     return (DWORD)strlen(g_gamepath.c_str());
 }
 
+HANDLE WINAPI CreateMutexA_Hook(LPSECURITY_ATTRIBUTES lpMutexAttributes, BOOL bInitialOwner, LPCSTR lpName) {
+    if (!_strcmpi(lpName, "Mafia Launcher Super Mutex Shit")) {
+         /* removing name allows multiple instances */
+        return CreateMutexA(lpMutexAttributes, bInitialOwner, NULL);
+    }
+
+    return CreateMutexA(lpMutexAttributes, bInitialOwner, lpName);
+}
+
 /* entry point handling */
 int launcher_gameinit(std::string localpath, std::string gamepath) {
     g_localpath = std::string(localpath);
@@ -104,7 +113,12 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
             return static_cast<LPVOID>(GetCommandLineA_Hook);
         }
 
-        // *temp hack*
+        /* fix for multiwindow game */
+        if (!_strcmpi(exportFn, "CreateMutexA")) {
+            return static_cast<LPVOID>(CreateMutexA_Hook);
+        }
+
+        // TODO: remove? (*temp hack*)
         if (!_strcmpi(exportFn, "RaiseException")) {
             return static_cast<LPVOID>(RaiseException_Hook);
         }
