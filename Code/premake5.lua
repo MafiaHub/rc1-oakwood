@@ -21,7 +21,7 @@ workspace "Oakwood"
 
     -- Enable position-independent-code generation
     pic "On"
-    startproject "Server"
+    startproject "Launcher"
 
     location "../Build/"
     targetdir "../Bin/%{cfg.buildcfg}/"
@@ -35,15 +35,6 @@ workspace "Oakwood"
     includedirs {
         ".",
         "./Shared",
-        "../Vendors",
-    }
-
-    libdirs {
-        "../Vendors/bass",
-        "../Vendors/d3d9",
-        "../Vendors/detours",
-        "../Vendors/lua/lib",
-        "../Vendors/opus/lib",
     }
 
     filter "platforms:x64"
@@ -81,11 +72,14 @@ workspace "Oakwood"
             "_WINSOCK_DEPRECATED_NO_WARNINGS",
         }
 
+
+    include "../Vendors"
+
     --
     -- Source subprojects
     --
+    include "Launcher"
     include "Client"
-    include "Loader"
     include "LuaMod"
     include "SampleMod"
     include "Server"
