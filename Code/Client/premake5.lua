@@ -1,6 +1,9 @@
 project "Client"
     language "C++"
     kind "SharedLib"
+
+    targetname "oakwood-client"
+
     vpaths { ["*"] = "*" }
     files {
         "premake5.lua",
@@ -13,19 +16,18 @@ project "Client"
         "../Shared/*.hpp",
         "../Shared/*.cpp"
     }
-	links {
-		"bass",
-		"d3d9",
-		"d3dx9",
-		"detours",
-		"lua",
-		"opus",
-		"dxguid",
-		"dinput8",
-	}
-	postbuildcommands {
-		"{COPY} ../Bin/%{cfg.buildcfg}/Client.dll ../../"
-	}
+
+    links {
+        "bass",
+        "d3d9",
+        "d3dx9",
+        "detours",
+        "lua",
+        "opus",
+        "dxguid",
+        "dinput8",
+    }
+
     linkoptions {
         "/SAFESEH:NO"
     }

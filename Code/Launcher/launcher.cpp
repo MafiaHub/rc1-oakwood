@@ -82,7 +82,10 @@ int main()
 
     zpl_printf("[info] gamepath: %s\n", gamepath.c_str());
     if (!zpl_file_exists(concat(gamepath, "Game.exe"))) {
-        return launcher_abort(("Cannot find a game executable by given path: " + gamepath).c_str());
+        return launcher_abort((
+            "Cannot find a game executable by given path:\n" + gamepath
+                + "\n\n Please check your path and try again!").c_str()
+        );
     }
 
     #if defined(ZPL_SYSTEM_WINDOWS)

@@ -5,6 +5,11 @@
 /* system libraries */
 #include <string>
 
+/* temp storage */
+static std::string g_gamepath;
+static std::string g_localpath;
+typedef void(oakwood_proc)(const char *, const char *);
+
 /* internal methods */
 const char *launcher_localpath() {
     wchar_t buf[MAX_PATH] = { 0 };
@@ -20,51 +25,47 @@ const char *launcher_localpath() {
 
 int launcher_abort(const char *msg) {
     auto buffer = (const wchar_t *)zpl_utf8_to_ucs2_buf((const u8 *)msg);
-    MessageBoxW(NULL, buffer, L"ERROR", MB_OK | MB_ICONEXCLAMATION);
+    MessageBoxW(NULL, buffer, L"Oakwood: Error", MB_OK | MB_ICONEXCLAMATION);
+    ZPL_PANIC(msg);
     return 1;
 }
 
 /* hooked handlers */
 LPSTR WINAPI GetCommandLineA_Hook() {
     static bool init = false; if (!init) {
-        // auto mod = LoadLibraryW(L"Client.dll"); if (mod) {
-        //     // auto init = reinterpret_cast<void*(*)()>(GetProcAddress(mod, "RunClient"));
-        //     // if (init) { init(); }
-        // }
+        auto mod = LoadLibraryW(L"oakwood-client.dll"); if (mod) {
+            auto oakwood_start = (oakwood_proc *)(GetProcAddress(mod, "oakwood_start")); if (oakwood_start) {
+                // TODO: add custom entry point
+                //oakwood_start(g_localpath.c_str(), g_gamepath.c_str());
+            }
+        } else {
+            launcher_abort("Cannot find oakwood-client.dll!\n\nMake sure you've installed everything properly.");
+        }
 
         init = true;
     }
-
-    zpl_printf("GetCommandLineA hook\n");
 
     return GetCommandLineA();
 }
 
 void WINAPI RaiseException_Hook(DWORD dwExceptionCode, DWORD dwExceptionFlags, DWORD nNumberOfArguments, const ULONG_PTR* lpArguments) {
-// #if 1
-//     if (dwExceptionCode == 0x406D1388 && !IsDebuggerPresent()) {
-//         //printf("THREAD EX BY %p\n", _ReturnAddress());
-//         return; // thread naming
-//     }
-// #endif
-    zpl_printf("RaiseException hook\n");
-
+    zpl_printf("[info] RaiseException hook\n");
     RaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
 }
 
-static const char* g_img_path;
 DWORD WINAPI GetModuleFileNameA_Hook(HMODULE hModule, LPSTR lpFilename, DWORD nSize) {
     /* make sure we return our path to the game when it asks for the path */
     /* TODO: make sure we wont have conflicts in the future with our own calls */
-    strcpy_s(lpFilename, nSize, g_img_path);
+    strcpy_s(lpFilename, nSize, g_gamepath.c_str());
     zpl_printf("[info] GetModuleFileName override: %s\n", lpFilename);
 
-    return (DWORD)strlen(g_img_path);
+    return (DWORD)strlen(g_gamepath.c_str());
 }
 
 /* entry point handling */
 int launcher_gameinit(std::string localpath, std::string gamepath) {
-    g_img_path = gamepath.c_str();
+    g_localpath = std::string(localpath);
+    g_gamepath  = std::string(gamepath);
 
     FILE* file = _wfopen((wchar_t *)zpl_utf8_to_ucs2_buf((u8 *)gamepath.c_str()), L"rb"); if (!file) {
         MessageBoxA(nullptr, "Failed to find executable image", "oh no", MB_ICONERROR);
@@ -91,12 +92,12 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     ExecutableLoader loader(data.data());
 
     loader.SetLibraryLoader([](const char* library) -> HMODULE {
-        // zpl_printf("library resolver: %s\n", library);
+        // zpl_printf("[info] library: %s\n", library);
         return LoadLibraryA(library);
     });
 
     loader.SetFunctionResolver([](HMODULE hmod, const char* exportFn) -> LPVOID {
-        // zpl_printf("function resolver: %s\n", exportFn);
+        //zpl_printf("[info] -- method: %s\n", exportFn);
 
         // early init hook
         if (!_strcmpi(exportFn, "GetCommandLineA")) {
