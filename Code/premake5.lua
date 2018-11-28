@@ -80,7 +80,6 @@ workspace "Oakwood"
     --
     include "Launcher"
     include "Client"
-    include "Loader"
     include "LuaMod"
     include "SampleMod"
     include "Server"
