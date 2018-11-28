@@ -11,7 +11,7 @@ constexpr const char *OAKWOOD_CONFIG_NAME = "config.json";
 constexpr const char *OAKWOOD_CONFIG_DATA = R"foo(
 {
     /* path to game folder */
-    "gamepath": "C:\\Program Files\\Steam\\steamapps\\common\\Mafia\\Mafia\\",
+    "gamepath": "C:/Program Files/Steam/steamapps/common/Mafia/Mafia/",
 }
 )foo";
 
@@ -47,9 +47,9 @@ int main()
     zpl_printf("[info] oakwood: %s\n", localpath.c_str());
 
     /* create default folder structure */
-    zpl_path_mkdir(concat(localpath, "bin"), 0755);
-    zpl_path_mkdir(concat(localpath, "bin"), 0755);
-    zpl_path_mkdir(concat(localpath, "bin"), 0755);
+    zpl_path_mkdir(concat(localpath, "bin"),  0755);
+    zpl_path_mkdir(concat(localpath, "logs"), 0755);
+    zpl_path_mkdir(concat(localpath, "data"), 0755);
 
     { /* gamepath */
         zpl_file file = {0};
@@ -105,5 +105,5 @@ int main()
     #endif
 
     /* start game loading and initialization */
-    return launcher_gameinit(localpath, gamepath + "\\Game.exe");
+    return launcher_gameinit(localpath, gamepath + "/Game.exe");
 }
