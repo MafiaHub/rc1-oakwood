@@ -32,6 +32,12 @@ librg_ctx network_context = { 0 };
 #include <bass/bass.h>
 
 /*
+* Temp json parser
+*/
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
+/*
 * STD Includes
 */
 #include <iostream>
@@ -50,14 +56,6 @@ librg_ctx network_context = { 0 };
 #include <d3d9.h>
 #include <d3d9/include/d3dx9.h>
 #include <dinput.h>
-
-/*
-* Dear ImGUI
-*/
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#include "Graphics/imgui/imgui.h"
-#include "Graphics/imgui/imgui_impl_dx9.h"
-#include "Graphics/imgui/imgui_impl_win32.h"
 
 /*
 * Shared

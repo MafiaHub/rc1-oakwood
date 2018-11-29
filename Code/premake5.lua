@@ -1,10 +1,22 @@
 premake.path = premake.path .. ";Build"
 
+if os.target() == "windows" then
+    --x86 !
+    CEF_VERSION = "cef_binary_3.3440.1806.g65046b7_windows32"
+
+    --dofile('../tools/premake/helpers/type_select.lua')
+    dofile('../tools/premake/helpers/cef_setup.lua')
+
+    verifycef(CEF_VERSION)
+end
+
 function os.winSdkVersion()
     local reg_arch = iif( os.is64bit(), "\\Wow6432Node\\", "\\" )
     local sdk_version = os.getWindowsRegistry( "HKLM:SOFTWARE" .. reg_arch .."Microsoft\\Microsoft SDKs\\Windows\\v10.0\\ProductVersion" )
     if sdk_version ~= nil then return sdk_version end
 end
+
+dofile('../tools/premake/vendor/vendorfiles.lua')
 
 workspace "Oakwood"
     configurations { "Debug", "Release" }
@@ -85,12 +97,15 @@ workspace "Oakwood"
     -- Source subprojects
     --
     include "Client"
+    include "Worker"
     include "Loader"
     include "LuaMod"
     include "SampleMod"
     include "Server"
     include "Oakgen"
 
+    do_vendor()
+    
 -- Cleanup
 if _ACTION == "clean" then
     os.rmdir("../Bin");

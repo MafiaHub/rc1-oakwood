@@ -13,14 +13,14 @@ return {
     end,
 
     run = function()
-        targetname "cefwrapper"
+        targetname "CefWrapper"
         language "C++"
         kind "StaticLib"
 
         -- dont question this output path!
-        targetdir "../bin/vendor/%{cfg.buildcfg}"
+        targetdir "../bin/Vendors/%{cfg.buildcfg}"
 
-        local cef_base = "vendor/cef/" .. CEF_VERSION .. "/libcef_dll/"
+        local cef_base = "../Vendors/cef/" .. CEF_VERSION .. "/libcef_dll/"
 
         includedirs {
             cef_base,

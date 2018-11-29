@@ -15,6 +15,10 @@ namespace input {
     } InputState;
 }
 
+namespace cef {
+    void inject_winproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, bool& pass, LRESULT& lresult);
+}
+
 #include "input/CDirectInputDevice8Proxy.h"
 #include "input/CDirectInput8Proxy.h"
 
@@ -44,8 +48,10 @@ namespace input {
     
         //Process gui input only when our window is focues
         if(MafiaSDK::IsWindowFocused()) {
-            if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
-                return true;
+            LRESULT result;
+            bool pass;
+            cef::inject_winproc(hWnd, uMsg, wParam, lParam, pass, result);
+            return result;
         }
 
         return false;
@@ -85,6 +91,33 @@ namespace input {
         original_dxi8create = (input_dxi8create_t)(DetourFunction(DetourFindFunction((char*)"dinput8.dll", (char*)"DirectInput8Create"), (PBYTE)input_dxi8create_hook));
     }
 
+    /* 
+    * Function wich disable focus from all device :) 
+    */
+    inline auto block_input(bool do_block) -> void {
+
+        if (do_block) {
+            InputState.devices[ZINPUT_MOUSE]->masterAquired = false;
+            InputState.devices[ZINPUT_MOUSE]->Unacquire();
+
+            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = false;
+            InputState.devices[ZINPUT_KEYBOARD]->Unacquire();
+
+            ShowCursor(TRUE);
+        }
+        else {
+            InputState.devices[ZINPUT_MOUSE]->masterAquired = true;
+            InputState.devices[ZINPUT_MOUSE]->Acquire();
+
+            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = true;
+            InputState.devices[ZINPUT_KEYBOARD]->Acquire();
+
+            ShowCursor(FALSE);
+        }
+
+        InputState.input_blocked = do_block;
+    }
+
     /*
     * Hook both input windows winproc
     */
@@ -97,29 +130,6 @@ namespace input {
         auto mod_win32_hwnd = MafiaSDK::GetChildWindow();
         mod_wndproc_original_mouse = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_mouse);
         SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
-    }
-
-    /* 
-    * Function wich disable focus from all device :) 
-    */
-    inline auto block_input(bool do_block) -> void {
-
-        if (do_block) {
-            InputState.devices[ZINPUT_MOUSE]->masterAquired = false;
-            InputState.devices[ZINPUT_MOUSE]->Unacquire();
-
-            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = false;
-            InputState.devices[ZINPUT_KEYBOARD]->Unacquire();
-        }
-        else {
-            InputState.devices[ZINPUT_MOUSE]->masterAquired = true;
-            InputState.devices[ZINPUT_MOUSE]->Acquire();
-
-            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = true;
-            InputState.devices[ZINPUT_KEYBOARD]->Acquire();
-        }
-
-        InputState.input_blocked = do_block;
     }
 
     auto toggle_block_input() {

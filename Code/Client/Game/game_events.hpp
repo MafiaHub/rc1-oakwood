@@ -102,8 +102,8 @@ auto mod_bind_events() {
                 }
             }
 
-            chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
-            chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
+            chat::add_message("Welcome to Mafia Oakwood 0.1");
+            chat::add_message("Connecting to " + GlobalConfig.server_address + " ...");
             mod_librg_connect();
 
             effects::load("Cinematic.fx");

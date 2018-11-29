@@ -11,8 +11,21 @@ project "Client"
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../Shared/*.hpp",
-        "../Shared/*.cpp"
+        "../Shared/*.cpp",
+        "**.manifest"
     }
+    flags "NoManifest"
+    filter { "system:windows", "kind:not StaticLib" }
+        linkoptions "/manifestdependency:\"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\""
+
+    includedirs {
+        "../../Vendors/cef/" .. CEF_VERSION
+    }
+
+    libdirs {
+        "../../Bin/Vendors/%{cfg.buildcfg}/"
+    }
+
 	links {
 		"bass",
 		"d3d9",
@@ -22,9 +35,12 @@ project "Client"
 		"opus",
 		"dxguid",
 		"dinput8",
+        "libcef",
+        "cefwrapper"
 	}
 	postbuildcommands {
-		"{COPY} ../Bin/%{cfg.buildcfg}/Client.dll ../../"
+		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/Client.dll"',
+		'{COPY} ../Bin/%{cfg.buildcfg}/Client.dll ../../'
 	}
     linkoptions {
         "/SAFESEH:NO"
