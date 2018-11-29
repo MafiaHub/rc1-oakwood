@@ -94,9 +94,7 @@ struct _GlobalConfig {
 
 auto mod_init() {
     mod_pre_init_game();
-    init_config();
-    mod_init_game();
-    mod_init_networking();
+    mod_init_patches();
 }
 
 #include "stub.hpp"

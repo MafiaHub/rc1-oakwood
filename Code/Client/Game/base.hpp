@@ -5,16 +5,19 @@
 #include "patches.hpp"
 #include "game_events.hpp"
 
+inline void mod_init_game();
+#include "Hooks/engine.hpp"
+
 inline auto mod_pre_init_game() {
     graphics::hook();
     input::hook();
-    Sleep(300);
-    input::hook_window();
+    hooks::engine::init();
     //voip::init();
     alloc_console();
 }
 
-inline auto mod_init_game() {
-    mod_init_patches();
+inline void mod_init_game() {
+    input::hook_window();
     mod_bind_events();
 }
+
