@@ -116,10 +116,6 @@ auto mod_bind_events() {
         local_player.dead = true;
     });
 
-    MafiaSDK::C_Indicators_Hooks::HookAfterDrawAll([]() {
-        nameplates::render();
-    });
-
     MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 
         delta_time = zpl_time_now() - last_time;

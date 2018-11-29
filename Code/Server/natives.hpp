@@ -172,8 +172,8 @@ extern "C" {
     // 
 
     OAKGEN_NATIVE();
-    librg_entity* oak_vehicle_spawn(zpl_vec3 position, zpl_vec3 rotation, char* model) {
-        return spawn_vehicle(position, rotation, model);
+    librg_entity* oak_vehicle_spawn(zpl_vec3 position, zpl_vec3 rotation, char* model, b32 show_in_radar) {
+        return spawn_vehicle(position, rotation, model, show_in_radar);
     }
 }
 

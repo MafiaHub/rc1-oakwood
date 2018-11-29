@@ -4,6 +4,7 @@
 
 /* system libraries */
 #include <string>
+#include "shellapi.h" // CommandLineToArgvW
 
 /* settings */
 #define OAKWOOD_CONSOLE 1
@@ -52,12 +53,25 @@ int main()
     zpl_path_mkdir(concat(localpath, "data"), 0755);
 
     { /* gamepath */
+
+        char *config_name = (char *)OAKWOOD_CONFIG_NAME;
+
+        int argc;
+        auto argv = CommandLineToArgvW(GetCommandLineW(), &argc); 
+
+        if (argc > 1) {
+            config_name = (char *)zpl_ucs2_to_utf8_buf((u16*)argv[1]);
+            zpl_printf("[info] custom config used: %s\n", config_name);
+        }
+
         zpl_file file = {0};
-        zplFileError error = zpl_file_open(&file, concat(localpath, OAKWOOD_CONFIG_NAME)); if (error != 0) {
+        zplFileError error = zpl_file_open(&file, concat(localpath, config_name)); if (error != 0) {
             zpl_file_create(&file, concat(localpath, OAKWOOD_CONFIG_NAME));
             zpl_file_write(&file, OAKWOOD_CONFIG_DATA, zpl_strlen(OAKWOOD_CONFIG_DATA));
             zpl_file_seek(&file, 0);
         }
+
+        LocalFree(argv);
 
         /* read and copy the data */
         isize file_size = (isize)zpl_file_size(&file);

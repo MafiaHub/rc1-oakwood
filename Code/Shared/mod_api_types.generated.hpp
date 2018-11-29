@@ -46,6 +46,6 @@ typedef OAK_PLAYER_PLAY_ANIMATION(oak_player_play_animation_ptr);
 #define OAK_DROP_SPAWN(name) librg_entity* name(zpl_vec3 position, char *model, inventory_item item)
 typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
 
-#define OAK_VEHICLE_SPAWN(name) librg_entity* name(zpl_vec3 position, zpl_vec3 rotation, char* model)
+#define OAK_VEHICLE_SPAWN(name) librg_entity* name(zpl_vec3 position, zpl_vec3 rotation, char* model, b32 show_in_radar)
 typedef OAK_VEHICLE_SPAWN(oak_vehicle_spawn_ptr);
 

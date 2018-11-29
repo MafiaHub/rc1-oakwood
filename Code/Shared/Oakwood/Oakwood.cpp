@@ -117,10 +117,10 @@ void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_i
     mod->vtable.drop_spawn(position, (char *)model.c_str(), item);
 }
 
-Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model)
+Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model, b32 show_in_radar)
 {
     auto rot = ComputeDirVector(angle);
-    auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str());
+    auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str(), show_in_radar);
     return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
 }
 

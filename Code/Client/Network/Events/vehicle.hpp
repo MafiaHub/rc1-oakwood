@@ -239,6 +239,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     vehicle->horn               = librg_data_ru8(evnt->data);
     vehicle->siren              = librg_data_ru8(evnt->data);
     vehicle->sound_enabled      = librg_data_ru8(evnt->data);
+    vehicle->is_car_in_radar    = librg_data_ru8(evnt->data);
     vehicle->hand_break         = librg_data_rf32(evnt->data);
     vehicle->speed_limit        = librg_data_rf32(evnt->data);
     vehicle->gear               = librg_data_ri32(evnt->data);
