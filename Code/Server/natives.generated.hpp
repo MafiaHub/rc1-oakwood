@@ -18,3 +18,5 @@ vt->drop_spawn = oak_drop_spawn;
 vt->vehicle_spawn = oak_vehicle_spawn;
 vt->vehicle_show_on_radar = oak_vehicle_show_on_radar;
 vt->vehicle_get_player_seat_id = oak_vehicle_get_player_seat_id;
+vt->vehicle_set_position = oak_vehicle_set_position;
+vt->vehicle_set_direction = oak_vehicle_set_direction;

@@ -358,7 +358,7 @@ int Vehicle::GetPlayerSeatID(Player *player)
 
 void Vehicle::SetPosition(zpl_vec3 pos)
 {
-    
+    __gm->mod->vtable.vehicle_set_position(this->entity, pos);
 }
 
 zpl_vec3 Vehicle::GetPosition()
@@ -368,7 +368,7 @@ zpl_vec3 Vehicle::GetPosition()
 
 void Vehicle::SetDirection(zpl_vec3 dir)
 {
-
+    __gm->mod->vtable.vehicle_set_direction(this->entity, dir);
 }
 
 zpl_vec3 Vehicle::GetDirection()
@@ -383,10 +383,12 @@ zpl_vec3 Vehicle::GetDirection()
 
 void Vehicle::SetHeadingRotation(float angle)
 {
-
+    auto dir = ComputeDirVector(angle);
+    SetDirection(dir);
 }
 
 float Vehicle::GetHeadingRotation()
 {
-    return 0.0f;
+    auto angle = DirToRotation180(vehicle->rotation);
+    return angle;
 }

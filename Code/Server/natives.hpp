@@ -221,6 +221,30 @@ extern "C" {
 
         return -1;
     }
+    
+    OAKGEN_NATIVE();
+    void oak_vehicle_set_position(librg_entity *entity, zpl_vec3 position) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE);
+        entity->position = position;
+
+        librg_send(&network_context, NETWORK_VEHICLE_SET_POS, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wptr(&data, &position, sizeof(position));
+        });
+    }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_set_direction(librg_entity *entity, zpl_vec3 dir) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE);
+        
+        auto vehicle = (mafia_vehicle*)entity->user_data;
+        vehicle->rotation = dir;
+
+        librg_send(&network_context, NETWORK_VEHICLE_SET_DIR, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wptr(&data, &dir, sizeof(dir));
+        });
+    }
 }
 
 auto set_up_natives() -> void {

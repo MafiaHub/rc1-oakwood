@@ -58,3 +58,9 @@ typedef OAK_VEHICLE_SHOW_ON_RADAR(oak_vehicle_show_on_radar_ptr);
 #define OAK_VEHICLE_GET_PLAYER_SEAT_ID(name) int name(librg_entity *entity, librg_entity *player)
 typedef OAK_VEHICLE_GET_PLAYER_SEAT_ID(oak_vehicle_get_player_seat_id_ptr);
 
+#define OAK_VEHICLE_SET_POSITION(name) void name(librg_entity *entity, zpl_vec3 position)
+typedef OAK_VEHICLE_SET_POSITION(oak_vehicle_set_position_ptr);
+
+#define OAK_VEHICLE_SET_DIRECTION(name) void name(librg_entity *entity, zpl_vec3 dir)
+typedef OAK_VEHICLE_SET_DIRECTION(oak_vehicle_set_direction_ptr);
+

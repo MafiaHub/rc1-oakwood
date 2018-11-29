@@ -28,18 +28,6 @@ lua.new_usertype<GameMode>("GameMode",
 	BIND_FUNCTION(GameMode,  AddCommandHandler)
 );
 
-lua.new_usertype<Vehicle>("Vehicle",
-	BIND_FUNCTION(Vehicle,  ShowOnRadar),
-	BIND_FUNCTION(Vehicle,  GetRadarVisibility),
-	BIND_FUNCTION(Vehicle,  GetPlayerSeatID),
-	BIND_FUNCTION(Vehicle,  SetPosition),
-	BIND_FUNCTION(Vehicle,  GetPosition),
-	BIND_FUNCTION(Vehicle,  SetDirection),
-	BIND_FUNCTION(Vehicle,  GetDirection),
-	BIND_FUNCTION(Vehicle,  SetHeadingRotation),
-	BIND_FUNCTION(Vehicle,  GetHeadingRotation)
-);
-
 lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  Spawn),
 	BIND_FUNCTION(Player,  Respawn),
@@ -61,5 +49,17 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  SetHealth),
 	BIND_FUNCTION(Player,  *GetVehicle),
 	BIND_FUNCTION(Player,  SetPed)
+);
+
+lua.new_usertype<Vehicle>("Vehicle",
+	BIND_FUNCTION(Vehicle,  ShowOnRadar),
+	BIND_FUNCTION(Vehicle,  GetRadarVisibility),
+	BIND_FUNCTION(Vehicle,  GetPlayerSeatID),
+	BIND_FUNCTION(Vehicle,  SetPosition),
+	BIND_FUNCTION(Vehicle,  GetPosition),
+	BIND_FUNCTION(Vehicle,  SetDirection),
+	BIND_FUNCTION(Vehicle,  GetDirection),
+	BIND_FUNCTION(Vehicle,  SetHeadingRotation),
+	BIND_FUNCTION(Vehicle,  GetHeadingRotation)
 );
 

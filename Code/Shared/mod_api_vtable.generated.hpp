@@ -18,3 +18,5 @@ oak_drop_spawn_ptr *drop_spawn;
 oak_vehicle_spawn_ptr *vehicle_spawn;
 oak_vehicle_show_on_radar_ptr *vehicle_show_on_radar;
 oak_vehicle_get_player_seat_id_ptr *vehicle_get_player_seat_id;
+oak_vehicle_set_position_ptr *vehicle_set_position;
+oak_vehicle_set_direction_ptr *vehicle_set_direction;

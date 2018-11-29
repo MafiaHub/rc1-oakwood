@@ -131,3 +131,21 @@ librg_network_add(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, [](librg_m
         }
     }
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_SET_POS, [](librg_message* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        librg_data_rptr(msg->data, &entity->position, sizeof(entity->position));
+    }
+});
+
+librg_network_add(&network_context, NETWORK_VEHICLE_SET_DIR, [](librg_message* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity && entity->user_data) {
+        auto vehicle = (mafia_vehicle*)entity->user_data;
+
+        librg_data_rptr(msg->data, &vehicle->rotation, sizeof(vehicle->rotation));
+    }
+});
