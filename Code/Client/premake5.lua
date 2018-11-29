@@ -1,6 +1,9 @@
 project "Client"
     language "C++"
     kind "SharedLib"
+
+    targetname "oakwood-client"
+
     vpaths { ["*"] = "*" }
     files {
         "premake5.lua",
@@ -14,6 +17,7 @@ project "Client"
         "../Shared/*.cpp",
         "**.manifest"
     }
+<<<<<<< HEAD
     flags "NoManifest"
     filter { "system:windows", "kind:not StaticLib" }
         linkoptions "/manifestdependency:\"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\""
@@ -42,6 +46,7 @@ project "Client"
 		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/Client.dll"',
 		'{COPY} ../Bin/%{cfg.buildcfg}/Client.dll ../../'
 	}
+
     linkoptions {
         "/SAFESEH:NO"
     }
