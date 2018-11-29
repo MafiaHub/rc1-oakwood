@@ -5,8 +5,9 @@
 */
 
 class GameMode;
+class Vehicle;
 
-class Player {
+class Player : public GameObject {
 public:
     friend class GameMode;
     Player(librg_entity *entity, mafia_player *ped);
@@ -44,15 +45,13 @@ public:
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2
 
+    Vehicle *GetVehicle();
+
     //
     // Utilities
     //
 
-    b32 CompareWith(librg_entity *entity);
     void SetPed(mafia_player *ped);
-
-protected:
-    librg_entity *entity;
 
 private:
     mafia_player *ped;

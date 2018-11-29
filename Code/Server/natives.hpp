@@ -1,5 +1,8 @@
 #pragma once
 
+#define NATIVE_CHECK_ENTITY_TYPE(entity, ent_type) if (!entity || !entity->user_data || entity->type != ent_type) return
+#define NATIVE_CHECK_ENTITY(entity) if (!entity || !entity->user_data) return
+
 extern "C" {
     
     //
@@ -48,7 +51,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         librg_send_to(&network_context, NETWORK_SEND_FADEOUT, entity->client_peer, data, {
             librg_data_wu8(&data, fadeout);
@@ -74,7 +77,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_model(librg_entity *entity, char *modelName) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         auto player = (mafia_player*)entity->user_data;
 
@@ -90,7 +93,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_position(librg_entity *entity, zpl_vec3 position) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
         entity->position = position;
 
         librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
@@ -101,7 +104,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_health(librg_entity *entity, float health) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         auto player = (mafia_player*)entity->user_data;
         player->health = health;
@@ -114,7 +117,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_rotation(librg_entity *entity, zpl_vec3 rotation) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         auto player = (mafia_player*)(entity->user_data);
         if(player) {
@@ -129,7 +132,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
             librg_data_wptr(&data, &pos, sizeof(pos));
@@ -139,14 +142,14 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_unlock_camera(librg_entity *entity) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
     }
 
     OAKGEN_NATIVE();
     void oak_player_play_animation(librg_entity *entity, const char* text) {
-        if (!entity || !entity->user_data || entity->type != TYPE_PLAYER) return;
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER);
 
         librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {
             
@@ -156,6 +159,20 @@ extern "C" {
             librg_data_went(&data, entity->id);
             librg_data_wptr(&data, animation, sizeof(char) * 32);
         });
+    }
+
+    OAKGEN_NATIVE();
+    librg_entity* oak_player_get_vehicle(librg_entity *entity) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) { nullptr };
+
+        auto player = (mafia_player*)entity->user_data;
+
+        if (player->vehicle_id != -1) {
+            auto vehicle = librg_entity_fetch(&network_context, player->vehicle_id);
+            return vehicle;
+        }
+
+        return nullptr;
     }
 
     //
@@ -174,6 +191,35 @@ extern "C" {
     OAKGEN_NATIVE();
     librg_entity* oak_vehicle_spawn(zpl_vec3 position, zpl_vec3 rotation, char* model, b32 show_in_radar) {
         return spawn_vehicle(position, rotation, model, show_in_radar);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_show_on_radar(librg_entity *entity, b32 state) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE);
+
+        auto vehicle = (mafia_vehicle*)entity->user_data;
+        vehicle->is_car_in_radar = state;
+
+        librg_send(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wu8(&data, (u8)state);
+        });
+    }
+
+    OAKGEN_NATIVE();
+    int oak_vehicle_get_player_seat_id(librg_entity *entity, librg_entity *player) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) { -1 };
+        NATIVE_CHECK_ENTITY_TYPE(player, TYPE_PLAYER) { -1 };
+
+        auto vehicle = (mafia_vehicle*)entity->user_data;
+
+        for (size_t i = 0; i < 4; i++)
+        {
+            if (vehicle->seats[i] == player->id)
+                return i;
+        }
+
+        return -1;
     }
 }
 

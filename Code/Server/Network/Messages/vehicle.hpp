@@ -104,6 +104,9 @@ librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* m
                 librg_data_wu32(data, vehicle_ent->id);
             });
 
+            if (gm.on_vehicle_destroyed)
+                gm.on_vehicle_destroyed(vehicle_ent);
+
             librg_entity_destroy(&network_context, vehicle_ent->id);
         }
     }

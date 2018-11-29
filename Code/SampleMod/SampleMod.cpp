@@ -65,7 +65,7 @@ OAK_MOD_MAIN {
 
     // Spawn default vehicles
     for (auto vehicle_spawn : vehicle_spawns) {
-        gm->SpawnVehicle(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.model);
+        auto vehicle = gm->SpawnVehicle(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.model);
     }
 
     // Register several events
@@ -124,6 +124,11 @@ OAK_MOD_MAIN {
             return true;
         }
 
+        if (player->GetVehicle() != nullptr) {
+            gm->SendMessageToPlayer("You can't spawn another car from inside of vehicle!", player);
+            return true;
+        }
+
         auto modelID = std::stoi(args[1]);
 
         auto position = player->GetPosition();
@@ -142,6 +147,11 @@ OAK_MOD_MAIN {
             return true;
         }
 
+        if (player->GetVehicle() != nullptr) {
+            gm->SendMessageToPlayer("You can't change skin inside of vehicle!", player);
+            return true;
+        }
+
         auto modelID = std::stoi(args[1]);
 
         player->SetModelByID(modelID);
@@ -156,6 +166,23 @@ OAK_MOD_MAIN {
 
     gm->AddCommandHandler("%42", [=](Player *player, ArgumentList args) {
         gm->ChatPrint("Be careful!");
+        return true;
+    });
+
+    gm->AddCommandHandler("/hidemycar", [=](Player *player, ArgumentList args) {
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) {
+            gm->SendMessageToPlayer("You are not sitting in a car!", player);
+            return true;
+        }
+        else if (vehicle->GetPlayerSeatID(player) != 0) {
+            gm->SendMessageToPlayer("You are not a driver!", player);
+            return true;
+        }
+
+        vehicle->ShowOnRadar(!vehicle->GetRadarVisibility());
+
         return true;
     });
 }

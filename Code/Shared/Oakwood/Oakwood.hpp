@@ -2,6 +2,16 @@
 
 #include "mod_api.hpp"
 
+class GameObject
+{
+public:
+    b32 CompareWith(librg_entity *entity);
+    inline librg_entity *GetEntity() { return entity; }
+
+protected:
+    librg_entity *entity;
+};
+
 #include "Player.hpp"
 #include "Vehicle.hpp"
 
@@ -12,6 +22,31 @@
 #include <unordered_map>
 
 using ArgumentList = std::vector<std::string>;
+
+template<typename T>
+class ObjectManager
+{
+public:
+    inline T* GetObjectByEntity(librg_entity *entity)
+    {
+        for (GameObject *object : objects) {
+            if (object && object->CompareWith(entity))
+                return (T*)object;
+        }
+
+        return nullptr;
+    }
+
+    inline void AddObject(T *object) {
+        objects.push_back(object);
+    }
+
+    inline void RemoveObject(T *object) {
+        objects.erase(std::remove(objects.begin(), objects.end(), object), objects.end());
+    }
+private:
+    std::vector<T*> objects;
+};
 
 class GameMode {
 public:
@@ -52,17 +87,22 @@ public:
 
     void AddCommandHandler(std::string command, std::function<bool(Player*,ArgumentList)> callback);
 
+    //
+    // Object pools
+    //
+
+    ObjectManager<Player> players;
+    ObjectManager<Vehicle> vehicles;
+
 private:
     std::function<void(Player*)> onPlayerConnected;
     std::function<void(Player*)> onPlayerDisconnected;
     std::function<void(Player*)> onPlayerDied;
     std::function<void(Player*,Player*,float)> onPlayerHit;
     std::function<bool(Player*,std::string msg)> onPlayerChat;
+    std::function<void(Vehicle*)> onVehicleDestroyed;
     std::function<void()> onServerTick;
-    std::vector<Player*> players;
     std::unordered_map<std::string, std::function<bool(Player*,ArgumentList)>> commands;
-
-    Player* GetPlayerByEntity(librg_entity *entity);
 };
 
 #include <sstream>
@@ -75,4 +115,3 @@ static std::vector<std::string> SplitStringByNewline(const std::string& subject)
     std::vector<std::string> container{ StrIt{ss}, StrIt{} };
     return container;
 }
-

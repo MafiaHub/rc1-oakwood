@@ -111,3 +111,23 @@ librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_messa
         }
     }
 });
+
+librg_network_add(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, [](librg_message* msg) {
+    u32 vehicle_id = librg_data_rent(msg->data);
+    auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+    if (vehicle_ent && vehicle_ent->user_data) {
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+        b32 state = librg_data_ru8(msg->data);
+
+        if (state != vehicle->is_car_in_radar) {
+            if (state)
+                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(vehicle->car, 0xFFFF0000);
+            else
+                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
+
+            vehicle->is_car_in_radar = state;
+        }
+    }
+});
