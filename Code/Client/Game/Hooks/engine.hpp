@@ -8,9 +8,7 @@ namespace hooks
         * We wait till engine is initialize then we hook and init our mod
         */
         auto OnGameInited() {
-            init_config();
-            mod_init_game();
-            mod_init_networking();
+            input::hook_window();
         }
         
         __declspec(naked) void GameInited() {
