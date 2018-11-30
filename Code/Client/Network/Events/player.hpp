@@ -112,7 +112,7 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 
         if (alpha == 1.5f) ped->interp.pose.finishTime = 0;
 
-        Vector3D mafia_pose = EXPAND_VEC(compensation);
+        S_vector mafia_pose = EXPAND_VEC(compensation);
 
         if (ped->is_aiming)
             ped->ped->PoseSetPoseAimed(mafia_pose);

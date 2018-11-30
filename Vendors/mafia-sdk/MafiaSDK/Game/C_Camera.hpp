@@ -258,7 +258,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void FreeLookBase(float ohnisko, float rychlost, Vector3D & vPozice, Vector3D &vRotace1, Vector3D &vRotace2)
+		void FreeLookBase(float ohnisko, float rychlost, S_vector & vPozice, S_vector &vRotace1, S_vector &vRotace2)
 		{
 			unsigned long funcAddress = C_Camera_Enum::FunctionsAddresses::FreeLookBase;
 
@@ -274,7 +274,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void LockAt(Vector3D const &vPos, Vector3D const &vRot)
+		void LockAt(S_vector const &vPos, S_vector const &vRot)
 		{
 			unsigned long funcAddress = C_Camera_Enum::FunctionsAddresses::LockAt;
 
@@ -408,7 +408,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void SetLookTo(Vector3D const &vVec, unsigned long I3D_Frame)
+		void SetLookTo(S_vector const &vVec, unsigned long I3D_Frame)
 		{
 			unsigned long funcAddress = C_Camera_Enum::FunctionsAddresses::SetLookTo;
 

@@ -28,7 +28,7 @@ namespace MafiaSDK
         DWORD first_mesh;
         DWORD last_mesh;
         PADDING(C_Vehicle_Interface, _pad4, 0x100);
-        Vector3D position;
+        S_vector position;
         PADDING(C_Vehicle_Interface, _pad5, 0x104);
         byte horn;
         byte siren;
@@ -53,11 +53,11 @@ namespace MafiaSDK
         PADDING(C_Vehicle_Interface, _pad17, 0x3);
         float fuel;
         PADDING(C_Vehicle_Interface, _pad18, 0x8);
-        Vector3D rotation;
+        S_vector rotation;
         PADDING(C_Vehicle_Interface, _pad19, 0xC);
-        Vector3D rotation_second;
+        S_vector rotation_second;
         PADDING(C_Vehicle_Interface, _pad20, 0x1330);
-        Vector3D speed;
+        S_vector speed;
     };
 
 	namespace C_Vehicle_Enum

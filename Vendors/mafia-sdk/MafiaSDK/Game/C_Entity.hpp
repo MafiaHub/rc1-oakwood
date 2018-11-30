@@ -1,5 +1,5 @@
 /*
-	Copyright 2017 Dávid Svitana
+	Copyright 2017 DÃ¡vid Svitana
 
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ namespace MafiaSDK
 		PADDING(C_Entity_Interface, _pad0, 0xC);
 		unsigned long objectType;
 		PADDING(C_Entity_Interface, _pad1, 0x10);
-		Vector3D position;
-		Vector3D rotation;
+		S_vector position;
+        S_vector rotation;
 		PADDING(C_Entity_Interface, _pad2, 0x21);
 		bool isActive;
 		bool doRemove;

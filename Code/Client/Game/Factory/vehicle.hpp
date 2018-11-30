@@ -1,17 +1,17 @@
 auto vehicle_spawn(zpl_vec3 position, 
                    mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car* {
 
-    Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
-    Vector3D default_pos = EXPAND_VEC(position);
+    S_vector default_scale = { 1.0f, 1.0f, 1.0f };
+    S_vector default_pos = EXPAND_VEC(position);
 
-    auto vehicle_frame = new MafiaSDK::I3D_Frame();
-    vehicle_frame->SetName("mafia_vehicle");
-    vehicle_frame->LoadModel(spawn_struct->model);
-    vehicle_frame->SetScale(default_scale);
-    vehicle_frame->SetPos(default_pos);
-    
+    auto vehicle_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    vehicle_model->SetName("mafia_vehicle");
+    vehicle_model->SetScale(default_scale);
+    vehicle_model->SetWorldPos(default_pos);
+    MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL);
+
     MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
-    new_car->Init(vehicle_frame);
+    new_car->Init(vehicle_model);
     new_car->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
 
@@ -63,10 +63,16 @@ auto vehicle_spawn(zpl_vec3 position,
         if (mesh) {
             auto mesh_lod = mesh->GetLOD(0);
             if (mesh_lod) {
+                MafiaSDK::I3D_stats_mesh stats;
                 auto vertices = mesh_lod->LockVertices(0);
-                vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
-                vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
-                mesh_lod->UnlockVertices();
+                if (vertices) {
+                    mesh_lod->GetStats(stats);
+                    if (delta.vertex_index < stats.vertex_count) {
+                        vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
+                        vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
+                    }
+                    mesh_lod->UnlockVertices();
+                }
             }
         }
     }

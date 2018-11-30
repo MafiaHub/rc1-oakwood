@@ -77,7 +77,7 @@ namespace MafiaSDK
 			}
 		}
 		
-		void AddBlood(Vector3D & position, Vector3D & rotation, float bloodRadius, int bloodType, BOOL doEnable)
+		void AddBlood(S_vector & position, S_vector & rotation, float bloodRadius, int bloodType, BOOL doEnable)
 		{
 			unsigned long funcAddress = C_BloodManger_Enum::FunctionsAddresses::AddBlood;
 

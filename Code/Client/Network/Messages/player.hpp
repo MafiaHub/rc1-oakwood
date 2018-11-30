@@ -147,7 +147,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg)
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
-    Vector3D target = EXPAND_VEC(pos);
+    S_vector target = EXPAND_VEC(pos);
 
     auto entity = librg_entity_fetch(&network_context, id);
     if(entity) {
@@ -162,7 +162,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_THROW_GRENADE, [](librg_messa
     zpl_vec3 pos;
     librg_entity_id id = librg_data_rent(msg->data);
     librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
-    Vector3D target = EXPAND_VEC(pos);
+    S_vector target = EXPAND_VEC(pos);
 
     auto entity = librg_entity_fetch(&network_context, id);
     if(entity) {
@@ -250,7 +250,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
     auto victim_ent = librg_entity_fetch(&network_context, victim_id);
 
     u32 hit_type = librg_data_ru32(msg->data);
-    Vector3D unk1, unk2, unk3;
+    S_vector unk1, unk2, unk3;
     librg_data_rptr(msg->data, (void*)&unk1, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, (void*)&unk2, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, (void*)&unk3, sizeof(zpl_vec3));
@@ -363,7 +363,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_ROT, [](librg_message* ms
 
 librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message* msg) {
     
-    Vector3D pos, rot;
+    S_vector pos, rot;
     librg_data_rptr(msg->data, &pos, sizeof(pos));
     librg_data_rptr(msg->data, &rot, sizeof(rot));
 

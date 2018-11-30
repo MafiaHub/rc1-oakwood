@@ -2,7 +2,7 @@ librg_network_add(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, [](librg_
 
     u32 vehicle_id = librg_data_ru32(msg->data);
     u32 component_idx = librg_data_ru32(msg->data);
-    Vector3D speed, unk;
+    S_vector speed, unk;
 
     librg_data_rptr(msg->data, &speed, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, &unk, sizeof(zpl_vec3));
@@ -22,7 +22,7 @@ librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, [](librg_mess
 
     u32 vehicle_id = librg_data_ru32(msg->data);
     u32 wheel_idx = librg_data_ru32(msg->data);
-    Vector3D speed, unk;
+    S_vector speed, unk;
 
     librg_data_rptr(msg->data, &speed, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, &unk, sizeof(zpl_vec3));
@@ -101,10 +101,16 @@ librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_messa
                 if (mesh) {
                     auto mesh_lod = mesh->GetLOD(0);
                     if (mesh_lod) {
+                        MafiaSDK::I3D_stats_mesh stats;
                         auto vertices = mesh_lod->LockVertices(0);
-                        vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
-                        vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
-                        mesh_lod->UnlockVertices();
+                        if (vertices) {
+                            mesh_lod->GetStats(stats);
+                            if (delta.vertex_index < stats.vertex_count) {
+                                vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
+                                vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
+                            }
+                            mesh_lod->UnlockVertices();
+                        }
                     }
                 }
             }

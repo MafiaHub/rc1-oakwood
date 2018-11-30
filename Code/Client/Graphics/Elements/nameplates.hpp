@@ -44,7 +44,7 @@ namespace nameplates {
                     auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
                     auto player_health = player->health;
                     
-                    Vector3D camera_pos = get_current_i3dcamera()->GetInterface()->mPosition;
+                    S_vector camera_pos = get_current_i3dcamera()->GetInterface()->mPosition;
 
                     {
                         auto local_player_int = local_player.ped;

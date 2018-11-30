@@ -6,6 +6,6 @@ struct mafia_weapon_drop {
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	MafiaSDK::C_Drop_In_Weapon* weapon_drop_actor;
 	float angle;
-	Vector4D rotation;
+	S_quat rotation;
 #endif
 };

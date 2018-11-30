@@ -73,8 +73,8 @@ auto interpolate_cam(f64 delta_time) {
     zpl_vec3 dest_rot;
     zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
 
-    Vector3D pos = EXPAND_VEC(dest_pos);
-    Vector3D rot = EXPAND_VEC(dest_rot);
+    S_vector pos = EXPAND_VEC(dest_pos);
+    S_vector rot = EXPAND_VEC(dest_rot);
     cam->LockAt(pos, rot);
     passed_time += delta_time * 0.11f;
 }

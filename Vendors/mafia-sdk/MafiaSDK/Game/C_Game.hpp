@@ -128,7 +128,7 @@ namespace MafiaSDK
     {
         void HookOnGameTick(std::function<void()> funcitonPointer);
         void HookOnGameInit(std::function<void()> funcitonPointer);
-        void HookOnHumanShoot(std::function<void(C_Human*, Vector3D)> functionPointer);
+        void HookOnHumanShoot(std::function<void(C_Human*, S_vector)> functionPointer);
         void HookLocalPlayerFallDown(std::function<void()> functionPointer);
 
 #ifdef MAFIA_SDK_IMPLEMENTATION
@@ -138,7 +138,7 @@ namespace MafiaSDK
             std::function<void()> gameDone;
             std::function<void()> gameInit;
             std::function<void()> localPlayerFallDown;
-            std::function<void(C_Human*, Vector3D)> humanOnShoot;
+            std::function<void(C_Human*, S_vector)> humanOnShoot;
         };
         
         namespace Functions
@@ -458,7 +458,7 @@ namespace MafiaSDK
             }
         }
 
-        void NewExplosion(C_Actor* actor, Vector3D & pos, float radius, float force, BOOL b1, BOOL b2, BOOL b3, int int1)
+        void NewExplosion(C_Actor* actor, S_vector & pos, float radius, float force, BOOL b1, BOOL b2, BOOL b3, int int1)
         {
             unsigned long funcAddr = C_Game_Enum::FunctionAddresses::NewExplosion;
 
