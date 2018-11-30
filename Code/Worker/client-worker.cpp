@@ -1,39 +1,22 @@
-#ifndef _WIN32
-int main()
-#else
-
 #include <windows.h>
 #include <delayimp.h>
+#include <vector>
 #include <mutex>
-
 #define ZPL_IMPL
 #include "librg/zpl.h"
 
 double lastCoreUpdate = 0.0f;
 bool isCoreUpdated = false;
 std::mutex timeCheck;
+#include <cef.hpp>
+CefRefPtr<OakwoodCefApp> cefapp;
 
-#include <ui/uiapp.h>
-
-int CALLBACK WinMain(
-    _In_ HINSTANCE hInstance,
-    _In_ HINSTANCE hPrevInstance,
-    _In_ LPSTR     lpCmdLine,
-    _In_ int       nCmdShow
-)
-#endif
-{
-#ifdef _WIN32
-
+int CALLBACK WinMain(HINSTANCE wininst, HINSTANCE pi, LPSTR cmdline, int nCmdShow) {
     __HrLoadAllImportsForDll("libcef.dll");
 
-    const CefMainArgs args(hInstance);
-#else
-    const CefMainArgs args();
-#endif
+    CefMainArgs args(wininst);
+    cefapp = new OakwoodCefApp;
 
-    CefRefPtr<nfx::UiApp> ui_app = new nfx::UiApp;
-    
     lastCoreUpdate = zpl_time_now();
     std::thread parentRunCheck([&]() {
         while (true) {
@@ -51,6 +34,5 @@ int CALLBACK WinMain(
     });
 
     parentRunCheck.detach();
-
-    return CefExecuteProcess(args, ui_app, nullptr);
+    return CefExecuteProcess(args, cefapp, nullptr);
 }

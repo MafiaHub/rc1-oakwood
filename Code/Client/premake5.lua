@@ -2,7 +2,7 @@ project "Client"
     language "C++"
     kind "SharedLib"
 
-    targetname "oakwood-client"
+    targetname "OakwoodClient"
 
     vpaths { ["*"] = "*" }
     files {
@@ -44,7 +44,7 @@ project "Client"
 	}
 
 	postbuildcommands {
-		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/Client.dll"',
+		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/oakwood-client.dll"',
 	}
 
     linkoptions {

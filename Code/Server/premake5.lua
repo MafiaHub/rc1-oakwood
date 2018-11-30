@@ -1,6 +1,6 @@
 project "Server"
     language "C++"
-    targetname "oakwood-server"
+    targetname "OakwoodServer"
     kind "ConsoleApp"
     vpaths { ["*"] = "*" }
     files {

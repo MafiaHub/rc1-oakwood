@@ -174,9 +174,7 @@ namespace cef {
         IMPLEMENT_REFCOUNTING(OakwoodRenderHandler);
     };
 
-    class OakwoodBrowserClient : public CefClient,
-        public CefLifeSpanHandler {
-
+    class OakwoodBrowserClient : public CefClient, public CefLifeSpanHandler {
     public:
         OakwoodBrowserClient(OakwoodRenderHandler* handler) :
             mRenderHandler(handler) {}
@@ -197,8 +195,7 @@ namespace cef {
         }
 
         virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser>, CefProcessId, CefRefPtr<CefProcessMessage> msg) override {
-
-            if (msg->GetName() == "invoke") {
+            if (msg->GetName() == "executeEvent") {
                 auto args = msg->GetArgumentList();
                 for (auto native : native_functions) {
                     if (native.first.find(args->GetString(0).ToString()) != std::string::npos) {
@@ -228,116 +225,23 @@ namespace cef {
         CefRefPtr<CefRenderHandler> mRenderHandler;
     };
 
-    class CefMinimal : public CefApp,
-        public CefRenderProcessHandler,
-        public CefV8Handler {
+    class CefMinimal : public CefApp {
     public:
         virtual ~CefMinimal() = default;
         void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) override {
-
-            command_line->AppendSwitch("disable-smooth-scrolling");
+            command_line->AppendSwitch("enable-begin-frame-scheduling");
+            command_line->AppendSwitch("force-gpu-rasterization");
             command_line->AppendSwitchWithValue("disable-features", "TouchpadAndWheelScrollLatching");
+            command_line->AppendSwitch("disable-smooth-scrolling");
             command_line->AppendSwitchWithValue("disable-features", "AsyncWheelEvents");
+            command_line->AppendSwitch("disable-direct-composition");
+            command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
             command_line->AppendSwitch("enable-experimental-web-platform-features");
             command_line->AppendSwitch("transparent-painting-enabled");
             command_line->AppendSwitch("off-screen-rendering-enabled");
-            command_line->AppendSwitch("disable-direct-composition");
-            command_line->AppendSwitch("enable-begin-frame-scheduling");
-            command_line->AppendSwitch("force-gpu-rasterization");
-            command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
-        }
-
-        void InvokeEvent(const std::string &name, const std::string &data) {
-
-            CefV8ValueList args;
-            CefRefPtr<CefV8Value> retval;
-            args.push_back(CefV8Value::CreateString(name));
-            args.push_back(CefV8Value::CreateString(data));
-
-            for (auto& handler : handlers)
-                handler.second->ExecuteFunctionWithContext(handler.first, nullptr, args);
-        }
-
-        bool Execute(const CefString &name, CefRefPtr<CefV8Value>, const CefV8ValueList &args, CefRefPtr<CefV8Value>&, CefString &) override {
-
-            if (name == "addEventHandler") {
-                if (args.size() != 1 || !args[0]->IsFunction())
-                    return false;
-
-                handlers.emplace_back(CefV8Context::GetCurrentContext(), args[0]);
-                return true;
-            }
-
-            if (name == "invoke") {
-                if (args.size() != 2 || !args[0]->IsString() || !args[1]->IsString())
-                    return false;
-
-                auto msg = CefProcessMessage::Create("invoke");
-                auto argList = msg->GetArgumentList();
-
-                argList->SetSize(2);
-                argList->SetString(0, args[0]->GetStringValue());
-                argList->SetString(1, args[1]->GetStringValue());
-
-                return CefV8Context::GetCurrentContext()->GetBrowser()->SendProcessMessage(
-                    PID_BROWSER,
-                    msg
-                );
-            }
-
-            return false;
-        }
-
-        bool OnProcessMessageReceived(CefRefPtr<CefBrowser>, CefProcessId, CefRefPtr<CefProcessMessage> msg) override {
-
-            if (msg->GetName() == "invoke") {
-                MessageBox(NULL, "INVOKE", "OMG", MB_OK);
-                auto args = msg->GetArgumentList();
-                for (auto native : native_functions) {
-                    if (native.first.find(args->GetString(0).ToString()) != std::string::npos) {
-                        native.second(args);
-                    }
-                }
-                return true;
-            }
-
-            return false;
-        }
-
-        void OnContextCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context> ctx) override {
-
-            CefRefPtr<CefV8Value> window = ctx->GetGlobal();
-            window->SetValue("invoke", CefV8Value::CreateFunction("invoke", this), V8_PROPERTY_ATTRIBUTE_READONLY);
-            window->SetValue("addEventHandler", CefV8Value::CreateFunction("addEventHandler", this), V8_PROPERTY_ATTRIBUTE_NONE);
-
-            browser->SendProcessMessage(
-                PID_BROWSER,
-                CefProcessMessage::Create("register")
-            );
-        }
-
-        void OnContextReleased(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context> ctx) override {
-            if (handlers.empty())
-                return;
-
-            auto it = handlers.begin();
-            while (it != handlers.end()) {
-                if (it->first->IsSame(ctx))
-                    it = handlers.erase(it);
-                else
-                    ++it;
-            }
-        }
-
-        virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() {
-            return this;
         }
 
         IMPLEMENT_REFCOUNTING(CefMinimal);
-
-    private:
-        using V8EventHandler = std::pair<CefRefPtr<CefV8Context>, CefRefPtr<CefV8Value>>;
-        std::vector<V8EventHandler> handlers;
     };
 
     // =======================================================================//
@@ -369,7 +273,7 @@ namespace cef {
         CefString(&settings.locales_dir_path) = path + "\\cef\\locales";
         CefString(&settings.cache_path) = path + "\\cef\\cache";
         CefString(&settings.user_data_path) = path + "\\cef\\userdata";
-        CefString(&settings.browser_subprocess_path) = path + "\\Client-Worker.exe";
+        CefString(&settings.browser_subprocess_path) = path + "\\OakwoodWorker.exe";
 
         settings.multi_threaded_message_loop = false;
         settings.log_severity = LOGSEVERITY_WARNING;
@@ -391,7 +295,6 @@ namespace cef {
     }
 
     int tick() {
-
         CefDoMessageLoopWork();
 
         if (zpl_time_now() - last_core_update > 3.0) {

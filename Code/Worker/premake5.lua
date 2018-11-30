@@ -1,8 +1,8 @@
-project "Client-Worker"
+project "Worker"
     language "C++"
     kind "WindowedApp"
 
-    targetname "Client-Worker"
+    targetname "OakwoodWorker"
     flags "NoManifest"
 
     filter { "system:windows", "kind:not StaticLib" }
@@ -46,8 +46,7 @@ project "Client-Worker"
     }
 
     postbuildcommands {
-        'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/Client-Worker.exe"',
-        '{COPY} ../Bin/%{cfg.buildcfg}/Client-Worker.exe ../../'
+        'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/OakwoodWorker.exe"',
     }
 
     filter "files:ui/**"

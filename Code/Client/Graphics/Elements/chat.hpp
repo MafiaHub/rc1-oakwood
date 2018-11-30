@@ -47,15 +47,17 @@ namespace chat {
 
     auto add_message(std::string new_msg) {
         if (main_browser) {
-            CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("callEvent");
+            CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
             json send_msg = {
                 { "type", "chat-msg" },
                 { "msg", new_msg }
             };
 
-            auto send_args = msg->GetArgumentList();
-            send_args->SetSize(1);
-            send_args->SetString(0, send_msg.dump());
+            auto send_args = msg->GetArgumentList(); {
+                send_args->SetSize(1);
+                send_args->SetString(0, send_msg.dump());
+            };
+
             main_browser->browser.get()->SendProcessMessage(PID_RENDERER, msg);
         }
     }
@@ -86,7 +88,7 @@ namespace chat {
     auto init(IDirect3DDevice9* device) {
 
         auto back_buffer = graphics::get_backbuffer_desc(device);
-        main_browser = cef::browser_create(device, "file:///C:/Users/david/Desktop/ceftest/index.html", back_buffer.Width, back_buffer.Height, 1);
+        main_browser = cef::browser_create(device, "file:///D:/Games/Steam/steamapps/common/Mafia/Mafia/ceftest/index.html", back_buffer.Width, back_buffer.Height, 1);
 
         cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) {
             input::block_input(atoi(args->GetString(1).ToString().c_str()));
