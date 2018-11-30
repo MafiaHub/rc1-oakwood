@@ -51,7 +51,9 @@ std::vector<VehicleSpawn> vehicle_spawns = {
     },
 };
 
-OAK_MOD_MAIN {
+GameMode *gm = nullptr;
+
+OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     // Set up mod information
 
@@ -61,7 +63,7 @@ OAK_MOD_MAIN {
 
     // Initialize the GameMode
 
-    auto gm = new GameMode(mod);
+    gm = new GameMode(mod);
 
     // Spawn default vehicles
     for (auto vehicle_spawn : vehicle_spawns) {
@@ -92,7 +94,7 @@ OAK_MOD_MAIN {
         auto wep = get_weapon_by_id(player->GetCurrentWeapon());
 
         if (wep) {
-            gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
+            //gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
         }
 
         player->ClearInventory();

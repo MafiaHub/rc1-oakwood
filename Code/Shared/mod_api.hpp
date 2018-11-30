@@ -3,7 +3,7 @@
 #include "librg.h"
 
 /*
-* STD Includes
+* Standard Includes
 */
 #include <iostream>
 #include <string>
