@@ -6,3 +6,4 @@ Build
 .vscode
 VS2017
 Tools/oakgen.exe
+*.code-workspace

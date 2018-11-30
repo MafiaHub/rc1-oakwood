@@ -9,7 +9,7 @@
 //
 
 #define ZPL_IMPLEMENTATION
-#include "librg/zpl.h"
+#include "zpl.h"
 
 #include <Oakwood/Oakwood.hpp>
 #include <iostream>
@@ -153,13 +153,7 @@ OAK_MOD_MAIN {
         }
 
         auto modelID = std::stoi(args[1]);
-
-        auto position = player->GetPosition();
-        auto dir = ComputeDirVector(player->GetRotation());
-        zpl_vec3_muleq(&dir, 1.5f);
-        zpl_vec3_addeq(&position, dir);
-        auto rot = player->GetRotation() - 90.0f;
-        auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
+        auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
 
         player->PutToVehicle(vehicle, 0);
 
@@ -213,5 +207,5 @@ OAK_MOD_MAIN {
 }
 
 OAK_MOD_SHUTDOWN {
-    printf("Freeride is shutting down...\n");
+    zpl_printf("Freeride is shutting down...\n");
 }
