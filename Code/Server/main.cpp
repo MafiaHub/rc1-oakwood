@@ -43,6 +43,8 @@ struct _GlobalConfig {
 
 librg_ctx network_context = { 0 };
 
+#define OAK_CHAT_DISABLE_STYLING
+
 #include "config.hpp"
 #include "mode.hpp"
 #include "commands.hpp"
@@ -56,7 +58,7 @@ librg_ctx network_context = { 0 };
 #include "Workers/misc.hpp"
 #include "natives.hpp"
 
-const char *jebe = R"foo(
+const char *banner_text = R"foo(
  .88888.   .d888888  dP     dP dP   dP   dP  .88888.   .88888.  888888ba     8888ba.88ba   888888ba  
 d8'   `8b d8'    88  88   .d8' 88   88   88 d8'   `8b d8'   `8b 88    `8b    88  `8b  `8b  88    `8b 
 88     88 88aaaaa88a 88aaa8P'  88  .8P  .8P 88     88 88     88 88     88    88   88   88 a88aaaa8P' 
@@ -73,7 +75,7 @@ auto main() -> int {
         SetConsoleOutputCP(CP_UTF8);
     #endif
 
-    zpl_printf("%s", jebe);
+    zpl_printf("%s", banner_text);
 
     init_config();
     init_api();

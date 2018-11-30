@@ -113,7 +113,7 @@ OAK_MOD_MAIN {
     });
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
-        gm->ChatPrint(player->GetName() + " says: " + msg);
+        gm->ChatPrint("#AAAAAA<#FF0000" + player->GetName() + "#AAAAAA>#FFFFFF " + msg);
 
         return true;
     });

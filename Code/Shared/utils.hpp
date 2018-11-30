@@ -71,3 +71,69 @@ static float DirToRotation360(zpl_vec3 dir) {
 
     return val;
 }
+
+#include <sstream>
+
+static void html_encode_string(std::string& data) {
+    std::string buffer;
+    buffer.reserve(data.size());
+    for(size_t pos = 0; pos != data.size(); ++pos) {
+        switch(data[pos]) {
+            case '&':  buffer.append("&amp;");       break;
+            case '\"': buffer.append("&quot;");      break;
+            case '\'': buffer.append("&apos;");      break;
+            case '<':  buffer.append("&lt;");        break;
+            case '>':  buffer.append("&gt;");        break;
+            default:   buffer.append(&data[pos], 1); break;
+        }
+    }
+    data.swap(buffer);
+}
+
+static std::string ConvertColoredString(std::string text) {
+    std::stringstream output;
+    
+    #ifndef OAK_CHAT_DISABLE_STYLING
+    b32 following_style = true;
+    static std::string begin_style = "<p style=\"color: #";
+    static std::string enclose_style = "\">";
+    static std::string end_style = "</p>";
+
+    html_encode_string(text);
+    #endif
+
+    char *p = (char *)text.c_str();
+
+    while (*p) {
+        if (*p == '\\' && *(p+1) == '#') {
+            output << "#";
+            p += 2;
+        }
+        else if (*p != '#') {
+            output << *p++;
+        }
+        else {
+            // handle hex string
+            char *b = p+1;
+            char *e = b;
+            char hex_col[7] = {0};
+            char *hexp = hex_col;
+
+            while (zpl_char_is_hex_digit(*e) && hex_col[5] == NULL) {
+                *hexp++ = *e++;
+            }
+
+            #ifndef OAK_CHAT_DISABLE_STYLING
+            if (following_style) {
+                output << end_style;
+            }
+            
+            following_style = true;
+            output << begin_style << std::string(hex_col) << enclose_style;
+            #endif
+
+            p = e;
+        }
+    }
+    return output.str();
+}

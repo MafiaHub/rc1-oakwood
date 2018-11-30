@@ -25,10 +25,11 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_chat_print(const char* text) {
+        auto final_text = ConvertColoredString(text);
         librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-            auto len = strlen(text);
+            auto len = final_text.size();
             librg_data_wu16(&data, len);
-            librg_data_wptr(&data, (void *)text, len);
+            librg_data_wptr(&data, (void *)final_text.c_str(), len);
         });
     }
 
