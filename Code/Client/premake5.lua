@@ -44,7 +44,7 @@ project "Client"
 	}
 
 	postbuildcommands {
-		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/oakwood-client.dll"',
+		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/OakwoodClient.dll"',
 	}
 
     linkoptions {

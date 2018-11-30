@@ -71,7 +71,7 @@ namespace chat {
                 input::block_input(true);
 
             if (main_browser) {
-                CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("callEvent");
+                CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
                 json send_msg = {
                     { "type", "update-input" },
                     { "blocked", input::InputState.input_blocked }

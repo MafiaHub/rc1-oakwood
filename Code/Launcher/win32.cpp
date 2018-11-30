@@ -33,7 +33,7 @@ int launcher_abort(const char *msg) {
 /* hooked handlers */
 LPSTR WINAPI GetCommandLineA_Hook() {
     static bool init = false; if (!init) {
-        auto mod = LoadLibraryW(L"oakwood-client.dll"); if (mod) {
+        auto mod = LoadLibraryW(L"OakwoodClient.dll"); if (mod) {
             auto oakwood_start = (oakwood_proc *)(GetProcAddress(mod, "oakwood_start")); if (oakwood_start) {
                 // TODO: add custom entry point
                 //oakwood_start(g_localpath.c_str(), g_gamepath.c_str());
