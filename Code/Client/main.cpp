@@ -74,6 +74,9 @@ struct _GlobalConfig {
     std::string server_address;
     std::string username;
     float view_distance;
+
+    std::string localpath;
+    std::string gamepath;
 } GlobalConfig;
 
 /*
@@ -90,7 +93,10 @@ struct _GlobalConfig {
 #include "Graphics/elements_post.hpp"
 #include "Game/base.hpp"
 
-auto mod_init() {
+ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {
+    GlobalConfig.localpath = localpath;
+    GlobalConfig.gamepath = gamepath;
+
     mod_pre_init_game();
     mod_init_patches();
 }

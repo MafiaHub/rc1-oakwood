@@ -8,7 +8,7 @@
 
 /* settings */
 #define OAKWOOD_CONSOLE 1
-constexpr const char *OAKWOOD_CONFIG_NAME = "config.json";
+constexpr const char *OAKWOOD_CONFIG_NAME = "config/launcher.json";
 constexpr const char *OAKWOOD_CONFIG_DATA = R"foo(
 {
     /* path to game folder */
@@ -48,16 +48,16 @@ int main()
     zpl_printf("[info] oakwood: %s\n", localpath.c_str());
 
     /* create default folder structure */
-    zpl_path_mkdir(concat(localpath, "bin"),  0755);
-    zpl_path_mkdir(concat(localpath, "logs"), 0755);
+    zpl_path_mkdir(concat(localpath, "bin"), 0755);
     zpl_path_mkdir(concat(localpath, "data"), 0755);
+    zpl_path_mkdir(concat(localpath, "cache"), 0755);
+    zpl_path_mkdir(concat(localpath, "config"), 0755);
 
     { /* gamepath */
-
         char *config_name = (char *)OAKWOOD_CONFIG_NAME;
 
         int argc;
-        auto argv = CommandLineToArgvW(GetCommandLineW(), &argc); 
+        auto argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
         if (argc > 1) {
             config_name = (char *)zpl_ucs2_to_utf8_buf((u16*)argv[1]);
