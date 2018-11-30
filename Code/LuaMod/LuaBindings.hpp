@@ -48,6 +48,7 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  PlayAnimation),
 	BIND_FUNCTION(Player,  SetHealth),
 	BIND_FUNCTION(Player,  *GetVehicle),
+	BIND_FUNCTION(Player,  PutToVehicle),
 	BIND_FUNCTION(Player,  SetPed)
 );
 
