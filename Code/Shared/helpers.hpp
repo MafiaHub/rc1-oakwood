@@ -6,6 +6,10 @@ inline auto mod_log(const char* msg) -> void {
     printf("[Oakwood MP] %s\n", msg);
 }
 
+inline auto mod_log(std::string msg) -> void {
+    printf("[Oakwood MP] %s\n", msg.c_str());
+}
+
 inline auto mod_debug(const char* msg) -> void {
     printf("[DEBUG] %s\n", msg);
 }

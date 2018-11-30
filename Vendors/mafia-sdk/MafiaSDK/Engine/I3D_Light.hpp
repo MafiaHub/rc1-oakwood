@@ -83,7 +83,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void SetColor(Vector3D & lightColor)
+		void SetColor(S_vector & lightColor)
 		{
 			__asm
 			{

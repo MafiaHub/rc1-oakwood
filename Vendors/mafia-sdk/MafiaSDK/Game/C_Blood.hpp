@@ -59,7 +59,7 @@ namespace MafiaSDK
 			}
 		}
 		
-		void Init(Vector3D & position, Vector3D & rotation, float bloodRadius, int bloodType, BOOL doEnable)
+		void Init(S_vector & position, S_vector & rotation, float bloodRadius, int bloodType, BOOL doEnable)
 		{
 			unsigned long funcAddress = C_Blood_Enum::FunctionsAddresses::Init;
 

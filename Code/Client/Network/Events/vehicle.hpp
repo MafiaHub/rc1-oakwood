@@ -239,6 +239,7 @@ inline auto vehicle_entitycreate(librg_event* evnt) {
     vehicle->horn               = librg_data_ru8(evnt->data);
     vehicle->siren              = librg_data_ru8(evnt->data);
     vehicle->sound_enabled      = librg_data_ru8(evnt->data);
+    vehicle->is_car_in_radar    = librg_data_ru8(evnt->data);
     vehicle->hand_break         = librg_data_rf32(evnt->data);
     vehicle->speed_limit        = librg_data_rf32(evnt->data);
     vehicle->gear               = librg_data_ri32(evnt->data);
@@ -318,7 +319,7 @@ inline auto vehicle_entityremove(librg_event* evnt) {
     auto vehicle = (mafia_vehicle*)evnt->entity->user_data;
     if (vehicle && vehicle->car) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
-        vehicle_remove(vehicle);
+        vehicle_despawn(vehicle);
         zpl_zero_item(vehicle);
         evnt->entity->user_data = nullptr;
     }

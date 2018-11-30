@@ -13,6 +13,7 @@
 #include "Engine/Math.hpp"
 #include "Engine/ITexture.hpp"
 #include "Engine/I3D_Frame.hpp"
+#include "Engine/I3D_Model.hpp"
 #include "Engine/I3D_Projector.hpp"
 #include "Engine/I3D_Light.hpp"
 #include "Engine/ISND_Source.hpp"
@@ -31,6 +32,7 @@ namespace MafiaSDK {
 #include "Game/ai_action_manager.hpp"
 #include "Game/ai_follow_manager.hpp"
 
+#include "Game/C_I3D_Cache.hpp"
 #include "Game/C_Entity.hpp"
 #include "Game/C_Actor.hpp"
 #include "Game/C_Vehicle.hpp"

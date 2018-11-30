@@ -112,7 +112,7 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 
         if (alpha == 1.5f) ped->interp.pose.finishTime = 0;
 
-        Vector3D mafia_pose = EXPAND_VEC(compensation);
+        S_vector mafia_pose = EXPAND_VEC(compensation);
 
         if (ped->is_aiming)
             ped->ped->PoseSetPoseAimed(mafia_pose);
@@ -229,6 +229,21 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
     librg_data_wu8(evnt->data, player->is_crouching);
     librg_data_wu8(evnt->data, player->is_aiming);
     librg_data_wu64(evnt->data, player->aiming_time);
+
+    if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
+        auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+        if (vehicle_ent && vehicle_ent->user_data) {
+            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+            
+            for (int i = 0; i < 4; i++) {
+                if (vehicle->seats[i] == evnt->entity->id) {
+                    player->ped->Intern_UseCar(vehicle->car, i);
+                    break;
+                }
+            }
+        }
+    }
 }
 
 auto mod_player_add_events() {

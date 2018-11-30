@@ -153,7 +153,7 @@ namespace MafiaSDK
 			return *(float*)((unsigned long)this + (0x640 + property * 4));
 		}
 
-		int Hit(int hitType, const Vector3D & unk1, const Vector3D & unk2, const Vector3D & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
+		int Hit(int hitType, const S_vector & unk1, const S_vector & unk2, const S_vector & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Hit;
 			int returnVal = 0;
@@ -231,7 +231,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void PoseSetPoseAimed(Vector3D pose)
+		void PoseSetPoseAimed(S_vector pose)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::PoseSetPoseAimed;
 
@@ -245,7 +245,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void PoseSetPoseNormal(const Vector3D pose)
+		void PoseSetPoseNormal(const S_vector pose)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::PoseSetPoseNormal;
 
@@ -345,7 +345,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void Do_Shoot(BOOL isShooting, const Vector3D & vPos)
+		void Do_Shoot(BOOL isShooting, const S_vector & vPos)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Do_Shoot;
 			
@@ -358,7 +358,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void Do_ThrowGranade(Vector3D vPos)
+		void Do_ThrowGranade(S_vector vPos)
 		{
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Do_ThrowGranade;
 			
@@ -698,20 +698,20 @@ namespace MafiaSDK
 
 	namespace C_Human_Hooks
 	{
-		inline void HookOnHumanHit(std::function<int(MafiaSDK::C_Human*, int, const Vector3D &, const Vector3D &, const Vector3D &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> funcitonPointer);
+		inline void HookOnHumanHit(std::function<int(MafiaSDK::C_Human*, int, const S_vector &, const S_vector &, const S_vector &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> funcitonPointer);
 
 #ifdef MAFIA_SDK_IMPLEMENTATION
 		namespace FunctionsPointers
 		{
-			std::function<int(MafiaSDK::C_Human*, int, const Vector3D &, const Vector3D &, const Vector3D &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> humanHit;
-			std::function<void(const Vector3D &)> humanShoot;
+			std::function<int(MafiaSDK::C_Human*, int, const S_vector &, const S_vector &, const S_vector &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> humanHit;
+			std::function<void(const S_vector &)> humanShoot;
 			std::function<void(MafiaSDK::C_Human*, byte)> humanDoWeaponChange;
 			std::function<void(MafiaSDK::C_Human*)> humanDoWeaponDrop;
 		};
 
 		namespace Functions
 		{
-			inline int HumanHit(MafiaSDK::C_Human* thisInstance, int hitType, const Vector3D & unk1, const Vector3D & unk2, const Vector3D & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
+			inline int HumanHit(MafiaSDK::C_Human* thisInstance, int hitType, const S_vector & unk1, const S_vector & unk2, const S_vector & unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame)
 			{
 				if (FunctionsPointers::humanHit != nullptr)
 					return FunctionsPointers::humanHit(thisInstance, hitType, unk1, unk2, unk3, damage, atacker, hittedPart, targetFrame);
@@ -719,7 +719,7 @@ namespace MafiaSDK
 				else return 0;
 			}
 
-			inline void HumanShoot(const Vector3D & position)
+			inline void HumanShoot(const S_vector & position)
 			{
 				if (FunctionsPointers::humanShoot != nullptr)
 					FunctionsPointers::humanShoot(position);
@@ -889,7 +889,7 @@ namespace MafiaSDK
 			}
 		};
 
-		inline void HookOnHumanHit(std::function<int(MafiaSDK::C_Human*, int, const Vector3D &, const Vector3D &, const Vector3D &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> functionPointer)
+		inline void HookOnHumanHit(std::function<int(MafiaSDK::C_Human*, int, const S_vector &, const S_vector &, const S_vector &, float, MafiaSDK::C_Actor*, unsigned long, MafiaSDK::I3D_Frame*)> functionPointer)
 		{
 			FunctionsPointers::humanHit = functionPointer;
 
@@ -897,7 +897,7 @@ namespace MafiaSDK
 			MemoryPatcher::InstallJmpHook(0x00594230, (unsigned long)&NakedFunctions::HumanHitTwo);
 		}
 
-		inline void HookOnHumanShoot(std::function<void(const Vector3D &)> functionPointer)
+		inline void HookOnHumanShoot(std::function<void(const S_vector &)> functionPointer)
 		{
 			FunctionsPointers::humanShoot = functionPointer;
 			MemoryPatcher::InstallJmpHook(0x00591416, (unsigned long)&NakedFunctions::HumanShoot);

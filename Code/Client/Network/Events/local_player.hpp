@@ -60,9 +60,9 @@ inline auto local_player_died() {
 inline auto local_player_hit(
     MafiaSDK::C_Human* victim,
     DWORD hit_type, 
-    const Vector3D* unk1, 
-    const Vector3D* unk2, 
-    const Vector3D* unk3,
+    const S_vector* unk1, 
+    const S_vector* unk2, 
+    const S_vector* unk3,
     float damage,
     MafiaSDK::C_Actor* attacker, 
     unsigned int player_part) -> void {
@@ -83,10 +83,10 @@ inline auto local_player_hit(
     });
 }
 
-inline auto local_player_shoot(Vector3D pos) -> void {
+inline auto local_player_shoot(S_vector pos) -> void {
 
     librg_send(&network_context, NETWORK_PLAYER_SHOOT, data, {
-        librg_data_wptr(&data, &pos, sizeof(Vector3D));
+        librg_data_wptr(&data, &pos, sizeof(S_vector));
     });
 }
 
@@ -139,10 +139,10 @@ inline auto local_player_weaponpickup(librg_entity* item_entity) -> void {
     player_inventory_send();
 }
 
-inline auto local_player_throwgrenade(const Vector3D & pos) {
-    Vector3D vec_copy = pos;
+inline auto local_player_throwgrenade(const S_vector & pos) {
+    S_vector vec_copy = pos;
     librg_send(&network_context, NETWORK_PLAYER_THROW_GRENADE, data, {
-        librg_data_wptr(&data, &vec_copy, sizeof(Vector3D));
+        librg_data_wptr(&data, &vec_copy, sizeof(S_vector));
     });
 
     player_inventory_send();

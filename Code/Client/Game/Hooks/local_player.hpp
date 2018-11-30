@@ -6,7 +6,7 @@ namespace hooks
     //----------------------------------------------
     //C_Human::PoseSetPoseAimed() && C_Human::PoseSetPoseNormal
     //----------------------------------------------
-    auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, Vector3D pose) -> int {
+    auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, S_vector pose) -> int {
     
         if(_this == local_player.ped) 
             local_player.pose = EXPAND_VEC(pose);
@@ -15,7 +15,7 @@ namespace hooks
         return 0;
     }
 
-    auto __fastcall PoseSetPoseNormal(MafiaSDK::C_Human* _this, Vector3D pose) -> int {
+    auto __fastcall PoseSetPoseNormal(MafiaSDK::C_Human* _this, S_vector pose) -> int {
 
         if(_this == local_player.ped)
             local_player.pose = EXPAND_VEC(pose);
@@ -82,9 +82,9 @@ namespace hooks
     //----------------------------------------------
     //C_Human:Hit(E_hit_type, S_vector const &, S_vector const &, S_vector const &, float, C_actor *, unsigned int, I3D_frame *)
     //----------------------------------------------
-    typedef bool(__thiscall* C_Human_Hit_t)(void* _this, int hitType, Vector3D* unk1, Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame);
+    typedef bool(__thiscall* C_Human_Hit_t)(void* _this, int hitType, S_vector* unk1, S_vector* unk2, S_vector* unk3, float damage, MafiaSDK::C_Actor* atacker, unsigned long hittedPart, MafiaSDK::I3D_Frame* targetFrame);
     C_Human_Hit_t human_hit_original = nullptr;
-    bool __fastcall OnHit(void* _this, DWORD edx, int type, Vector3D* unk1,Vector3D* unk2, Vector3D* unk3, float damage, MafiaSDK::C_Actor* attacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
+    bool __fastcall OnHit(void* _this, DWORD edx, int type, S_vector* unk1,S_vector* unk2, S_vector* unk3, float damage, MafiaSDK::C_Actor* attacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
         
         if (hit_hook_skip && (_this != local_player.ped)) return 0;
         auto victim = reinterpret_cast<MafiaSDK::C_Human*>(_this);
@@ -114,7 +114,7 @@ namespace hooks
     void C_Human_Do_ThrowGrenade(void* _this) {
 
         if(_this != nullptr) {
-            Vector3D pos = *(Vector3D*)((DWORD)_this + 0x200);
+            S_vector pos = *(S_vector*)((DWORD)_this + 0x200);
             if(_this == local_player.ped) {
                 local_player_throwgrenade(pos);
             }
@@ -145,7 +145,7 @@ namespace hooks
     //----------------------------------------------
     //CHuman::DoSoot(const S_Vector) custom jmp hook
     //----------------------------------------------
-    void OnDoShoot(Vector3D* pos, MafiaSDK::C_Player* player) {
+    void OnDoShoot(S_vector* pos, MafiaSDK::C_Player* player) {
 
         player->Do_Shoot(1, *pos);
 

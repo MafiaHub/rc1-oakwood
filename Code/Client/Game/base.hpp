@@ -4,17 +4,17 @@
 #include "commands.hpp"
 #include "patches.hpp"
 #include "game_events.hpp"
+#include "Hooks/engine.hpp"
 
 inline auto mod_pre_init_game() {
     graphics::hook();
     input::hook();
-    Sleep(300);
-    input::hook_window();
+    hooks::engine::init();
     //voip::init();
+
+    init_config();
+    mod_bind_events();
+    mod_init_networking();
     alloc_console();
 }
 
-inline auto mod_init_game() {
-    mod_init_patches();
-    mod_bind_events();
-}

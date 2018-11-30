@@ -105,7 +105,7 @@ namespace MafiaSDK
 			}
 		}
 
-		int CreateParticle(int particleId, Vector3D & vPos, Vector3D & vRot, I3D_Frame* I3D_Frame)
+		int CreateParticle(int particleId, S_vector & vPos, S_vector & vRot, I3D_Frame* I3D_Frame)
 		{
 			unsigned long funcAddr = C_ParticleManager_Enum::FunctionsAddresses::CreateParticle;
 			int iReturnId = 0;

@@ -9,15 +9,16 @@ auto player_spawn(zpl_vec3 position,
                   bool is_local_player, 
                   int expectedWeaponId,
                   bool is_in_car) -> MafiaSDK::C_Player *{
-                      
-    Vector3D default_scale = { 1.0f, 1.0f, 1.0f };
-    Vector3D default_pos = EXPAND_VEC(position);
+    
+    S_vector default_scale = { 1.0f, 1.0f, 1.0f };
+    S_vector default_pos = EXPAND_VEC(position);
 
-    auto player_frame = new MafiaSDK::I3D_Frame();
-    player_frame->SetName("testing_player");
-    player_frame->LoadModel(model);
-    player_frame->SetScale(default_scale);
-    player_frame->SetPos(default_pos);
+    auto player_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    player_model->SetName("testing_player");
+    player_model->SetScale(default_scale);
+    MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL);
+    player_model->Update();
+    player_model->SetWorldPos(default_pos);
     
     MafiaSDK::C_Player *new_ped = nullptr;
 
@@ -26,7 +27,7 @@ auto player_spawn(zpl_vec3 position,
     else
         new_ped = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Enemy));
 
-    new_ped->Init(player_frame);
+    new_ped->Init(player_model);
 
     if (!is_local_player)
         new_ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);

@@ -6,9 +6,9 @@ namespace hooks
     //----------------------------------------------
     //C_car::Prepare_DropOut_Wheel
     //----------------------------------------------
-    typedef bool(__fastcall* C_car_Prepare_DropOut_Wheel_t)(void* _this, int idx, const Vector3D& speed, const Vector3D* unk);
+    typedef bool(__fastcall* C_car_Prepare_DropOut_Wheel_t)(void* _this, int idx, const S_vector& speed, const S_vector* unk);
     C_car_Prepare_DropOut_Wheel_t car_prepare_dropout_wheel_original = nullptr;
-    bool __fastcall C_car_Prepare_DropOut_Wheel(void* _this, int idx, const Vector3D& speed, const Vector3D* unk) {
+    bool __fastcall C_car_Prepare_DropOut_Wheel(void* _this, int idx, const S_vector& speed, const S_vector* unk) {
 
         auto vehicle_ent = get_vehicle_from_base((void*)_this);
         if (!vehicle_ent) return false;
@@ -31,9 +31,9 @@ namespace hooks
     //----------------------------------------------
     //C_car::Prepare_DropOut
     //----------------------------------------------
-    typedef bool(__fastcall* C_car_Prepare_DropOut_t)(void* _this, int idx, const Vector3D& speed, const Vector3D* unk);
+    typedef bool(__fastcall* C_car_Prepare_DropOut_t)(void* _this, int idx, const S_vector& speed, const S_vector* unk);
     C_car_Prepare_DropOut_Wheel_t car_prepare_dropout_original = nullptr;
-    bool __fastcall C_car_Prepare_DropOut(void* _this, int idx, const Vector3D& speed, const Vector3D* unk) {
+    bool __fastcall C_car_Prepare_DropOut(void* _this, int idx, const S_vector& speed, const S_vector* unk) {
 
         auto vehicle_ent = get_vehicle_from_base((void*)_this);
         if (!vehicle_ent) return false;
@@ -95,16 +95,16 @@ namespace hooks
     //----------------------------------------------
     //C_Vehicle::Deform((S_vector const &,S_vector const &,float,float,uint,S_vector const *))
     //----------------------------------------------
-    typedef bool(__thiscall* C_Vehicle_Deform_t)(void* _this, const Vector3D& unk1, const Vector3D& unk2, float unk3, float unk4, unsigned int unk5, Vector3D* unk6);
+    typedef bool(__thiscall* C_Vehicle_Deform_t)(void* _this, const S_vector& unk1, const S_vector& unk2, float unk3, float unk4, unsigned int unk5, S_vector* unk6);
     C_Vehicle_Deform_t c_vehicle_deform_original = nullptr;
     bool __fastcall C_Vehicle_Deform(void* _this,
         DWORD edx,
-        const Vector3D & pos,
-        const Vector3D & rot,
+        const S_vector & pos,
+        const S_vector & rot,
         float unk1,
         float unk2,
         unsigned int unk3,
-        Vector3D* unk4) {
+        S_vector* unk4) {
 
         //NOTE(DavoSK): Get car from C_Vehicle, be carefull if is something else RIP, CRASH, CRY
         MafiaSDK::C_Car* current_car = reinterpret_cast<MafiaSDK::C_Car*>((char*)_this - 0x70);

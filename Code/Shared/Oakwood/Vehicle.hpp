@@ -5,8 +5,9 @@
 */
 
 class GameMode;
+class Player;
 
-class Vehicle {
+class Vehicle : public GameObject {
 public:
     friend class GameMode;
     Vehicle(librg_entity *entity, mafia_vehicle *vehicle);
@@ -15,6 +16,11 @@ public:
     //
     // Natives
     //
+
+    void ShowOnRadar(bool visibility);
+    bool GetRadarVisibility();
+
+    int GetPlayerSeatID(Player *player);
     
     void SetPosition(zpl_vec3 pos);
     zpl_vec3 GetPosition();
@@ -24,9 +30,6 @@ public:
 
     void SetHeadingRotation(float angle);
     float GetHeadingRotation();
-
-protected:
-    librg_entity *entity;
 
 private:
     mafia_vehicle *vehicle;

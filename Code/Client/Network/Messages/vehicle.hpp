@@ -2,7 +2,7 @@ librg_network_add(&network_context, NETWORK_VEHICLE_COMPONENT_DROPOUT, [](librg_
 
     u32 vehicle_id = librg_data_ru32(msg->data);
     u32 component_idx = librg_data_ru32(msg->data);
-    Vector3D speed, unk;
+    S_vector speed, unk;
 
     librg_data_rptr(msg->data, &speed, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, &unk, sizeof(zpl_vec3));
@@ -22,7 +22,7 @@ librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, [](librg_mess
 
     u32 vehicle_id = librg_data_ru32(msg->data);
     u32 wheel_idx = librg_data_ru32(msg->data);
-    Vector3D speed, unk;
+    S_vector speed, unk;
 
     librg_data_rptr(msg->data, &speed, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, &unk, sizeof(zpl_vec3));
@@ -101,13 +101,57 @@ librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_messa
                 if (mesh) {
                     auto mesh_lod = mesh->GetLOD(0);
                     if (mesh_lod) {
+                        MafiaSDK::I3D_stats_mesh stats;
                         auto vertices = mesh_lod->LockVertices(0);
-                        vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
-                        vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
-                        mesh_lod->UnlockVertices();
+                        if (vertices) {
+                            mesh_lod->GetStats(stats);
+                            if (delta.vertex_index < stats.vertex_count) {
+                                vertices[delta.vertex_index].n = EXPAND_VEC(delta.normal);
+                                vertices[delta.vertex_index].p = EXPAND_VEC(delta.position);
+                            }
+                            mesh_lod->UnlockVertices();
+                        }
                     }
                 }
             }
         }
+    }
+});
+
+librg_network_add(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, [](librg_message* msg) {
+    u32 vehicle_id = librg_data_rent(msg->data);
+    auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+    if (vehicle_ent && vehicle_ent->user_data) {
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+        b32 state = librg_data_ru8(msg->data);
+
+        if (state != vehicle->is_car_in_radar) {
+            if (state)
+                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(vehicle->car, 0xFFFF0000);
+            else
+                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
+
+            vehicle->is_car_in_radar = state;
+        }
+    }
+});
+
+librg_network_add(&network_context, NETWORK_VEHICLE_SET_POS, [](librg_message* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity) {
+        librg_data_rptr(msg->data, &entity->position, sizeof(entity->position));
+    }
+});
+
+librg_network_add(&network_context, NETWORK_VEHICLE_SET_DIR, [](librg_message* msg) {
+    auto entity_id = librg_data_rent(msg->data);
+    auto entity = librg_entity_fetch(&network_context, entity_id);
+    if (entity && entity->user_data) {
+        auto vehicle = (mafia_vehicle*)entity->user_data;
+
+        librg_data_rptr(msg->data, &vehicle->rotation, sizeof(vehicle->rotation));
     }
 });

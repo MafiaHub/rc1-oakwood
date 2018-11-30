@@ -21,12 +21,12 @@ GameMode::GameMode(oak_api *mod) {
         if (onPlayerConnected)
             onPlayerConnected(player);
 
-        players.push_back(player);
+        players.AddObject(player);
     };
 
     mod->on_player_disconnected = [=](librg_event* evnt, librg_entity* entity) {
 
-        auto player = GetPlayerByEntity(entity);
+        auto player = players.GetObjectByEntity(entity);
 
         if (!player) {
             printf("[OAKWOOD] Unregistered entity was just disconnected !");
@@ -38,12 +38,12 @@ GameMode::GameMode(oak_api *mod) {
 
         delete player;
 
-        players.erase(std::remove(players.begin(), players.end(), player), players.end());
+        players.RemoveObject(player);
     };
 
     mod->on_player_died = [=](librg_entity* entity, mafia_player* ped) {
 
-        auto player = GetPlayerByEntity(entity);
+        auto player = players.GetObjectByEntity(entity);
 
         if (!player) {
             printf("[OAKWOOD] Unregistered entity just died !");
@@ -55,15 +55,26 @@ GameMode::GameMode(oak_api *mod) {
     };
 
     mod->on_player_hit = [=](librg_entity *attacker_ent, librg_entity *victim_ent, float damage) {
-        auto attacker = GetPlayerByEntity(attacker_ent);
-        auto victim = GetPlayerByEntity(victim_ent);
+        auto attacker = players.GetObjectByEntity(attacker_ent);
+        auto victim = players.GetObjectByEntity(victim_ent);
 
         if (attacker && victim && onPlayerHit)
             onPlayerHit(attacker, victim, damage);
     };
 
+    mod->on_vehicle_destroyed = [=](librg_entity *vehicle_ent) {
+        auto vehicle = vehicles.GetObjectByEntity(vehicle_ent);
+
+        if (vehicle) {
+            if (onVehicleDestroyed)
+                onVehicleDestroyed(vehicle);
+
+            vehicles.RemoveObject(vehicle);
+        }
+    };
+
     mod->on_player_chat = [=](librg_entity* entity, std::string msg) {
-        auto player = GetPlayerByEntity(entity);
+        auto player = players.GetObjectByEntity(entity);
 
         if (!player) {
             printf("[OAKWOOD] Unregistered entity sends message!");
@@ -89,6 +100,11 @@ GameMode::GameMode(oak_api *mod) {
 
 GameMode::~GameMode() {
     this->mod = nullptr;
+}
+
+b32 GameObject::CompareWith(librg_entity *entity)
+{
+    return this->entity == entity;
 }
 
 void GameMode::BroadcastMessage(std::string text, u32 color)
@@ -117,11 +133,14 @@ void GameMode::SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_i
     mod->vtable.drop_spawn(position, (char *)model.c_str(), item);
 }
 
-Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model)
+Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model, b32 show_in_radar)
 {
     auto rot = ComputeDirVector(angle);
-    auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str());
-    return new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+    auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str(), show_in_radar);
+    auto vehicle = new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+    vehicles.AddObject(vehicle);
+
+    return vehicle;
 }
 
 Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
@@ -172,16 +191,6 @@ void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*
 //
 // Player
 //
-
-Player *GameMode::GetPlayerByEntity(librg_entity * entity)
-{
-    for (auto player : players) {
-        if (player->CompareWith(entity))
-            return player;
-    }
-
-    return nullptr;
-}
 
 Player::Player(librg_entity *entity, mafia_player *ped)
 {
@@ -300,9 +309,20 @@ f32 Player::GetHealth()
     return ped->health / 2.0f;
 }
 
-b32 Player::CompareWith(librg_entity *entity)
+Vehicle *Player::GetVehicle()
 {
-    return this->entity == entity;
+    auto vehicle_ent = __gm->mod->vtable.player_get_vehicle(this->entity);
+
+    if (vehicle_ent) {
+        return __gm->vehicles.GetObjectByEntity(vehicle_ent);
+    }
+
+    return nullptr;
+}
+
+bool Player::PutToVehicle(Vehicle *vehicle, int seatID)
+{
+    return __gm->mod->vtable.player_put_to_vehicle(this->entity, vehicle->GetEntity(), seatID);
 }
 
 void Player::SetPed(mafia_player *ped)
@@ -324,9 +344,26 @@ Vehicle::~Vehicle()
 {
 }
 
+void Vehicle::ShowOnRadar(bool visibility)
+{
+    __gm->mod->vtable.vehicle_show_on_radar(this->entity, visibility);
+}
+
+bool Vehicle::GetRadarVisibility()
+{
+    return this->vehicle->is_car_in_radar;
+}
+
+int Vehicle::GetPlayerSeatID(Player *player) 
+{
+    if (!player) return -1;
+
+    return __gm->mod->vtable.vehicle_get_player_seat_id(this->entity, player->GetEntity());
+}
+
 void Vehicle::SetPosition(zpl_vec3 pos)
 {
-    
+    __gm->mod->vtable.vehicle_set_position(this->entity, pos);
 }
 
 zpl_vec3 Vehicle::GetPosition()
@@ -336,7 +373,7 @@ zpl_vec3 Vehicle::GetPosition()
 
 void Vehicle::SetDirection(zpl_vec3 dir)
 {
-
+    __gm->mod->vtable.vehicle_set_direction(this->entity, dir);
 }
 
 zpl_vec3 Vehicle::GetDirection()
@@ -351,10 +388,12 @@ zpl_vec3 Vehicle::GetDirection()
 
 void Vehicle::SetHeadingRotation(float angle)
 {
-
+    auto dir = ComputeDirVector(angle);
+    SetDirection(dir);
 }
 
 float Vehicle::GetHeadingRotation()
 {
-    return 0.0f;
+    auto angle = DirToRotation180(vehicle->rotation);
+    return angle;
 }

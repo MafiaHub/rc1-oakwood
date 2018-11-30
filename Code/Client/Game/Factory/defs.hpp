@@ -13,4 +13,4 @@ auto player_spawn(zpl_vec3 position,
 auto vehicle_spawn(zpl_vec3 position,
                    mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car*;
 
-auto vehicle_remove(mafia_vehicle* vehicle) -> void;
+auto vehicle_despawn(mafia_vehicle* vehicle) -> void;

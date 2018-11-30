@@ -159,7 +159,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void Prepare_Drop_Out_Wheel(unsigned int wheel_idx, const Vector3D & speed, const Vector3D & unk)
+		void Prepare_Drop_Out_Wheel(unsigned int wheel_idx, const S_vector & speed, const S_vector & unk)
 		{
 			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::PrepareDropOutWheel;
 
@@ -172,7 +172,7 @@ namespace MafiaSDK
 			}
 		}
 
-		void Prepare_Drop_Out(unsigned int comp_idx, const Vector3D & speed, const Vector3D & unk)
+		void Prepare_Drop_Out(unsigned int comp_idx, const S_vector & speed, const S_vector & unk)
 		{
 			unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::PrepareDropOut;
 
@@ -201,13 +201,31 @@ namespace MafiaSDK
 		*/
 		DWORD* GetCarComponent(unsigned int comp_idx)
 		{
-			return (DWORD*)(*(DWORD *)((DWORD)this + 0x288) + 52 * comp_idx);
+            DWORD car_components = *(DWORD *)((DWORD)this + 0x288);
+            if (car_components) {
+                return (DWORD*)(car_components + 52 * comp_idx);
+            }
+
+            return NULL;
 		}
 		
 		DWORD GetCarTyre(unsigned int tyre_idx) 
 		{
-			return *(DWORD*)(*(DWORD*)((DWORD)this + 0xCA8) + 0x4 * tyre_idx);
+            DWORD car_tyres = *(DWORD*)((DWORD)this + 0xCA8);
+            if (car_tyres) {
+                DWORD* ptr_tyre = (DWORD*)(car_tyres + 0x4 * tyre_idx);
+                if (ptr_tyre) {
+                    return *ptr_tyre;
+                }
+            }
+            
+            return NULL;
 		}
+
+#define GET_PTR(type,name,addr, err)\
+        auto name_ptr = (type*)(addr); \
+        if (!name_ptr) { err; }; \
+        type* name = *(type**)(name_ptr); \
 
 		void RemoveTyre(unsigned int tyre_idx) 
 		{
@@ -216,10 +234,10 @@ namespace MafiaSDK
 			if (vehicle_tyre) {
 				// Remove tyre frame
 				if (vehicle_tyre) {
-			        I3D_Frame* tyre_frame = *(I3D_Frame**)((DWORD)vehicle_tyre + 0x4);
+                    GET_PTR(I3D_Frame, tyre_frame, (DWORD)vehicle_tyre + 0x4, return);
                     if (tyre_frame) {
                         tyre_frame->SetOn(FALSE);
-                        tyre_frame->UpdateMatrix();
+                        tyre_frame->Update();
                     }
 				}
 
@@ -235,7 +253,6 @@ namespace MafiaSDK
 			auto component = this->GetCarComponent(component_idx);
   
 			if (component) {
-
                 auto check = *((unsigned __int16 *)component + 6);
                 if (check == 2 ||
                     check == 4 ||
@@ -248,7 +265,7 @@ namespace MafiaSDK
                     I3D_Frame* comp_frame = *(I3D_Frame**)(component);
                     if (comp_frame) {
                         comp_frame->SetOn(FALSE);
-                        comp_frame->UpdateMatrix();
+                        comp_frame->Update();
                     }
                 }
             }
@@ -259,11 +276,18 @@ namespace MafiaSDK
             if (functionPtr != nullptr) {
                 
                 auto inter = &GetInterface()->vehicle_interface;
-                DWORD meshCount = (inter->last_mesh - inter->first_mesh) / I3D_mesh_object_size;
+                if (inter) {
+                    DWORD meshCount = (inter->last_mesh - inter->first_mesh) / I3D_mesh_object_size;
 
-                for (int i = 0; i < meshCount; i++) {
-                    I3D_mesh_object* currentMesh = *(I3D_mesh_object**)((I3D_mesh_object_size * i) + inter->first_mesh + 0x4);
-                    functionPtr(currentMesh);
+                    for (int i = 0; i < meshCount; i++) {
+                        DWORD meshPtr = (I3D_mesh_object_size * i) + inter->first_mesh + 0x4;
+                        if (meshPtr) {
+                            I3D_mesh_object* currentMesh = *(I3D_mesh_object**)(meshPtr);
+                            
+                            if(currentMesh)
+                                functionPtr(currentMesh);
+                        }
+                    }
                 }
             }
         }
@@ -271,7 +295,17 @@ namespace MafiaSDK
         I3D_mesh_object* GetMeshByIndex(unsigned int idx) 
         {
             auto inter = &GetInterface()->vehicle_interface;
-            return *(I3D_mesh_object**)((I3D_mesh_object_size * idx) + inter->first_mesh + 0x4);
+
+            if (!inter) return nullptr;
+            auto mesh_ptr = (I3D_mesh_object**)((I3D_mesh_object_size * idx) + inter->first_mesh + 0x4);
+
+            if (mesh_ptr) {
+                if (*mesh_ptr) {
+                    return *mesh_ptr;
+                }
+                else return nullptr;
+            }
+            else return nullptr;
         }
 	};
 };

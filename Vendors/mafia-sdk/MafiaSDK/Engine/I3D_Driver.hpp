@@ -53,7 +53,8 @@ namespace MafiaSDK
 	class I3D_Driver
 	{
 	public:
-		I3D_Frame* CreateFrame(I3D_Driver_Enum::FrameType frame_type)
+        template<typename T>
+		T* CreateFrame(I3D_Driver_Enum::FrameType frame_type)
 		{
 			__asm
 			{

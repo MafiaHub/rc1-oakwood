@@ -22,7 +22,33 @@ struct mafia_vehicle {
 			tyres[i].flags = 0x0;
 		}
 	}
-#ifdef MAFIA_SDK_IMPLEMENTATION
+
+	char model[32];
+	i32 seats[4];
+    float engine_health;
+    float health;
+    u8 horn;
+    u8 siren;
+    u8 sound_enabled;
+    float hand_break;
+    float speed_limit;
+    i32 gear;
+    float break_val;
+    float clutch;
+    float wheel_angle;
+    u8 engine_on;
+    float fuel;
+	float engine_rpm;
+	float accelerating;
+	u8 is_car_in_radar;
+    zpl_vec3 rotation;
+	zpl_vec3 rotation_second;
+	zpl_vec3 speed;
+	mafia_vehicle_tyre tyres[4];
+	u8 destroyed_components[15];
+    std::vector<mafia_vehicle_deform> deform_deltas;
+
+	#ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
 	b32 wants_explode;
 
@@ -49,27 +75,4 @@ struct mafia_vehicle {
 		u32 forceLocalZCounter;
 	} interp;
 #endif
-	char model[32];
-	i32 seats[4];
-    float engine_health;
-    float health;
-    u8 horn;
-    u8 siren;
-    u8 sound_enabled;
-    float hand_break;
-    float speed_limit;
-    i32 gear;
-    float break_val;
-    float clutch;
-    float wheel_angle;
-    u8 engine_on;
-    float fuel;
-	float engine_rpm;
-	float accelerating;
-    zpl_vec3 rotation;
-	zpl_vec3 rotation_second;
-	zpl_vec3 speed;
-	mafia_vehicle_tyre tyres[4];
-	u8 destroyed_components[15];
-    std::vector<mafia_vehicle_deform> deform_deltas;
 };

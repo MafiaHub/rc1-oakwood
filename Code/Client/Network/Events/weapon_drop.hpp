@@ -6,16 +6,16 @@ inline auto drop_entitycreate(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, drop->model, sizeof(char) * 32);
     librg_data_rptr(evnt->data, &drop->weapon, sizeof(inventory_item));
 
-    auto drop_frame = new MafiaSDK::I3D_Frame();
-    Vector3D default_scale = { 1.5f, 1.5f, 1.5f };
-    Vector3D default_pos = EXPAND_VEC(evnt->entity->position);
-    drop_frame->SetName("testing_drop");
-    drop_frame->LoadModel(drop->model);
-    drop_frame->SetScale(default_scale);
-    drop_frame->SetPos(default_pos);
+    auto drop_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    S_vector default_scale = { 1.5f, 1.5f, 1.5f };
+    S_vector default_pos = EXPAND_VEC(evnt->entity->position);
+    drop_model->SetName("testing_drop");
+    MafiaSDK::GetModelCache()->Open(drop_model, drop->model, NULL, NULL, NULL, NULL);
+    drop_model->SetScale(default_scale);
+    drop_model->SetWorldPos(default_pos);
 
     auto weapon_drop = new MafiaSDK::C_Drop_In_Weapon;
-    weapon_drop->Init(drop_frame);
+    weapon_drop->Init(drop_model);
     weapon_drop->GetInterface()->DropItem = { drop->weapon.weaponId, drop->weapon.ammoLoaded, drop->weapon.ammoHidden, NULL };
     weapon_drop->SetActive(1);
     drop->weapon_drop_actor = weapon_drop;

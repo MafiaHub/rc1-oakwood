@@ -1,3 +1,17 @@
+lua.new_usertype<GameObject>("GameObject",
+	BIND_FUNCTION(GameObject,  CompareWith),
+	BIND_FUNCTION(GameObject,  librg_entity *GetEntity)
+);
+
+lua.new_usertype<ObjectManager>("ObjectManager",
+	BIND_FUNCTION(ObjectManager,  T* GetObjectByEntity),
+	BIND_FUNCTION(ObjectManager,  ),
+	BIND_FUNCTION(ObjectManager,  ),
+	BIND_FUNCTION(ObjectManager,  ),
+	BIND_FUNCTION(ObjectManager,  void AddObject),
+	BIND_FUNCTION(ObjectManager,  void RemoveObject)
+);
+
 lua.new_usertype<GameMode>("GameMode",
 	BIND_FUNCTION(GameMode,  BroadcastMessage),
 	BIND_FUNCTION(GameMode,  SendMessageToPlayer),
@@ -33,11 +47,15 @@ lua.new_usertype<Player>("Player",
 	BIND_FUNCTION(Player,  UnlockCamera),
 	BIND_FUNCTION(Player,  PlayAnimation),
 	BIND_FUNCTION(Player,  SetHealth),
-	BIND_FUNCTION(Player,  CompareWith),
+	BIND_FUNCTION(Player,  *GetVehicle),
+	BIND_FUNCTION(Player,  PutToVehicle),
 	BIND_FUNCTION(Player,  SetPed)
 );
 
 lua.new_usertype<Vehicle>("Vehicle",
+	BIND_FUNCTION(Vehicle,  ShowOnRadar),
+	BIND_FUNCTION(Vehicle,  GetRadarVisibility),
+	BIND_FUNCTION(Vehicle,  GetPlayerSeatID),
 	BIND_FUNCTION(Vehicle,  SetPosition),
 	BIND_FUNCTION(Vehicle,  GetPosition),
 	BIND_FUNCTION(Vehicle,  SetDirection),
