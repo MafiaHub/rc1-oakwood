@@ -211,3 +211,7 @@ OAK_MOD_MAIN {
         return true;
     });
 }
+
+OAK_MOD_SHUTDOWN {
+    printf("Freeride is shutting down...\n");
+}

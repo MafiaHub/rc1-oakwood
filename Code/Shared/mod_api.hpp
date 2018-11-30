@@ -52,9 +52,18 @@ struct oak_api {
     std::function<void(librg_entity* attacker, librg_entity* victim, float damage)> on_player_hit;
     std::function<void(librg_entity* vehicle)> on_vehicle_destroyed;
     std::function<void()> on_server_tick;
+
+    inline ~oak_api() {
+        zpl_zero_item(this);
+    }
 };
 
 #define OAK_MOD_ENTRYPOINT_NAME oak_mod_main
-#define OAK_MOD_ENTRYPOINT(name) void name(oak_api *mod)
-#define OAK_MOD_MAIN extern "C" ZPL_DLL_EXPORT OAK_MOD_ENTRYPOINT(OAK_MOD_ENTRYPOINT_NAME)
-typedef OAK_MOD_ENTRYPOINT(oak_mod_entrypoint_ptr);
+#define OAK_MOD_ENTRYPOINT_PROC(name) void name(oak_api *mod)
+#define OAK_MOD_MAIN extern "C" ZPL_DLL_EXPORT OAK_MOD_ENTRYPOINT_PROC(OAK_MOD_ENTRYPOINT_NAME)
+typedef OAK_MOD_ENTRYPOINT_PROC(oak_mod_entrypoint_ptr);
+
+#define OAK_MOD_SHUTDOWN_NAME oak_mod_shutdown
+#define OAK_MOD_SHUTDOWN_PROC(name) void name(oak_api *mod)
+#define OAK_MOD_SHUTDOWN extern "C" ZPL_DLL_EXPORT OAK_MOD_SHUTDOWN_PROC(OAK_MOD_SHUTDOWN_NAME)
+typedef OAK_MOD_SHUTDOWN_PROC(oak_mod_shutdown_ptr);
