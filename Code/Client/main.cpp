@@ -56,6 +56,7 @@ using json = nlohmann::json;
 #include <d3d9.h>
 #include <d3d9/include/d3dx9.h>
 #include <dinput.h>
+IDirect3DDevice9* global_device = nullptr;
 
 /*
 * Shared

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<!--Import Google Icon Font-->
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		<!-- Compiled and minified CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+		<!--Let browser know website is optimized for mobile-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	</head>
+	
+	<style>
+	body {
+		color: white;
+	}
+	
+	.background-div {
+		/*background-color: rgba(0, 0, 0, 0.2);*/
+		text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
+		position: fixed;
+		bottom: 0;
+		margin-bottom: 160px;
+		margin-left: 30px;
+	}
+	
+	::-webkit-scrollbar {
+    width: 12px;
+	}
+	 
+	::-webkit-scrollbar-track {
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+		border-radius: 10px;
+	}
+	 
+	::-webkit-scrollbar-thumb {
+		border-radius: 10px;
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+	}
+	
+	.test-cont {
+		margin-top: 20px;
+		margin-bottom: 20px;
+		max-height: 190px;
+		width: 400px;
+		overflow-x: hidden;
+		overflow-y: scroll;
+		color: white;
+		padding: 2px;
+		list-style: none;
+		background: rgba(255, 255, 255, 0.0);
+		font-size: 14px;
+		font-family: Verdana;
+	}
+	
+	.input-cont {
+		width: 400px;
+		color: white !important;
+		visibility: visible;
+	}
+	
+	#autocomplete-input {
+		color: white !important;
+	}
+	
+	.collection-item {
+		width: 100%;
+	}
+	
+	.input-field .prefix.active {
+		color: #FFF !important;
+	}
+	
+	.input-field label {
+		color: #FFF !important;
+	}
+	
+	.input-field input {
+		border-bottom: 1px solid #FFF !important;
+		
+	}
+	
+	.input-field input:focus {
+		box-shadow: 0 2px 0 0 #FFF !important;
+	}
+	
+	.invisible {
+		visibility: hidden;
+	}
+	</style>
+	
+	<body>
+		<div id="app">
+			<div class="container background-div">
+				<div class="test-cont" id="scroller">
+					<li class="collection-item" v-for="message in messages">
+						{{message}}
+					</li>
+				</div>
+				
+				
+				<div class="input-cont" v-bind:class="{invisible: !isTyping}">
+					<div class="input-field col s12">
+						<i class="material-icons prefix">textsms</i>
+						<input type="text" id="autocomplete-input"  v-model="currentText" class="autocomplete">
+						<label for="autocomplete-input">Autocomplete</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		
+		<script>
+			var app = new Vue({
+				el: '#app',
+				methods: {
+					updateInput: function(blocked) {
+						this.isTyping = blocked;
+						if(!this.isTyping) 
+							this.currentText = '';
+					},
+					processInput: function(e, down) {
+						
+						//T key pressed
+						if(down && e.keyCode == 84) {
+
+							if(this.isTyping && !this.currentText.length) {
+								this.isTyping = false;
+								triggerNative('update-input', '0');
+							}
+							return;
+						}
+						
+						if(this.isTyping)
+							$('.autocomplete').focus();
+
+						//Enter pressed
+						if(down && e.keyCode == 13) {
+							
+							if(this.isTyping && this.currentText.length) {
+								this.sendMessage(this.currentText);
+							}
+							
+							this.currentText = '';
+							this.isTyping = false;
+							triggerNative('update-input', '0');
+							return;
+						}
+					},
+					
+					scrollChat: function() {
+						function scrollToBottom(e) {
+						  e.scrollTop = (e.scrollHeight - e.clientHeight) + 20;
+						}
+						setTimeout(function() {
+							scrollToBottom($('#scroller')[0]);
+						}, 100);
+					},
+					
+					sendMessage: function(message) {
+						if(message.length > 0) {
+							triggerNative('chat-msg', message);
+						}
+					},
+					
+					addMesage: function(message) {
+						this.messages.push(message);
+						this.scrollChat();
+					}
+				},
+				data: {
+					currentText: '',
+					isTyping: false,
+					messages: []
+				}
+			});
+			
+			document.onkeydown = function(e){
+				app.processInput(e, true);
+			};
+			
+			document.onkeyup = function(e) {
+				app.processInput(e, false);
+			};
+			
+			window.onload = function() {
+				addNativeHandler(function(msg) {
+					let jsoned = JSON.parse(msg);
+					switch(jsoned.type) {
+						case 'chat-msg': {
+							app.addMesage(jsoned.msg);
+						} break;
+						case 'update-input': {
+							app.updateInput(jsoned.blocked);
+						} break;
+					}
+				});
+			}
+ 		</script>
+	</body>
+</html>

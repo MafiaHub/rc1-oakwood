@@ -1,7 +1,4 @@
 #pragma once
-
-IDirect3DDevice9* global_device	= nullptr;
-
 #include "Graphics/d3d9/CDirect3DDevice9Proxy.h"
 #include "Graphics/d3d9/CDirect3D9Proxy.h"
 #include "utils.hpp"
@@ -48,12 +45,14 @@ namespace graphics {
     }
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
-
+        effects::device_lost();
+        cef::device_lost();
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
         global_device = device;
-        effects::reset(device);
+        effects::device_reset(device);
+        cef::device_reset(device);
     }
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
@@ -86,7 +85,7 @@ namespace graphics {
         chat::update();
         cef::tick();
         cef::render_browsers();
-        effects::render();
+        effects::render(device);
         
         pStateBlock->Apply();
         pStateBlock->Release();

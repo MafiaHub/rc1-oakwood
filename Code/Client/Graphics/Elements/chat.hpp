@@ -88,7 +88,8 @@ namespace chat {
     auto init(IDirect3DDevice9* device) {
 
         auto back_buffer = graphics::get_backbuffer_desc(device);
-        main_browser = cef::browser_create(device, "file:///D:/Games/Steam/steamapps/common/Mafia/Mafia/ceftest/index.html", back_buffer.Width, back_buffer.Height, 1);
+        auto path = get_platform_path();
+        main_browser = cef::browser_create(device, (path + "\\Files\\chat.html").c_str(), back_buffer.Width, back_buffer.Height, 1);
 
         cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) {
             input::block_input(atoi(args->GetString(1).ToString().c_str()));

@@ -67,10 +67,7 @@ namespace cef {
             mPopupBuffer = nullptr;
             mPixelBufferRow = nullptr;
 
-            if (FAILED(D3DXCreateTexture(device, w, h, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
-                MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
-                return;
-            }
+            InitTexture(device);
         }
 
         ~OakwoodRenderHandler() {
@@ -171,6 +168,17 @@ namespace cef {
             return mTexture;
         }
 
+        void SetTexture(IDirect3DTexture9* texture) {
+            mTexture = texture;
+        }
+
+        void InitTexture(IDirect3DDevice9* device) {
+            if (FAILED(D3DXCreateTexture(device, mPixelBufferWidth, mPixelBufferHeight, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
+                MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
+                return;
+            }
+        }
+
         IMPLEMENT_REFCOUNTING(OakwoodRenderHandler);
     };
 
@@ -249,17 +257,6 @@ namespace cef {
     // ! Internal CEF implementation
     // !
     // =======================================================================//
-
-    std::string get_platform_path() {
-
-        char temp_path_raw[MAX_PATH] = { '\0' };
-        GetModuleFileName(GetModuleHandle(NULL), temp_path_raw, MAX_PATH);
-
-        auto temp_path = std::string(temp_path_raw);
-        auto temp_pos = temp_path.rfind("\\");
-        return temp_path.erase(temp_pos, std::string::npos);
-    }
-
     int init(IDirect3DDevice9* device) {
 
         minimal = new CefMinimal();
@@ -349,6 +346,37 @@ namespace cef {
         browsers.push_back(new_browser);
 
         return new_browser;
+    }
+
+    void device_lost() {
+        if (!browsers.empty()) {
+            for (auto handle : browsers) {
+                if (handle && handle->renderer && handle->renderer->GetTexture()) {
+                    handle->renderer->GetTexture()->Release();
+                    handle->renderer->SetTexture(nullptr);
+                }
+            }
+        }
+
+        if (rendering_sprite) {
+            rendering_sprite->Release();
+        }
+    }
+
+    void device_reset(IDirect3DDevice9* device) {
+        
+        if (FAILED(D3DXCreateSprite(device, &rendering_sprite))) {
+            MessageBox(NULL, "Failed to create the sprite", "Error init Initialization", MB_OK);
+            return;
+        }
+
+        if (!browsers.empty()) {
+            for (auto handle : browsers) {
+                if (handle) {
+                    handle->renderer->InitTexture(device);
+                }
+            }
+        }
     }
 
     void render_browsers() {
