@@ -402,3 +402,15 @@ librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* 
     text[msg_size]  = '\0';
     MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
 });
+
+librg_network_add(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, [](librg_message* msg) {
+    auto player_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+    auto vehicle_id = librg_data_rent(msg->data);
+    int seat_id = librg_data_ri32(msg->data);
+    
+    if (player_ent && player_ent->user_data) {
+        auto player = (mafia_player*)player_ent->user_data;
+        player->vehicle_id = vehicle_id;
+        player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+    }
+});

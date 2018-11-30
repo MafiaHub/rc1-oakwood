@@ -320,6 +320,11 @@ Vehicle *Player::GetVehicle()
     return nullptr;
 }
 
+bool Player::PutToVehicle(Vehicle *vehicle, int seatID)
+{
+    return __gm->mod->vtable.player_put_to_vehicle(this->entity, vehicle->GetEntity(), seatID);
+}
+
 void Player::SetPed(mafia_player *ped)
 {
     this->ped = ped;

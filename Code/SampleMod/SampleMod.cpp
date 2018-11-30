@@ -141,6 +141,31 @@ OAK_MOD_MAIN {
         return true;
     });
 
+    gm->AddCommandHandler("/putcar", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("Usage: /putcar [modelID]", player);
+            return true;
+        }
+
+        if (player->GetVehicle() != nullptr) {
+            gm->SendMessageToPlayer("You can't spawn another car from inside of vehicle!", player);
+            return true;
+        }
+
+        auto modelID = std::stoi(args[1]);
+
+        auto position = player->GetPosition();
+        auto dir = ComputeDirVector(player->GetRotation());
+        zpl_vec3_muleq(&dir, 1.5f);
+        zpl_vec3_addeq(&position, dir);
+        auto rot = player->GetRotation() - 90.0f;
+        auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
+
+        player->PutToVehicle(vehicle, 0);
+
+        return true;
+    });
+
     gm->AddCommandHandler("/skin", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
             gm->SendMessageToPlayer("Usage: /skin [modelID]", player);

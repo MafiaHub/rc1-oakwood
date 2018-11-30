@@ -14,6 +14,7 @@ oak_player_set_camera_ptr *player_set_camera;
 oak_player_unlock_camera_ptr *player_unlock_camera;
 oak_player_play_animation_ptr *player_play_animation;
 oak_player_get_vehicle_ptr *player_get_vehicle;
+oak_player_put_to_vehicle_ptr *player_put_to_vehicle;
 oak_drop_spawn_ptr *drop_spawn;
 oak_vehicle_spawn_ptr *vehicle_spawn;
 oak_vehicle_show_on_radar_ptr *vehicle_show_on_radar;

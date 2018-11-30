@@ -46,6 +46,7 @@ public:
     f32  GetHealth();           // output value gets divided by 2
 
     Vehicle *GetVehicle();
+    bool PutToVehicle(Vehicle *vehicle, int seatID);
 
     //
     // Utilities
