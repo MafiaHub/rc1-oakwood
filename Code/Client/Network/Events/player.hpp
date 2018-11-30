@@ -173,8 +173,6 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
                     player->ped->Intern_UseCar(vehicle->car, i);
-
-                    // TODO: Handle local player as well
                     break;
                 }
             }
@@ -241,8 +239,6 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
                     player->ped->Intern_UseCar(vehicle->car, i);
-
-                    // TODO: Handle local player as well
                     break;
                 }
             }
