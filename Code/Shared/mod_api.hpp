@@ -1,6 +1,6 @@
 #pragma once
 
-#include "librg/librg.h"
+#include "librg.h"
 
 /*
 * STD Includes
@@ -23,7 +23,7 @@
 
 #ifndef OAK_INTERNAL
 
-#include "librg/librg_ext.h"
+#include "librg_ext.h"
 
 #include "messages.hpp"
 #include "helpers.hpp"
