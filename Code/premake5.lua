@@ -92,18 +92,14 @@ workspace "Oakwood"
     --
     include "Launcher"
     include "Client"
-<<<<<<< HEAD
     include "Worker"
-    include "Loader"
-=======
->>>>>>> 820c8bde95997c15795159dd7c4a6a1b1f5eddf4
     include "LuaMod"
     include "SampleMod"
     include "Server"
     include "Oakgen"
 
     do_vendor()
-    
+
 -- Cleanup
 if _ACTION == "clean" then
     os.rmdir("../Bin");
