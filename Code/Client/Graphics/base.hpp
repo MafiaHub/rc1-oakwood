@@ -33,6 +33,7 @@ namespace graphics {
     }
 
     inline auto create_font(IDirect3DDevice9* device, const char* font_name, unsigned int size, bool bold) -> ID3DXFont* {
+        
         ID3DXFont* to_create = nullptr;
 
         if (FAILED(D3DXCreateFont(device, size, 0, (bold ? FW_BOLD : FW_NORMAL), 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, (DEFAULT_PITCH | FF_DONTCARE), font_name, &to_create))) {
@@ -51,6 +52,7 @@ namespace graphics {
             GetTextExtentPoint32(dc, text, strlen(text), &size);
             return size.cx;
         }
+
         return 0;
     }
 

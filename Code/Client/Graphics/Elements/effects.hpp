@@ -78,10 +78,17 @@ namespace effects {
     inline void device_lost() {
         if (back_buffer_texture) {
             back_buffer_texture->Release();
+            back_buffer_texture = nullptr;
         }
         
         if (vertex_buffer) {
             vertex_buffer->Release();
+            vertex_buffer = nullptr;
+        }
+
+        if (effect) {
+            effect->Release();
+            effect = nullptr;
         }
     }
 
