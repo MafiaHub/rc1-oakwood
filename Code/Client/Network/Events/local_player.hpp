@@ -113,7 +113,6 @@ inline auto local_player_weaponchange(u32 index) -> void {
 }
 
 inline auto local_player_fromcar() -> void {
-    printf("Car force exit!\n");
     librg_send(&network_context, NETWORK_PLAYER_FROM_CAR, data, {});
 }
 
