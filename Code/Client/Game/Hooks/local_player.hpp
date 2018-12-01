@@ -25,6 +25,20 @@ namespace hooks
     }
 
     //----------------------------------------------
+    //C_Human::Intern_FromCar()
+    //----------------------------------------------
+    typedef bool(__thiscall* C_Human_Itern_FromCar_t)(void* _this, MafiaSDK::I3D_Frame* frame);
+    C_Human_Itern_FromCar_t human_intern_fromcar_original = nullptr;
+    
+    bool __fastcall C_Human_Intern_FromCar(void* _this, DWORD edx, MafiaSDK::I3D_Frame* frame) {
+        if (local_player.ped && reinterpret_cast<MafiaSDK::C_Player*>(_this) == local_player.ped) {
+            local_player_fromcar();
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------
     //C_Human::Do_Reload()
     //----------------------------------------------
     typedef bool(__thiscall* C_Human_Do_Reload_t)(void* _this);
