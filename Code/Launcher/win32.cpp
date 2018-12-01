@@ -47,9 +47,41 @@ LPSTR WINAPI GetCommandLineA_Hook() {
     return GetCommandLineA();
 }
 
-void WINAPI RaiseException_Hook(DWORD dwExceptionCode, DWORD dwExceptionFlags, DWORD nNumberOfArguments, const ULONG_PTR* lpArguments) {
-    zpl_printf("[info] RaiseException hook\n");
-    RaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
+struct mafia_settings {
+    u8 magic_number;
+
+    u16 width;
+    u16 unk2;
+    u16 height;
+    u16 unk3;
+
+    u16 bitdept;
+    u8 unk4[6];
+    u8 anitalias;
+    u8 unk5[2];
+
+    bool fullscreen;
+};
+
+LSTATUS WINAPI RegQueryValueExA_Hook(
+    HKEY    hKey,
+    LPCSTR  lpValueName,
+    LPDWORD lpReserved,
+    LPDWORD lpType,
+    LPBYTE  lpData,
+    LPDWORD lpcbData
+) {
+    auto res = RegQueryValueExA(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
+    zpl_printf("[info] RegQueryValueExA hook: %s %s\n", lpValueName, (char *)lpData);
+    
+    auto val = (mafia_settings*)lpData;
+
+    zpl_printf("w: %d h: %d,\nbitdepth: %d,\nantialias: %d,\nfullscr: %d\n",
+        val->width, val->height, val->bitdept, val->anitalias, val->fullscreen);
+
+    ZPL_PANIC(0);
+
+    return res;
 }
 
 DWORD WINAPI GetModuleFileNameA_Hook(HMODULE hModule, LPSTR lpFilename, DWORD nSize) {
@@ -62,8 +94,8 @@ DWORD WINAPI GetModuleFileNameA_Hook(HMODULE hModule, LPSTR lpFilename, DWORD nS
 }
 
 HANDLE WINAPI CreateMutexA_Hook(LPSECURITY_ATTRIBUTES lpMutexAttributes, BOOL bInitialOwner, LPCSTR lpName) {
+    /* removing name allows multiple instances */
     if (!_strcmpi(lpName, "Mafia Launcher Super Mutex Shit")) {
-         /* removing name allows multiple instances */
         return CreateMutexA(lpMutexAttributes, bInitialOwner, NULL);
     }
 
@@ -105,26 +137,26 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     });
 
     loader.SetFunctionResolver([](HMODULE hmod, const char* exportFn) -> LPVOID {
-        //zpl_printf("[info] -- method: %s\n", exportFn);
-
-        // early init hook
-        if (!_strcmpi(exportFn, "GetCommandLineA")) {
-            return static_cast<LPVOID>(GetCommandLineA_Hook);
-        }
+        zpl_printf("[info] -- method: %s\n", exportFn);
 
         /* fix for multiwindow game */
         if (!_strcmpi(exportFn, "CreateMutexA")) {
             return static_cast<LPVOID>(CreateMutexA_Hook);
         }
 
-        // TODO: remove? (*temp hack*)
-        if (!_strcmpi(exportFn, "RaiseException")) {
-            return static_cast<LPVOID>(RaiseException_Hook);
+        /* config reading */
+        if (!_strcmpi(exportFn, "RegQueryValueExA")) {
+            return static_cast<LPVOID>(RegQueryValueExA_Hook);
         }
 
-        // *fix pathing*
+        /* tell game where binaries are located */
         if (!_strcmpi(exportFn, "GetModuleFileNameA")) {
             return static_cast<LPVOID>(GetModuleFileNameA_Hook);
+        }
+
+        /* hooking for custom dll injection*/
+        if (!_strcmpi(exportFn, "GetCommandLineA")) {
+            return static_cast<LPVOID>(GetCommandLineA_Hook);
         }
 
         return static_cast<LPVOID>(GetProcAddress(hmod, exportFn));
