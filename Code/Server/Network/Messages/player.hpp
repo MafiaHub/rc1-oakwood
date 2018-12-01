@@ -152,6 +152,17 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
         auto vehicle = (mafia_vehicle *)vehicle_ent->user_data;
         auto sender = (mafia_player*)sender_ent->user_data;
 
+        // NOTE(DavoSK): SeatID can be NULL if player is force exiting
+        // We need to get id from server :) 
+        if (seat_id == 0 && action == 2) {
+            for (int i = 0; i < 4; i++) {
+                if (vehicle->seats[i] == sender_ent->id) {
+                    seat_id = i;
+                    break;
+                }
+            }
+        }
+
         if(action == 1) {
             vehicle->seats[seat_id] = sender_ent->id;
             sender->vehicle_id = vehicle_ent->id;

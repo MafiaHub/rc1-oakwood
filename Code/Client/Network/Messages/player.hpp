@@ -142,6 +142,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
             sender->ped->Use_Actor(vehicle->car, action, seat_id, unk3);
     }
 });
+
 librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
     
     auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
