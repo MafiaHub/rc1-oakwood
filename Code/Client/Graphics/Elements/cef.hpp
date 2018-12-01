@@ -55,6 +55,7 @@ namespace cef {
         CefRect mPopupBufferRect;
         int mBufferDepth;
         bool mFlipYPixels;
+        std::mutex mTextureMutex;
         IDirect3DTexture9* mTexture;
 
         OakwoodRenderHandler(IDirect3DDevice9* device, int w, int h, int zindex) {
@@ -129,18 +130,22 @@ namespace cef {
             if (mPixelBufferWidth > 0 && mPixelBufferHeight > 0) {
 
                 D3DLOCKED_RECT rect;
-                mTexture->LockRect(0, &rect, NULL, D3DLOCK_DISCARD);
+                mTextureMutex.lock();
+                if (mTexture) {
+                    mTexture->LockRect(0, &rect, NULL, D3DLOCK_DISCARD);
 
-                unsigned char *pDestPixels = (unsigned char*)rect.pBits;
-                unsigned char *pSourcePixels = (unsigned char *)mPixelBuffer;
+                    unsigned char *pDestPixels = (unsigned char*)rect.pBits;
+                    unsigned char *pSourcePixels = (unsigned char *)mPixelBuffer;
 
-                for (int y = 0; y < mPixelBufferHeight; ++y) {
-                    memcpy(pDestPixels, pSourcePixels, mPixelBufferWidth * 4);
-                    pSourcePixels += rect.Pitch;
-                    pDestPixels += rect.Pitch;
+                    for (int y = 0; y < mPixelBufferHeight; ++y) {
+                        memcpy(pDestPixels, pSourcePixels, mPixelBufferWidth * 4);
+                        pSourcePixels += rect.Pitch;
+                        pDestPixels += rect.Pitch;
+                    }
+
+                    mTexture->UnlockRect(NULL);
                 }
-
-                mTexture->UnlockRect(NULL);
+                mTextureMutex.unlock();
             }
         }
 
@@ -164,19 +169,19 @@ namespace cef {
             }
         }
 
-        IDirect3DTexture9* GetTexture() {
-            return mTexture;
-        }
-
-        void SetTexture(IDirect3DTexture9* texture) {
-            mTexture = texture;
+        void GetTexture(std::function<void(IDirect3DTexture9*)> fPtr) {
+            mTextureMutex.lock();
+            fPtr(mTexture);
+            mTextureMutex.unlock();
         }
 
         void InitTexture(IDirect3DDevice9* device) {
+            mTextureMutex.lock();
             if (FAILED(D3DXCreateTexture(device, mPixelBufferWidth, mPixelBufferHeight, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
                 MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
                 return;
             }
+            mTextureMutex.unlock();
         }
 
         IMPLEMENT_REFCOUNTING(OakwoodRenderHandler);
@@ -349,17 +354,24 @@ namespace cef {
     }
 
     void device_lost() {
-        if (!browsers.empty()) {
-            for (auto handle : browsers) {
-                if (handle && handle->renderer && handle->renderer->GetTexture()) {
-                    handle->renderer->GetTexture()->Release();
-                    handle->renderer->SetTexture(nullptr);
-                }
-            }
-        }
-
+        
         if (rendering_sprite) {
             rendering_sprite->Release();
+            rendering_sprite = nullptr;
+        }
+
+        if (!browsers.empty()) {
+            for (auto handle : browsers) {
+                if (handle && handle->renderer) {
+
+                    handle->renderer->GetTexture([](auto texture) {
+                        if (texture) {
+                            texture->Release();
+                            texture = nullptr;
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -381,12 +393,18 @@ namespace cef {
 
     void render_browsers() {
 
-        if (!browsers.empty()) {
+        if (!browsers.empty() && rendering_sprite != nullptr) {
             rendering_sprite->Begin(D3DXSPRITE_ALPHABLEND);
             for (auto handle : browsers) {
 
-                if (handle->visible)
-                    rendering_sprite->Draw(handle->renderer->GetTexture(), NULL, NULL, NULL, 0xFFFFFFFF);
+                if (handle->visible) {
+                    
+                    handle->renderer->GetTexture([=](auto texture) {
+                        if (texture) {
+                            rendering_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
+                        }
+                    });
+                }
             }
             rendering_sprite->End();
         }

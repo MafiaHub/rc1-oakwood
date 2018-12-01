@@ -126,6 +126,8 @@ namespace effects {
                 device->SetFVF(OURVERTEX);
                 device->SetStreamSource(0, vertex_buffer, 0, sizeof(thisVertex));
                 device->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
+                back_buffer_surface->Release();
+
                 effect->EndPass();
             }
 

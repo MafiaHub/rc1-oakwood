@@ -132,6 +132,10 @@ namespace graphics {
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
 
+        if (global_device) {
+            global_device = nullptr;
+        }
+
         if (main_sprite) {
             main_sprite->Release();
             main_sprite = nullptr;
@@ -143,6 +147,7 @@ namespace graphics {
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
+        
         global_device = device;
         init_main_sprite(device);
         nameplates::device_reset(device);
