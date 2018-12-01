@@ -122,21 +122,22 @@ namespace hooks
         auto get_mesh_data = [](MafiaSDK::C_Car* car) {
             std::vector<mesh_data> car_before;
             car->EnumerateVehicleMeshes([&](MafiaSDK::I3D_mesh_object* mesh) {
-
-                mesh_data new_mesh;
-
                 auto lod = mesh->GetLOD(0);
-                auto vertices = lod->LockVertices(0);
+                if (lod) {
+                    auto vertices = lod->LockVertices(0);
+                    if (vertices) {
+                        mesh_data new_mesh;
+                        MafiaSDK::I3D_stats_mesh mesh_info;
+                        lod->GetStats(mesh_info);
 
-                MafiaSDK::I3D_stats_mesh mesh_info;
-                lod->GetStats(mesh_info);
+                        for (int i = 0; i < mesh_info.vertex_count; i++) {
+                            new_mesh.vertices.push_back(vertices[i]);
+                        }
 
-                for (int i = 0; i < mesh_info.vertex_count; i++) {
-                    new_mesh.vertices.push_back(vertices[i]);
+                        lod->UnlockVertices();
+                        car_before.push_back(new_mesh);
+                    }
                 }
-
-                lod->UnlockVertices();
-                car_before.push_back(new_mesh);
             });
 
             return car_before;
