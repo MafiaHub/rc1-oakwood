@@ -6,20 +6,19 @@
 #include <string>
 #include "shellapi.h" // CommandLineToArgvW
 
-/* settings */
-#define OAKWOOD_CONSOLE 1
-constexpr const char *OAKWOOD_CONFIG_NAME = "config/launcher.json";
-constexpr const char *OAKWOOD_CONFIG_DATA = R"foo(
-{
-    /* path to game folder */
-    "gamepath": "C:/Program Files/Steam/steamapps/common/Mafia/Mafia/",
-}
-)foo";
+#include "settings.h"
 
 /* platform specific launcher api */
 const char *launcher_localpath();
 int         launcher_abort(const char *msg);
 int         launcher_gameinit(std::string localpath, std::string gamepath);
+
+#define json_apply(OBJ, VAR, NAME, STR, DEF)\
+do { \
+    zpl_json_object *NAME;\
+    zpl_json_find(OBJ, #NAME, false, &NAME);\
+    VAR = (NAME && NAME->STR) ? NAME->STR : DEF; \
+} while (0)
 
 /* entry function */
 #if defined(ZPL_SYSTEM_WINDOWS)
@@ -84,10 +83,17 @@ int main()
         /* parse json */
         zpl_json_object root = {0}; u8 err;
         zpl_json_parse(&root, file_size, content, zpl_heap(), true, &err); {
-            zpl_json_object *value;
-            zpl_json_find(&root, "gamepath", false, &value); if (value && value->string) {
-                gamepath = std::string(value->string);
-            }
+            std::string temp_gamepath;
+            int isfullscreen;
+
+            json_apply(&root, temp_gamepath, gamepath, string, 0);
+            json_apply(&root, settings.width, width, integer, 1600);
+            json_apply(&root, settings.height, height, integer, 900);
+            json_apply(&root, isfullscreen, fullscreen, constant, 1);
+            json_apply(&root, settings.antialiasing, antialiasing, integer, 4);
+
+            gamepath = temp_gamepath;
+            settings.fullscreen = isfullscreen == ZPL_JSON_CONST_TRUE;
         }
 
         zpl_json_free(&root);

@@ -1,13 +1,15 @@
+/* system libraries */
+#include <string>
+
 /* core libraries */
 #include "zpl.h"
 #include "loader/exeldr.h"
-
-/* system libraries */
-#include <string>
+#include "settings.h"
 
 /* temp storage */
 static std::string g_gamepath;
 static std::string g_localpath;
+mafia_settings settings;
 typedef void(oakwood_proc)(const char *, const char *);
 
 /* internal methods */
@@ -47,22 +49,6 @@ LPSTR WINAPI GetCommandLineA_Hook() {
     return GetCommandLineA();
 }
 
-struct mafia_settings {
-    u8 magic_number;
-
-    u16 width;
-    u16 unk2;
-    u16 height;
-    u16 unk3;
-
-    u16 bitdept;
-    u8 unk4[6];
-    u8 anitalias;
-    u8 unk5[2];
-
-    bool fullscreen;
-};
-
 LSTATUS WINAPI RegQueryValueExA_Hook(
     HKEY    hKey,
     LPCSTR  lpValueName,
@@ -73,13 +59,13 @@ LSTATUS WINAPI RegQueryValueExA_Hook(
 ) {
     auto res = RegQueryValueExA(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
     zpl_printf("[info] RegQueryValueExA hook: %s %s\n", lpValueName, (char *)lpData);
-    
+
     auto val = (mafia_settings*)lpData;
 
-    zpl_printf("w: %d h: %d,\nbitdepth: %d,\nantialias: %d,\nfullscr: %d\n",
-        val->width, val->height, val->bitdept, val->anitalias, val->fullscreen);
-
-    ZPL_PANIC(0);
+    val->width = settings.width;
+    val->height = settings.height;
+    val->fullscreen = settings.fullscreen;
+    val->antialiasing = settings.antialiasing;
 
     return res;
 }
@@ -137,7 +123,7 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     });
 
     loader.SetFunctionResolver([](HMODULE hmod, const char* exportFn) -> LPVOID {
-        zpl_printf("[info] -- method: %s\n", exportFn);
+        // zpl_printf("[info] -- method: %s\n", exportFn);
 
         /* fix for multiwindow game */
         if (!_strcmpi(exportFn, "CreateMutexA")) {
