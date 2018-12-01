@@ -276,15 +276,18 @@ namespace MafiaSDK
             if (functionPtr != nullptr) {
                 
                 auto inter = &GetInterface()->vehicle_interface;
-                if (inter) {
+                DWORD vehicle_frame = *(DWORD*)((DWORD)this + 0x68);
+
+                if (inter && inter->first_mesh && vehicle_frame) {
                     DWORD meshCount = (inter->last_mesh - inter->first_mesh) / I3D_mesh_object_size;
 
                     for (int i = 0; i < meshCount; i++) {
+                       
                         DWORD meshPtr = (I3D_mesh_object_size * i) + inter->first_mesh + 0x4;
                         if (meshPtr) {
                             I3D_mesh_object* currentMesh = *(I3D_mesh_object**)(meshPtr);
-                            
-                            if(currentMesh)
+
+                            if (currentMesh)
                                 functionPtr(currentMesh);
                         }
                     }

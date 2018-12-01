@@ -105,9 +105,11 @@ namespace hooks
         unsigned int unk3,
         S_vector* unk4) {
 
+        if (!_this) return false;
+
         //NOTE(DavoSK): Get car from C_Vehicle, be carefull if is something else RIP, CRASH, CRY
         MafiaSDK::C_Car* current_car = reinterpret_cast<MafiaSDK::C_Car*>((char*)_this - 0x70);
-        if (!_this || !current_car) return false;
+        if (!current_car) return false;
 
         auto vehicle_ent = get_vehicle_from_base(current_car);
         if (!vehicle_ent) return false;

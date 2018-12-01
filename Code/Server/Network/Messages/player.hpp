@@ -9,6 +9,20 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
         auto player = (mafia_player*)sender_ent->user_data;
         player->health = 0.0f;
 
+        if (player->vehicle_id != -1) {
+            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+            if (vehicle_ent && vehicle_ent->user_data) {
+                auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+                for (int i = 0; i < 4; i++) {
+                    if (vehicle->seats[i] == sender_ent->id) {
+                        vehicle->seats[i] = -1;
+                        player->vehicle_id = -1;
+                        break;
+                    }
+                }
+            }
+        }
+
         if (gm.on_player_died)
             gm.on_player_died(sender_ent, player);
     }
