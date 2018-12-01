@@ -13,5 +13,5 @@ librg_network_add(&network_context, NETWORK_SEND_FADEOUT, [](librg_message* msg)
     auto do_fade = librg_data_ru8(msg->data);
     auto duration = librg_data_ru32(msg->data);
     auto color = librg_data_ru32(msg->data);
-    MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(do_fade, duration, color);
+    MafiaSDK::GetIndicators()->FadeInOutScreen(do_fade, duration, color);
 });

@@ -15,7 +15,7 @@ auto vehicle_despawn(mafia_vehicle* vehicle) -> void {
         }
 
         if (vehicle->is_car_in_radar)
-            MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
+            MafiaSDK::GetIndicators()->RadarRemoveCar(vehicle->car);
             
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
         vehicle->car = nullptr;

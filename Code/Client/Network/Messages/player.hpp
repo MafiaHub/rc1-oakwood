@@ -52,7 +52,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
 
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives(100);
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
 
         if (local_player.ped) {
             player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
@@ -338,7 +338,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_HEALTH, [](librg_message*
                 auto player_int = player->ped->GetInterface();
 
                 if (player->ped == local_player.ped)
-                    MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
+                    MafiaSDK::GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
 
                 player_int->health = health;
             }
@@ -418,7 +418,7 @@ librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* 
     char* text = reinterpret_cast<char*>(malloc(msg_size));
     librg_data_rptr(msg->data, text, msg_size);
     text[msg_size]  = '\0';
-    MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
+    MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, [](librg_message* msg) {

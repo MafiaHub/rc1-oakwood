@@ -129,9 +129,9 @@ librg_network_add(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, [](librg_m
 
         if (state != vehicle->is_car_in_radar) {
             if (state)
-                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(vehicle->car, 0xFFFF0000);
+                MafiaSDK::GetIndicators()->RadarAddCar(vehicle->car, 0xFFFF0000);
             else
-                MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarRemoveCar(vehicle->car);
+                MafiaSDK::GetIndicators()->RadarRemoveCar(vehicle->car);
 
             vehicle->is_car_in_radar = state;
         }

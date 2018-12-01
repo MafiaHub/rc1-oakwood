@@ -9,7 +9,7 @@ inline auto mod_librg_connect() -> void;
 
 void on_librg_connect(librg_event* evnt) {
     
-    MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+    MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
     effects::is_enabled = false;
     chat::add_message("Connected to " + GlobalConfig.server_address);
