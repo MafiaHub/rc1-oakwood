@@ -188,12 +188,17 @@ namespace hooks
     typedef bool(__thiscall* C_Human_Use_Actor_t)(void* _this, DWORD actor, int unk1, int unk2, int unk3);
     C_Human_Use_Actor_t human_use_actor_original = nullptr;
     bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int unk1, int unk2, int unk3) {
-
+        
+        bool return_val = human_use_actor_original(_this, actor, unk1, unk2, unk3);
+       
         if (_this == local_player.ped) {
-            local_player_useactor(actor, unk1, unk2, unk3);
+            auto ped_interface = ((MafiaSDK::C_Human*)_this)->GetInterface();
+
+            if(ped_interface->carLeavingOrEntering)
+                local_player_useactor(actor, unk1, unk2, unk3);
         }
 
-        return human_use_actor_original(_this, actor, unk1, unk2, unk3);
+        return return_val;
     }
 
     //----------------------------------------------
