@@ -17,7 +17,6 @@ const char *launcher_localpath() {
     wchar_t buf[MAX_PATH] = { 0 };
     GetModuleFileNameW(nullptr, buf, MAX_PATH);
 
-    //append string terminator
     for (size_t i = wcslen(buf); i > 0; --i) {
         if (buf[i] == '\\') { buf[i + 1] = 0; break; }
     }
@@ -133,9 +132,6 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
 
     // store entry
     auto entry_point = static_cast<void(*)()>(loader.GetEP());
-
-    // TODO: set hooking memory offset
-    // set_base_offset(reinterpret_cast<uintptr_t>(base));
 
     // invoke original entry point
     entry_point();

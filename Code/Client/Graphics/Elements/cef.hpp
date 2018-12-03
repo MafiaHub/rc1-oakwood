@@ -269,8 +269,9 @@ namespace cef {
         CefSettings settings;
         CefMainArgs args(GetModuleHandle(nullptr));
 
-        std::string path = get_platform_path();
-        CefString(&settings.resources_dir_path) = path;
+        std::string path = GlobalConfig.localpath;
+
+        CefString(&settings.resources_dir_path) = path + "\\cef";
         CefString(&settings.log_file) = path + "\\cef\\ceflog.txt";
         CefString(&settings.locales_dir_path) = path + "\\cef\\locales";
         CefString(&settings.cache_path) = path + "\\cef\\cache";
@@ -278,7 +279,7 @@ namespace cef {
         CefString(&settings.browser_subprocess_path) = path + "\\OakwoodWorker.exe";
 
         settings.multi_threaded_message_loop = false;
-        settings.log_severity = LOGSEVERITY_WARNING;
+        settings.log_severity = LOGSEVERITY_VERBOSE;
         settings.remote_debugging_port = 7777;
         settings.windowless_rendering_enabled = true;
         settings.no_sandbox = true;

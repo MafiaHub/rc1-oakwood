@@ -37,5 +37,5 @@ OAK_MOD_MAIN{
     #include "LuaBindings.hpp"
     
     lua["gm"] = new GameMode(mod);
-    lua.script_file("main.lua");
+    lua.script_file(GlobalConfig.localpath + "files/main.lua");
 }

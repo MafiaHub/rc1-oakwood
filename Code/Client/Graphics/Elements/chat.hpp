@@ -88,8 +88,9 @@ namespace chat {
     auto init(IDirect3DDevice9* device) {
 
         auto back_buffer = graphics::get_backbuffer_desc(device);
-        auto path = get_platform_path();
-        main_browser = cef::browser_create(device, (path + "\\Files\\chat.html").c_str(), back_buffer.Width, back_buffer.Height, 1);
+        auto url = GlobalConfig.localpath + "static\\chat.html";
+
+        main_browser = cef::browser_create(device, url.c_str(), back_buffer.Width, back_buffer.Height, 1);
 
         cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) {
             input::block_input(atoi(args->GetString(1).ToString().c_str()));
@@ -123,7 +124,7 @@ namespace chat {
         });
         
         register_command("/shade", [&](std::vector<std::string> args) {
-            effects::load("Cinematic.fx");
+            effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
             effects::is_enabled = true;
         });
 

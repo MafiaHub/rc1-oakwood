@@ -106,7 +106,7 @@ auto mod_bind_events() {
             chat::add_message("Connecting to " + GlobalConfig.server_address + " ...");
             mod_librg_connect();
 
-            effects::load("Cinematic.fx");
+            effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
             effects::is_enabled = true;
         }
     });

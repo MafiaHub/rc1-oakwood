@@ -1,12 +1,14 @@
-includedirs {
-    "../Vendors",
-    "../Vendors/librg",
-}
+return function()
+    includedirs {
+        "../Vendors",
+        "../Vendors/librg",
+    }
 
-libdirs {
-    "../Vendors/bass",
-    "../Vendors/d3d9",
-    "../Vendors/detours",
-    "../Vendors/lua/lib",
-    "../Vendors/opus/lib",
-}
+    libdirs {
+        "../Vendors/bass",
+        "../Vendors/d3d9",
+        "../Vendors/detours",
+        "../Vendors/lua/lib",
+        "../Vendors/opus/lib",
+    }
+end
