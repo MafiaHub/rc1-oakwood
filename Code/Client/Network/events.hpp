@@ -9,10 +9,10 @@ inline auto mod_librg_connect() -> void;
 
 void on_librg_connect(librg_event* evnt) {
     
-    MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+    MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
     effects::is_enabled = false;
-    chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connected to " + GlobalConfig.server_address));
+    chat::add_message("Connected to " + GlobalConfig.server_address);
 
     auto local_player_data = new mafia_player;
     evnt->entity->user_data = local_player_data;
@@ -21,7 +21,7 @@ void on_librg_connect(librg_event* evnt) {
 
 void on_librg_disconnect(librg_event* evnt) {
 
-    chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Disconnected from " + GlobalConfig.server_address + "."));
+    chat::add_message("Disconnected from " + GlobalConfig.server_address + ".");
     if(local_player.ped) {
         player_despawn(local_player.ped);
         local_player.ped = nullptr;

@@ -333,6 +333,11 @@ namespace MafiaSDK
 			}
 		}
 	};
+
+    C_Indicators* GetIndicators()
+    {
+        return reinterpret_cast<C_Indicators*>(C_Indicators_Enum::GIndicators);
+    }
 };
 
 #endif

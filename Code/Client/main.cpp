@@ -32,6 +32,12 @@ librg_ctx network_context = { 0 };
 #include <bass/bass.h>
 
 /*
+* Temp json parser
+*/
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
+/*
 * STD Includes
 */
 #include <iostream>
@@ -50,14 +56,7 @@ librg_ctx network_context = { 0 };
 #include <d3d9.h>
 #include <d3d9/include/d3dx9.h>
 #include <dinput.h>
-
-/*
-* Dear ImGUI
-*/
-extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-#include "Graphics/imgui/imgui.h"
-#include "Graphics/imgui/imgui_impl_dx9.h"
-#include "Graphics/imgui/imgui_impl_win32.h"
+IDirect3DDevice9* global_device = nullptr;
 
 /*
 * Shared
@@ -76,6 +75,9 @@ struct _GlobalConfig {
     std::string server_address;
     std::string username;
     float view_distance;
+
+    std::string localpath;
+    std::string gamepath;
 } GlobalConfig;
 
 /*
@@ -92,7 +94,10 @@ struct _GlobalConfig {
 #include "Graphics/elements_post.hpp"
 #include "Game/base.hpp"
 
-auto mod_init() {
+ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {
+    GlobalConfig.localpath = localpath;
+    GlobalConfig.gamepath = gamepath;
+
     mod_pre_init_game();
     mod_init_patches();
 }

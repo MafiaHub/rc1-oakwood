@@ -1,8 +1,7 @@
 #pragma once
 
 namespace hooks
-{
-    
+{    
     //----------------------------------------------
     //C_car::Prepare_DropOut_Wheel
     //----------------------------------------------
@@ -106,9 +105,11 @@ namespace hooks
         unsigned int unk3,
         S_vector* unk4) {
 
+        if (!_this) return false;
+
         //NOTE(DavoSK): Get car from C_Vehicle, be carefull if is something else RIP, CRASH, CRY
         MafiaSDK::C_Car* current_car = reinterpret_cast<MafiaSDK::C_Car*>((char*)_this - 0x70);
-        if (!_this || !current_car) return false;
+        if (!current_car) return false;
 
         auto vehicle_ent = get_vehicle_from_base(current_car);
         if (!vehicle_ent) return false;
@@ -121,21 +122,22 @@ namespace hooks
         auto get_mesh_data = [](MafiaSDK::C_Car* car) {
             std::vector<mesh_data> car_before;
             car->EnumerateVehicleMeshes([&](MafiaSDK::I3D_mesh_object* mesh) {
-
-                mesh_data new_mesh;
-
                 auto lod = mesh->GetLOD(0);
-                auto vertices = lod->LockVertices(0);
+                if (lod) {
+                    auto vertices = lod->LockVertices(0);
+                    if (vertices) {
+                        mesh_data new_mesh;
+                        MafiaSDK::I3D_stats_mesh mesh_info;
+                        lod->GetStats(mesh_info);
 
-                MafiaSDK::I3D_stats_mesh mesh_info;
-                lod->GetStats(mesh_info);
+                        for (int i = 0; i < mesh_info.vertex_count; i++) {
+                            new_mesh.vertices.push_back(vertices[i]);
+                        }
 
-                for (int i = 0; i < mesh_info.vertex_count; i++) {
-                    new_mesh.vertices.push_back(vertices[i]);
+                        lod->UnlockVertices();
+                        car_before.push_back(new_mesh);
+                    }
                 }
-
-                lod->UnlockVertices();
-                car_before.push_back(new_mesh);
             });
 
             return car_before;

@@ -4,37 +4,22 @@ namespace effects {
     inline void load(std::string effect_file);
 }
 
+namespace graphics {
+    inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device);
+}
+
 namespace chat {
 
     struct ChatCommand {
         std::string command_name;
         std::function<void(std::vector<std::string>)> command_ptr;
     };
-
-    std::vector<ChatCommand> chat_commands;
-    std::vector<std::pair<ImVec4, std::string>> chat_messages;	
-    IDirect3DDevice9* main_device = nullptr;
-
-    std::vector<std::string> chat_history;
-    i64 chat_history_index;
-    unsigned int chat_current_msg;
-
+    
+    cef::object* main_browser = nullptr;
+    std::vector<ChatCommand> chat_commands;    
     constexpr unsigned int VK_T = 0x54;
     KeyToggle key_chat_open(VK_T);
-    KeyToggle key_chat_send(VK_RETURN);
-    KeyToggle key_chat_history_prev(VK_UP);
-    KeyToggle key_chat_history_next(VK_DOWN);
-    KeyToggle key_chat_caret_prev(VK_LEFT);
-    KeyToggle key_chat_caret_next(VK_RIGHT);
-
-    void add_debug(const std::string & msg)
-    {
-        chat_messages.push_back({
-            ImColor(255, 255, 255, 255),
-            "Debug: "  + msg
-        });
-    }
-
+  
     auto register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
         if(ptr != nullptr) {
             chat_commands.push_back({name, ptr});
@@ -60,12 +45,75 @@ namespace chat {
         return false;
     }
 
+    auto add_message(std::string new_msg) {
+        if (main_browser) {
+            CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
+            json send_msg = {
+                { "type", "chat-msg" },
+                { "msg", new_msg }
+            };
+
+            auto send_args = msg->GetArgumentList(); {
+                send_args->SetSize(1);
+                send_args->SetString(0, send_msg.dump());
+            };
+
+            main_browser->browser.get()->SendProcessMessage(PID_RENDERER, msg);
+        }
+    }
+
+    auto update() {
+        if (key_chat_open) {
+
+            // block input when T only when we dont writting
+            // we unblock input from cef handle
+            if(!input::InputState.input_blocked)
+                input::block_input(true);
+
+            if (main_browser) {
+                CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
+                json send_msg = {
+                    { "type", "update-input" },
+                    { "blocked", input::InputState.input_blocked }
+                };
+
+                auto send_args = msg->GetArgumentList();
+                send_args->SetSize(1);
+                send_args->SetString(0, send_msg.dump());
+                main_browser->browser.get()->SendProcessMessage(PID_RENDERER, msg);
+            }
+        }
+    }
+
     auto init(IDirect3DDevice9* device) {
 
-        main_device = device;
-        chat_history_index = -1;
-        chat_current_msg = 0;
-    
+        auto back_buffer = graphics::get_backbuffer_desc(device);
+        auto url = GlobalConfig.localpath + "static\\chat.html";
+
+        main_browser = cef::browser_create(device, url.c_str(), back_buffer.Width, back_buffer.Height, 1);
+
+        cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) {
+            input::block_input(atoi(args->GetString(1).ToString().c_str()));
+        });
+
+        cef::register_native("chat-msg", [=](CefRefPtr<CefListValue> args) {
+
+            auto message = args->GetString(1).ToString();   
+            if (!message.empty()) {
+                bool is_command = false;
+
+                if (message[0] == '/')
+                    is_command = parse_command(message);
+
+                if (!is_command && librg_is_connected(&network_context)) {
+                    librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
+                        librg_data_wu16(&data, message.length());
+                        librg_data_wptr(&data, (void *)message.c_str(), message.length());
+                    });
+                }
+            }
+        });
+
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             exit(0);
@@ -76,7 +124,7 @@ namespace chat {
         });
         
         register_command("/shade", [&](std::vector<std::string> args) {
-            effects::load("Cinematic.fx");
+            effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
             effects::is_enabled = true;
         });
 
@@ -91,103 +139,6 @@ namespace chat {
             auto rot = DirToRotation180(direction);
 
             pos_file << position.x << " " << position.y << " " << position.z << ", " << rot << std::endl;
-            add_debug("Position was stored!");
         });
-    }
-
-    static char add_text[4096] = {0};
-    static char backup_text[4096] = {0};
-
-    void input_text_replace(ImGuiInputTextCallbackData *data, const char *str) {
-        data->DeleteChars(0, data->BufTextLen);
-        data->InsertChars(0, str);
-    }
-
-    int inputTextHandler(ImGuiInputTextCallbackData *data) {
-        b32 hist_prev = key_chat_history_prev;
-        b32 hist_next = key_chat_history_next;
-            
-        if (hist_prev || hist_next) {
-            if (!chat_history.empty()) {
-                if (chat_history_index == 0 && hist_next)
-                {
-                    input_text_replace(data, backup_text);
-                }
-                else
-                {
-                    if (hist_prev && chat_history_index != chat_history.size()-1) {
-                        if (chat_history_index == -1) {
-                            strcpy(backup_text, data->Buf);
-                        }
-
-                        chat_history_index++;
-                    }
-                    else if (hist_next && chat_history_index > 0)
-                        chat_history_index--;
-                    
-                    input_text_replace(data, chat_history[chat_history_index].c_str());
-                }
-            }
-        }
-
-        return FALSE;
-    }
-
-    auto render() {
-
-        ImGui::Begin("Mafia Multiplayer - Chat", 
-            nullptr, 
-            ImGuiWindowFlags_NoMove | 
-            ImGuiWindowFlags_NoResize | 
-            ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoScrollbar);
-
-        ImGui::SetWindowSize(ImVec2(400, 300));
-        ImGui::SetWindowPos(ImVec2(20, 20));
-        ImGui::BeginChild("scrolling");
-
-        if (!chat_messages.empty()) {
-            for (auto message : chat_messages) {
-                ImGui::TextColored(message.first, message.second.c_str());
-            }
-        }
-        
-        ImGui::SetScrollHere(1.0f);
-        ImGui::EndChild();
-        
-        if (!input::InputState.input_blocked && MafiaSDK::IsWindowFocused() && key_chat_open) {
-            input::toggle_block_input();
-        }
-
-        if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
-            ImGui::SetKeyboardFocusHere(0);
-            ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
-
-            if (key_chat_send) {
-                
-                if (strlen(add_text)) {
-
-                    bool is_command = false;
-
-                    if (add_text[0] == '/')
-                        is_command = parse_command(add_text);
-
-                    if (!is_command) {
-                        librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-                            librg_data_wu16(&data, zpl_strlen(add_text));
-                            librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
-                        });
-                    }
-
-                    chat_history.insert(chat_history.begin(), std::string(add_text));
-                    chat_history_index = -1;
-                    strcpy(add_text, "");
-                }
-
-                input::toggle_block_input();
-            }
-        }
-        ImGui::SetScrollHere(1.0f);
-        ImGui::End();
     }
 }

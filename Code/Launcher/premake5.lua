@@ -5,7 +5,7 @@ project "Launcher"
     flags { "NoIncrementalLink" }
     editandcontinue "Off"
 
-    targetname "oakwood"
+    targetname "Oakwood"
     characterset "Unicode"
     linkoptions "/IGNORE:4254 /ENTRY:wmainCRTStartup /OPT:NOLBR /SAFESEH:NO /DYNAMICBASE:NO /LARGEADDRESSAWARE /LAST:.zdata"
 

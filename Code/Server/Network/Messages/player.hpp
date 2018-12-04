@@ -9,6 +9,20 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
         auto player = (mafia_player*)sender_ent->user_data;
         player->health = 0.0f;
 
+        if (player->vehicle_id != -1) {
+            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+            if (vehicle_ent && vehicle_ent->user_data) {
+                auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+                for (int i = 0; i < 4; i++) {
+                    if (vehicle->seats[i] == sender_ent->id) {
+                        vehicle->seats[i] = -1;
+                        player->vehicle_id = -1;
+                        break;
+                    }
+                }
+            }
+        }
+
         if (gm.on_player_died)
             gm.on_player_died(sender_ent, player);
     }
@@ -97,6 +111,49 @@ librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
+    auto sender_ent = librg_entity_find(&network_context, msg->peer);
+
+    if (sender_ent && sender_ent->user_data) {
+        auto sender = (mafia_player*)sender_ent->user_data;
+        
+        if (sender->vehicle_id != -1) {
+            auto sender_vehicle_ent = librg_entity_fetch(&network_context, sender->vehicle_id);
+            if (sender_vehicle_ent && sender_vehicle_ent->user_data) {
+                auto sender_vehicle = (mafia_vehicle*)sender_vehicle_ent->user_data;
+
+                for (u32 i = 0; i < 4; i++) {
+                    if (sender_vehicle->seats[i] == sender_ent->id) {
+                        sender_vehicle->seats[i] = -1;
+                        sender->vehicle_id = -1;
+
+                        mod_message_send(&network_context, NETWORK_PLAYER_FROM_CAR, [&](librg_data *data) {
+                            librg_data_went(data, sender_ent->id);
+                            librg_data_went(data, sender_vehicle_ent->id);
+                            librg_data_wu32(data, i);
+                        });
+
+                        // NOTE(DavoSK) : He was driver find new streamer, 
+                        // Do we need this part code if player will not actualy change position until message is send
+
+                        if (i == 0) {
+                            auto streamer = mod_get_nearest_player(&network_context, sender_vehicle_ent->position);
+                            if (streamer != nullptr) {
+                                librg_entity_control_set(&network_context, sender_vehicle_ent->id, streamer->client_peer);
+                            }
+                            else {
+                                librg_entity_control_remove(&network_context, sender_vehicle_ent->id);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
     auto sender_ent = librg_entity_find(&network_context, msg->peer);
     auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
@@ -108,6 +165,17 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 
         auto vehicle = (mafia_vehicle *)vehicle_ent->user_data;
         auto sender = (mafia_player*)sender_ent->user_data;
+
+        // NOTE(DavoSK): SeatID can be NULL if player is force exiting
+        // We need to get id from server :) 
+        if (seat_id == 0 && action == 2) {
+            for (int i = 0; i < 4; i++) {
+                if (vehicle->seats[i] == sender_ent->id) {
+                    seat_id = i;
+                    break;
+                }
+            }
+        }
 
         if(action == 1) {
             vehicle->seats[seat_id] = sender_ent->id;

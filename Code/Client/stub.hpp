@@ -12,7 +12,7 @@ BOOL WINAPI DllMain(
         // Initialize once for each new process.
         // Return FALSE to fail DLL load.
         DisableThreadLibraryCalls(hinstDLL);
-        CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&mod_init, 0, 0, 0);
+        // CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)&mod_init, 0, 0, 0);
     } break;
 
     case DLL_THREAD_ATTACH:

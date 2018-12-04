@@ -85,7 +85,7 @@ auto vehicle_spawn(zpl_vec3 position,
     }
 
     if (spawn_struct->is_car_in_radar)
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
+        MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
 
     return new_car;
 }

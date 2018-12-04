@@ -116,11 +116,11 @@ namespace MafiaSDK
             //Respwn no camera unbind meybe (TODO)
             //No delete actor and anims
             //BYTE noDeleteActors[] = "\xC7\x86\x0C\x04\x00\x00";
-            /*MemoryPatcher::InstallNopPatch(0x00572F3B, 10);
+            MemoryPatcher::InstallNopPatch(0x00572F3B, 10);
             MemoryPatcher::InstallNopPatch(0x0057838F, 10);
             MemoryPatcher::InstallNopPatch(0x0057AB8C, 10);
             MemoryPatcher::InstallNopPatch(0x0057ACD1, 10);
-            MemoryPatcher::InstallNopPatch(0x0058A780, 10);*/
+            MemoryPatcher::InstallNopPatch(0x0058A780, 10);
         }
     };
 
@@ -260,11 +260,6 @@ namespace MafiaSDK
         C_Game_Interface* GetInterface()
         {
             return reinterpret_cast<C_Game_Interface*>(this);
-        }
-
-        C_Indicators* GetIndicators()
-        {
-            return reinterpret_cast<C_Indicators*>(C_Indicators_Enum::GIndicators);
         }
 
         C_Camera* GetCamera()

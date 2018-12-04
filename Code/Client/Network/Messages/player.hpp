@@ -52,7 +52,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
 
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
         MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives(100);
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
 
         if (local_player.ped) {
             player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
@@ -140,6 +140,24 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
 
         if(sender_ent->id != local_player.entity.id)
             sender->ped->Use_Actor(vehicle->car, action, seat_id, unk3);
+    }
+});
+
+librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
+    
+    auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto seat_id = librg_data_ru32(msg->data);
+
+    if (sender_ent && sender_ent->user_data && vehicle_ent && vehicle_ent->user_data) {
+        auto sender = (mafia_player*)sender_ent->user_data;
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+        
+        MafiaSDK::I3D_Frame* vehicleFrame = *(MafiaSDK::I3D_Frame**)((unsigned long)sender->ped + 0x68);
+        hooks::human_intern_fromcar_original(sender->ped, vehicleFrame);
+
+        vehicle->seats[seat_id] = -1;
+        sender->vehicle_id = -1;
     }
 });
 
@@ -320,7 +338,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_HEALTH, [](librg_message*
                 auto player_int = player->ped->GetInterface();
 
                 if (player->ped == local_player.ped)
-                    MafiaSDK::GetMission()->GetGame()->GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
+                    MafiaSDK::GetIndicators()->PlayerSetWingmanLives((int)(health/2.0f));
 
                 player_int->health = health;
             }
@@ -400,7 +418,7 @@ librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* 
     char* text = reinterpret_cast<char*>(malloc(msg_size));
     librg_data_rptr(msg->data, text, msg_size);
     text[msg_size]  = '\0';
-    MafiaSDK::GetMission()->GetGame()->GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
+    MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, [](librg_message* msg) {

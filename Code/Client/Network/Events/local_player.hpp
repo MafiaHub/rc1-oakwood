@@ -112,6 +112,10 @@ inline auto local_player_weaponchange(u32 index) -> void {
     player_inventory_send();
 }
 
+inline auto local_player_fromcar() -> void {
+    librg_send(&network_context, NETWORK_PLAYER_FROM_CAR, data, {});
+}
+
 //TODO send inventory on each message related with weapons !
 inline auto local_player_reload() -> void {
     librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});

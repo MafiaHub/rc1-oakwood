@@ -25,6 +25,20 @@ namespace hooks
     }
 
     //----------------------------------------------
+    //C_Human::Intern_FromCar()
+    //----------------------------------------------
+    typedef bool(__thiscall* C_Human_Itern_FromCar_t)(void* _this, MafiaSDK::I3D_Frame* frame);
+    C_Human_Itern_FromCar_t human_intern_fromcar_original = nullptr;
+    
+    bool __fastcall C_Human_Intern_FromCar(void* _this, DWORD edx, MafiaSDK::I3D_Frame* frame) {
+        if (reinterpret_cast<MafiaSDK::C_Player*>(_this) == local_player.ped) {
+            local_player_fromcar();
+        }
+
+        return false;
+    }
+
+    //----------------------------------------------
     //C_Human::Do_Reload()
     //----------------------------------------------
     typedef bool(__thiscall* C_Human_Do_Reload_t)(void* _this);
@@ -173,13 +187,21 @@ namespace hooks
     //----------------------------------------------
     typedef bool(__thiscall* C_Human_Use_Actor_t)(void* _this, DWORD actor, int unk1, int unk2, int unk3);
     C_Human_Use_Actor_t human_use_actor_original = nullptr;
-    bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int unk1, int unk2, int unk3) {
-
+    bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int action, int unk2, int unk3) {
+        
+        bool return_val = human_use_actor_original(_this, actor, action, unk2, unk3);
         if (_this == local_player.ped) {
-            local_player_useactor(actor, unk1, unk2, unk3);
+            auto ped_interface = ((MafiaSDK::C_Human*)_this)->GetInterface();
+
+            /* 
+            * We send use actor only when we entering car or exiting
+            * If player forceexit carLeavingOrEntering is NULL, thats why we check if we are exiting by action
+            */
+            if(ped_interface->carLeavingOrEntering || action == 2)
+                local_player_useactor(actor, action, unk2, unk3);
         }
 
-        return human_use_actor_original(_this, actor, unk1, unk2, unk3);
+        return return_val;
     }
 
     //----------------------------------------------

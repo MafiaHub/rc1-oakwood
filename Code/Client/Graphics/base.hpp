@@ -1,15 +1,20 @@
 #pragma once
-
-IDirect3DDevice9* global_device	= nullptr;
-
 #include "Graphics/d3d9/CDirect3DDevice9Proxy.h"
 #include "Graphics/d3d9/CDirect3D9Proxy.h"
 #include "utils.hpp"
+
+namespace nameplates {
+    inline void init(IDirect3DDevice9* device);
+    inline void device_lost();
+    inline void device_reset(IDirect3DDevice9* device);
+    inline void render(IDirect3DDevice9* device);
+}
 
 namespace graphics {
     
     typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);
     d3dcreate9_t d3dcreate9_original = nullptr;
+    ID3DXSprite* main_sprite = nullptr;
     
     IDirect3D9* WINAPI d3dcreate9_hook(UINT SDKVersion) {
         IDirect3D9 *new_direct = d3dcreate9_original(SDKVersion);
@@ -23,162 +28,164 @@ namespace graphics {
     }
 
     inline auto hook() {
-
-        while (!GetModuleHandle("d3d9.dll")) {
-            Sleep(100);
-        }
-
+        while (!GetModuleHandle("d3d9.dll")) Sleep(100);
         d3dcreate9_original = (d3dcreate9_t)(DetourFunction(DetourFindFunction((char*)"d3d9.dll", (char*)"Direct3DCreate9"), (PBYTE)d3dcreate9_hook));
     }
 
-    auto GetCustomGlyphRanges() -> const ImWchar *{
-        static const ImWchar ranges[] =
-        {
-            0x0020, 0x00FF, // Basic Latin + Latin Supplement
-            0x0100, 0x017F, // Latin Extended-A
-            0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
-            0x2DE0, 0x2DFF, // Cyrillic Extended-A
-            0xA640, 0xA69F, // Cyrillic Extended-B
-            0,
-        };
-        return &ranges[0];
+    inline auto create_font(IDirect3DDevice9* device, const char* font_name, unsigned int size, bool bold) -> ID3DXFont* {
+        
+        ID3DXFont* to_create = nullptr;
+
+        if (FAILED(D3DXCreateFont(device, size, 0, (bold ? FW_BOLD : FW_NORMAL), 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, (DEFAULT_PITCH | FF_DONTCARE), font_name, &to_create))) {
+            MessageBox(NULL, "Unable to create font", "nameplates.hpp", MB_OK);
+            return nullptr;
+        }
+
+        return to_create;
     }
 
-    inline auto setup_imgui(IDirect3DDevice9* device) -> void {
+    inline auto get_text_width(ID3DXFont* font, const char* text) -> int {
 
-        IMGUI_CHECKVERSION();
-        ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO(); (void)io;
-        ImGui_ImplWin32_Init(MafiaSDK::GetMainWindow());
-        ImGui_ImplDX9_Init(device);
+        if (font) {
+            HDC dc = font->GetDC();
+            SIZE size;
+            GetTextExtentPoint32(dc, text, strlen(text), &size);
+            return size.cx;
+        }
 
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("ChatFont.ttf", 20, NULL, GetCustomGlyphRanges());
-        io.FontAllowUserScaling = true;
+        return 0;
+    }
 
-        ImGui::StyleColorsDark();
+    struct Vertex2D {
+        float x, y, z, rhw;
+        DWORD color;
+    };
 
-        ImColor mainColor = ImColor(150, 0, 0, 70);
-        ImColor bodyColor = ImColor(24, 24, 24, 50);
-        ImColor fontColor = ImColor(255, 255, 255, 255);
+    inline void draw_box(IDirect3DDevice9* device, float x, float y, float width, float height, DWORD color) {
+        
+        const Vertex2D rect[] = {
+            { x,			y,			0.0f, 1.0f,	color },
+            { x + width,	y,			0.0f, 1.0f,	color },
+            { x,			y + height, 0.0f, 1.0f,	color },
+            { x + width,	y + height, 0.0f, 1.0f,	color },
+        };
 
-        ImGuiStyle& style = ImGui::GetStyle();
+        device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+        device->SetPixelShader(NULL);
+        device->SetVertexShader(NULL);
+        device->SetRenderState(D3DRS_ZENABLE, FALSE);
+        device->SetTexture(0, NULL);
+        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &rect, sizeof(Vertex2D));
+    }
 
-        ImVec4 mainColorHovered = ImVec4(mainColor.Value.x + 0.1f, mainColor.Value.y + 0.1f, mainColor.Value.z + 0.1f, mainColor.Value.w);
-        ImVec4 mainColorActive = ImVec4(mainColor.Value.x + 0.2f, mainColor.Value.y + 0.2f, mainColor.Value.z + 0.2f, mainColor.Value.w);
-        ImVec4 menubarColor = ImVec4(bodyColor.Value.x, bodyColor.Value.y, bodyColor.Value.z, bodyColor.Value.w - 0.8f);
-        ImVec4 frameBgColor = ImVec4(bodyColor.Value.x, bodyColor.Value.y, bodyColor.Value.z, bodyColor.Value.w + .1f);
-        ImVec4 tooltipBgColor = ImVec4(bodyColor.Value.x, bodyColor.Value.y, bodyColor.Value.z, bodyColor.Value.w + .05f);
+    /*
+    *  Just draw some text boi
+    */
+    inline void draw_text(ID3DXFont* font, const char* text, float x, float y, float scale, unsigned long color, bool shadow) {
+        if (text == nullptr || main_sprite == nullptr || font == nullptr) return;
 
-        style.Alpha = 1.0f;
-        style.WindowPadding = ImVec2(8, 8);
-        style.WindowMinSize = ImVec2(32, 32);
-        style.WindowRounding = 0.0f;
-        style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-        style.FramePadding = ImVec2(4, 3);
-        style.FrameRounding = 0.0f;
-        style.ItemSpacing = ImVec2(8, 4);
-        style.ItemInnerSpacing = ImVec2(4, 4);
-        style.TouchExtraPadding = ImVec2(0, 0);
-        style.IndentSpacing = 21.0f;
-        style.ColumnsMinSpacing = 3.0f;
-        style.ScrollbarSize = 12.0f;
-        style.ScrollbarRounding = 0.0f;
-        style.GrabMinSize = 5.0f;
-        style.GrabRounding = 0.0f;
-        style.ButtonTextAlign = ImVec2(0.5f, 0.5f);
-        style.DisplayWindowPadding = ImVec2(22, 22);
-        style.DisplaySafeAreaPadding = ImVec2(4, 4);
-        style.AntiAliasedLines = true;
-        style.CurveTessellationTol = 1.25f;
-        style.Colors[ImGuiCol_Text] = fontColor;
-        style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
-        style.Colors[ImGuiCol_WindowBg] = bodyColor;
-        style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(.0f, .0f, .0f, .0f);
-        style.Colors[ImGuiCol_PopupBg] = tooltipBgColor;
-        style.Colors[ImGuiCol_Border] = mainColor;
-        style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
-        style.Colors[ImGuiCol_FrameBg] = frameBgColor;
-        style.Colors[ImGuiCol_FrameBgHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_FrameBgActive] = mainColorActive;
-        style.Colors[ImGuiCol_TitleBg] = mainColor;
-        style.Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
-        style.Colors[ImGuiCol_TitleBgActive] = mainColor;
-        style.Colors[ImGuiCol_MenuBarBg] = menubarColor;
-        style.Colors[ImGuiCol_ScrollbarBg] = ImVec4(frameBgColor.x + .05f, frameBgColor.y + .05f, frameBgColor.z + .05f, frameBgColor.w);
-        style.Colors[ImGuiCol_ScrollbarGrab] = mainColor;
-        style.Colors[ImGuiCol_ScrollbarGrabHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_ScrollbarGrabActive] = mainColorActive;
-        style.Colors[ImGuiCol_CheckMark] = mainColor;
-        style.Colors[ImGuiCol_SliderGrab] = mainColorHovered;
-        style.Colors[ImGuiCol_SliderGrabActive] = mainColorActive;
-        style.Colors[ImGuiCol_Button] = mainColor;
-        style.Colors[ImGuiCol_ButtonHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_ButtonActive] = mainColorActive;
-        style.Colors[ImGuiCol_Header] = mainColor;
-        style.Colors[ImGuiCol_HeaderHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_HeaderActive] = mainColorActive;
-        style.Colors[ImGuiCol_Column] = mainColor;
-        style.Colors[ImGuiCol_ColumnHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_ColumnActive] = mainColorActive;
-        style.Colors[ImGuiCol_ResizeGrip] = mainColor;
-        style.Colors[ImGuiCol_ResizeGripHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_ResizeGripActive] = mainColorActive;
-        style.Colors[ImGuiCol_PlotLines] = mainColor;
-        style.Colors[ImGuiCol_PlotLinesHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_PlotHistogram] = mainColor;
-        style.Colors[ImGuiCol_PlotHistogramHovered] = mainColorHovered;
-        style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
-        style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
-    } 
+        D3DXVECTOR2 scaling(scale, scale);
+        D3DXMATRIX matrix;
+        D3DXMatrixTransformation2D(&matrix, NULL, 0.0f, &scaling, NULL, 0.0f, NULL);
+
+        main_sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
+        main_sprite->SetTransform(&matrix);
+
+        if (shadow) {
+            RECT shadow_rect;
+            SetRect(&shadow_rect, x * (1.0f / scale) + 1, y * (1.0f / scale) + 1, 0, 0);
+            font->DrawTextA(main_sprite, text, -1, &shadow_rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
+        }
+
+        RECT rect;
+        SetRect(&rect, x * (1.0f / scale), y * (1.0f / scale), 0, 0);
+        font->DrawTextA(main_sprite, text, -1, &rect, DT_NOCLIP, color);
+
+        main_sprite->End();
+    }
+
+    inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device) {
+        IDirect3DSurface9* back_buffer = nullptr;
+        device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
+
+        D3DSURFACE_DESC back_buffer_desc;
+        back_buffer->GetDesc(&back_buffer_desc);
+        return back_buffer_desc;
+    }
+
+    inline auto init_main_sprite(IDirect3DDevice9* device) -> void {
+        if (FAILED(D3DXCreateSprite(device, &main_sprite))) {
+            MessageBox(NULL, "Unable to create sprite for drawing nameplates", "nameplates.hpp", MB_OK);
+            return;
+        }
+    }
 
     inline auto init(IDirect3DDevice9* device) -> void {
 
+        init_main_sprite(device);
         global_device = device;
-        setup_imgui(device);
-
+        nameplates::init(device);
         effects::init(device);
+        cef::init(device);
         chat::init(device);
     }
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
-        ImGui_ImplDX9_InvalidateDeviceObjects();
+
+        if (global_device) {
+            global_device = nullptr;
+        }
+
+        if (main_sprite) {
+            main_sprite->Release();
+            main_sprite = nullptr;
+        }
+
+        nameplates::device_lost();
+        effects::device_lost();
+        cef::device_lost();
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
+        
         global_device = device;
-        ImGui_ImplDX9_CreateDeviceObjects();
-        effects::reset(device);
+        init_main_sprite(device);
+        nameplates::device_reset(device);
+        effects::device_reset(device);
+        cef::device_reset(device);
     }
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
-        ImGui::GetIO().MouseDrawCursor = input::InputState.input_blocked;
-        ImGui_ImplDX9_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
+        IDirect3DStateBlock9* pStateBlock = NULL;
+        device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
-        //effects::render();
-        if (!MafiaSDK::GetGMMenu()) {
-            ImGuiStyle& style = ImGui::GetStyle();
+        IDirect3DDevice9_SetVertexShader(device, NULL);
+        IDirect3DDevice9_SetFVF(device, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+        IDirect3DDevice9_SetRenderState(device, D3DRS_ZENABLE, D3DZB_FALSE);
+        IDirect3DDevice9_SetRenderState(device, D3DRS_CULLMODE, D3DCULL_NONE);
+        IDirect3DDevice9_SetRenderState(device, D3DRS_LIGHTING, FALSE);
 
-            if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused() || 
-                playerlist::playerListKey) {
-                style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 200);
-                style.Colors[ImGuiCol_TitleBg]  = ImColor(150, 0, 0, 200);
-            }
-            else {
-                style.Colors[ImGuiCol_WindowBg] = ImColor(24, 24, 24, 50);
-                style.Colors[ImGuiCol_TitleBg]  = ImColor(150, 0, 0, 70);
-            }
-            
-            if(!playerlist::playerListKey)
-                chat::render();
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-            playerlist::render();
-        }
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        IDirect3DDevice9_SetRenderState(device, D3DRS_ALPHABLENDENABLE, TRUE);
 
-        ImGui::EndFrame();
-        ImGui::Render();
-        ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
+        IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+        IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+        IDirect3DDevice9_SetPixelShader(device, NULL);
+
+        nameplates::render(device);
+        effects::render(device);
+        chat::update();
+        cef::tick();
+        cef::render_browsers();
+
+        pStateBlock->Apply();
+        pStateBlock->Release();
     }
 }

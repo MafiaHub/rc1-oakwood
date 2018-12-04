@@ -1,9 +1,12 @@
+# not weird files
 .vs
-Bin
-*/Debug
-Build
-*/Release
 .vscode
-VS2017
+.DS_store
+
+# not weird folders
+Bin
+Build
+Vendors/Cef
 Tools/oakgen.exe
+Tools/premake/cache
 *.code-workspace

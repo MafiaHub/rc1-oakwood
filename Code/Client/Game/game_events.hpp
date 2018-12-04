@@ -54,7 +54,7 @@ auto interpolate_cam(f64 delta_time) {
     auto to = camera_follow_points.at(transition_idx + 1);
 
     if (passed_time > 0.8f && passed_time < 0.82f) {
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+        MafiaSDK::GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
     }
 
     if (passed_time > 1.0f) {		
@@ -63,7 +63,7 @@ auto interpolate_cam(f64 delta_time) {
         else 
             transition_idx += 2;
 
-        MafiaSDK::GetMission()->GetGame()->GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+        MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
         passed_time = 0.0f;
     }
 
@@ -102,11 +102,11 @@ auto mod_bind_events() {
                 }
             }
 
-            chat::chat_messages.push_back(std::make_pair(ImVec4(150.0, 0.0, 0.0, 1.0), "Welcome to Mafia Oakwood 0.1"));
-            chat::chat_messages.push_back(std::make_pair(ImVec4(1.0, 1.0, 1.0, 1.0), "Connecting to " + GlobalConfig.server_address + " ..."));
+            chat::add_message("Welcome to Mafia Oakwood 0.1");
+            chat::add_message("Connecting to " + GlobalConfig.server_address + " ...");
             mod_librg_connect();
 
-            effects::load("Cinematic.fx");
+            effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
             effects::is_enabled = true;
         }
     });
