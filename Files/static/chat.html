@@ -121,18 +121,7 @@
 						if(!this.isTyping) 
 							this.currentText = '';
 					},
-					processInput: function(e, down) {
-						
-						//T key pressed
-						if(down && e.keyCode == 84) {
-
-							if(this.isTyping && !this.currentText.length) {
-								this.isTyping = false;
-								triggerNative('update-input', '0');
-							}
-							return;
-						}
-						
+					processInput: function(e, down) {						
 						if(this.isTyping)
 							$('.autocomplete').focus();
 
