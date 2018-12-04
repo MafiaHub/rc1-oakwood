@@ -11,8 +11,7 @@ typedef DWORD(_stdcall *DtaOpen_t) (const char* filename, DWORD params);
 DtaOpen_t DtaOpen = nullptr;
 
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
-
-    printf("requesting: %s\n", filename);
+    // printf("requesting: %s\n", filename);
 
     if (filename) {
         if (strstr(filename, "mainmenu.mnu")) {
