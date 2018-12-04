@@ -15,7 +15,8 @@ namespace MafiaSDK
 			Do_AB_OwnerNULL = 0x00594300,
 			AI = 0x005937B0,
             SetAlpha = 0x00595E10,
-            SetAimed = 0x005952F0
+            SetAimed = 0x005952F0,
+            LockControls = 0x00595F00
 		};
 	};
 
@@ -72,6 +73,18 @@ namespace MafiaSDK
 				call funcAddress
 			}
 		}
+
+        void LockControls(BOOL lock)
+        {
+            unsigned long funcAddress = C_Player_Enum::FunctionAddresses::LockControls;
+
+            __asm
+            {
+                push lock
+                mov ecx, this
+                call funcAddress
+            }
+        }
 	};
 };
 

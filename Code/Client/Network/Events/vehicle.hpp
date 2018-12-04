@@ -319,8 +319,8 @@ inline auto vehicle_entityremove(librg_event* evnt) {
     auto vehicle = (mafia_vehicle*)evnt->entity->user_data;
     if (vehicle && vehicle->car) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
+        vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
         vehicle_despawn(vehicle);
-        evnt->entity->user_data = nullptr;
     }
 }
 

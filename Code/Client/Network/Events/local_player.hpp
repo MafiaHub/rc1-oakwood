@@ -1,15 +1,34 @@
 #pragma once
-
 struct local_player_data {
-    local_player_data() :
-        ped(nullptr), 
+    local_player_data() : 
         dead(false)  {
     }
-    MafiaSDK::C_Player* ped;
-    librg_entity entity;
+
+    u32 entity_id;
     zpl_vec3 pose;
     bool dead;
 } local_player;
+
+inline auto get_local_entity() {
+    return librg_entity_fetch(&network_context, local_player.entity_id);
+}
+
+inline auto get_local_player() -> mafia_player* {
+    auto local_ent = get_local_entity();
+    if (local_ent) {
+        return (mafia_player*)local_ent->user_data;
+    }
+
+    return nullptr;
+}
+
+inline auto get_local_ped() -> MafiaSDK::C_Player* {
+    auto player = get_local_player();
+    if (player) {
+        return (MafiaSDK::C_Player*)player->ped;
+    }
+    return nullptr;
+}
 
 inline auto get_player_from_base(void* base) -> librg_entity* {
 
@@ -36,12 +55,13 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
 auto player_inventory_send() {
     player_inventory inv = {0};
 
-    if (!local_player.ped) {
+    auto local_ped = get_local_ped();
+    if (!local_ped) {
         mod_log("[INV SEND] Local player doesn't exist!");
         return;
     }
 
-    memcpy(&inv, &((MafiaSDK::C_Human *)local_player.ped)->GetInterface()->inventory, sizeof(player_inventory));
+    memcpy(&inv, &((MafiaSDK::C_Human *)local_ped)->GetInterface()->inventory, sizeof(player_inventory));
 
     librg_send(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, data, {
         librg_data_wptr(&data, &inv, sizeof(player_inventory));
@@ -59,11 +79,17 @@ inline auto local_player_died() {
     if (!local_player.dead) 
         local_player.dead = true;
     
-    local_player.ped = nullptr;
-    
-    auto player_ent = librg_entity_fetch(&network_context, local_player.entity.id);
-    if (player_ent && player_ent->user_data) {
-        auto player = (mafia_player*)(player_ent->user_data);
+    auto player = get_local_player();
+    if (player) {
+
+        if (player->ped) {
+            auto veh = player->ped->GetInterface()->playersCar;
+            if (veh) {
+                MafiaSDK::C_Player* current_player = (MafiaSDK::C_Player*)player->ped;
+                current_player->LockControls(TRUE);
+                player->ped->Intern_FromCar();
+            }
+        }
         player->ped = nullptr;
     }
 
@@ -150,11 +176,13 @@ inline auto local_player_weaponpickup(librg_entity* item_entity) -> void {
     });
 
     //force weapon change for inventory sync (weird rules wen wep is picked up, some weapons have priority and sheet)
-    auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
-    local_player.ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
-    local_player.ped->Do_ChangeWeapon(0, 0);
-
-    player_inventory_send();
+    auto local_ped = get_local_ped();
+    if (local_ped) {
+        auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
+        local_ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
+        local_ped->Do_ChangeWeapon(0, 0);
+        player_inventory_send();
+    }
 }
 
 inline auto local_player_throwgrenade(const S_vector & pos) {
@@ -194,16 +222,25 @@ inline auto local_player_remove_temporary_actor(void* base) {
 
     auto player_ent = get_player_from_base(base);
     if (player_ent) {
-        printf("~C_Actor remove for player :%d\n", player_ent->id);
         auto player = (mafia_player*)player_ent->user_data;
-        player->ped = nullptr;
+        if (player && player->ped) {
+            player->ped = nullptr;
+        }
     }
 
     auto vehicle_ent = get_vehicle_from_base(base);
     if (vehicle_ent) {
-        printf("~C_Actor remove for vehicle :%d\n", vehicle_ent->id);
         auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-        vehicle->car = nullptr;
+        if (vehicle) {
+            if (!(vehicle->clientside_flags & CLIENTSIDE_VEHICLE_STREAMER_REMOVED)) {
+                librg_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, data, {
+                    librg_data_wu32(&data, vehicle_ent->id);
+                });
+            }
+            
+            delete vehicle;
+            vehicle_ent->user_data = nullptr;
+        }
     }
 }
 

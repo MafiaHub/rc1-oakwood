@@ -34,8 +34,8 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
         -1,
         player->vehicle_id != -1);
 
-    if(player->streamer_entity_id == local_player.entity.id) {
-        auto me = local_player.ped;
+    if(player->streamer_entity_id == local_player.entity_id) {
+        auto me = get_local_ped();
         auto action = player->ped->GetActionManager()->NewFollow(me, 3.0f, 13, 2, 0, 0);
         player->ped->GetActionManager()->NewTurnTo(me, action->action_id);
         player->ped->GetActionManager()->AddJob(action);
@@ -179,7 +179,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
         }
     }
 
-    if (evnt->entity->id != local_player.entity.id) {
+    if (evnt->entity->id != local_player.entity_id) {
         player->health = health;
     }
 }

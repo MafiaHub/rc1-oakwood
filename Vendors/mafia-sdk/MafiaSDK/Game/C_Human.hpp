@@ -210,12 +210,14 @@ namespace MafiaSDK
 			unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Intern_FromCar;
 			I3D_Frame* vehicleFrame  = *(I3D_Frame**)((unsigned long)this + 0x68);
 			
-			__asm
-			{
-				push vehicleFrame
-				mov ecx, this
-				call funcAddress
-			}
+            if (vehicleFrame) {
+                __asm
+                {
+                    push vehicleFrame
+                    mov ecx, this
+                    call funcAddress
+                }
+            }
 		}
 
 		void Intern_UseRailway(BOOL usingRailway)

@@ -27,7 +27,7 @@ namespace nameplates {
         for (u32 i = 0; i < network_context.max_entities; i++) {
 
             librg_entity *entity = librg_entity_fetch(&network_context, i);
-            if (entity == nullptr || entity->id == local_player.entity.id) continue;
+            if (entity == nullptr || entity->id == local_player.entity_id) continue;
 
             if (entity->type == TYPE_PLAYER && entity->user_data && fptr != nullptr) {
                 fptr(reinterpret_cast<mafia_player*>(entity->user_data));

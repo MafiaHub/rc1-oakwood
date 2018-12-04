@@ -137,7 +137,7 @@ auto mod_bind_events() {
 
             case TYPE_PLAYER: {
                 auto player = (mafia_player*)entity->user_data;
-                if (player && player->ped && player->streamer_entity_id != local_player.entity.id) {
+                if (player && player->ped && player->streamer_entity_id != local_player.entity_id) {
                     player_game_tick(player, delta_time);
                 }
             } break;

@@ -195,8 +195,8 @@ namespace menu {
                 GlobalConfig.server_address = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
                 if (!GlobalConfig.server_address.empty()) {
                     
-                    if (local_player.entity.user_data) {
-                        auto player = (mafia_player*)local_player.entity.user_data;
+                    auto player = get_local_player();
+                    if (player) {
                         zpl_zero_item(player);
                     }
 

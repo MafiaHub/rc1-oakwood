@@ -11,6 +11,8 @@ auto vehicle_despawn(mafia_vehicle* vehicle) -> void {
                     if (player->ped) {
                         player->ped->Intern_FromCar();
                     }
+                    
+
                     player->vehicle_id = -1;
                     vehicle->seats[i] = -1;
                 }
@@ -18,6 +20,5 @@ auto vehicle_despawn(mafia_vehicle* vehicle) -> void {
         }
 
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
-        //vehicle->car = nullptr;
     }
 }

@@ -10,6 +10,10 @@ struct mafia_vehicle_deform {
     zpl_vec3 position;
 };
 
+enum {
+    CLIENTSIDE_VEHICLE_STREAMER_REMOVED = (1 << 10)
+};
+
 struct mafia_vehicle {
 	mafia_vehicle() {
 		zpl_zero_item(this);
@@ -51,7 +55,7 @@ struct mafia_vehicle {
 	#ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
 	b32 wants_explode;
-
+    u64 clientside_flags;
 	/* interpolation table */
 	struct {
 		struct {

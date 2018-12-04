@@ -16,16 +16,18 @@ void on_librg_connect(librg_event* evnt) {
 
     auto local_player_data = new mafia_player;
     evnt->entity->user_data = local_player_data;
-    local_player.entity = *evnt->entity;
+    local_player.entity_id = evnt->entity->id;
 }
 
 void on_librg_disconnect(librg_event* evnt) {
 
     chat::add_message("Disconnected from " + GlobalConfig.server_address + ".");
-    if(local_player.ped) {
-        player_despawn(local_player.ped);
-        local_player.ped = nullptr;
+    auto player = get_local_player();
+    if(player && player->ped) {
+        player_despawn(player->ped);
+        player->ped = nullptr;
     }
+
     mod_librg_connect();
 }
 
