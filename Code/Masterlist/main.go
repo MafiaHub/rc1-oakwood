@@ -115,9 +115,9 @@ func AddServer(writer http.ResponseWriter, request *http.Request) {
 		json.NewEncoder(writer).Encode(Response{true, "Your server is not visible to the masterlist!", nil})
 		log.Printf("Server %s:%s with name '%s' is not visible!\n", checkAddr, server.ServerPort, server.Name)
 		return
-	} else {
-		tcpConn.Close()
 	}
+
+	tcpConn.Close()
 
 	server.updatedAt = time.Now().Unix() + defaultTimeout
 

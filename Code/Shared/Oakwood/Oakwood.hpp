@@ -104,14 +104,3 @@ private:
     std::function<void()> onServerTick;
     std::unordered_map<std::string, std::function<bool(Player*,ArgumentList)>> commands;
 };
-
-#include <sstream>
-#include <iterator>
-
-static std::vector<std::string> SplitStringByNewline(const std::string& subject)
-{
-    std::istringstream ss{ subject };
-    using StrIt = std::istream_iterator<std::string>;
-    std::vector<std::string> container{ StrIt{ss}, StrIt{} };
-    return container;
-}

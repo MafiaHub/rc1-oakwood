@@ -23,11 +23,11 @@ project "Client"
         linkoptions "/manifestdependency:\"type='Win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\""
 
     includedirs {
-        "../../Vendors/cef/" .. CEF_VERSION
+        "../../Vendors/cef/"
     }
 
     libdirs {
-        "../../Bin/Vendors/%{cfg.buildcfg}/"
+        "../../Bin/%{cfg.buildcfg}/bin"
     }
 
 	links {
@@ -45,6 +45,10 @@ project "Client"
 
 	postbuildcommands {
 		'mt.exe -manifest "../Scripts/manifest.xml" -outputresource:"../Bin/%{cfg.buildcfg}/OakwoodClient.dll"',
+
+        -- copy additional files and stuff
+        "{COPY} " .. "../Files/ ../Bin/Debug",
+        "{COPY} " .. "../Files/ ../Bin/Release",
 	}
 
     linkoptions {

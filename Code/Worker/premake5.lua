@@ -3,6 +3,7 @@ project "Worker"
     kind "WindowedApp"
 
     targetname "OakwoodWorker"
+    characterset "Unicode"
     flags "NoManifest"
 
     filter { "system:windows", "kind:not StaticLib" }
@@ -11,8 +12,7 @@ project "Worker"
     vpaths { ["*"] = "*" }
 
     libdirs {
-        "../../Bin/",
-        "../../Bin/Vendors/%{cfg.buildcfg}/"
+        "../../Bin/%{cfg.buildcfg}/bin"
     }
 
     includedirs
@@ -21,7 +21,7 @@ project "Worker"
         ".",
 
         "../Shared",
-        "../../Vendors/cef/" .. CEF_VERSION,
+        "../../Vendors/cef/",
     }
 
     filter { "system:windows" }

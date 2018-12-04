@@ -11,14 +11,15 @@ typedef DWORD(_stdcall *DtaOpen_t) (const char* filename, DWORD params);
 DtaOpen_t DtaOpen = nullptr;
 
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
+    // printf("requesting: %s\n", filename);
 
     if (filename) {
         if (strstr(filename, "mainmenu.mnu")) {
-            return DtaOpen("main.mnu", params);
+            return DtaOpen((GlobalConfig.localpath + "files/main.mnu").c_str(), params);
         }
 
         if (strstr(filename, "online.tga")) {
-            return DtaOpen("online.tga", params);
+            return DtaOpen((GlobalConfig.localpath + "files/online.tga").c_str(), params);
         }
     }
     

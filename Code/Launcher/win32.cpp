@@ -17,7 +17,6 @@ const char *launcher_localpath() {
     wchar_t buf[MAX_PATH] = { 0 };
     GetModuleFileNameW(nullptr, buf, MAX_PATH);
 
-    //append string terminator
     for (size_t i = wcslen(buf); i > 0; --i) {
         if (buf[i] == '\\') { buf[i + 1] = 0; break; }
     }
@@ -58,8 +57,6 @@ LSTATUS WINAPI RegQueryValueExA_Hook(
     LPDWORD lpcbData
 ) {
     auto res = RegQueryValueExA(hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
-    zpl_printf("[info] RegQueryValueExA hook: %s %s\n", lpValueName, (char *)lpData);
-
     auto val = (mafia_settings*)lpData;
 
     val->width = settings.width;
@@ -93,29 +90,11 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     g_localpath = std::string(localpath);
     g_gamepath  = std::string(gamepath);
 
-    FILE* file = _wfopen((wchar_t *)zpl_utf8_to_ucs2_buf((u8 *)gamepath.c_str()), L"rb"); if (!file) {
-        MessageBoxA(nullptr, "Failed to find executable image", "oh no", MB_ICONERROR);
-        return 0;
-    }
-
-    // determine file length
-    fseek(file, 0, SEEK_END);
-    auto length = ftell(file);
-
-    // reserve buffer
-    std::vector<uint8_t> data(length);
-
-    // read game into buffer
-    fseek(file, 0, SEEK_SET);
-
-    fread(data.data(), 1, length, file);
-    fclose(file);
-
-    // zpl_file_contents gamefile = zpl_file_read_contents(zpl_heap(), true, gamepath.c_str());
-    zpl_printf("[info] loaded game binary (%lf MB)\n", length / 1024.0f / 1024.0f);
+    zpl_file_contents gamefile = zpl_file_read_contents(zpl_heap(), true, gamepath.c_str());
+    zpl_printf("[info] loaded game binary (%lf MB)\n", gamefile.size / 1024.0f / 1024.0f);
 
     auto base = GetModuleHandle(nullptr);
-    ExecutableLoader loader(data.data());
+    ExecutableLoader loader((const u8 *)gamefile.data);
 
     loader.SetLibraryLoader([](const char* library) -> HMODULE {
         // zpl_printf("[info] library: %s\n", library);
@@ -149,12 +128,10 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     });
 
     loader.LoadIntoModule(base);
+    zpl_file_free_contents(&gamefile);
 
     // store entry
     auto entry_point = static_cast<void(*)()>(loader.GetEP());
-
-    // TODO: set hooking memory offset
-    // set_base_offset(reinterpret_cast<uintptr_t>(base));
 
     // invoke original entry point
     entry_point();

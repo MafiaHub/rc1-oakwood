@@ -8,3 +8,5 @@ Bin
 Build
 Vendors/Cef
 Tools/oakgen.exe
+Tools/premake/cache
+*.code-workspace
