@@ -26,7 +26,7 @@
 //#include "Engine/DirectHook.hpp"
 
 namespace MafiaSDK {
-	class C_Actor;
+    class C_Actor;
 }
 
 #include "Game/ai_action_manager.hpp"

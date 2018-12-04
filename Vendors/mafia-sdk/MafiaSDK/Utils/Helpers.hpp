@@ -18,15 +18,15 @@
 class S_GameItem
 {
 public:
-	int		weaponId;
-	int		ammoLoaded;
-	int		ammoHidden;
-	int		_unk;
+    int		weaponId;
+    int		ammoLoaded;
+    int		ammoHidden;
+    int		_unk;
 };
 
 class G_Inventory
 {
 public:
-	S_GameItem items[8];
+    S_GameItem items[8];
 };
 #endif

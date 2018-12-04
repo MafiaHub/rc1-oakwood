@@ -137,3 +137,13 @@ static std::string ConvertColoredString(std::string text) {
     }
     return output.str();
 }
+
+#include <iterator>
+
+static std::vector<std::string> SplitStringByNewline(const std::string &subject)
+{
+    std::istringstream ss{subject};
+    using StrIt = std::istream_iterator<std::string>;
+    std::vector<std::string> container{StrIt{ss}, StrIt{}};
+    return container;
+}

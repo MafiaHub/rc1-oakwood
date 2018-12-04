@@ -1,5 +1,6 @@
 @echo off
 
+set op=%CD%
 cd %~dp0
 
 pushd ..
@@ -21,3 +22,5 @@ echo.
 popd
 
 node generate_lua_bindings.js
+
+cd %op%

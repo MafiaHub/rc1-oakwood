@@ -4,7 +4,6 @@
 
 /* system libraries */
 #include "shellapi.h" // CommandLineToArgvW
-#include <regex>
 #include <string>
 
 #include "settings.h"
@@ -14,21 +13,14 @@ const char *launcher_localpath();
 int launcher_abort(const char *msg);
 int launcher_gameinit(std::string localpath, std::string gamepath);
 
+/* small local helper */
+#define concat(local, path) (local + "/" + path).c_str()
 #define json_apply(OBJ, VAR, NAME, STR, DEF, CAST)           \
     do {                                                     \
         zpl_json_object *NAME;                               \
         zpl_json_find(OBJ, #NAME, false, &NAME);             \
         VAR = (CAST)((NAME && NAME->STR) ? NAME->STR : DEF); \
     } while (0)
-
-void replaceAll(std::string &str, const std::string &from, const std::string &to) {
-    if (from.empty()) return;
-    size_t start_pos = 0;
-    while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-    }
-}
 
 /* entry function */
 #if defined(ZPL_SYSTEM_WINDOWS)
@@ -48,9 +40,6 @@ int main()
     }
 #endif
 
-/* small local helper */
-#define concat(local, path) (local + "/" + path).c_str()
-
     std::string localpath = launcher_localpath();
     std::string gamepath;
 
@@ -59,7 +48,7 @@ int main()
     auto prevdir = localpath.find("\\..\\");
     if (prevdir != std::string::npos) {
         auto first = localpath.substr(0, localpath.find_last_of("\\", prevdir - 1));
-        auto last  = localpath.substr(prevdir + 4);
+        auto last = localpath.substr(prevdir + 4);
         localpath = first + "\\" + last;
     }
 
@@ -124,18 +113,13 @@ int main()
 
     zpl_printf("[info] gamepath: %s\n", gamepath.c_str());
     if (!zpl_file_exists(concat(gamepath, "Game.exe"))) {
-        return launcher_abort(("Cannot find a game executable by given path:\n" + gamepath + "\n\n Please check your path and try again!")
-                              .c_str());
+        return launcher_abort(("Cannot find a game executable by given path:\n" + gamepath + "\n\n Please check your path and try again!").c_str());
     }
 
 #if defined(ZPL_SYSTEM_WINDOWS)
     { /* working directory, and library paths */
-        auto addDllDirectory =
-        (decltype(&AddDllDirectory))GetProcAddress(GetModuleHandle(L"kernel32.dll"),
-                                                   "AddDllDirectory");
-        auto setDefaultDllDirectories =
-        (decltype(&SetDefaultDllDirectories))GetProcAddress(GetModuleHandle(L"kernel32.dll"),
-                                                            "SetDefaultDllDirectories");
+        auto addDllDirectory = (decltype(&AddDllDirectory))GetProcAddress(GetModuleHandle(L"kernel32.dll"), "AddDllDirectory");
+        auto setDefaultDllDirectories = (decltype(&SetDefaultDllDirectories))GetProcAddress(GetModuleHandle(L"kernel32.dll"), "SetDefaultDllDirectories");
 
         if (addDllDirectory && setDefaultDllDirectories) {
             setDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_USER_DIRS);
