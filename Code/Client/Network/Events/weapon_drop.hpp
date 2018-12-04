@@ -32,7 +32,7 @@ inline auto drop_entityremove(librg_event* evnt) -> void {
 }
  
 inline auto drop_frame_init(MafiaSDK::C_Human* _this, MafiaSDK::C_Drop_In_Weapon* drop, char* model_name) -> void {
-    if (local_player.ped == _this) {
+    if (get_local_ped() == _this) {
         auto item = (inventory_item*)&drop->GetInterface()->DropItem;
         local_player_weapondrop(item, model_name);
         mod_log(("Dropping gun: " + std::string(model_name)).c_str());
@@ -50,15 +50,14 @@ inline auto drop_game_tick(mafia_weapon_drop* drop) -> void {
 inline auto drop_on_pickup(MafiaSDK::C_Drop_In_Weapon* drop) {
 
     for (u32 i = 0; i < network_context.max_entities; i++) {
-
-        // skip local player 
-        if (i == local_player.entity.id) continue;
+        if (i == local_player.entity_id) continue;
         librg_entity *entity = librg_entity_fetch(&network_context, i);
         if (!entity || entity->type != TYPE_WEAPONDROP) continue;
 
         auto mafia_drop = (mafia_weapon_drop*)entity->user_data;
         if (mafia_drop->weapon_drop_actor == drop) {
             local_player_weaponpickup(entity);
+            break;
         }
     }
 }

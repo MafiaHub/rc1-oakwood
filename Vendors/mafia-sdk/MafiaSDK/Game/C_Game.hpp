@@ -28,9 +28,10 @@ namespace MafiaSDK
             ScoreEnabled = 0x5B9FA0, 
             SetScore = 0x5B9FE0,
             AddTemporaryActor = 0x5A77C0,
-            RemoveTemporaryActor = 0x5A79A0,
+            RemoveTemporaryActor = 0x5A79A0,//
             SetCamerRotRepair = 0x005BA010,
-            Init = 0x005A0810
+            Init = 0x005A0810,
+            SetHuman = 0x005A07E0,
         };
     };
 
@@ -113,7 +114,6 @@ namespace MafiaSDK
             //Respwn no camera unbind meybe (TODO)
             //No delete actor and anims
             //BYTE noDeleteActors[] = "\xC7\x86\x0C\x04\x00\x00";*/
-
             /*MemoryPatcher::InstallNopPatch(0x00572F3B, 10);
             MemoryPatcher::InstallNopPatch(0x0057838F, 10);
             MemoryPatcher::InstallNopPatch(0x0057AB8C, 10);
@@ -278,6 +278,18 @@ namespace MafiaSDK
         void SetLocalPlayer(C_Player* player)
         {
             this->GetInterface()->mLocalPlayer = player;
+        }
+
+        void SetHuman(C_Actor* actor)
+        {
+            unsigned long funcAddress = C_Game_Enum::FunctionAddresses::SetHuman;
+
+            __asm
+            {
+                push actor
+                mov ecx, this
+                call funcAddress
+            }
         }
 
         void AddTemporaryActor(C_Actor* actor)

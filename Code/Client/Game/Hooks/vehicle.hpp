@@ -188,22 +188,6 @@ namespace hooks
 
         return result;
     }
-
-    //----------------------------------------------
-    //~C_Car::C_Car
-    //----------------------------------------------
-    /*typedef void(__thiscall* C_Car_Destructor_t)(void* _this);
-    C_Car_Destructor_t car_destructor_original = nullptr;
-
-    void __fastcall C_car_Destructor(void* _this,void* edx) {
-
-        DWORD car_ptr = 
-        __asm {
-
-        }
-        local_player_car_destruct(_this);
-        car_destructor_original(_this);
-    }*/
 }
 
 BOOL streamed_udate = FALSE;
@@ -308,8 +292,4 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
     hooks::c_car_carexplosion_original = reinterpret_cast<hooks::C_car_CarExplosion_t>(
         DetourFunction((PBYTE)0x00421D60, (PBYTE)&hooks::C_car_CarExplosion)
     );
-
-    /*hooks::car_destructor_original = reinterpret_cast<hooks::C_Car_Destructor_t>(
-        DetourFunction((PBYTE)0x0041BCB0, (PBYTE)&hooks::C_car_Destructor)
-    );*/
 }

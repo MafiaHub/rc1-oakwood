@@ -35,26 +35,31 @@ auto player_spawn(zpl_vec3 position,
 
     new_ped->SetShooting(1.0f);
     new_ped->SetActive(1);
-  
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
     if (is_local_player) {
-        MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
-        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetCar(NULL);
-        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
-        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
-        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
-
-        if (local_player.ped) {
-            player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
+        
+        auto game = MafiaSDK::GetMission()->GetGame();
+        if (game) {
+            game->GetCamera()->SetCar(NULL);
+            game->GetCamera()->SetMode(true, 1);
+            game->GetCamera()->SetPlayer(new_ped);
+            game->SetLocalPlayer(new_ped);
+            //game->SetHuman(new_ped);
         }
 
-        local_player.dead = false;
-        local_player.ped = new_ped;
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
 
-        auto local_userdata = (mafia_player*)local_player.entity.user_data;
-        local_userdata->ped = new_ped;
-        strcpy(local_userdata->name, GlobalConfig.username.c_str());
+        auto player = get_local_player();
+        if (player) {
+            local_player.dead = false;
+            if (player->ped) {
+                player_despawn(player->ped);
+            }
+
+            player->ped = new_ped;
+            strcpy(player->name, GlobalConfig.username.c_str());
+        }
     }
 
     new_ped->GetInterface()->humanObject.health = health;
