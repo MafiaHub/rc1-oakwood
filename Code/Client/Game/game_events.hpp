@@ -50,6 +50,11 @@ std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
 
 auto interpolate_cam(f64 delta_time) {
     auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
+
+    cam->SetCar(nullptr);
+    cam->SetPlayer(nullptr);
+    cam->Unlock();
+
     auto from = camera_follow_points.at(transition_idx);
     auto to = camera_follow_points.at(transition_idx + 1);
 
