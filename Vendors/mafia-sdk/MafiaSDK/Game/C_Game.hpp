@@ -100,9 +100,6 @@ namespace MafiaSDK
 
         inline void PatchCustomPlayerRespawning()
         {
-            BYTE respawnPlayer2[] = "\xE9\xAD\x82\x00\x00";
-            MemoryPatcher::PatchAddress(0x004716ED, respawnPlayer2, sizeof(respawnPlayer2));
-
             // Water sink respawn
             BYTE respawnWater[] = "\xE9\xC2\x00\x00\x00";
             MemoryPatcher::PatchAddress(0x005A5290, respawnWater, sizeof(respawnWater));
@@ -115,12 +112,13 @@ namespace MafiaSDK
 
             //Respwn no camera unbind meybe (TODO)
             //No delete actor and anims
-            //BYTE noDeleteActors[] = "\xC7\x86\x0C\x04\x00\x00";
-            MemoryPatcher::InstallNopPatch(0x00572F3B, 10);
+            //BYTE noDeleteActors[] = "\xC7\x86\x0C\x04\x00\x00";*/
+
+            /*MemoryPatcher::InstallNopPatch(0x00572F3B, 10);
             MemoryPatcher::InstallNopPatch(0x0057838F, 10);
             MemoryPatcher::InstallNopPatch(0x0057AB8C, 10);
             MemoryPatcher::InstallNopPatch(0x0057ACD1, 10);
-            MemoryPatcher::InstallNopPatch(0x0058A780, 10);
+            MemoryPatcher::InstallNopPatch(0x0058A780, 10);*/
         }
     };
 

@@ -53,6 +53,20 @@ auto player_inventory_send() {
 * todo add reason killer and so one ...
 */
 inline auto local_player_died() {
+
+    if (local_player.dead) return;
+
+    if (!local_player.dead) 
+        local_player.dead = true;
+    
+    local_player.ped = nullptr;
+    
+    auto player_ent = librg_entity_fetch(&network_context, local_player.entity.id);
+    if (player_ent && player_ent->user_data) {
+        auto player = (mafia_player*)(player_ent->user_data);
+        player->ped = nullptr;
+    }
+
     librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
 }
 
@@ -174,6 +188,26 @@ inline auto local_player_hijack(DWORD car, int seat) {
         librg_data_wu32(&data, vehicle_ent->id);
         librg_data_wi32(&data, seat);
     });
+}
+
+inline auto local_player_remove_temporary_actor(void* base) {
+
+    auto player_ent = get_player_from_base(base);
+    if (player_ent) {
+        printf("~C_Actor remove for player :%d\n", player_ent->id);
+        auto player = (mafia_player*)player_ent->user_data;
+        player->ped = nullptr;
+    }
+
+    auto vehicle_ent = get_vehicle_from_base(base);
+    if (vehicle_ent) {
+        printf("~C_Actor remove for vehicle :%d\n", vehicle_ent->id);
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+        vehicle->car = nullptr;
+    }
+}
+
+inline auto local_player_car_destruct(void* base) {
 }
 
 #include "Game/Hooks/local_player.hpp"

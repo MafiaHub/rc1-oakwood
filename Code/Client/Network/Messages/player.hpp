@@ -50,18 +50,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
             0,
             false);
 
-        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
-        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
-        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
-
-        if (local_player.ped) {
-            player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
-        }
-
-        local_player.dead = false;
-        local_player.ped = new_ped;
         strncpy(((mafia_player*)(local_player.entity.user_data))->model, model, 32);
-
         player_inventory_send();
     }
 });
@@ -89,9 +78,6 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
         true, 
         0,
         false);
-
-    local_player.ped = ped;
-    MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(ped);
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
@@ -300,17 +286,6 @@ librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_mess
 
         if (player) {
             librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
-        }
-    }
-});
-
-librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
-    auto entity_id = librg_data_rent(msg->data);
-    auto entity = librg_entity_fetch(&network_context, entity_id);
-    if (entity && entity->user_data) {
-        auto player = (mafia_player*)(entity->user_data);
-        if (player) {
-            //player->ped->Intern_ForceDeath();
         }
     }
 });

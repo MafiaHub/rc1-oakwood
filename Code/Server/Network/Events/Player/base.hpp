@@ -49,6 +49,7 @@ inline auto player_connection_disconnect(librg_event* evnt) -> void {
                 for (int i = 0; i < 4; i++) {
                     if (vehicle->seats[i] == evnt->entity->id) {
                         vehicle->seats[i] = -1;
+                        player->vehicle_id = -1;
 
                         if (i == 0) {
                             auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position, evnt->entity->id);

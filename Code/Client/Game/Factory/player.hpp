@@ -16,9 +16,10 @@ auto player_spawn(zpl_vec3 position,
     auto player_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
     player_model->SetName("testing_player");
     player_model->SetScale(default_scale);
+    player_model->SetWorldPos(default_pos);
+
     MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL);
     player_model->Update();
-    player_model->SetWorldPos(default_pos);
     
     MafiaSDK::C_Player *new_ped = nullptr;
 
@@ -34,15 +35,22 @@ auto player_spawn(zpl_vec3 position,
 
     new_ped->SetShooting(1.0f);
     new_ped->SetActive(1);
+  
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
     if (is_local_player) {
         MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
-        auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
-        if (camera) {
-            camera->SetCar(NULL);
-            camera->SetPlayer(new_ped);
+        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetCar(NULL);
+        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetMode(true, 1);
+        MafiaSDK::GetMission()->GetGame()->GetCamera()->SetPlayer(new_ped);
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
+
+        if (local_player.ped) {
+            player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(local_player.ped));
         }
+
+        local_player.dead = false;
+        local_player.ped = new_ped;
 
         auto local_userdata = (mafia_player*)local_player.entity.user_data;
         local_userdata->ped = new_ped;

@@ -113,10 +113,9 @@ namespace hooks
             local_player_hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, attacker, player_part);
             auto player_int = local_player.ped->GetInterface();
             bool is_alive = player_int->humanObject.entity.isActive;
-            if (!is_alive && !local_player.dead) {
+
+            if (!is_alive)
                 local_player_died();
-                local_player.dead = true;
-            }
         }
         
         return ret_val;
@@ -182,6 +181,38 @@ namespace hooks
         }
     }
 
+    //----------------------
+    // Sink & Fall hook
+    //----------------------
+    void Player__OnSink()
+    {
+        local_player_died();
+    }
+
+    __declspec(naked) void PlayerOnSink() {
+        __asm {
+            pushad
+                call Player__OnSink
+            popad
+
+            // 0x0057BAB1
+            mov eax, 0x005A545D
+            jmp eax
+        }
+    }
+
+    __declspec(naked) void PlayerFall() {
+        __asm {
+            pushad
+                call Player__OnSink
+            popad
+
+            // 0x0057BAB1
+            mov eax, 0x0057A7F8
+            jmp eax
+        }
+    }
+
     //----------------------------------------------
     //C_human::Use_Actor((C_actor *, int, int, int))
     //----------------------------------------------
@@ -217,6 +248,18 @@ namespace hooks
 
         return human_do_throw_cocot_from_car_original(_this, car, seat);
     }
+
+    //----------------------------------------------
+    //~C_Human::C_Human
+    //----------------------------------------------
+    typedef void(__thiscall* RemoveTemporaryActor_t)(void* _this, void* actor);
+    RemoveTemporaryActor_t remove_temporary_actor_original = nullptr;
+
+    void __fastcall RemoveTemporaryActor(void* _this, DWORD edx, void* actor) {
+        
+        local_player_remove_temporary_actor(actor);
+        remove_temporary_actor_original(_this, actor);
+    }
 }
 
 inline auto local_player_init() {
@@ -226,6 +269,12 @@ inline auto local_player_init() {
     MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
     MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);
     MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&hooks::ThrowGrenade);
+    //MemoryPatcher::InstallJmpHook(0x0057A7CB, (DWORD)&hooks::PlayerFall);
+    MemoryPatcher::InstallJmpHook(0x005A543B, (DWORD)&hooks::PlayerOnSink);
+
+    hooks::remove_temporary_actor_original = reinterpret_cast<hooks::RemoveTemporaryActor_t>(
+        DetourFunction((PBYTE)0x005A79A0, (PBYTE)&hooks::RemoveTemporaryActor)
+    );
 
     hooks::select_by_id_original = reinterpret_cast<hooks::G_Inventory_SelectByID_t>(
         DetourFunction((PBYTE)0x006081D0, (PBYTE)&hooks::SelectByID)

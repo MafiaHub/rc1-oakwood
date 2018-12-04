@@ -320,7 +320,6 @@ inline auto vehicle_entityremove(librg_event* evnt) {
     if (vehicle && vehicle->car) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle_despawn(vehicle);
-        zpl_zero_item(vehicle);
         evnt->entity->user_data = nullptr;
     }
 }
@@ -360,7 +359,7 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     // NOTE(DavoSK): check for vehicle tyre change
     // we will send flat tyres and health changes only when they changes 
     // also we sending only particular flag for now only is tyre is flat
-    constexpr DWORD FLAT_TYRE_FLAG = 0x80000000;
+    /*constexpr DWORD FLAT_TYRE_FLAG = 0x80000000;
 
     if (vehicle->car) {
         for (int i = 0; i < 4; i++) {
@@ -389,7 +388,7 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
                 mafia_tyre->health = tyre_health;
             }
         }
-    }
+    }*/
 }
 
 #include "Game/Hooks/vehicle.hpp"

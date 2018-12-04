@@ -3,21 +3,21 @@
 auto vehicle_despawn(mafia_vehicle* vehicle) -> void {
     if(vehicle && vehicle->car) {
         for (int i = 0; i < 4; i++) {
-            auto seat = vehicle->seats[i];
-            if (seat != -1) {
-                auto player_ent = librg_entity_fetch(&network_context, seat);
-                if (player_ent && player_ent->user_data) {
+            
+            if (vehicle->seats[i] != -1) {
+                auto player_ent = librg_entity_fetch(&network_context, vehicle->seats[i]);
+                if (player_ent && player_ent->user_data) { 
                     auto player = (mafia_player*)player_ent->user_data;
-                    if(player->ped)
+                    if (player->ped) {
                         player->ped->Intern_FromCar();
+                    }
+                    player->vehicle_id = -1;
+                    vehicle->seats[i] = -1;
                 }
             }
         }
 
-        if (vehicle->is_car_in_radar)
-            MafiaSDK::GetIndicators()->RadarRemoveCar(vehicle->car);
-            
         MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
-        vehicle->car = nullptr;
+        //vehicle->car = nullptr;
     }
 }

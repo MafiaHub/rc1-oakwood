@@ -43,7 +43,7 @@ auto vehicle_spawn(zpl_vec3 position,
     veh_inter->engine_rpm		= spawn_struct->engine_rpm;
 
     // NOTE(DavoSK): Update tyres
-    for (int i = 0; i < 4; i++) {
+    /*for (int i = 0; i < 4; i++) {
         auto mafia_tyre = spawn_struct->tyres[i];
         auto tyre = new_car->GetCarTyre(i);
 
@@ -82,7 +82,7 @@ auto vehicle_spawn(zpl_vec3 position,
         if (spawn_struct->destroyed_components[i]) {
             new_car->RemoveComponent(i);
         }
-    }
+    }*/
 
     if (spawn_struct->is_car_in_radar)
         MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);

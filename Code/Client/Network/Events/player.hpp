@@ -189,8 +189,29 @@ inline auto player_entityremove(librg_event* evnt) -> void {
 
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
+
+        if (player->vehicle_id != -1) {
+            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+            if (vehicle_ent && vehicle_ent->user_data) {
+                auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+                for (int i = 0; i < 4; i++) {
+                    if (vehicle->seats[i] == evnt->entity->id) {
+
+                        vehicle->seats[i] = -1;
+                        player->vehicle_id = -1;
+
+                        if (player->ped) {
+                            player->ped->Intern_FromCar();
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
         player_despawn(player->ped);
-        zpl_zero_item(player);
         evnt->entity->user_data = nullptr;
     }
 }
