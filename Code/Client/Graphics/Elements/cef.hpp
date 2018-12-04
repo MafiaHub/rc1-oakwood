@@ -335,7 +335,6 @@ namespace cef {
     object* browser_create(IDirect3DDevice9* device, const char *url, int w, int h, int zindex) {
 
         object* new_browser = new object;
-        HWND win_id = (HWND)MafiaSDK::GetMainWindow();
 
         CefWindowInfo window_info;
         window_info.SetAsWindowless(NULL);

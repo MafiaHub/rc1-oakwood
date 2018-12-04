@@ -25,12 +25,12 @@ namespace MafiaSDK
 
     HWND GetMainWindow() 
     {
-        return *(HWND*)(MAIN_WINDOW);
+        return GetActiveWindow();
     }
 
 	HWND GetChildWindow() 
     {
-        return *(HWND*)(CHILD_WINDOW);
+        return GetActiveWindow();
     }
 
     bool IsWindowFocused() 
