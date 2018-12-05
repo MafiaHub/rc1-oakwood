@@ -2,8 +2,9 @@
 
 inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
-    librg_data_rptr(evnt->data, &vehicle->rotation, sizeof(zpl_vec3));
-    librg_data_rptr(evnt->data, &vehicle->rotation_second, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, &vehicle->rot_right, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
     vehicle->engine_rpm			= librg_data_rf32(evnt->data);
     vehicle->engine_health 		= librg_data_rf32(evnt->data);
@@ -21,8 +22,9 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
 
 inline auto vehicle_entityupdate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
-    librg_data_wptr(evnt->data, &vehicle->rotation, sizeof(zpl_vec3));
-    librg_data_wptr(evnt->data, &vehicle->rotation_second, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_right, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
     librg_data_wf32(evnt->data, vehicle->engine_rpm);
     librg_data_wf32(evnt->data, vehicle->engine_health);
@@ -40,8 +42,9 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
 
 inline auto vehicle_entitycreate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
-    librg_data_wptr(evnt->data, &vehicle->rotation, sizeof(zpl_vec3));
-    librg_data_wptr(evnt->data, &vehicle->rotation_second, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_right, sizeof(zpl_vec3));
+    librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &evnt->entity->position, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, vehicle->model, sizeof(char) * 32);

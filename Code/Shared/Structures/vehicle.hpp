@@ -45,8 +45,9 @@ struct mafia_vehicle {
 	float engine_rpm;
 	float accelerating;
 	u8 is_car_in_radar;
-    zpl_vec3 rotation;
-	zpl_vec3 rotation_second;
+    zpl_vec3 rot_forward;
+	zpl_vec3 rot_right;
+    zpl_vec3 rot_up;
 	zpl_vec3 speed;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
@@ -74,7 +75,7 @@ struct mafia_vehicle {
 			f32  lastAlpha;
 			f64  startTime;
 			f64  finishTime;
-		} rot, rot_second;
+		} rot_forward, rot_right, rot_up;
 
 		u32 forceLocalZCounter;
 	} interp;

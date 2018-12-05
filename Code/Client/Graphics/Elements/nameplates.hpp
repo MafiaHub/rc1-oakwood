@@ -81,12 +81,6 @@ namespace nameplates {
                     zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(camera_pos));
                     auto dist = zpl_vec3_mag(vec);
                     auto dist_sq = zpl_sqrt(dist);
-
-                   /* constexpr auto orig_font_size = 2.0f;
-                    auto font_size = orig_font_size / dist_sq;
-                    if (font_size > orig_font_size)
-                    font_size = orig_font_size;
-                    */
                     auto distance_scale = (1.0f / dist_sq);
                     auto size = graphics::get_text_size(nameplate_font, player->name);
                     size.cx = size.cx * distance_scale;

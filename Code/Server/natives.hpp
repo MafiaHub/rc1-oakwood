@@ -273,7 +273,7 @@ extern "C" {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
         
         auto vehicle = (mafia_vehicle*)entity->user_data;
-        vehicle->rotation = dir;
+        vehicle->rot_forward = dir;
 
         librg_send(&network_context, NETWORK_VEHICLE_SET_DIR, data, {
             librg_data_went(&data, entity->id);

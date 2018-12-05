@@ -23,8 +23,10 @@ auto vehicle_spawn(zpl_vec3 position,
 
     veh_inter->health           = spawn_struct->health;
     veh_inter->position			= EXPAND_VEC(position);
-    veh_inter->rotation			= EXPAND_VEC(spawn_struct->rotation);
-    veh_inter->rotation_second	= EXPAND_VEC(spawn_struct->rotation_second);
+    veh_inter->rot_forward		= EXPAND_VEC(spawn_struct->rot_forward);
+    veh_inter->rot_right	    = EXPAND_VEC(spawn_struct->rot_right);
+    veh_inter->rot_up           = EXPAND_VEC(spawn_struct->rot_up);
+
     veh_inter->speed            = EXPAND_VEC(spawn_struct->speed);
     veh_inter->engine_health    = spawn_struct->engine_health;
     veh_inter->health           = spawn_struct->health;
@@ -85,7 +87,7 @@ auto vehicle_spawn(zpl_vec3 position,
     }*/
 
     if (spawn_struct->is_car_in_radar)
-        MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
+        MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFFFFFF);
 
     return new_car;
 }

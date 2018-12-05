@@ -50,38 +50,39 @@ std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
 
 auto interpolate_cam(f64 delta_time) {
     auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
+    if (cam) {
+        cam->SetCar(nullptr);
+        cam->SetPlayer(nullptr);
+        cam->Unlock();
 
-    cam->SetCar(nullptr);
-    cam->SetPlayer(nullptr);
-    cam->Unlock();
+        auto from = camera_follow_points.at(transition_idx);
+        auto to = camera_follow_points.at(transition_idx + 1);
 
-    auto from = camera_follow_points.at(transition_idx);
-    auto to = camera_follow_points.at(transition_idx + 1);
+        if (passed_time > 0.8f && passed_time < 0.82f) {
+            MafiaSDK::GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+        }
 
-    if (passed_time > 0.8f && passed_time < 0.82f) {
-        MafiaSDK::GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+        if (passed_time > 1.0f) {		
+            if (transition_idx + 2 > camera_follow_points.size() - 1)
+                transition_idx = 0;
+            else 
+                transition_idx += 2;
+
+            MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+            passed_time = 0.0f;
+        }
+
+        zpl_vec3 dest_pos;
+        zpl_vec3_lerp(&dest_pos, from.first, to.first, passed_time);
+
+        zpl_vec3 dest_rot;
+        zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
+
+        S_vector pos = EXPAND_VEC(dest_pos);
+        S_vector rot = EXPAND_VEC(dest_rot);
+        cam->LockAt(pos, rot);
+        passed_time += delta_time * 0.11f;
     }
-
-    if (passed_time > 1.0f) {		
-        if (transition_idx + 2 > camera_follow_points.size() - 1)
-            transition_idx = 0;
-        else 
-            transition_idx += 2;
-
-        MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
-        passed_time = 0.0f;
-    }
-
-    zpl_vec3 dest_pos;
-    zpl_vec3_lerp(&dest_pos, from.first, to.first, passed_time);
-
-    zpl_vec3 dest_rot;
-    zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
-
-    S_vector pos = EXPAND_VEC(dest_pos);
-    S_vector rot = EXPAND_VEC(dest_rot);
-    cam->LockAt(pos, rot);
-    passed_time += delta_time * 0.11f;
 }
 
 f64 delta_time = 0.0f;

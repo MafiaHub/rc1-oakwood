@@ -380,7 +380,7 @@ zpl_vec3 Vehicle::GetDirection()
 {
     auto vehicle = (mafia_vehicle*)entity->user_data;
     if (vehicle) {
-        return vehicle->rotation;
+        return vehicle->rot_forward;
     } 
 
     return  { 0.0f, 0.0f, 0.0f };
@@ -394,6 +394,6 @@ void Vehicle::SetHeadingRotation(float angle)
 
 float Vehicle::GetHeadingRotation()
 {
-    auto angle = DirToRotation180(vehicle->rotation);
+    auto angle = DirToRotation180(vehicle->rot_forward);
     return angle;
 }
