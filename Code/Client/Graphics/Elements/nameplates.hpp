@@ -36,7 +36,7 @@ namespace nameplates {
     }
 
     inline void init(IDirect3DDevice9* device) {
-        nameplate_font = graphics::create_font(device, "tahoma-bold", 22, true);
+        nameplate_font = graphics::create_font(device, "tahoma-bold", 36, true);
     }
 
     /*
@@ -82,18 +82,20 @@ namespace nameplates {
                     auto dist = zpl_vec3_mag(vec);
                     auto dist_sq = zpl_sqrt(dist);
 
-                    constexpr auto orig_font_size = 30.0f;
+                   /* constexpr auto orig_font_size = 2.0f;
                     auto font_size = orig_font_size / dist_sq;
                     if (font_size > orig_font_size)
-                        font_size = orig_font_size;
-
-                    auto size = graphics::get_text_width(nameplate_font, player->name) * (1 / dist_sq);
-                    auto render_x = screen.x;
-                    auto render_y = screen.y;
-                    graphics::draw_text(nameplate_font, player->name, screen.x - (size / 2), screen.y, 1 / dist_sq, 0xFFFFFFFF, true);
+                    font_size = orig_font_size;
+                    */
+                    auto distance_scale = (1.0f / dist_sq);
+                    auto size = graphics::get_text_size(nameplate_font, player->name);
+                    size.cx = size.cx * distance_scale;
+                    
+                    graphics::draw_text(nameplate_font, player->name, screen.x - (size.cx / 2), screen.y, distance_scale, 0xFFFFFFFF, true);
                     
                     constexpr auto health_width = 135.0f;
                     constexpr auto health_height = 15.0f;
+                    constexpr auto health_gap = 20.0f;
 
                     auto scaled_width = health_width / dist_sq;
                     auto scaled_height = health_height / dist_sq;
@@ -104,8 +106,7 @@ namespace nameplates {
                     if (scaled_height > health_height)
                         scaled_height = health_height;
 
-                    screen.y += scaled_height + 5.0f;
-                    render_x = screen.x - (scaled_width / 2);
+                    screen.y += scaled_height + (health_gap * distance_scale);
 
                     zpl_vec3 health_color_min = { 255.0f, 0.0f, 0.0f };
                     zpl_vec3 health_color_max = { 0.0f, 255.0f, 0.0f };
@@ -117,9 +118,10 @@ namespace nameplates {
                     DWORD final_color = mod_vec3_to_color(calculated_color);
                     DWORD final_bg_color = mod_vec3_to_color(background_color);
 
-                    float width = (player_health * scaled_width) / 200.0f;
-                    graphics::draw_box(device, render_x - 2.0f, screen.y - 2.0f, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
-                    graphics::draw_box(device, render_x, screen.y, width, scaled_height, final_color);
+                    auto width = (player_health * scaled_width) / 200.0f;
+                    auto healthbar_x = screen.x - (scaled_width / 2);
+                    graphics::draw_box(device, healthbar_x - 2.0f, screen.y - 2.0f, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
+                    graphics::draw_box(device, healthbar_x, screen.y, width, scaled_height, final_color);
                 }
             }
         });

@@ -44,16 +44,16 @@ namespace graphics {
         return to_create;
     }
 
-    inline auto get_text_width(ID3DXFont* font, const char* text) -> int {
+    inline auto get_text_size(ID3DXFont *font, const char *text)-> SIZE {
 
         if (font) {
             HDC dc = font->GetDC();
             SIZE size;
             GetTextExtentPoint32(dc, text, strlen(text), &size);
-            return size.cx;
+            return size;
         }
 
-        return 0;
+        return {};
     }
 
     struct Vertex2D {
