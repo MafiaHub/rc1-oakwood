@@ -53,10 +53,10 @@ namespace MafiaSDK
         PADDING(C_Vehicle_Interface, _pad17, 0x3);
         float fuel;
         PADDING(C_Vehicle_Interface, _pad18, 0x8);
-        S_vector rotation;
-        PADDING(C_Vehicle_Interface, _pad19, 0xC);
-        S_vector rotation_second;
-        PADDING(C_Vehicle_Interface, _pad20, 0x1330);
+        S_vector rot_forward;
+        S_vector rot_right;
+        S_vector rot_up;
+        PADDING(C_Vehicle_Interface, _pad21, 0x1330);
         S_vector speed;
     };
 
