@@ -113,94 +113,92 @@ void car_target_position_set(mafia_vehicle *car, zpl_vec3 targetPos, f32 interpT
 
 void car_target_rotation_update(mafia_vehicle *car) {
 
-    //Dot not overinterpolate when we are done :)
-    if (car->interp.rot_forward.finishTime == 0 && 
-        car->interp.rot_right.finishTime == 0 && 
-        car->interp.rot_up.finishTime == 0) {
-        return;
-    }
-
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-
+    
     // Grab the current game rotation (in degrees)
     zpl_vec3 rotation_forward   = EXPAND_VEC(vehicle_int->rot_forward);
     zpl_vec3 rotation_right     = EXPAND_VEC(vehicle_int->rot_right);
     zpl_vec3 rotation_up        = EXPAND_VEC(vehicle_int->rot_up);
 
     //-------------- [FORWARD VEC INTERPOLATION] --------------
+    if (car->interp.rot_forward.finishTime > 0.0f) {
 
-    // Get the factor of time spent from the interpolation start to the current time.
-    f64 currentTime = zpl_time_now();
-    f32 alpha = zpl_unlerp(currentTime, car->interp.rot_forward.startTime, car->interp.rot_forward.finishTime);
+        // Get the factor of time spent from the interpolation start to the current time.
+        f64 currentTime = zpl_time_now();
+        f32 alpha = zpl_unlerp(currentTime, car->interp.rot_forward.startTime, car->interp.rot_forward.finishTime);
 
-    // Don't let it to overcompensate the error
-    alpha = zpl_clamp(0.0f, alpha, 1.0f);
+        // Don't let it to overcompensate the error
+        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
 
-    // Get the current error portion to compensate
-    f32 currentAlpha = alpha - car->interp.rot_forward.lastAlpha;
-    car->interp.rot_forward.lastAlpha = alpha;
+        // Get the current error portion to compensate
+        f32 currentAlpha = alpha - car->interp.rot_forward.lastAlpha;
+        car->interp.rot_forward.lastAlpha = alpha;
 
-    zpl_vec3 compensation;
-    zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), car->interp.rot_forward.error, currentAlpha);
+        zpl_vec3 compensation;
+        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), car->interp.rot_forward.error, currentAlpha);
 
-    // If we finished compensating the error, finish it for the next pulse
-    if (alpha == 1.0f) {
-        car->interp.rot_forward.finishTime = 0;
+        // If we finished compensating the error, finish it for the next pulse
+        if (alpha == 1.0f) {
+            car->interp.rot_forward.finishTime = 0;
+        }
+
+        zpl_vec3 compensated;
+        zpl_vec3_add(&compensated, rotation_forward, compensation);
+        vehicle_int->rot_forward = EXPAND_VEC(compensated);
     }
-
-    zpl_vec3 compensated;
-    zpl_vec3_add(&compensated, rotation_forward, compensation);
-    vehicle_int->rot_forward = EXPAND_VEC(compensated);
 
     //-------------- [RIGHT VEC INTERPOLATION] --------------
+    if (car->interp.rot_right.finishTime > 0.0f) {
 
-    // Get the factor of time spent from the interpolation start to the current time.
-    currentTime = zpl_time_now();
-    alpha = zpl_unlerp(currentTime, car->interp.rot_right.startTime, car->interp.rot_right.finishTime);
+        // Get the factor of time spent from the interpolation start to the current time.
+        f64 currentTime = zpl_time_now();
+        f32 alpha = zpl_unlerp(currentTime, car->interp.rot_right.startTime, car->interp.rot_right.finishTime);
 
-    // Don't let it to overcompensate the error
-    alpha = zpl_clamp(0.0f, alpha, 1.0f);
+        // Don't let it to overcompensate the error
+        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
 
-    // Get the current error portion to compensate
-    f32 currentAlphaRight = alpha - car->interp.rot_right.lastAlpha;
-    car->interp.rot_right.lastAlpha = alpha;
+        // Get the current error portion to compensate
+        f32 currentAlphaRight = alpha - car->interp.rot_right.lastAlpha;
+        car->interp.rot_right.lastAlpha = alpha;
 
-    zpl_vec3 compensation_right;
-    zpl_vec3_lerp(&compensation_right, zpl_vec3f_zero(), car->interp.rot_right.error, currentAlphaRight);
+        zpl_vec3 compensation_right;
+        zpl_vec3_lerp(&compensation_right, zpl_vec3f_zero(), car->interp.rot_right.error, currentAlphaRight);
 
-    // If we finished compensating the error, finish it for the next pulse
-    if (alpha == 1.0f) {
-        car->interp.rot_right.finishTime = 0;
+        // If we finished compensating the error, finish it for the next pulse
+        if (alpha == 1.0f) {
+            car->interp.rot_right.finishTime = 0;
+        }
+
+        zpl_vec3 compensated_right;
+        zpl_vec3_add(&compensated_right, rotation_right, compensation_right);
+        vehicle_int->rot_right = EXPAND_VEC(compensated_right);
     }
-
-    zpl_vec3 compensated_right;
-    zpl_vec3_add(&compensated_right, rotation_right, compensation_right);
-    vehicle_int->rot_right = EXPAND_VEC(compensated_right);
 
     //-------------- [UP VEC INTERPOLATION] --------------
+    if (car->interp.rot_up.finishTime > 0.0f) {
+        // Get the factor of time spent from the interpolation start to the current time.
+        f64 currentTime = zpl_time_now();
+        f32 alpha = zpl_unlerp(currentTime, car->interp.rot_up.startTime, car->interp.rot_up.finishTime);
 
-     // Get the factor of time spent from the interpolation start to the current time.
-    currentTime = zpl_time_now();
-    alpha = zpl_unlerp(currentTime, car->interp.rot_up.startTime, car->interp.rot_up.finishTime);
+        // Don't let it to overcompensate the error
+        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
 
-    // Don't let it to overcompensate the error
-    alpha = zpl_clamp(0.0f, alpha, 1.0f);
+        // Get the current error portion to compensate
+        f32 currentAlphaUp = alpha - car->interp.rot_up.lastAlpha;
+        car->interp.rot_up.lastAlpha = alpha;
 
-    // Get the current error portion to compensate
-    f32 currentAlphaUp = alpha - car->interp.rot_up.lastAlpha;
-    car->interp.rot_up.lastAlpha = alpha;
+        zpl_vec3 compensation_up;
+        zpl_vec3_lerp(&compensation_up, zpl_vec3f_zero(), car->interp.rot_up.error, currentAlphaUp);
 
-    zpl_vec3 compensation_up;
-    zpl_vec3_lerp(&compensation_up, zpl_vec3f_zero(), car->interp.rot_up.error, currentAlphaUp);
+        // If we finished compensating the error, finish it for the next pulse
+        if (alpha == 1.0f) {
+            car->interp.rot_up.finishTime = 0;
+        }
 
-    // If we finished compensating the error, finish it for the next pulse
-    if (alpha == 1.0f) {
-        car->interp.rot_up.finishTime = 0;
+        zpl_vec3 compensated_up;
+        zpl_vec3_add(&compensated_up, rotation_up, compensation_up);
+        vehicle_int->rot_up = EXPAND_VEC(compensated_up);
     }
-
-    zpl_vec3 compensated_up;
-    zpl_vec3_add(&compensated_up, rotation_up, compensation_up);
-    vehicle_int->rot_up = EXPAND_VEC(compensated_up);
 }
 
 zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
@@ -234,6 +232,11 @@ void car_target_rotation_set(mafia_vehicle *car,
     // Get the error
     car->interp.rot_forward.error = compute_rotation_offset(target_rot_forward, rotation_forward);
 
+    auto error_mag = zpl_vec3_mag(car->interp.rot_forward.error);
+    if (error_mag > 0.1f) {
+        car->interp.rot_forward.start = target_rot_forward;
+    }
+    
     // Apply the error over 250ms (i.e. 2/5 per 100ms )
     zpl_vec3_mul(&car->interp.rot_forward.error, car->interp.rot_forward.error, zpl_lerp(0.25f, 1.0f, zpl_clamp01(zpl_unlerp(interpTime, 0.1f, 0.4f))));
 
