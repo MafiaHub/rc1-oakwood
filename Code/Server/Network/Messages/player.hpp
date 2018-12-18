@@ -202,3 +202,44 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
         }
     }
 });
+
+librg_network_add(&network_context, NETWORK_PLAYER_USE_DOORS, [](librg_message *msg) {
+    auto sender_ent = librg_entity_find(&network_context, msg->peer);
+    auto door_name_len = librg_data_ru32(msg->data);
+    char door_name[32];
+    librg_data_rptr(msg->data, door_name, door_name_len);
+    door_name[door_name_len] = '\0';
+
+    auto door_state = librg_data_ru32(msg->data);
+    librg_entity* door_ent = nullptr;
+    for (u32 i = 0; i < network_context.max_entities; i++) {
+        librg_entity *entity = librg_entity_fetch(&network_context, i);
+        if (!entity) continue;
+        if (entity->type == TYPE_DOOR) {
+            auto current_door = (mafia_door*)entity->user_data;
+            if(strcmp(current_door->name, door_name) == 0) {
+                door_ent = entity;
+                break;
+            }
+        }     
+    }
+
+    //If doors doesen't exists yet we create new one
+    if (door_ent == nullptr) {
+        auto door_user_data = new mafia_door();
+        memcpy(door_user_data->name, door_name, door_name_len);
+        door_user_data->name[door_name_len] = '\0';
+
+        door_ent = librg_entity_create(&network_context, TYPE_DOOR);
+        door_ent->user_data = door_user_data;
+    }
+
+    librg_entity_control_set(&network_context, door_ent->id, sender_ent->client_peer);
+
+    mod_message_send(&network_context, NETWORK_PLAYER_USE_DOORS, [&](librg_data *data) {
+        librg_data_went(data, sender_ent->id);
+        librg_data_wu32(data, door_name_len);
+        librg_data_wptr(data, door_name, door_name_len);
+        librg_data_wu32(data, door_state);
+    });
+});

@@ -3,6 +3,7 @@
 #include "event_data.hpp"
 #include "Events/player.hpp"
 #include "Events/vehicle.hpp"
+#include "Events/door.hpp"
 
 auto on_librg_connection_request(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
@@ -51,7 +52,8 @@ auto on_librg_clientstreamer_update(librg_event* evnt) -> void {
         case TYPE_VEHICLE: {
             vehicle_clientstreamer_update(evnt);
         } break;
-        case TYPE_WEAPONDROP: {
+        case TYPE_DOOR: {
+            door_clientstreamer_update(evnt);
         } break;
     }
 }
@@ -79,6 +81,9 @@ auto on_librg_entitycreate(librg_event* evnt) -> void {
         } break;
         case TYPE_WEAPONDROP: {
             drop_entitycreate(evnt);
+        } break;
+        case TYPE_DOOR: {
+            door_entitycreate(evnt);
         } break;
     }
 }

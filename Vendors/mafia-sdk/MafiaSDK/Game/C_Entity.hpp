@@ -31,7 +31,7 @@ namespace MafiaSDK
         bool isActive;
         bool doRemove;
         PADDING(C_Entity_Interface, _pad3, 0x9);
-        I3D_Frame * frame;
+        I3D_Frame *frame;
     };
 
     namespace C_Entity_Enum

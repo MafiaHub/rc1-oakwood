@@ -39,16 +39,20 @@ inline auto alloc_console() {
 }
 #endif
 
-inline auto split(std::string s, std::string delimiter){
-    std::vector<std::string> list;
-    size_t pos = 0;
-    std::string token;
-    while ((pos = s.find(delimiter)) != std::string::npos) {
-        token = s.substr(0, pos);
-        list.push_back(token);
-        s.erase(0, pos + delimiter.length());
+inline auto split(std::string str, std::string token) {
+    std::vector<std::string> result;
+    while (str.size()) {
+        int index = str.find(token);
+        if (index != std::string::npos) {
+            result.push_back(str.substr(0, index));
+            str = str.substr(index + token.size());
+            if (str.size() == 0) result.push_back(str);
+        } else {
+            result.push_back(str);
+            str = "";
+        }
     }
-    return list;
+    return result;
 }
 
 static zpl_vec3 ComputeDirVector(float angle) {

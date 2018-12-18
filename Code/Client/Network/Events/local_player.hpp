@@ -207,6 +207,25 @@ inline auto local_player_useactor(DWORD actor, int action, int seat_id, int unk3
     });
 }
 
+inline auto local_player_use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state) {
+    
+    if(!door || !librg_is_connected(&network_context)) return;
+    
+    auto door_int = door->GetInterface();
+    if (door_int && door_int->entity.frame) {
+
+        auto door_frame_name = door_int->entity.frame->GetInterface()->name;
+        auto door_name_len = strlen(door_frame_name);
+        if (door_name_len) {
+            librg_send(&network_context, NETWORK_PLAYER_USE_DOORS, data, {
+                librg_data_wu32(&data, door_name_len);
+                librg_data_wptr(&data, door_frame_name, door_name_len);
+                librg_data_wu32(&data, state);
+            });
+        }
+    }
+}
+
 inline auto local_player_hijack(DWORD car, int seat) {
 
     auto vehicle_ent = get_vehicle_from_base((void*)car);

@@ -51,5 +51,6 @@ namespace MafiaSDK {
 #include "Game/C_Mission.hpp"
 #include "Game/C_DropInWeapon.hpp"
 #include "Game/C_Bridge.hpp"
+#include "Game/C_Door.hpp"
 
 #endif

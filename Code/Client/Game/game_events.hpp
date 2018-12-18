@@ -125,7 +125,7 @@ auto mod_bind_events() {
     MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 
         delta_time = zpl_time_now() - last_time;
-
+    
         if (!librg_is_connected(&network_context))
             interpolate_cam(delta_time);
 

@@ -214,7 +214,7 @@ namespace hooks
         bool return_val = human_use_actor_original(_this, actor, action, unk2, unk3);
         if (_this == get_local_ped()) {
             auto ped_interface = ((MafiaSDK::C_Human*)_this)->GetInterface();
-
+            
             /* 
             * We send use actor only when we entering car or exiting
             * If player forceexit carLeavingOrEntering is NULL, thats why we check if we are exiting by action
@@ -238,6 +238,19 @@ namespace hooks
         }
 
         return human_do_throw_cocot_from_car_original(_this, car, seat);
+    }
+
+    //----------------------------------------------
+    //C_Door::SetState
+    //----------------------------------------------
+    typedef void(__thiscall *C_Door__SetState_t)(MafiaSDK::C_Door *_this, MafiaSDK::C_Door_Enum::States state, MafiaSDK::C_Actor *actor, BOOL unk1, BOOL unk2);
+    C_Door__SetState_t door_setstate_orignal = nullptr;
+
+    void __fastcall Door__SetState(MafiaSDK::C_Door* _this, DWORD edx, MafiaSDK::C_Door_Enum::States state, MafiaSDK::C_Actor *actor, BOOL unk1, BOOL unk2) {
+        
+        if (actor == get_local_ped()) {
+            local_player_use_door(_this, state);
+        }
     }
 
     //----------------------------------------------
@@ -293,5 +306,10 @@ inline auto local_player_init() {
 
     hooks::human_do_throw_cocot_from_car_original = reinterpret_cast<hooks::C_Human_Do_ThrowCocotFromCar_t>(
         DetourFunction((PBYTE)0x00587D70, (PBYTE)&hooks::C_Human_Do_ThrowCocotFromCar)
+    );
+
+    //Doors
+    hooks::door_setstate_orignal = reinterpret_cast<hooks::C_Door__SetState_t>(
+        DetourFunction((PBYTE)0x00439610, (PBYTE)&hooks::Door__SetState)
     );
 }

@@ -24,6 +24,8 @@ namespace MafiaSDK
 		PADDING(I3D_Frame_Interface, _pad0, 0x40);
 		S_vector mPosition;
 		S_vector mRotation;
+        PADDING(I3D_Frame_Interface, _pad1, 0xA8);
+        char* name;
 	};
 
     namespace I3D_Frame_Enum

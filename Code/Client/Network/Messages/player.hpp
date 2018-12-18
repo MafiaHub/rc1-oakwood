@@ -130,6 +130,23 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_USE_DOORS, [](librg_message *msg) {
+    auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
+    auto door_name_len = librg_data_ru32(msg->data);
+    char door_name[32];
+    librg_data_rptr(msg->data, door_name, door_name_len);
+    door_name[door_name_len] = '\0';
+
+    auto door_state = librg_data_ru32(msg->data);
+    if (sender_ent && sender_ent->user_data) {
+        auto sender = (mafia_player *)sender_ent->user_data;
+        auto found_door = (MafiaSDK::C_Door*)MafiaSDK::GetMission()->FindActorByName(door_name);
+        if(found_door && sender->ped) {
+            hooks::door_setstate_orignal(found_door, (MafiaSDK::C_Door_Enum::States)door_state, sender->ped, TRUE, TRUE);
+        }
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
     
     auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));

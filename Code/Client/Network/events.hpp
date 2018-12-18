@@ -4,6 +4,7 @@
 #include "Events/player.hpp"
 #include "Events/weapon_drop.hpp"
 #include "Events/vehicle.hpp"
+#include "Events/door.hpp"
 
 inline auto mod_librg_connect() -> void;
 
@@ -45,6 +46,9 @@ void on_librg_entity_create(librg_event* evnt) {
         case TYPE_VEHICLE: {
             vehicle_entitycreate(evnt);
         } break;
+        case TYPE_DOOR: {
+            door_entitycreate(evnt);
+        } break;
     }
 }
 
@@ -52,9 +56,6 @@ void on_librg_entity_update(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
             player_entityupdate(evnt);
-        } break;
-        case TYPE_WEAPONDROP: {
-            
         } break;
         case TYPE_VEHICLE: {
             vehicle_entityupdate(evnt);
@@ -73,6 +74,9 @@ void on_librg_entity_remove(librg_event* evnt) {
         case TYPE_VEHICLE: {
             vehicle_entityremove(evnt);
         } break;
+        case TYPE_DOOR: {
+            door_entityremove(evnt);
+        } break;
     }
 }
 
@@ -81,10 +85,11 @@ void on_librg_clientstreamer_update(librg_event* evnt) {
         case TYPE_PLAYER: {
             player_clientstreamer_update(evnt);
         } break;
-        case TYPE_WEAPONDROP: {
-        } break;
         case TYPE_VEHICLE: {
             vehicle_clientstreamer_update(evnt);
+        } break;
+        case TYPE_DOOR: {
+            door_clientstreamer_update(evnt);
         } break;
     }
 }
