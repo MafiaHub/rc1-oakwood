@@ -326,11 +326,10 @@ inline auto vehicle_entitycreate(librg_event *evnt) {
 
 inline auto vehicle_game_tick(mafia_vehicle *vehicle, f64 delta) {
 
+    if(!vehicle || !vehicle->car) return;
+
     car_target_position_update(vehicle);
     car_target_rotation_update(vehicle);
-
-    MafiaSDK::C_Actor *car_act = (MafiaSDK::C_Actor *)vehicle->car;
-    car_act->SetActState(0);
 
     auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
     vehicle_int->engine_rpm = vehicle->engine_rpm;

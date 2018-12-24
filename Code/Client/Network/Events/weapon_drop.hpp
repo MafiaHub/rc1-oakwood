@@ -7,10 +7,13 @@ inline auto drop_entitycreate(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, &drop->weapon, sizeof(inventory_item));
 
     auto drop_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while (MafiaSDK::GetModelCache()->Open(drop_model, drop->model, NULL, NULL, NULL, NULL)) {
+        printf("Error: Unable to create model <%s> drop_entitycreate !\n", drop->model);
+    }
+
     S_vector default_scale = { 1.5f, 1.5f, 1.5f };
     S_vector default_pos = EXPAND_VEC(evnt->entity->position);
     drop_model->SetName("testing_drop");
-    MafiaSDK::GetModelCache()->Open(drop_model, drop->model, NULL, NULL, NULL, NULL);
     drop_model->SetScale(default_scale);
     drop_model->SetWorldPos(default_pos);
 

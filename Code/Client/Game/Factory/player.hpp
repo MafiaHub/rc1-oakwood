@@ -14,13 +14,15 @@ auto player_spawn(zpl_vec3 position,
     S_vector default_pos = EXPAND_VEC(position);
 
     auto player_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while(MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL))  {
+        printf("Error: Unable to create player model <%s> !\n", model);
+    }
+
     player_model->SetName("testing_player");
     player_model->SetScale(default_scale);
     player_model->SetWorldPos(default_pos);
-
-    MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL);
     player_model->Update();
-    
+
     MafiaSDK::C_Player *new_ped = nullptr;
 
     if (is_local_player)

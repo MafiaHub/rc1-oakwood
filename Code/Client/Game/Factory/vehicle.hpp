@@ -5,10 +5,13 @@ auto vehicle_spawn(zpl_vec3 position,
     S_vector default_pos = EXPAND_VEC(position);
 
     auto vehicle_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while(MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL)) {
+        printf("Error: Unable to create vehicle model <%s> !\n", spawn_struct->model);
+    }
+
     vehicle_model->SetName("mafia_vehicle");
     vehicle_model->SetScale(default_scale);
-    vehicle_model->SetWorldPos(default_pos);
-    MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL);
+    vehicle_model->SetWorldPos(default_pos);    
 
     MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
     new_car->Init(vehicle_model);
