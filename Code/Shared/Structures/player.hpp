@@ -57,11 +57,12 @@ struct mafia_player {
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	struct {
 		struct {
-			zpl_vec3 start;
-			zpl_vec3 target;
-			f32  lastAlpha;
-			f64  startTime;
-			f64  finishTime;
+            zpl_vec3 start;
+            zpl_vec3 target;
+            zpl_vec3 error;
+            f32 last_alpha;
+            f64 start_time;
+            f64 finish_time;
 		} pos, rot, pose;
 	} interp;
 	

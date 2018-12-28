@@ -107,10 +107,17 @@ namespace chat
             }
         });
 
-        register_command("/peat", [&](std::vector<std::string> args) {
+        register_command("/pete", [&](std::vector<std::string> args) {
             auto player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->GetInterface();
             if (player) {
                 player->humanObject.entity.position = {61.4763f, 4.72524f, 107.708f};
+            }
+        });
+
+        register_command("/inter", [&](std::vector<std::string> args) {
+            if(args.size()) {
+                inter_time = atof(args.at(1).c_str());
+                printf("Interp: %f\n", inter_time);
             }
         });
 

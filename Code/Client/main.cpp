@@ -7,6 +7,7 @@
 #include "Network/interpolation.hpp"
 
 librg_ctx network_context = { 0 };
+float inter_time = 1.0f;
 
 /*
 * Mafia SDK
@@ -78,6 +79,9 @@ struct _GlobalConfig {
 
     std::string localpath;
     std::string gamepath;
+
+    float interp_time_vehicle = 0.5f;
+    float interp_time_player = 0.1f;
 } GlobalConfig;
 
 /*

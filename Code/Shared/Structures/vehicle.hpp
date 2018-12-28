@@ -48,6 +48,7 @@ struct mafia_vehicle {
     zpl_vec3 rot_forward;
 	zpl_vec3 rot_right;
     zpl_vec3 rot_up;
+    zpl_vec3 rot_speed;
 	zpl_vec3 speed;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
@@ -59,25 +60,16 @@ struct mafia_vehicle {
     u64 clientside_flags;
 	/* interpolation table */
 	struct {
-		struct {
-			zpl_vec3 start;
-			zpl_vec3 target;
-			zpl_vec3 error;
-			f32  lastAlpha;
-			f64  startTime;
-			f64  finishTime;
-		} pos;
-
 		struct rot_data {
 			zpl_vec3 start;
 			zpl_vec3 target;
 			zpl_vec3 error;
-			f32  lastAlpha;
-			f64  startTime;
-			f64  finishTime;
-		} rot_forward, rot_right, rot_up;
+			f32  last_alpha;
+			f64  start_time;
+			f64  finish_time;
+		} pos, rot_forward, rot_up;
 
-		u32 forceLocalZCounter;
+		u32 force_localz_counter;
 	} interp;
 #endif
 };

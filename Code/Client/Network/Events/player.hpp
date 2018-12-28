@@ -1,5 +1,123 @@
 #pragma once
-#define TICKRATE_SERVER 30
+
+// =======================================================================//
+// !
+// ! Position Interpolation
+// !
+// =======================================================================//
+
+void player_target_position_update(mafia_player *player) {
+
+    if (player->interp.pos.finish_time > 0.0) {
+        // Grab the current game position
+        auto player_int = player->ped->GetInterface();
+        zpl_vec3 current_position = EXPAND_VEC(player_int->entity.position);
+   
+        // Get the factor of time spent from the interpolation start to the current time.
+        f64 current_time = zpl_time_now();
+        f32 alpha = zpl_unlerp(current_time, player->interp.pos.start_time, player->interp.pos.finish_time);
+
+        // Don't let it overcompensate the error too much
+        alpha = zpl_clamp(alpha, 0.0f, 1.0);
+
+        // Get the current error portion to compensate
+        f32 currentAlpha = alpha - player->interp.pos.last_alpha;
+        player->interp.pos.last_alpha = alpha;
+
+        // Apply the error compensation
+        zpl_vec3 compensation;
+        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), player->interp.pos.error, currentAlpha);
+
+        // If we finished compensating the error, finish it for the next pulse
+        if (alpha == 1.0f) {
+            player->interp.pos.finish_time = 0;
+        }
+
+        zpl_vec3 new_position;
+        zpl_vec3_add(&new_position, current_position, compensation);
+        player_int->entity.position = EXPAND_VEC(new_position);
+    }
+}
+
+void player_target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 interpTime) {
+
+    auto player_int = player->ped->GetInterface();
+    player_target_position_update(player);
+
+    zpl_vec3 local_pos = EXPAND_VEC(player_int->entity.position);
+    player->interp.pos.start = local_pos;
+    player->interp.pos.target = target_pos;
+
+    zpl_vec3 error_vec;
+    zpl_vec3_sub(&error_vec, target_pos, local_pos);
+    player->interp.pos.error = error_vec;
+
+    player->interp.pos.start_time = zpl_time_now();
+    player->interp.pos.finish_time = player->interp.pos.start_time + interpTime;
+    player->interp.pos.last_alpha = 0.0f;
+}
+
+// =======================================================================//
+// !
+// ! Rotation Interpolation
+// !
+// =======================================================================//
+
+void player_target_rotation_update(mafia_player *player) {
+
+    auto player_int = player->ped->GetInterface();
+
+    // Grab the current game rotation
+    zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
+ 
+    if (player->interp.rot.finish_time > 0.0f) {
+
+        // Get the factor of time spent from the interpolation start to the current time.
+        f64 currentTime = zpl_time_now();
+        f32 alpha = zpl_unlerp(currentTime, player->interp.rot.start_time, player->interp.rot.finish_time);
+
+        // Don't let it to overcompensate the error
+        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
+
+        // Get the current error portion to compensate
+        f32 current_alpha = alpha - player->interp.rot.last_alpha;
+        player->interp.rot.last_alpha = alpha;
+
+        zpl_vec3 compensation;
+        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), player->interp.rot.error, current_alpha);
+
+        // If we finished compensating the error, finish it for the next pulse
+        if (alpha == 1.0f) {
+            player->interp.rot.finish_time = 0;
+        }
+
+        zpl_vec3 compensated;
+        zpl_vec3_add(&compensated, rotation, compensation);
+        player_int->entity.rotation = EXPAND_VEC(compensated);
+    }
+}
+
+zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
+
+    auto one_axis = [](float a, float b) { return a - b; };
+    return {one_axis(a.x, b.x), one_axis(a.y, b.y), one_axis(a.z, b.z)};
+}
+
+void player_target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 interp_time) {
+
+    player_target_rotation_update(player);
+    auto player_int = player->ped->GetInterface();
+
+    // Grab the current game rotation
+    zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
+    player->interp.rot.start = rotation;
+    player->interp.rot.error = compute_rotation_offset(target_rot, rotation);
+
+    // Get the interpolation interval
+    player->interp.rot.start_time = zpl_time_now();
+    player->interp.rot.finish_time = player->interp.rot.start_time + interp_time;
+    player->interp.rot.last_alpha = 0.0f;
+}
 
 inline auto player_entitycreate(librg_event* evnt) -> void {
 
@@ -65,52 +183,13 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
     if (player_int->isInAnimWithCar)
         player_int->isInAnimWithCar = 0;
 
-    f64	currentTime = zpl_time_now();
-
-    // Position interpolation
-    {
-        f32 alpha = zpl_unlerp(currentTime, ped->interp.pos.startTime, ped->interp.pos.finishTime);
-        alpha = zpl_clamp(0.0f, alpha, 1.5f);
-
-        f32 currentAlpha = alpha - ped->interp.pos.lastAlpha;
-        ped->interp.pos.lastAlpha = alpha;
-
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, ped->interp.pos.start, ped->interp.pos.target, alpha);
-
-        if (alpha == 1.5f) ped->interp.pos.finishTime = 0;
-
-        ped->ped->GetInterface()->entity.position = EXPAND_VEC(compensation);
-    }
-
-    // Rotation interpolation
-    {
-        f32 alpha = zpl_unlerp(currentTime, ped->interp.rot.startTime, ped->interp.rot.finishTime);
-        alpha = zpl_clamp(0.0f, alpha, 1.5f);
-
-        f32 currentAlpha = alpha - ped->interp.rot.lastAlpha;
-        ped->interp.rot.lastAlpha = alpha;
-
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, ped->interp.rot.start, ped->interp.rot.target, alpha);
-
-        if (alpha == 1.5f) ped->interp.rot.finishTime = 0;
-
-        ped->ped->GetInterface()->entity.rotation = EXPAND_VEC(compensation);
-    }
+    player_target_position_update(ped);
+    player_target_rotation_update(ped);
 
     // Pose interpolation
     {
-        f32 alpha = zpl_unlerp(currentTime, ped->interp.pose.startTime, ped->interp.pose.finishTime);
-        alpha = zpl_clamp(0.0f, alpha, 1.5f);
-
-        f32 currentAlpha = alpha - ped->interp.pose.lastAlpha;
-        ped->interp.pose.lastAlpha = alpha;
-
         zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, ped->interp.pose.start, ped->interp.pose.target, alpha);
-
-        if (alpha == 1.5f) ped->interp.pose.finishTime = 0;
+        zpl_vec3_lerp(&compensation, ped->interp.pose.start, ped->interp.pose.target, 0.4f);
 
         S_vector mafia_pose = EXPAND_VEC(compensation);
 
@@ -135,27 +214,8 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     player->ping                = librg_data_ru32(evnt->data);
     auto player_int = player->ped->GetInterface();
   
-    // Position interpolation
-    player->interp.pos.startTime	= zpl_time_now();
-    player->interp.pos.finishTime	= player->interp.pos.startTime + (1.0f / TICKRATE_SERVER);
-    player->interp.pos.lastAlpha	= 0.0f;
-    player->interp.pos.start		= player->interp.pos.target;
-    player->interp.pos.target		= evnt->entity->position;
-
-    // Rotation interpolation
-    player->interp.rot.startTime	= zpl_time_now();
-    player->interp.rot.finishTime	= player->interp.rot.startTime + (1.0f / TICKRATE_SERVER);
-    player->interp.rot.lastAlpha	= 0.0f;
-    player->interp.rot.start		= player->interp.rot.target;
-    player->interp.rot.target		= recv_rotation;
-
-    // Pose interpolation
-    player->interp.pose.startTime	= zpl_time_now();
-    player->interp.pose.finishTime	= player->interp.pose.startTime + (1.0f / TICKRATE_SERVER);
-    player->interp.pose.lastAlpha	= 0.0f;
-    player->interp.pose.start		= player->interp.pose.target;
-    player->interp.pose.target		= recv_pose;
-
+    player_target_position_set(player, evnt->entity->position, GlobalConfig.interp_time_player);
+    player_target_rotation_set(player, recv_rotation, GlobalConfig.interp_time_player);
 
     if (!player_int->carLeavingOrEntering) {
         player_int->animState	= player->animation_state;
