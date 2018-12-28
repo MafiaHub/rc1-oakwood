@@ -122,7 +122,7 @@ void player_target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 i
 inline auto player_entitycreate(librg_event* evnt) -> void {
 
     auto player					= new mafia_player();
-    player->voice_channel		= voip::create_remote();
+    player->voice_channel		= nullptr;//voip::create_remote();
     player->vehicle_id			= librg_data_ri32(evnt->data);
     player->streamer_entity_id	= librg_data_ri32(evnt->data);
     
@@ -141,7 +141,7 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
     player->current_weapon_id = librg_data_ru32(evnt->data);
     player->health = librg_data_rf32(evnt->data);
 
-    player->ped = player_spawn(
+    auto new_ped = player_spawn(
         evnt->entity->position,
         player->rotation,
         player->inventory,
@@ -151,6 +151,12 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
         false,
         -1,
         player->vehicle_id != -1);
+
+    //TODO(DavoSK): Rework respawn/spawn
+    if (player->ped != nullptr)
+        player_despawn(player->ped);
+
+    player->ped = new_ped;
 
     if(player->streamer_entity_id == local_player.entity_id) {
         auto me = get_local_ped();

@@ -30,11 +30,11 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
                 current_wep,
                 health,
                 is_local_player,
-                0,
+                -1,
                 false);
 
             if (player->ped) {
-                player_despawn(reinterpret_cast<MafiaSDK::C_Player*>(player->ped));
+                player_despawn(player->ped);
                 player->ped = new_ped;
             }
         }
@@ -47,7 +47,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
             current_wep,
             health,
             is_local_player,
-            0,
+            -1,
             false);
 
         auto player = get_local_player();

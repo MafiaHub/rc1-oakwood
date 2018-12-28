@@ -114,13 +114,6 @@ namespace chat
             }
         });
 
-        register_command("/inter", [&](std::vector<std::string> args) {
-            if(args.size()) {
-                inter_time = atof(args.at(1).c_str());
-                printf("Interp: %f\n", inter_time);
-            }
-        });
-
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             exit(0);

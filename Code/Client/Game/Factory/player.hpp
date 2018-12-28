@@ -39,15 +39,13 @@ auto player_spawn(zpl_vec3 position,
     new_ped->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
-    if (is_local_player) {
-        
+    if (is_local_player) { 
         auto game = MafiaSDK::GetMission()->GetGame();
         if (game) {
             game->GetCamera()->SetCar(NULL);
             game->GetCamera()->SetMode(true, 1);
             game->GetCamera()->SetPlayer(new_ped);
             game->SetLocalPlayer(new_ped);
-            //game->SetHuman(new_ped);
         }
 
         MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
@@ -77,14 +75,19 @@ auto player_spawn(zpl_vec3 position,
             ((MafiaSDK::C_Human*)new_ped)->G_Inventory_AddItem(*item);
         }
     }
+    
+    //TODO(DavoSK): Make it more fancy !
+    void *player_inv = nullptr;
+    __asm {
+                mov eax, new_ped
+                lea eax, dword ptr ds : [eax + 0x480]
+                mov player_inv, eax
+    }
 
-    ((MafiaSDK::C_Human*)new_ped)->G_Inventory_SelectByID(current_wep);
-
-    if (!is_local_player && (current_wep != 0 || current_wep != -1))
-        ((MafiaSDK::C_Human*)new_ped)->Do_ChangeWeapon(0, 0);
-
+    hooks::select_by_id_original((void *)player_inv, current_wep, nullptr);
     ((MafiaSDK::C_Human*)new_ped)->ChangeWeaponModel();
-
+    
+   
     if (current_wep == 0)
         ((MafiaSDK::C_Human*)new_ped)->Do_Holster();
 
