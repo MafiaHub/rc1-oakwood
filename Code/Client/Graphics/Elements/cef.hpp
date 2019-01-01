@@ -95,7 +95,7 @@ namespace cef {
         }
 
         void OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo& custom_cursor_info) override {
-            SetClassLong((HWND)MafiaSDK::GetMainWindow(), GCL_HCURSOR, (LONG)cursor);
+            SetClassLong((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), GCL_HCURSOR, (LONG)cursor);
         }
 
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override {
