@@ -1,6 +1,4 @@
 #pragma once
-
-
 namespace hooks
 {
     //----------------------------------------------
@@ -66,18 +64,12 @@ namespace hooks
 
         auto player = get_local_player();
         if (player && player->ped) {
-            void* player_inv = nullptr;
-            void* ped = (void*)player->ped;
-            __asm {
-                mov eax, ped
-                lea eax, dword ptr ds : [eax + 0x480]
-                mov player_inv, eax
-            }
-
-            if (_this == player_inv)
+            void* player_inv = (void*)player->ped->GetInventory();
+            
+            if (_this == player_inv) {
                 local_player_weaponchange(index);
-
-            player->current_weapon_id = index;
+                player->current_weapon_id = index;
+            }
         }
 
         return select_by_id_original(_this, index, items_vec);
@@ -245,7 +237,6 @@ namespace hooks
     //----------------------------------------------
     typedef void(__thiscall *C_Door__SetState_t)(MafiaSDK::C_Door *_this, MafiaSDK::C_Door_Enum::States state, MafiaSDK::C_Actor *actor, BOOL unk1, BOOL unk2);
     C_Door__SetState_t door_setstate_orignal = nullptr;
-
     void __fastcall Door__SetState(MafiaSDK::C_Door* _this, DWORD edx, MafiaSDK::C_Door_Enum::States state, MafiaSDK::C_Actor *actor, BOOL unk1, BOOL unk2) {
         
         if (actor == get_local_ped()) {

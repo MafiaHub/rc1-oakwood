@@ -589,7 +589,7 @@ namespace MafiaSDK
         void G_Inventory_Insert(S_GameItem & newItem, BOOL unk)
         {
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::G_Inventory_Insert;
-            G_Inventory* inventory = &this->GetInterface()->inventory;
+            G_Inventory* inventory = GetInventory();
 
             __asm
             {
@@ -608,7 +608,7 @@ namespace MafiaSDK
 
         void G_Inventory_RemoveWeapon(short int iWeaponId)
         {
-            G_Inventory* inventory = &this->GetInterface()->inventory;
+            G_Inventory* inventory = GetInventory();
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::G_Inventory_Remove;
 
             __asm
@@ -627,16 +627,24 @@ namespace MafiaSDK
             this->ChangeWeaponModel();
         }
         
-        S_GameItem* G_Inventory_GetWeaponInRightHand()
+        G_Inventory* GetInventory() 
         {
-            S_GameItem* wep;
-
-            G_Inventory* inventory;// = &this->GetInterface()->inventory;
-            __asm {
+            G_Inventory *inventory = nullptr;
+            __asm 
+            {
                 mov esi, this
                 lea     ecx, [esi + 480h]
                 mov inventory, ecx
             }
+
+            return inventory;
+        }
+
+        S_GameItem* G_Inventory_GetWeaponInRightHand()
+        {
+            S_GameItem* wep;
+            G_Inventory *inventory = GetInventory();
+            
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::G_Inventory_GetWeaponInRightHand;
 
             __asm
@@ -645,12 +653,13 @@ namespace MafiaSDK
                 call funcAddress
                 mov wep, eax
             }
+
             return wep;
         }
 
         S_GameItem* G_Inventory_GetWeaponInLeftHand()
         {
-            G_Inventory* inventory = &this->GetInterface()->inventory;
+            G_Inventory* inventory = GetInventory();
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::G_Inventory_GetWeaponInLeftHand;
 
             __asm
@@ -662,7 +671,7 @@ namespace MafiaSDK
 
         void G_Inventory_SelectByID(int id) 
         {
-            G_Inventory* inventory = &this->GetInterface()->inventory;
+            G_Inventory* inventory = GetInventory();
             unsigned long funcAddress = 0x006081D0;
 
             __asm
@@ -686,7 +695,7 @@ namespace MafiaSDK
 
         unsigned int G_Inventory_GetAmmo(int & unk1)
         {
-            G_Inventory* inventory = &this->GetInterface()->inventory;
+            G_Inventory* inventory = GetInventory();
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::G_Inventory_GetAmmo;
 
             __asm

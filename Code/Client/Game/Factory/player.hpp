@@ -69,27 +69,23 @@ auto player_spawn(zpl_vec3 position,
         new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
     }
 
+    //Foreach every weapon in inventory and give it to the player
     for (size_t i = 0; i < 8; i++) {
         S_GameItem* item = (S_GameItem*)&inventory.items[i];
         if (item->weaponId != expectedWeaponId) {
-            ((MafiaSDK::C_Human*)new_ped)->G_Inventory_AddItem(*item);
+            new_ped->G_Inventory_AddItem(*item);
         }
     }
     
     //TODO(DavoSK): Make it more fancy !
-    void *player_inv = nullptr;
-    __asm {
-                mov eax, new_ped
-                lea eax, dword ptr ds : [eax + 0x480]
-                mov player_inv, eax
-    }
+    //Select right weapon
+    hooks::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
+    new_ped->Do_ChangeWeapon(0, 0);
+    new_ped->ChangeWeaponModel();
 
-    hooks::select_by_id_original((void *)player_inv, current_wep, nullptr);
-    ((MafiaSDK::C_Human*)new_ped)->ChangeWeaponModel();
-    
-   
+    //If player have hands do holster
     if (current_wep == 0)
-        ((MafiaSDK::C_Human*)new_ped)->Do_Holster();
+        new_ped->Do_Holster();
 
     return new_ped;
 }

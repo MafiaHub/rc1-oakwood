@@ -122,8 +122,8 @@ namespace graphics {
 
     inline auto init(IDirect3DDevice9* device) -> void {
 
-        init_main_sprite(device);
         global_device = device;
+        init_main_sprite(device);
         nameplates::init(device);
         effects::init(device);
         cef::init(device);

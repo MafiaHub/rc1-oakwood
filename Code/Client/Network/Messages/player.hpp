@@ -1,4 +1,4 @@
-librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* msg) {
+/*librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* msg) {
 
     //read data
     zpl_vec3 position, rotation;
@@ -54,10 +54,20 @@ librg_network_add(&network_context, NETWORK_PLAYER_RESPAWN, [](librg_message* ms
         strncpy(player->model, model, 32);
         player_inventory_send();
     }
-});
+});*/
+
+
+//NOTE(DavoSK): When local player spawns
+//When local player dies we are removing librg_entity
+//And before we calling spawn we are create new blank one 
+//We need to realocate local_player entity
 
 librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg) {
     
+    u32 local_player_entity_id  = librg_data_ru32(msg->data);
+    auto new_player_entity      = librg_entity_fetch(&network_context, local_player_entity_id);
+    auto new_player_data        = new mafia_player;
+
     zpl_vec3 position, rotation;
     player_inventory inventory;
     char model[32];
@@ -79,6 +89,10 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
         true, 
         0,
         false);
+
+    new_player_data->ped = ped;
+    new_player_entity->user_data = new_player_data;
+    local_player.entity_id = local_player_entity_id;
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
@@ -257,8 +271,6 @@ librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_messa
     player->ped->G_Inventory_SelectByID(weapon_item.weaponId);
     player->ped->Do_ChangeWeapon(0, 0);
     player->ped->ChangeWeaponModel();
-
-    mod_debug("weapon pickup");
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {

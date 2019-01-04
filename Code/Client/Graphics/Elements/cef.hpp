@@ -366,7 +366,7 @@ namespace cef {
                 if (handle && handle->renderer) {
 
                     handle->renderer->GetTexture([](auto texture) {
-                        if (texture) {
+                        if (texture != nullptr) {
                             texture->Release();
                             texture = nullptr;
                         }

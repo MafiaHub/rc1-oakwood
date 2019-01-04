@@ -65,7 +65,6 @@ namespace chat
 
     auto update() {
         if (key_chat_open) {
-
             // block input when T only when we dont writting
             // we unblock input from cef handle
             if (!input::InputState.input_blocked) input::block_input(true);
@@ -82,14 +81,20 @@ namespace chat
         }
     }
     
+    auto load_browser() {
+        if (!global_device) return;
+
+        auto desc = graphics::get_backbuffer_desc(global_device);
+        chat::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/chat.html").c_str(), desc.Width, desc.Height, 1);
+    }
+
     auto init(IDirect3DDevice9 *device) {
 
         auto back_buffer = graphics::get_backbuffer_desc(device);
-        auto url = GlobalConfig.localpath + "static\\chat.html";
-
-        main_browser = cef::browser_create(device, url.c_str(), back_buffer.Width, back_buffer.Height, 1);
-
-        cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) { input::block_input(atoi(args->GetString(1).ToString().c_str())); });
+        
+        cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) { 
+            input::block_input(atoi(args->GetString(1).ToString().c_str())); 
+        });
 
         cef::register_native("chat-msg", [=](CefRefPtr<CefListValue> args) {
             auto message = args->GetString(1).ToString();
@@ -119,11 +124,13 @@ namespace chat
             exit(0);
         });
 
-        register_command("/npc", [&](std::vector<std::string> args) { librg_send(&network_context, NETWORK_NPC_CREATE, data, {}); });
+        register_command("/npc", [&](std::vector<std::string> args) { 
+            librg_send(&network_context, NETWORK_NPC_CREATE, data, {}); 
+        });
 
         register_command("/shade", [&](std::vector<std::string> args) {
             effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
-            effects::is_enabled = true;
+            effects::is_enabled = !effects::is_enabled;
         });
 
         register_command("/savepos", [&](std::vector<std::string> args) {

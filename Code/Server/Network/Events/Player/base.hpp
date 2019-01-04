@@ -68,28 +68,7 @@ inline auto player_connection_disconnect(librg_event* evnt) -> void {
 inline auto player_send_spawn(librg_entity* player_ent) -> void {
     auto player = (mafia_player*)player_ent->user_data;
     librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
-        librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3));
-        librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
-        librg_data_wptr(&data, player->model, sizeof(char) * 32);
-        librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
-        librg_data_wu32(&data, player->current_weapon_id);
-        librg_data_wf32(&data, player->health);
-    });
-}
-
-inline auto player_send_message(librg_entity* player_ent, char* msg, u32 color = 0xFFFFFF) {
-    librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
-        librg_data_wu32(&data, strlen(msg));
-        librg_data_wu32(&data, color);
-        librg_data_wptr(&data, msg, strlen(msg));
-    });
-}
-
-inline auto player_send_respawn(librg_entity* player_ent) -> void {
-    auto player = (mafia_player*)player_ent->user_data;
-
-    librg_send(&network_context, NETWORK_PLAYER_RESPAWN, data, {
-        librg_data_went(&data, player_ent->id);
+        librg_data_wu32(&data, player_ent->id);
         librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3));
         librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
         librg_data_wptr(&data, player->model, sizeof(char) * 32);

@@ -105,7 +105,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         add_weapons(player);
 
-        player->Respawn();
+        player->Spawn();
 
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });

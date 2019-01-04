@@ -13,14 +13,12 @@ void on_librg_connect(librg_event* evnt) {
     MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
     effects::is_enabled = false;
-    chat::add_message("Connected to " + GlobalConfig.server_address);
-
-    auto local_player_data = new mafia_player;
-    evnt->entity->user_data = local_player_data;
-    local_player.entity_id = evnt->entity->id;
-
+    
     /* setup default timeout */
     enet_peer_timeout(evnt->peer, 10, 5000, 10000);
+    chat::main_browser->visible = true;
+
+    chat::add_message("Connected to " + GlobalConfig.server_address);
 }
 
 void on_librg_disconnect(librg_event* evnt) {

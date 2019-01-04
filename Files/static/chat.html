@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<!--Import Google Icon Font-->
+		<meta charset="utf-8">
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-		<!-- Compiled and minified CSS -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-		<!--Let browser know website is optimized for mobile-->
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	</head>
 	
@@ -15,7 +13,6 @@
 	}
 	
 	.background-div {
-		/*background-color: rgba(0, 0, 0, 0.2);*/
 		text-shadow: 2px 2px 2px rgba(150, 150, 150, 1);
 		position: fixed;
 		bottom: 0;
@@ -24,16 +21,14 @@
 	}
 	
 	::-webkit-scrollbar {
-    width: 12px;
+		width: 12px;
 	}
 	 
 	::-webkit-scrollbar-track {
 		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-		border-radius: 10px;
 	}
 	 
 	::-webkit-scrollbar-thumb {
-		border-radius: 10px;
 		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
 	}
 	
@@ -90,6 +85,18 @@
 	
 	<body>
 		<div id="app">
+			<div id="car-modal" class="modal">
+				<div class="modal-content">
+					<div class="row" v-for="n in 87">
+						<div class="col s6"><img class="responsive-img" :src="'cars/' + n + '.png'" v-on:click="spawnCar(n)"></div>
+						<div class="col s6"><img class="responsive-img" :src="'cars/' + (87 + n) + '.png'" v-on:click="spawnCar(87 + n)"></div>
+					</div>
+				</div>
+				<div class="modal-footer">
+				<a href="#!" class="modal-close waves-effect waves-green btn-flat"></a>
+				</div>
+			</div>
+  
 			<div class="container background-div">
 				<div class="test-cont" id="scroller">
 					<li class="collection-item" v-for="message in messages">
@@ -97,22 +104,24 @@
 					</li>
 				</div>
 				
-				
 				<div class="input-cont" v-bind:class="{invisible: !isTyping}">
 					<div class="input-field col s12">
 						<i class="material-icons prefix">textsms</i>
 						<input type="text" id="autocomplete-input"  v-model="currentText" class="autocomplete">
-						<label for="autocomplete-input">Autocomplete</label>
+						<label for="autocomplete-input">Type in chat</label>
 					</div>
 				</div>
 			</div>
 		</div>
 		
-		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-		
+		<script src="js/jquery-3.3.1.min.js"></script>
+		<script src="js/materialize.min.js"></script>
+		<script src="js/vue.js"></script>
 		<script>
+			const KEY_ENTER = 13;
+			const KEY_UP = 38;
+			const KEY_DOWN = 40;
+
 			var app = new Vue({
 				el: '#app',
 				methods: {
@@ -125,18 +134,66 @@
 						if(this.isTyping)
 							$('.autocomplete').focus();
 
-						//Enter pressed
-						if(down && e.keyCode == 13) {
-							
-							if(this.isTyping && this.currentText.length) {
-								this.sendMessage(this.currentText);
+						if(down && e.keyCode == KEY_ENTER) {
+							if(!this.handleCommand(this.currentText)) {
+								if(this.isTyping && this.currentText.length) {
+									this.history.push(this.currentText);
+									this.sendMessage(this.currentText);
+								}
+								this.stopTyping();
+								return;
 							}
-							
-							this.currentText = '';
-							this.isTyping = false;
-							triggerNative('update-input', '0');
-							return;
+							this.history.push(this.currentText);
 						}
+
+						if(this.isTyping && down && e.keyCode == KEY_UP) {
+							this.historyIndex--;
+							if(this.historyIndex < 0) {
+								this.historyIndex = (this.history.length - 1);
+							} 
+							this.currentText = this.history[this.historyIndex];
+						}
+
+						if(this.isTyping && down && e.keyCode == KEY_DOWN) {
+							this.historyIndex++;
+							if(this.historyIndex >= this.history.length) {
+								this.historyIndex = 0;
+							}
+							this.currentText = this.history[this.historyIndex];
+						}
+					},
+					
+					handleCommand: function(command) {
+						var _this = this;
+						if(command.indexOf("/spawncar") > -1) {
+							$("#car-modal").modal({
+								onCloseStart: function() { 
+									_this.stopTyping();
+								}
+							});
+							$("#car-modal").modal('open');
+							return true;
+						}
+						return false;
+					},
+
+					stopTyping: function() {
+						this.currentText = '';
+						this.isTyping = false;
+						triggerNative('update-input', '0');
+					},
+					
+					spawnCar: function(carId) {
+						let _this = this;
+						$("#car-modal").modal({
+							onCloseStart: function() { 
+								_this.stopTyping();
+							}
+						});
+						
+						$("#car-modal").modal('close');
+						this.sendMessage('/putcar ' + carId);
+						this.stopTyping();
 					},
 					
 					scrollChat: function() {
@@ -162,7 +219,9 @@
 				data: {
 					currentText: '',
 					isTyping: false,
-					messages: []
+					messages: [],
+					history: [],
+					historyIndex: 0
 				}
 			});
 			
