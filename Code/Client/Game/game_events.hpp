@@ -94,6 +94,9 @@ auto mod_bind_events() {
     drop_init();
 
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
+        
+        //TODO(DavoSK): Move it to sdk
+        *(BOOL*)(0x006C406C) = true;
 
         auto mission_id = MafiaSDK::GetCurrentMissionID();
         if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 
