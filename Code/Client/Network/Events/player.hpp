@@ -286,7 +286,6 @@ inline auto player_entityremove(librg_event* evnt) -> void {
         }
 
         player_despawn(player->ped);
-        evnt->entity->user_data = nullptr;
     }
 }
 
