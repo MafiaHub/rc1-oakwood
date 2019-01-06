@@ -36,9 +36,8 @@ GameMode::GameMode(oak_api *mod) {
         if (onPlayerDisconnected)
             onPlayerDisconnected(player);
 
-        delete player;
-
         players.RemoveObject(player);
+        delete player;
     };
 
     mod->on_player_died = [=](librg_entity* entity, mafia_player* ped) {
