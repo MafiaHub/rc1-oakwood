@@ -322,6 +322,9 @@ Vehicle *Player::GetVehicle()
 
 bool Player::PutToVehicle(Vehicle *vehicle, int seatID)
 {
+    if (vehicle == nullptr)
+        return;
+
     return __gm->mod->vtable.player_put_to_vehicle(this->entity, vehicle->GetEntity(), seatID);
 }
 
