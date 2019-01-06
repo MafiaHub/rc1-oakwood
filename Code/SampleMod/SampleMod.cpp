@@ -66,7 +66,9 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         player->Spawn();
     });
 
-    gm->SetOnPlayerDisconnected([=](Player *player) { gm->BroadcastMessage("Player " + player->GetName() + " left the server."); });
+    gm->SetOnPlayerDisconnected([=](Player *player) { 
+        gm->BroadcastMessage("Player " + player->GetName() + " left the server."); 
+    });
 
     gm->SetOnPlayerDied([=](Player *player) {
         player->Fadeout(true, 500, 0xFFFFFF);
