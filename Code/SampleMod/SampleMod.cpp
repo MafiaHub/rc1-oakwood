@@ -168,16 +168,6 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
-    gm->AddCommandHandler("/tp", [=](Player *player, ArgumentList args) {
-        if (args.size() != 1) {
-            gm->SendMessageToPlayer("You need to specify player name!", player);
-            return true;
-        }
-
-
-        return true;
-    });
-
     gm->AddCommandHandler("%42", [=](Player *player, ArgumentList args) {
         gm->ChatPrint("Be careful!");
         return true;
