@@ -168,11 +168,6 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
-    gm->AddCommandHandler("%42", [=](Player *player, ArgumentList args) {
-        gm->ChatPrint("Be careful!");
-        return true;
-    });
-
     gm->AddCommandHandler("/hidemycar", [=](Player *player, ArgumentList args) {
         auto vehicle = player->GetVehicle();
 
@@ -221,12 +216,6 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         for (int32_t i = 0; i < gm->players.GetNumberOfObjects(); i++) {
             gm->SendMessageToPlayer(std::to_string(i)+". "+gm->players.GetObjectByID(i)->GetName(), player);
         }
-
-        return true;
-    });
-
-    gm->AddCommandHandler("/test", [=](Player *player, ArgumentList args) {
-        player->SetPosition(mode_generate_spawn());
 
         return true;
     });
