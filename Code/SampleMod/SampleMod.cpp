@@ -12,8 +12,8 @@
 #include "zpl.h"
 
 #include <Oakwood/Oakwood.hpp>
-#include <iostream>
 #include "weapons.hpp"
+#include <iostream>
 
 //
 // Entry point
@@ -22,33 +22,17 @@
 struct VehicleSpawn {
     zpl_vec3 pos;
     float rot;
-    const char* model;
+    const char *model;
 };
 
 std::vector<VehicleSpawn> vehicle_spawns = {
-    {
-        {-1991.89f, -5.09753f, 10.4476f},
-        0.0f,
-        "alfa00.i3d"
-    },
+{{-1991.89f, -5.09753f, 10.4476f}, 0.0f, "alfa00.i3d"},
 
-    {
-        { -1974.2f, -4.8862f, 22.5578f },
-        0.0f,
-        "FordHOT00.i3d"
-    },
+{{-1974.2f, -4.8862f, 22.5578f}, 0.0f, "FordHOT00.i3d"},
 
-    {
-        { -1981.11f, -4.98206f, 22.7471f },
-        0.0f,
-        "FThot00.i3d"
-    },
+{{-1981.11f, -4.98206f, 22.7471f}, 0.0f, "FThot00.i3d"},
 
-    {
-        { -1991.69f, -5.12453f, 22.3242f },
-        0.0f,
-        "TBirdold00.i3d"
-    },
+{{-1991.69f, -5.12453f, 22.3242f}, 0.0f, "TBirdold00.i3d"},
 };
 
 GameMode *gm = nullptr;
@@ -82,19 +66,16 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         player->Spawn();
     });
 
-    gm->SetOnPlayerDisconnected([=](Player *player) {
-        gm->BroadcastMessage("Player " + player->GetName() + " left the server.");
-    });
+    gm->SetOnPlayerDisconnected([=](Player *player) { gm->BroadcastMessage("Player " + player->GetName() + " left the server."); });
 
     gm->SetOnPlayerDied([=](Player *player) {
- 
         player->Fadeout(true, 500, 0xFFFFFF);
         player->Fadeout(false, 500, 0xFFFFFF);
 
         auto wep = get_weapon_by_id(player->GetCurrentWeapon());
 
         if (wep) {
-            //gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
+            // gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
         }
 
         player->ClearInventory();
@@ -191,7 +172,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        
+
         return true;
     });
 
@@ -206,13 +187,54 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (!vehicle) {
             gm->SendMessageToPlayer("You are not sitting in a car!", player);
             return true;
-        }
-        else if (vehicle->GetPlayerSeatID(player) != 0) {
+        } else if (vehicle->GetPlayerSeatID(player) != 0) {
             gm->SendMessageToPlayer("You are not a driver!", player);
             return true;
         }
 
         vehicle->ShowOnRadar(!vehicle->GetRadarVisibility());
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/tp", [=](Player *player, ArgumentList args) {
+        auto vehicle = player->GetVehicle();
+
+        if (vehicle) {
+            gm->SendMessageToPlayer("You are sitting in a car!", player);
+            return true;
+        }
+
+        auto playerId = std::stoi(args[1]);
+
+        if (playerId < 0 || playerId >= gm->players.GetNumberOfObjects()) {
+            gm->SendMessageToPlayer("Invalid ID!", player);
+            return true;
+        }
+
+        auto sndPlayer = gm->players.GetObjectByID(playerId);
+
+        if (!sndPlayer) {
+            gm->SendMessageToPlayer("Invalid ID!", player);
+            return true;
+        }
+
+        player->SetPosition(sndPlayer->GetPosition());
+        return true;
+    });
+
+    gm->AddCommandHandler("/listplayers", [=](Player *player, ArgumentList args) { 
+        gm->SendMessageToPlayer("Online players:", player);
+
+        for (int32_t i = 0; i < gm->players.GetNumberOfObjects(); i++) {
+            gm->SendMessageToPlayer(std::to_string(i)+". "+gm->players.GetObjectByID(i)->GetName(), player);
+        }
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/test", [=](Player *player, ArgumentList args) {
+        player->SetPosition(mode_generate_spawn());
 
         return true;
     });

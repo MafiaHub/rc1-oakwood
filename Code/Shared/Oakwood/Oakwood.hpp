@@ -37,6 +37,14 @@ public:
         return nullptr;
     }
 
+    inline T *GetObjectByID(int idx) {
+        if (idx < 0 || idx >= objects.size()) {
+            return nullptr;
+        }
+
+        return objects.at(idx);
+    }
+
     inline void AddObject(T *object) {
         objects.push_back(object);
     }
@@ -44,6 +52,11 @@ public:
     inline void RemoveObject(T *object) {
         objects.erase(std::remove(objects.begin(), objects.end(), object), objects.end());
     }
+
+    inline size_t GetNumberOfObjects() {
+        return objects.size();
+    }
+
 private:
     std::vector<T*> objects;
 };

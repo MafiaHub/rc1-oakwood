@@ -323,6 +323,13 @@ librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* ms
     auto entity = librg_entity_fetch(&network_context, entity_id);
     if (entity) {
         librg_data_rptr(msg->data, &entity->position, sizeof(entity->position));
+
+        auto player = (mafia_player *)entity->user_data;
+        if (player && player->ped)
+        {
+            auto player_int = player->ped->GetInterface();
+            player_int->entity.position = EXPAND_VEC(entity->position);
+        }
     }
 });
 
