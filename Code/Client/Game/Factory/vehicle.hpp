@@ -5,10 +5,13 @@ auto vehicle_spawn(zpl_vec3 position,
     S_vector default_pos = EXPAND_VEC(position);
 
     auto vehicle_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while(MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL)) {
+        printf("Error: Unable to create vehicle model <%s> !\n", spawn_struct->model);
+    }
+
     vehicle_model->SetName("mafia_vehicle");
     vehicle_model->SetScale(default_scale);
-    vehicle_model->SetWorldPos(default_pos);
-    MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL);
+    vehicle_model->SetWorldPos(default_pos);    
 
     MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
     new_car->Init(vehicle_model);
@@ -23,8 +26,9 @@ auto vehicle_spawn(zpl_vec3 position,
 
     veh_inter->health           = spawn_struct->health;
     veh_inter->position			= EXPAND_VEC(position);
-    veh_inter->rotation			= EXPAND_VEC(spawn_struct->rotation);
-    veh_inter->rotation_second	= EXPAND_VEC(spawn_struct->rotation_second);
+    veh_inter->rot_forward		= EXPAND_VEC(spawn_struct->rot_forward);
+    veh_inter->rot_up           = EXPAND_VEC(spawn_struct->rot_up);
+    veh_inter->rot_speed        = EXPAND_VEC(spawn_struct->rot_speed);
     veh_inter->speed            = EXPAND_VEC(spawn_struct->speed);
     veh_inter->engine_health    = spawn_struct->engine_health;
     veh_inter->health           = spawn_struct->health;
@@ -43,7 +47,7 @@ auto vehicle_spawn(zpl_vec3 position,
     veh_inter->engine_rpm		= spawn_struct->engine_rpm;
 
     // NOTE(DavoSK): Update tyres
-    for (int i = 0; i < 4; i++) {
+    /*for (int i = 0; i < 4; i++) {
         auto mafia_tyre = spawn_struct->tyres[i];
         auto tyre = new_car->GetCarTyre(i);
 
@@ -82,10 +86,10 @@ auto vehicle_spawn(zpl_vec3 position,
         if (spawn_struct->destroyed_components[i]) {
             new_car->RemoveComponent(i);
         }
-    }
+    }*/
 
     if (spawn_struct->is_car_in_radar)
-        MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFF0000);
+        MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFFFFFF);
 
     return new_car;
 }

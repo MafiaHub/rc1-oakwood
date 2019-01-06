@@ -4,6 +4,7 @@
 #include "Events/player.hpp"
 #include "Events/weapon_drop.hpp"
 #include "Events/vehicle.hpp"
+#include "Events/door.hpp"
 
 inline auto mod_librg_connect() -> void;
 
@@ -12,20 +13,23 @@ void on_librg_connect(librg_event* evnt) {
     MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
     effects::is_enabled = false;
-    chat::add_message("Connected to " + GlobalConfig.server_address);
+    
+    /* setup default timeout */
+    enet_peer_timeout(evnt->peer, 10, 5000, 10000);
+    chat::main_browser->visible = true;
 
-    auto local_player_data = new mafia_player;
-    evnt->entity->user_data = local_player_data;
-    local_player.entity = *evnt->entity;
+    chat::add_message("Connected to " + GlobalConfig.server_address);
 }
 
 void on_librg_disconnect(librg_event* evnt) {
 
     chat::add_message("Disconnected from " + GlobalConfig.server_address + ".");
-    if(local_player.ped) {
-        player_despawn(local_player.ped);
-        local_player.ped = nullptr;
+    auto player = get_local_player();
+    if(player && player->ped) {
+        player_despawn(player->ped);
+        player->ped = nullptr;
     }
+
     mod_librg_connect();
 }
 
@@ -40,6 +44,9 @@ void on_librg_entity_create(librg_event* evnt) {
         case TYPE_VEHICLE: {
             vehicle_entitycreate(evnt);
         } break;
+        case TYPE_DOOR: {
+            door_entitycreate(evnt);
+        } break;
     }
 }
 
@@ -47,9 +54,6 @@ void on_librg_entity_update(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
             player_entityupdate(evnt);
-        } break;
-        case TYPE_WEAPONDROP: {
-            
         } break;
         case TYPE_VEHICLE: {
             vehicle_entityupdate(evnt);
@@ -68,6 +72,9 @@ void on_librg_entity_remove(librg_event* evnt) {
         case TYPE_VEHICLE: {
             vehicle_entityremove(evnt);
         } break;
+        case TYPE_DOOR: {
+            door_entityremove(evnt);
+        } break;
     }
 }
 
@@ -76,10 +83,11 @@ void on_librg_clientstreamer_update(librg_event* evnt) {
         case TYPE_PLAYER: {
             player_clientstreamer_update(evnt);
         } break;
-        case TYPE_WEAPONDROP: {
-        } break;
         case TYPE_VEHICLE: {
             vehicle_clientstreamer_update(evnt);
+        } break;
+        case TYPE_DOOR: {
+            door_clientstreamer_update(evnt);
         } break;
     }
 }

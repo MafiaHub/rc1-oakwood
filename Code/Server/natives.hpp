@@ -72,8 +72,27 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
-    void oak_player_respawn(librg_entity *entity) {
-        player_send_respawn(entity);
+    librg_entity* oak_player_respawn(librg_entity *entity) {
+       
+        auto new_player_data = new mafia_player;
+        auto old_player = (mafia_player*)entity->user_data;
+        if(old_player) {
+            memcpy(new_player_data, old_player, sizeof(mafia_player));
+
+            auto new_entity = librg_entity_create(&network_context, TYPE_PLAYER);
+            librg_entity_control_set(&network_context, new_entity->id, entity->control_peer);
+            
+            delete old_player;
+            entity->user_data = nullptr;
+            librg_entity_control_remove(&network_context, entity->id);
+            librg_entity_destroy(&network_context, entity->id);
+
+            new_entity->user_data = new_player_data;
+            player_send_spawn(new_entity);
+            return new_entity;
+        }
+
+        return nullptr;
     }
 
     OAKGEN_NATIVE();
@@ -273,7 +292,7 @@ extern "C" {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
         
         auto vehicle = (mafia_vehicle*)entity->user_data;
-        vehicle->rotation = dir;
+        vehicle->rot_forward = dir;
 
         librg_send(&network_context, NETWORK_VEHICLE_SET_DIR, data, {
             librg_data_went(&data, entity->id);

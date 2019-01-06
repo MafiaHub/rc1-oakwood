@@ -95,7 +95,7 @@ namespace cef {
         }
 
         void OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo& custom_cursor_info) override {
-            SetClassLong((HWND)MafiaSDK::GetMainWindow(), GCL_HCURSOR, (LONG)cursor);
+            SetClassLong((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), GCL_HCURSOR, (LONG)cursor);
         }
 
         void OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height) override {
@@ -335,7 +335,6 @@ namespace cef {
     object* browser_create(IDirect3DDevice9* device, const char *url, int w, int h, int zindex) {
 
         object* new_browser = new object;
-        HWND win_id = (HWND)MafiaSDK::GetMainWindow();
 
         CefWindowInfo window_info;
         window_info.SetAsWindowless(NULL);
@@ -367,7 +366,7 @@ namespace cef {
                 if (handle && handle->renderer) {
 
                     handle->renderer->GetTexture([](auto texture) {
-                        if (texture) {
+                        if (texture != nullptr) {
                             texture->Release();
                             texture = nullptr;
                         }

@@ -17,7 +17,9 @@ namespace hooks
     MafiaSDK::C_Actor* Scene_CreateActor_Filter(MafiaSDK::C_Mission_Enum::ObjectTypes type, DWORD frame) {
         
         for(auto forbidden_type : forbidden_objects) {
-            if(type == forbidden_type) {
+            if(type == forbidden_type && frame != NULL) {
+
+                MafiaSDK::I3D_Frame* frame_ex = (MafiaSDK::I3D_Frame*)frame;
                 //NOTE(DavoSK): Dont spawn actor but we need to call destructor of frame
                 __asm {
                     mov eax, frame
@@ -72,7 +74,7 @@ namespace hooks
 
 void scene_init() {
 
-    //Scene
+    // Scene
     MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&hooks::Scene_CreateActor);
 
     auto vd_value1 = hooks::vd_value - 50.0f;

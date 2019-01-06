@@ -1,27 +1,30 @@
 #pragma once
-namespace effects {
+namespace effects 
+{
     extern bool is_enabled;
     inline void load(std::string effect_file);
+} // namespace effects
+
+namespace graphics 
+{
+    inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9 *device);
 }
 
-namespace graphics {
-    inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device);
-}
-
-namespace chat {
-
-    struct ChatCommand {
+namespace chat 
+{
+    struct ChatCommand 
+    {
         std::string command_name;
         std::function<void(std::vector<std::string>)> command_ptr;
     };
-    
-    cef::object* main_browser = nullptr;
-    std::vector<ChatCommand> chat_commands;    
+
+    cef::object *main_browser = nullptr;
+    std::vector<ChatCommand> chat_commands;
     constexpr unsigned int VK_T = 0x54;
     KeyToggle key_chat_open(VK_T);
-  
-    auto register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
-        if(ptr != nullptr) {
+
+    auto register_command(const std::string &name, std::function<void(std::vector<std::string>)> ptr) {
+        if (ptr != nullptr) {
             chat_commands.push_back({name, ptr});
         }
     }
@@ -31,29 +34,27 @@ namespace chat {
     }
 
     auto parse_command(std::string command_str) {
-        if(!command_str.empty()) {
-            for(auto command : chat_commands) {
-                if(command_str.find(command.command_name) != std::string::npos) {
-                    if(command.command_ptr != nullptr) {
+        if (!command_str.empty()) {
+            for (auto command : chat_commands) {
+                if (command_str.find(command.command_name) != std::string::npos) {
+                    if (command.command_ptr != nullptr) {
                         command.command_ptr(get_vector_of_args(command_str));
                         return true;
                     }
                 }
             }
         }
-        
+
         return false;
     }
 
     auto add_message(std::string new_msg) {
         if (main_browser) {
             CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
-            json send_msg = {
-                { "type", "chat-msg" },
-                { "msg", new_msg }
-            };
+            json send_msg = {{"type", "chat-msg"}, {"msg", new_msg}};
 
-            auto send_args = msg->GetArgumentList(); {
+            auto send_args = msg->GetArgumentList();
+            {
                 send_args->SetSize(1);
                 send_args->SetString(0, send_msg.dump());
             };
@@ -64,18 +65,13 @@ namespace chat {
 
     auto update() {
         if (key_chat_open) {
-
             // block input when T only when we dont writting
             // we unblock input from cef handle
-            if(!input::InputState.input_blocked)
-                input::block_input(true);
+            if (!input::InputState.input_blocked) input::block_input(true);
 
             if (main_browser) {
                 CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
-                json send_msg = {
-                    { "type", "update-input" },
-                    { "blocked", input::InputState.input_blocked }
-                };
+                json send_msg = {{"type", "update-input"}, {"blocked", input::InputState.input_blocked}};
 
                 auto send_args = msg->GetArgumentList();
                 send_args->SetSize(1);
@@ -84,26 +80,28 @@ namespace chat {
             }
         }
     }
+    
+    auto load_browser() {
+        if (!global_device) return;
 
-    auto init(IDirect3DDevice9* device) {
+        auto desc = graphics::get_backbuffer_desc(global_device);
+        chat::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/chat.html").c_str(), desc.Width, desc.Height, 1);
+    }
+
+    auto init(IDirect3DDevice9 *device) {
 
         auto back_buffer = graphics::get_backbuffer_desc(device);
-        auto url = GlobalConfig.localpath + "static\\chat.html";
-
-        main_browser = cef::browser_create(device, url.c_str(), back_buffer.Width, back_buffer.Height, 1);
-
-        cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) {
-            input::block_input(atoi(args->GetString(1).ToString().c_str()));
+        
+        cef::register_native("update-input", [=](CefRefPtr<CefListValue> args) { 
+            input::block_input(atoi(args->GetString(1).ToString().c_str())); 
         });
 
         cef::register_native("chat-msg", [=](CefRefPtr<CefListValue> args) {
-
-            auto message = args->GetString(1).ToString();   
+            auto message = args->GetString(1).ToString();
             if (!message.empty()) {
                 bool is_command = false;
 
-                if (message[0] == '/')
-                    is_command = parse_command(message);
+                if (message[0] == '/') is_command = parse_command(message);
 
                 if (!is_command && librg_is_connected(&network_context)) {
                     librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
@@ -114,18 +112,25 @@ namespace chat {
             }
         });
 
+        register_command("/pete", [&](std::vector<std::string> args) {
+            auto player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->GetInterface();
+            if (player) {
+                player->humanObject.entity.position = {61.4763f, 4.72524f, 107.708f};
+            }
+        });
+
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             exit(0);
         });
 
-        register_command("/npc", [&](std::vector<std::string> args) {
-            librg_send(&network_context, NETWORK_NPC_CREATE, data, {});
+        register_command("/npc", [&](std::vector<std::string> args) { 
+            librg_send(&network_context, NETWORK_NPC_CREATE, data, {}); 
         });
-        
+
         register_command("/shade", [&](std::vector<std::string> args) {
             effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
-            effects::is_enabled = true;
+            effects::is_enabled = !effects::is_enabled;
         });
 
         register_command("/savepos", [&](std::vector<std::string> args) {
@@ -134,11 +139,11 @@ namespace chat {
             std::ofstream pos_file("positions.txt");
             auto pos = local_player->GetInterface()->humanObject.entity.position;
             auto dir = local_player->GetInterface()->humanObject.entity.rotation;
-            zpl_vec3 position  = EXPAND_VEC(pos);
+            zpl_vec3 position = EXPAND_VEC(pos);
             zpl_vec3 direction = EXPAND_VEC(dir);
             auto rot = DirToRotation180(direction);
 
             pos_file << position.x << " " << position.y << " " << position.z << ", " << rot << std::endl;
         });
     }
-}
+} // namespace chat

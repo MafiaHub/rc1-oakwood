@@ -6,7 +6,7 @@
 # not weird folders
 Bin
 Build
-Vendors/Cef
-Tools/oakgen.exe
+Vendors/[Cc]ef
+Tools/[Oo]akgen.exe
 Tools/premake/cache
 *.code-workspace

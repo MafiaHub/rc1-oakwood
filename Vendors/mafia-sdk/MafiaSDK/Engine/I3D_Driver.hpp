@@ -19,7 +19,8 @@ limitations under the License.
 
 namespace MafiaSDK
 {
-    constexpr unsigned long I3D_Driver_Const = 0x101C5298;
+    //constexpr unsigned long I3D_Driver_Const = 0x101C5298;
+    constexpr unsigned long I3D_Driver_Const = 0x00647ED8;
 	namespace I3D_Driver_Enum
 	{
 		enum FunctionsAddresses

@@ -50,33 +50,39 @@ std::vector<std::pair<zpl_vec3, zpl_vec3>> camera_follow_points = {
 
 auto interpolate_cam(f64 delta_time) {
     auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
-    auto from = camera_follow_points.at(transition_idx);
-    auto to = camera_follow_points.at(transition_idx + 1);
+    if (cam) {
+        cam->SetCar(nullptr);
+        cam->SetPlayer(nullptr);
+        cam->Unlock();
 
-    if (passed_time > 0.8f && passed_time < 0.82f) {
-        MafiaSDK::GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+        auto from = camera_follow_points.at(transition_idx);
+        auto to = camera_follow_points.at(transition_idx + 1);
+
+        if (passed_time > 0.8f && passed_time < 0.82f) {
+            MafiaSDK::GetIndicators()->FadeInOutScreen(true, 1000, 0x000000);
+        }
+
+        if (passed_time > 1.0f) {		
+            if (transition_idx + 2 > camera_follow_points.size() - 1)
+                transition_idx = 0;
+            else 
+                transition_idx += 2;
+
+            MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
+            passed_time = 0.0f;
+        }
+
+        zpl_vec3 dest_pos;
+        zpl_vec3_lerp(&dest_pos, from.first, to.first, passed_time);
+
+        zpl_vec3 dest_rot;
+        zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
+
+        S_vector pos = EXPAND_VEC(dest_pos);
+        S_vector rot = EXPAND_VEC(dest_rot);
+        cam->LockAt(pos, rot);
+        passed_time += delta_time * 0.11f;
     }
-
-    if (passed_time > 1.0f) {		
-        if (transition_idx + 2 > camera_follow_points.size() - 1)
-            transition_idx = 0;
-        else 
-            transition_idx += 2;
-
-        MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
-        passed_time = 0.0f;
-    }
-
-    zpl_vec3 dest_pos;
-    zpl_vec3_lerp(&dest_pos, from.first, to.first, passed_time);
-
-    zpl_vec3 dest_rot;
-    zpl_vec3_lerp(&dest_rot, from.second, to.second, passed_time);
-
-    S_vector pos = EXPAND_VEC(dest_pos);
-    S_vector rot = EXPAND_VEC(dest_rot);
-    cam->LockAt(pos, rot);
-    passed_time += delta_time * 0.11f;
 }
 
 f64 delta_time = 0.0f;
@@ -88,6 +94,9 @@ auto mod_bind_events() {
     drop_init();
 
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
+        
+        //TODO(DavoSK): Move it to sdk
+        *(BOOL*)(0x006C406C) = true;
 
         auto mission_id = MafiaSDK::GetCurrentMissionID();
         if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 
@@ -119,7 +128,7 @@ auto mod_bind_events() {
     MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
 
         delta_time = zpl_time_now() - last_time;
-
+    
         if (!librg_is_connected(&network_context))
             interpolate_cam(delta_time);
 
@@ -137,7 +146,7 @@ auto mod_bind_events() {
 
             case TYPE_PLAYER: {
                 auto player = (mafia_player*)entity->user_data;
-                if (player && player->ped && player->streamer_entity_id != local_player.entity.id) {
+                if (player && player->ped && player->streamer_entity_id != local_player.entity_id) {
                     player_game_tick(player, delta_time);
                 }
             } break;

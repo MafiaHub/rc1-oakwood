@@ -14,12 +14,15 @@ auto player_spawn(zpl_vec3 position,
     S_vector default_pos = EXPAND_VEC(position);
 
     auto player_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while(MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL))  {
+        printf("Error: Unable to create player model <%s> !\n", model);
+    }
+
     player_model->SetName("testing_player");
     player_model->SetScale(default_scale);
-    MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL);
-    player_model->Update();
     player_model->SetWorldPos(default_pos);
-    
+    player_model->Update();
+
     MafiaSDK::C_Player *new_ped = nullptr;
 
     if (is_local_player)
@@ -36,17 +39,27 @@ auto player_spawn(zpl_vec3 position,
     new_ped->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
-    if (is_local_player) {
-        MafiaSDK::GetMission()->GetGame()->SetLocalPlayer(new_ped);
-        auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
-        if (camera) {
-            camera->SetCar(NULL);
-            camera->SetPlayer(new_ped);
+    if (is_local_player) { 
+        auto game = MafiaSDK::GetMission()->GetGame();
+        if (game) {
+            game->GetCamera()->SetCar(NULL);
+            game->GetCamera()->SetMode(true, 1);
+            game->GetCamera()->SetPlayer(new_ped);
+            game->SetLocalPlayer(new_ped);
         }
 
-        auto local_userdata = (mafia_player*)local_player.entity.user_data;
-        local_userdata->ped = new_ped;
-        strcpy(local_userdata->name, GlobalConfig.username.c_str());
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
+
+        auto player = get_local_player();
+        if (player) {
+            local_player.dead = false;
+            if (player->ped) {
+                player_despawn(player->ped);
+            }
+
+            player->ped = new_ped;
+            strcpy(player->name, GlobalConfig.username.c_str());
+        }
     }
 
     new_ped->GetInterface()->humanObject.health = health;
@@ -56,22 +69,23 @@ auto player_spawn(zpl_vec3 position,
         new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
     }
 
+    //Foreach every weapon in inventory and give it to the player
     for (size_t i = 0; i < 8; i++) {
         S_GameItem* item = (S_GameItem*)&inventory.items[i];
         if (item->weaponId != expectedWeaponId) {
-            ((MafiaSDK::C_Human*)new_ped)->G_Inventory_AddItem(*item);
+            new_ped->G_Inventory_AddItem(*item);
         }
     }
+    
+    //TODO(DavoSK): Make it more fancy !
+    //Select right weapon
+    hooks::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
+    new_ped->Do_ChangeWeapon(0, 0);
+    new_ped->ChangeWeaponModel();
 
-    ((MafiaSDK::C_Human*)new_ped)->G_Inventory_SelectByID(current_wep);
-
-    if (!is_local_player && (current_wep != 0 || current_wep != -1))
-        ((MafiaSDK::C_Human*)new_ped)->Do_ChangeWeapon(0, 0);
-
-    ((MafiaSDK::C_Human*)new_ped)->ChangeWeaponModel();
-
+    //If player have hands do holster
     if (current_wep == 0)
-        ((MafiaSDK::C_Human*)new_ped)->Do_Holster();
+        new_ped->Do_Holster();
 
     return new_ped;
 }

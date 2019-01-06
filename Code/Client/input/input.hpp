@@ -123,11 +123,13 @@ namespace input {
     */
     inline auto hook_window() {
 
-        auto mod_win32_hwnd_parent = MafiaSDK::GetMainWindow();
+        MafiaSDK::GetIGraph()->SetAppName("Mafia Oakwood");
+
+        auto mod_win32_hwnd_parent = (HWND)MafiaSDK::GetIGraph()->GetMainHWND();
         mod_wndproc_original_keyboard = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd_parent, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_keyboard);
         SetWindowLongW(mod_win32_hwnd_parent, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd_parent, GWL_WNDPROC));
-
-        auto mod_win32_hwnd = MafiaSDK::GetChildWindow();
+        
+        auto mod_win32_hwnd = (HWND)MafiaSDK::GetIGraph()->GetChildHWND();
         mod_wndproc_original_mouse = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_mouse);
         SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
     }

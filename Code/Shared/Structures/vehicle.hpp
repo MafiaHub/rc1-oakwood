@@ -10,6 +10,10 @@ struct mafia_vehicle_deform {
     zpl_vec3 position;
 };
 
+enum {
+    CLIENTSIDE_VEHICLE_STREAMER_REMOVED = (1 << 10)
+};
+
 struct mafia_vehicle {
 	mafia_vehicle() {
 		zpl_zero_item(this);
@@ -41,8 +45,10 @@ struct mafia_vehicle {
 	float engine_rpm;
 	float accelerating;
 	u8 is_car_in_radar;
-    zpl_vec3 rotation;
-	zpl_vec3 rotation_second;
+    zpl_vec3 rot_forward;
+	zpl_vec3 rot_right;
+    zpl_vec3 rot_up;
+    zpl_vec3 rot_speed;
 	zpl_vec3 speed;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
@@ -51,28 +57,19 @@ struct mafia_vehicle {
 	#ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
 	b32 wants_explode;
-
+    u64 clientside_flags;
 	/* interpolation table */
 	struct {
-		struct {
-			zpl_vec3 start;
-			zpl_vec3 target;
-			zpl_vec3 error;
-			f32  lastAlpha;
-			f64  startTime;
-			f64  finishTime;
-		} pos;
-
 		struct rot_data {
 			zpl_vec3 start;
 			zpl_vec3 target;
 			zpl_vec3 error;
-			f32  lastAlpha;
-			f64  startTime;
-			f64  finishTime;
-		} rot, rot_second;
+			f32  last_alpha;
+			f64  start_time;
+			f64  finish_time;
+		} pos, rot_forward, rot_up;
 
-		u32 forceLocalZCounter;
+		u32 force_localz_counter;
 	} interp;
 #endif
 };

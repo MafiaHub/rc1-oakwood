@@ -75,9 +75,13 @@ struct _GlobalConfig {
     std::string server_address;
     std::string username;
     float view_distance;
-
     std::string localpath;
     std::string gamepath;
+    // NOTE(DavoSK): Better result with high delay values for vehicle interpolation
+    // Possible cuz of overinterpolation protection
+    // TODO(DavoSK): Find real good value
+    float interp_time_vehicle = 4.0f;
+    float interp_time_player = 0.08f;
 } GlobalConfig;
 
 /*

@@ -1,15 +1,34 @@
 #pragma once
-
 struct local_player_data {
-    local_player_data() :
-        ped(nullptr), 
+    local_player_data() : 
         dead(false)  {
     }
-    MafiaSDK::C_Player* ped;
-    librg_entity entity;
+
+    u32 entity_id;
     zpl_vec3 pose;
     bool dead;
 } local_player;
+
+inline auto get_local_entity() {
+    return librg_entity_fetch(&network_context, local_player.entity_id);
+}
+
+inline auto get_local_player() -> mafia_player* {
+    auto local_ent = get_local_entity();
+    if (local_ent) {
+        return (mafia_player*)local_ent->user_data;
+    }
+
+    return nullptr;
+}
+
+inline auto get_local_ped() -> MafiaSDK::C_Player* {
+    auto player = get_local_player();
+    if (player) {
+        return (MafiaSDK::C_Player*)player->ped;
+    }
+    return nullptr;
+}
 
 inline auto get_player_from_base(void* base) -> librg_entity* {
 
@@ -36,12 +55,13 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
 auto player_inventory_send() {
     player_inventory inv = {0};
 
-    if (!local_player.ped) {
+    auto local_ped = get_local_ped();
+    if (!local_ped) {
         mod_log("[INV SEND] Local player doesn't exist!");
         return;
     }
 
-    memcpy(&inv, &((MafiaSDK::C_Human *)local_player.ped)->GetInterface()->inventory, sizeof(player_inventory));
+    memcpy(&inv, &((MafiaSDK::C_Human *)local_ped)->GetInterface()->inventory, sizeof(player_inventory));
 
     librg_send(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, data, {
         librg_data_wptr(&data, &inv, sizeof(player_inventory));
@@ -53,6 +73,26 @@ auto player_inventory_send() {
 * todo add reason killer and so one ...
 */
 inline auto local_player_died() {
+
+    if (local_player.dead) return;
+
+    if (!local_player.dead) 
+        local_player.dead = true;
+    
+    auto player = get_local_player();
+    if (player) {
+
+        if (player->ped) {
+            auto veh = player->ped->GetInterface()->playersCar;
+            if (veh) {
+                MafiaSDK::C_Player* current_player = (MafiaSDK::C_Player*)player->ped;
+                current_player->LockControls(TRUE);
+                player->ped->Intern_FromCar();
+            }
+        }
+        //player->ped = nullptr;
+    }
+
     librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
 }
 
@@ -136,11 +176,13 @@ inline auto local_player_weaponpickup(librg_entity* item_entity) -> void {
     });
 
     //force weapon change for inventory sync (weird rules wen wep is picked up, some weapons have priority and sheet)
-    auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
-    local_player.ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
-    local_player.ped->Do_ChangeWeapon(0, 0);
-
-    player_inventory_send();
+    auto local_ped = get_local_ped();
+    if (local_ped) {
+        auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
+        local_ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
+        local_ped->Do_ChangeWeapon(0, 0);
+        player_inventory_send();
+    }
 }
 
 inline auto local_player_throwgrenade(const S_vector & pos) {
@@ -165,6 +207,25 @@ inline auto local_player_useactor(DWORD actor, int action, int seat_id, int unk3
     });
 }
 
+inline auto local_player_use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state) {
+    
+    if(!door || !librg_is_connected(&network_context)) return;
+    
+    auto door_int = door->GetInterface();
+    if (door_int && door_int->entity.frame) {
+
+        auto door_frame_name = door_int->entity.frame->GetInterface()->name;
+        auto door_name_len = strlen(door_frame_name);
+        if (door_name_len) {
+            librg_send(&network_context, NETWORK_PLAYER_USE_DOORS, data, {
+                librg_data_wu32(&data, door_name_len);
+                librg_data_wptr(&data, door_frame_name, door_name_len);
+                librg_data_wu32(&data, state);
+            });
+        }
+    }
+}
+
 inline auto local_player_hijack(DWORD car, int seat) {
 
     auto vehicle_ent = get_vehicle_from_base((void*)car);
@@ -174,6 +235,37 @@ inline auto local_player_hijack(DWORD car, int seat) {
         librg_data_wu32(&data, vehicle_ent->id);
         librg_data_wi32(&data, seat);
     });
+}
+
+inline auto local_player_remove_temporary_actor(void* base) {
+
+    auto player_ent = get_player_from_base(base);
+    if (player_ent) {
+        auto player = (mafia_player*)player_ent->user_data;
+        if (player && player->ped) {
+            printf("Deallocate player '%s'\n", player->name);
+            delete player;
+            player_ent->user_data = nullptr;
+        }
+    }
+
+    auto vehicle_ent = get_vehicle_from_base(base);
+    if (vehicle_ent) {
+        auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+        if (vehicle) {
+            if (!(vehicle->clientside_flags & CLIENTSIDE_VEHICLE_STREAMER_REMOVED)) {
+                librg_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, data, {
+                    librg_data_wu32(&data, vehicle_ent->id);
+                });
+            }
+            printf("Deallocate vehicle '%d'\n", vehicle_ent->id);
+            delete vehicle;
+            vehicle_ent->user_data = nullptr;
+        }
+    }
+}
+
+inline auto local_player_car_destruct(void* base) {
 }
 
 #include "Game/Hooks/local_player.hpp"

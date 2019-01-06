@@ -10,7 +10,7 @@
     #define default_gamemode "SampleMod.dylib"
 #endif
 
-constexpr const char* config_file_name = "server.json";
+constexpr const char* config_file_name = "config/server.json";
 static const char *mod_default_config = "max_players = 16\n"\
     "name = \"default oakwood server\""\
     "host = \"\""\

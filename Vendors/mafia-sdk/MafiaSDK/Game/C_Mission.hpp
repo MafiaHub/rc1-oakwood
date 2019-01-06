@@ -1,5 +1,5 @@
-﻿/*
-Copyright 2017 Dávid Svitana
+/*
+Copyright 2018 Dávid Svitana
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,7 +24,11 @@ namespace MafiaSDK
         enum FunctionAddresses
         {
             CLASS_CMISSION = C_MISSION_CLASS,
-            CreateActor = 0x53F7D0,
+            CreateActor = 0x0053F7D0,
+            AddActor = 0x0053FEA0,
+            UnloadActor = 0x00540080,
+            DelActor = 0x00540130,
+            DelActors = 0x00540240,
             FindActorByName = 0x00540490,
             Open = 0x005409D0,
             Close = 0x005405E0
@@ -84,7 +88,6 @@ namespace MafiaSDK
 
         C_Actor* CreateActor(C_Mission_Enum::ObjectTypes actorType)
         {
-            C_Actor* returnActor = nullptr;
             unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::CreateActor;
 
             __asm
@@ -92,15 +95,60 @@ namespace MafiaSDK
                 mov ecx, this
                 push actorType
                 call funcAddress
-                mov returnActor, eax
+               
             }
+        }
 
-            return returnActor;
+        void AddActor(C_Actor* actor, BOOL unk)
+        {
+            unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::AddActor;
+
+            __asm
+            {
+                push unk
+                push actor
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void UnloadActor(C_Actor* actor)
+        {
+            unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::UnloadActor;
+
+            __asm
+            {
+                push actor
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void DelActor(C_Actor* actor)
+        {
+            unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::DelActor;
+
+            __asm
+            {
+                push actor
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void DelActors()
+        {
+            unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::DelActors;
+
+            __asm
+            {
+                mov ecx, this
+                call funcAddress
+            }
         }
 
         C_Actor* FindActorByName(const char* actorName)
         {
-            C_Actor* returnActor = nullptr;
             unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::FindActorByName;
 
             __asm
@@ -108,10 +156,7 @@ namespace MafiaSDK
                 push actorName
                 mov ecx, this
                 call funcAddress
-                mov returnActor, eax
             }
-
-            return returnActor;
         }
 
         void Close()

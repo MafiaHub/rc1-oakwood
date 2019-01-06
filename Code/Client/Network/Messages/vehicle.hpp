@@ -152,6 +152,6 @@ librg_network_add(&network_context, NETWORK_VEHICLE_SET_DIR, [](librg_message* m
     if (entity && entity->user_data) {
         auto vehicle = (mafia_vehicle*)entity->user_data;
 
-        librg_data_rptr(msg->data, &vehicle->rotation, sizeof(vehicle->rotation));
+        librg_data_rptr(msg->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     }
 });

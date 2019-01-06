@@ -31,7 +31,7 @@ namespace MafiaSDK
     class C_I3D_cache_9I3D_model_
     {
     public:
-        void Open(I3D_Model* model, char const * modelName, unsigned int unk1, void* unk2, void* unk3, void* unk4) 
+        bool Open(I3D_Model* model, char const * modelName, unsigned int unk1, void* unk2, void* unk3, void* unk4) 
         {
             unsigned long functionAddress = C_I3D_cache_9I3D_model_Enum::FunctionsAddresses::Open;
 

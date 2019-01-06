@@ -145,10 +145,10 @@ Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& mo
 
 Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
 {
-    if (modelID < 0 || modelID >= zpl_count_of(VehicleCatalogue))
+    if (modelID < 0 || modelID >= VehicleCatalogue.size())
         return nullptr;
 
-    auto modelName = std::string(VehicleCatalogue[modelID]) + ".i3d";
+    auto modelName = VehicleCatalogue.at(modelID).second.c_str();
 
     return SpawnVehicle(pos, angle, modelName);
 }
@@ -209,7 +209,8 @@ void Player::Spawn()
 
 void Player::Respawn()
 {
-    __gm->mod->vtable.player_respawn(entity);
+    this->entity = __gm->mod->vtable.player_respawn(entity);
+    this->ped = (mafia_player*)this->entity->user_data;
 }
 
 void Player::SetModel(std::string name)
@@ -380,7 +381,7 @@ zpl_vec3 Vehicle::GetDirection()
 {
     auto vehicle = (mafia_vehicle*)entity->user_data;
     if (vehicle) {
-        return vehicle->rotation;
+        return vehicle->rot_forward;
     } 
 
     return  { 0.0f, 0.0f, 0.0f };
@@ -394,6 +395,6 @@ void Vehicle::SetHeadingRotation(float angle)
 
 float Vehicle::GetHeadingRotation()
 {
-    auto angle = DirToRotation180(vehicle->rotation);
+    auto angle = DirToRotation180(vehicle->rot_forward);
     return angle;
 }

@@ -3,7 +3,6 @@ namespace effects {
     bool is_enabled = false;
     IDirect3DVertexBuffer9* vertex_buffer = nullptr;
     IDirect3DTexture9* back_buffer_texture = nullptr;
-    
     ID3DXEffect* effect = nullptr;
     D3DXMATRIX shader_matrix;
 

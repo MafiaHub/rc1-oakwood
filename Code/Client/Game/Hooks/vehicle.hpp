@@ -275,7 +275,7 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
     MemoryPatcher::InstallJmpHook(0x004E526B, (DWORD)&ChangeUpdateCarPos);
     MemoryPatcher::InstallJmpHook(0x004E5E9F, (DWORD)&ChangeUpdateCarPosCollision);
 
-    hooks::car_prepare_dropout_wheel_original = reinterpret_cast<hooks::C_car_Prepare_DropOut_Wheel_t>(
+    /*hooks::car_prepare_dropout_wheel_original = reinterpret_cast<hooks::C_car_Prepare_DropOut_Wheel_t>(
         DetourFunction((PBYTE)0x00426DD0, (PBYTE)&hooks::C_car_Prepare_DropOut_Wheel)
     );
 
@@ -283,12 +283,13 @@ __declspec(naked) void ChangeUpdateCarPosCollision() {
         DetourFunction((PBYTE)0x00426EC0, (PBYTE)&hooks::C_car_Prepare_DropOut)
     );
 
-    hooks::c_car_carexplosion_original = reinterpret_cast<hooks::C_car_CarExplosion_t>(
-        DetourFunction((PBYTE)0x00421D60, (PBYTE)&hooks::C_car_CarExplosion)
-    );
 
     //Deform
     hooks::c_vehicle_deform_original = reinterpret_cast<hooks::C_Vehicle_Deform_t>(
         DetourFunction((PBYTE)0x004D5610, (PBYTE)&hooks::C_Vehicle_Deform)
+    );*/
+
+    hooks::c_car_carexplosion_original = reinterpret_cast<hooks::C_car_CarExplosion_t>(
+        DetourFunction((PBYTE)0x00421D60, (PBYTE)&hooks::C_car_CarExplosion)
     );
 }
