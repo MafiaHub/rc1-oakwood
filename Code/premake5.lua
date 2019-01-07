@@ -65,10 +65,13 @@ workspace "Oakwood"
     include "Launcher"
     include "Client"
     include "Worker"
+    
+    group "Plugins"
+    
+    include "Plugins/SampleMod"
+    -- include "Plugins/LuaMod"
 
     group "Server"
 
-    -- include "Plugins/LuaMod"
-    include "Plugins/SampleMod"
     include "Server"
     include "Oakgen"

@@ -1,6 +1,7 @@
 project "SampleMod"
     language "C++"
     kind "SharedLib"
+    targetdir "../../../Bin/%{cfg.buildcfg}/plugins/"
     vpaths { ["*"] = "*" }
     files {
         "premake5.lua",

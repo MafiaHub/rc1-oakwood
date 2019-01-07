@@ -8,7 +8,7 @@ workspace "Oakwood Plugins"
     characterset "MBCS"
 
     location "../Build/"
-    targetdir "../Bin/%{cfg.buildcfg}/"
+    targetdir "../Bin/%{cfg.buildcfg}/plugins/"
 
     -- general configuration definition
     filter "platforms:x64"

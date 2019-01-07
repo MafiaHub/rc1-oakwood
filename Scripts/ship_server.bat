@@ -21,7 +21,7 @@ mkdir Server\config
 echo f|xcopy %pr%\Files\config\server.json Server\config\server.json
 
 mkdir Server\plugins
-echo f|xcopy %pr%\Bin\%build%\plugins\*.* Server\plugins\
+echo f|xcopy %pr%\Bin\%build%\plugins\*.dll Server\plugins\
 
 mkdir Server\static
 echo f|xcopy /S /Q %pr%\Files\static Server\static\
