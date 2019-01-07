@@ -149,7 +149,9 @@ librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
 
     if (sender_ent && sender_ent->user_data) {
         auto sender = (mafia_player*)sender_ent->user_data;
-        sender->ped->Intern_ForceDeath();
+
+        if (sender->ped)
+            sender->ped->Intern_ForceDeath();
     }
 });
 
