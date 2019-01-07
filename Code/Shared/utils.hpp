@@ -1,34 +1,5 @@
 #pragma once
 #ifdef _WIN32
-class KeyToggle {
-public:
-    KeyToggle(int key) :mKey(key), mActive(false) {}
-    operator bool() {
-        if (GetAsyncKeyState(mKey)) {
-            if (!mActive) {
-                mActive = true;
-                return true;
-            }
-        }
-        else
-            mActive = false;
-        return false;
-    }
-private:
-    int mKey;
-    bool mActive;
-};
-
-class KeyHeld {
-public:
-    KeyHeld(int key) :mKey(key) {}
-    operator bool() {
-        return GetAsyncKeyState(mKey);
-    }
-private:
-    int mKey;
-};
-
 inline auto alloc_console() {
     AllocConsole();
     std::setlocale(LC_ALL, "C");

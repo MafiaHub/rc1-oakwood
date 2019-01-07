@@ -20,7 +20,7 @@ namespace chat
     cef::object *main_browser = nullptr;
     std::unordered_map<std::string, ChatCommand> chat_commands;
     constexpr unsigned int VK_T = 0x54;
-    KeyToggle key_chat_open(VK_T);
+    input::KeyToggle key_chat_open(VK_T);
 
     auto register_command(const std::string &name, std::function<void(std::vector<std::string>)> ptr) {
         if (ptr != nullptr) {

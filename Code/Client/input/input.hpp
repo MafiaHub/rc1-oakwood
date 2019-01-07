@@ -13,6 +13,58 @@ namespace input {
         CDirectInputDevice8Proxy* devices[4];
         bool input_blocked = false;
     } InputState;
+
+    std::unordered_map<unsigned long, bool> key_states_unfocused;
+
+    class KeyToggle {
+    public:
+        KeyToggle(int key) :mKey(key), mActive(false) {}
+        operator bool() {
+
+            if (InputState.input_blocked) {
+                if (key_states_unfocused[mKey]) {
+                    if (!mActive) {
+                        mActive = true;
+                        return true;
+                    }
+                }
+                else mActive = false;
+            }
+            else {
+                unsigned short scan_code = MapVirtualKey(mKey, MAPVK_VK_TO_VSC_EX);
+                switch (mKey) {
+                case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
+                case VK_PRIOR: case VK_NEXT: case VK_END: case VK_HOME:
+                case VK_INSERT: case VK_DELETE: case VK_DIVIDE: case VK_NUMLOCK:
+                    scan_code += 0x80;
+                    break;
+                }
+
+                if (MafiaSDK::GetIGraph()->TestKey(scan_code)) {
+                    if (!mActive) {
+                        mActive = true;
+                        return true;
+                    }
+                }
+                else mActive = false;
+            }
+
+            return false;
+        }
+    private:
+        int mKey;
+        bool mActive;
+    };
+
+    /*class KeyHeld {
+    public:
+        KeyHeld(int key) :mKey(key) {}
+        operator bool() {
+            return GetAsyncKeyState(mKey);
+        }
+    private:
+        int mKey;
+    };*/
 }
 
 namespace cef {
@@ -46,8 +98,14 @@ namespace input {
     */
     LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     
-        //Process gui input only when our window is focues
+        // Process gui input only when our window is focues
         if(MafiaSDK::IsWindowFocused()) {
+            if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
+                key_states_unfocused[wParam] = true;
+             
+            if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
+                key_states_unfocused[wParam] = false;
+
             LRESULT result;
             bool pass;
             cef::inject_winproc(hWnd, uMsg, wParam, lParam, pass, result);

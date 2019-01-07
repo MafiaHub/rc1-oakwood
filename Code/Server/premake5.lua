@@ -16,11 +16,6 @@ project "Server"
         "../Shared/*.hpp",
         "../Shared/*.cpp"
     }
-    postbuildcommands {
-        -- copy additional files and stuff
-        "{COPY} " .. "../Files/plugins/ ../Bin/Debug/plugins",
-        "{COPY} " .. "../Files/plugins/ ../Bin/Release/plugins",
-    }
 	configuration "Debug"
 		debugdir "Bin/Debug"
 
@@ -28,15 +23,4 @@ project "Server"
         links {
             "pthread",
             "dl"
-        }
-
-    -- This piece of code explicitly copies newly built SampleMod into the plugins directory.
-    filter "configurations:Debug"
-        postbuildcommands {
-            "{COPY} " .. "../Bin/Debug/SampleMod.dll ../Bin/Debug/plugins/SampleMod.dll"
-        }
-
-    filter "configurations:Release"
-        postbuildcommands {
-            "{COPY} " .. "../Bin/Release/SampleMod.dll ../Bin/Release/plugins/SampleMod.dll"
         }

@@ -1,8 +1,4 @@
 #pragma once
-
-// todo
-KeyToggle myDebugKey(VK_F2);
-
 /* 
 * Simple file replacment router
 * Needs to be moved into separated file for later ussage
