@@ -10,26 +10,25 @@ inline auto mod_librg_connect() -> void;
 
 void on_librg_connect(librg_event* evnt) {
     
+    enet_peer_timeout(evnt->peer, 10, 5000, 10000);
+
     MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
-    effects::is_enabled = false;
-    
-    /* setup default timeout */
-    enet_peer_timeout(evnt->peer, 10, 5000, 10000);
-    chat::main_browser->visible = true;
 
-    chat::add_message("Connected to " + GlobalConfig.server_address);
+    effects::is_enabled = false;  
+    cefgui::main_browser->visible = true;
 }
 
 void on_librg_disconnect(librg_event* evnt) {
 
-    chat::add_message("Disconnected from " + GlobalConfig.server_address + ".");
+    cefgui::add_message("Disconnected from " + GlobalConfig.server_address + ".");
     auto player = get_local_player();
     if(player && player->ped) {
         player_despawn(player->ped);
         player->ped = nullptr;
     }
 
+    librg_network_stop(evnt->ctx);
     mod_librg_connect();
 }
 

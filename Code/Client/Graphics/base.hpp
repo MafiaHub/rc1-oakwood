@@ -127,7 +127,7 @@ namespace graphics {
         nameplates::init(device);
         effects::init(device);
         cef::init(device);
-        chat::init(device);
+        cefgui::init(device);
     }
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
@@ -181,7 +181,7 @@ namespace graphics {
 
         nameplates::render(device);
         effects::render(device);
-        chat::update();
+        cefgui::update();
         cef::tick();
         cef::render_browsers();
 

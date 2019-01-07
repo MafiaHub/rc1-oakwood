@@ -6,20 +6,20 @@ namespace effects
 {
     extern bool is_enabled;
     inline void load(std::string effect_file);
-} // namespace effects
+}
 
 namespace graphics 
 {
     inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9 *device);
 }
 
-namespace chat 
+namespace cefgui 
 {
-    using ChatCommand = std::function<void(std::vector<std::string>)>;
-
     cef::object *main_browser = nullptr;
+    using ChatCommand = std::function<void(std::vector<std::string>)>;
     std::unordered_map<std::string, ChatCommand> chat_commands;
     constexpr unsigned int VK_T = 0x54;
+
     input::KeyToggle key_chat_open(VK_T);
 
     auto register_command(const std::string &name, std::function<void(std::vector<std::string>)> ptr) {
@@ -40,8 +40,6 @@ namespace chat
             command_it->second(command_args);
             return true;
         }
-    
-
         return false;
     }
 
@@ -59,21 +57,16 @@ namespace chat
         if (main_browser) {
             CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
             json send_msg = {{"type", "chat-msg"}, {"msg", new_msg}};
-
             send_message(msg, send_msg);
         }
     }
 
     auto update() {
         if (key_chat_open) {
-            // block input when T only when we dont writting
-            // we unblock input from cef handle
             if (!input::InputState.input_blocked) input::block_input(true);
-
             if (main_browser) {
                 CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
-                json send_msg = {{"type", "update-input"}, {"blocked", input::InputState.input_blocked}};
-                
+                json send_msg = {{"type", "update-input"}, {"blocked", input::InputState.input_blocked}};                
                 send_message(msg, send_msg);
             }
         }
@@ -83,7 +76,7 @@ namespace chat
         if (!global_device) return;
 
         auto desc = graphics::get_backbuffer_desc(global_device);
-        chat::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/chat.html").c_str(), desc.Width, desc.Height, 1);
+        cefgui::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/app.html").c_str(), desc.Width, desc.Height, 1);
     }
 
     #include "Natives/cef_commands.hpp"

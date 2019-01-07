@@ -9,7 +9,7 @@
 inline auto mod_librg_connect() -> void {
     librg_address addr = { 27010, (char*)GlobalConfig.server_address.c_str()};
     librg_network_start(&network_context, addr);
-    chat::load_browser();
+    cefgui::load_browser();
 }
 
 inline auto mod_init_networking() {
