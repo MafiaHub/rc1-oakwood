@@ -144,6 +144,15 @@ librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *
     }
 });
 
+librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
+    auto sender_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+
+    if (sender_ent && sender_ent->user_data) {
+        auto sender = (mafia_player*)sender_ent->user_data;
+        sender->ped->Intern_ForceDeath();
+    }
+});
+
 librg_network_add(&network_context, NETWORK_PLAYER_USE_DOORS, [](librg_message *msg) {
     auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
     auto door_name_len = librg_data_ru32(msg->data);

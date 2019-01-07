@@ -231,19 +231,9 @@ extern "C" {
     OAKGEN_NATIVE();
     b32 oak_player_die(librg_entity *entity) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) { return false; };
-
-        zpl_vec3 dummy = {0};
-
-        librg_send(&network_context, NETWORK_PLAYER_HIT, data, {
-            librg_data_went(&data, entity->id);                    /* victimId */
-            librg_data_went(&data, entity->id);                    /* attackerId == self */
-            librg_data_wu32(&data, 1);                             /* hitType */
-            librg_data_wptr(&data, (void *)&dummy, sizeof(dummy)); /* unk0 */
-            librg_data_wptr(&data, (void *)&dummy, sizeof(dummy)); /* unk1 */
-            librg_data_wptr(&data, (void *)&dummy, sizeof(dummy)); /* unk2 */
-            librg_data_wf32(&data, 1000);                          /* damage */
-            librg_data_wf32(&data, -1000);                         /* health */
-            librg_data_wu32(&data, 2);                             /* bodyPart */
+        
+        librg_send(&network_context, NETWORK_PLAYER_DIE, data, {
+            librg_data_went(&data, entity->id);
         });
 
         return true;
