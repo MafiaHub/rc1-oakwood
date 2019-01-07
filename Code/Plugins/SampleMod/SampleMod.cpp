@@ -61,8 +61,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         add_weapons(player);
 
-        player->Spawn();
-        player->SetPosition(mode_generate_spawn());
+        player->Spawn(mode_generate_spawn());
     });
 
     gm->SetOnPlayerDisconnected([=](Player *player) { 
@@ -84,8 +83,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         add_weapons(player);
 
-        player->Spawn();
-        player->SetPosition(mode_generate_spawn());
+        player->Spawn(mode_generate_spawn());
 
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });

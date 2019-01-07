@@ -243,7 +243,6 @@ inline auto local_player_remove_temporary_actor(void* base) {
     if (player_ent) {
         auto player = (mafia_player*)player_ent->user_data;
         if (player && player->ped) {
-            printf("Deallocate player '%s'\n", player->name);
             delete player;
             player_ent->user_data = nullptr;
         }
@@ -258,7 +257,6 @@ inline auto local_player_remove_temporary_actor(void* base) {
                     librg_data_wu32(&data, vehicle_ent->id);
                 });
             }
-            printf("Deallocate vehicle '%d'\n", vehicle_ent->id);
             delete vehicle;
             vehicle_ent->user_data = nullptr;
         }

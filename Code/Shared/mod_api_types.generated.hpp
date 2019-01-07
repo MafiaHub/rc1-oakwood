@@ -16,10 +16,10 @@ typedef OAK_PLAYER_FADEOUT(oak_player_fadeout_ptr);
 #define OAK_PLAYER_INVENTORY_ADD(name) void name(librg_entity *entity, inventory_item *item)
 typedef OAK_PLAYER_INVENTORY_ADD(oak_player_inventory_add_ptr);
 
-#define OAK_PLAYER_SPAWN(name) void name(librg_entity *entity)
+#define OAK_PLAYER_SPAWN(name) void name(librg_entity *entity, zpl_vec3 pos)
 typedef OAK_PLAYER_SPAWN(oak_player_spawn_ptr);
 
-#define OAK_PLAYER_RESPAWN(name) librg_entity* name(librg_entity *entity)
+#define OAK_PLAYER_RESPAWN(name) librg_entity* name(librg_entity *entity, zpl_vec3 pos)
 typedef OAK_PLAYER_RESPAWN(oak_player_respawn_ptr);
 
 #define OAK_PLAYER_SET_MODEL(name) void name(librg_entity *entity, char *modelName)

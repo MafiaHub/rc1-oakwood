@@ -66,13 +66,15 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
-    void oak_player_spawn(librg_entity *entity) {
+    void oak_player_spawn(librg_entity *entity, zpl_vec3 pos) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER){};
+
+        entity->position = EXPAND_VEC(pos);
         player_send_spawn(entity);
     }
 
     OAKGEN_NATIVE();
-    librg_entity* oak_player_respawn(librg_entity *entity) {
-       
+    librg_entity* oak_player_respawn(librg_entity *entity, zpl_vec3 pos) {
         auto new_player_data = new mafia_player;
         auto old_player = (mafia_player*)entity->user_data;
         if(old_player) {
@@ -87,6 +89,7 @@ extern "C" {
             librg_entity_destroy(&network_context, entity->id);
 
             new_entity->user_data = new_player_data;
+            new_entity->position = EXPAND_VEC(pos);
             player_send_spawn(new_entity);
             return new_entity;
         }
@@ -229,7 +232,7 @@ extern "C" {
     OAKGEN_NATIVE();
     b32 oak_player_die(librg_entity *entity) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) { return false; };
-        
+
         librg_send(&network_context, NETWORK_PLAYER_DIE, data, {
             librg_data_went(&data, entity->id);
         });

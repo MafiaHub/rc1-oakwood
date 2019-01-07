@@ -206,14 +206,14 @@ Player::~Player()
 {
 }
 
-void Player::Spawn()
+void Player::Spawn(zpl_vec3 pos)
 {
-    __gm->mod->vtable.player_spawn(entity);
+    __gm->mod->vtable.player_spawn(entity, pos);
 }
 
-void Player::Respawn()
+void Player::Respawn(zpl_vec3 pos)
 {
-    this->entity = __gm->mod->vtable.player_respawn(entity);
+    this->entity = __gm->mod->vtable.player_respawn(entity, pos);
     this->ped = (mafia_player*)this->entity->user_data;
 }
 

@@ -152,7 +152,6 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
         -1,
         player->vehicle_id != -1);
 
-    printf("Spawn playa: '%s'\n", player->name);
     //TODO(DavoSK): Rework respawn/spawn
     if (player->ped != nullptr)
         player_despawn(player->ped);

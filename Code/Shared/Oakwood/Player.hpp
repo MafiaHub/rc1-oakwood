@@ -17,9 +17,9 @@ public:
     // Natives
     //
 
-    void Spawn();
-    void Respawn();
-    
+    void Spawn(zpl_vec3 pos);
+    void Respawn(zpl_vec3 pos);
+
     void SetModel(std::string name);
     void SetModelByID(int modelID);
     std::string GetModel();
