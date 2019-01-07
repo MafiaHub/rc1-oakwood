@@ -1,9 +1,7 @@
-# not weird files
 .vs
+.idea
 .vscode
 .DS_store
-
-# not weird folders
 Bin
 Build
 Shipping
