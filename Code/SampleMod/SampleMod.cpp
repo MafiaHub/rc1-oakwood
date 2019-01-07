@@ -98,7 +98,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     });
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
-        gm->ChatPrint("#AAAAAA<#FF0000" + player->GetName() + "#AAAAAA>#FFFFFF " + msg);
+        gm->ChatPrint("<" + player->GetName() + "> " + msg);
 
         return true;
     });
