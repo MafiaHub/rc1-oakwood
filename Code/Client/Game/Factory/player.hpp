@@ -13,7 +13,7 @@ auto player_spawn(zpl_vec3 position,
     S_vector default_scale = { 1.0f, 1.0f, 1.0f };
     S_vector default_pos = EXPAND_VEC(position);
 
-    auto player_model = MafiaSDK::I3DGetDriver()->CreateFrame<MafiaSDK::I3D_Model>(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    auto player_model = (MafiaSDK::I3D_Model*)MafiaSDK::I3DGetDriver()->CreateFrame(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
     while(MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL))  {
         printf("Error: Unable to create player model <%s> !\n", model);
     }

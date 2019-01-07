@@ -86,6 +86,8 @@ auto interpolate_cam(f64 delta_time) {
 }
 
 f64 delta_time = 0.0f;
+MafiaSDK::I3D_Material* blank_material = nullptr;
+
 auto mod_bind_events() {
 
     scene_init();
@@ -93,11 +95,13 @@ auto mod_bind_events() {
     vehicle_init();
     drop_init();
 
+  
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
         
         //TODO(DavoSK): Move it to sdk
         *(BOOL*)(0x006C406C) = true;
-
+        *(BYTE*)(0x101C59CC) = 1;
+      
         auto mission_id = MafiaSDK::GetCurrentMissionID();
         if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 
             mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE_NOC) {
