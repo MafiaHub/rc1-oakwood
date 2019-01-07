@@ -309,6 +309,11 @@ f32 Player::GetHealth()
     return ped->health / 2.0f;
 }
 
+void Player::Die()
+{
+    __gm->mod->vtable.player_die(entity);
+}
+
 Vehicle *Player::GetVehicle()
 {
     auto vehicle_ent = __gm->mod->vtable.player_get_vehicle(this->entity);

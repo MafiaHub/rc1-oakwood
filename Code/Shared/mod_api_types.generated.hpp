@@ -49,6 +49,9 @@ typedef OAK_PLAYER_GET_VEHICLE(oak_player_get_vehicle_ptr);
 #define OAK_PLAYER_PUT_TO_VEHICLE(name) b32 name(librg_entity *entity, librg_entity *vehicle_ent, int seat_id)
 typedef OAK_PLAYER_PUT_TO_VEHICLE(oak_player_put_to_vehicle_ptr);
 
+#define OAK_PLAYER_DIE(name) b32 name(librg_entity *entity)
+typedef OAK_PLAYER_DIE(oak_player_die_ptr);
+
 #define OAK_DROP_SPAWN(name) librg_entity* name(zpl_vec3 position, char *model, inventory_item item)
 typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
 

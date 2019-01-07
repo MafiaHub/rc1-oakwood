@@ -44,6 +44,7 @@ public:
 
     void SetHealth(f32 health); // input value gets multiplied by 2
     f32  GetHealth();           // output value gets divided by 2
+    void Die();
 
     Vehicle *GetVehicle();
     bool PutToVehicle(Vehicle *vehicle, int seatID);

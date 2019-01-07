@@ -230,6 +230,11 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         return true;
     });
+
+    gm->AddCommandHandler("/kill", [=](Player *player, ArgumentList args) {
+        player->Die();
+        return true;
+    });
 }
 
 OAK_MOD_SHUTDOWN {

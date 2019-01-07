@@ -15,6 +15,7 @@ vt->player_unlock_camera = oak_player_unlock_camera;
 vt->player_play_animation = oak_player_play_animation;
 vt->player_get_vehicle = oak_player_get_vehicle;
 vt->player_put_to_vehicle = oak_player_put_to_vehicle;
+vt->player_die = oak_player_die;
 vt->drop_spawn = oak_drop_spawn;
 vt->vehicle_spawn = oak_vehicle_spawn;
 vt->vehicle_show_on_radar = oak_vehicle_show_on_radar;
