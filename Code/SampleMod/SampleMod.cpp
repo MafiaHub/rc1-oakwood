@@ -114,7 +114,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        auto modelID = std::stoi(args[1]);
+        auto modelID = StringToInteger(args[1]);
 
         auto position = player->GetPosition();
         auto dir = ComputeDirVector(player->GetRotation());
@@ -137,7 +137,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        auto modelID = std::stoi(args[1]);
+        auto modelID = StringToInteger(args[1]);
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
 
         player->PutToVehicle(vehicle, 0);
@@ -156,7 +156,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        auto modelID = std::stoi(args[1]);
+        auto modelID = StringToInteger(args[1]);
 
         player->SetModelByID(modelID);
 
@@ -192,7 +192,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        auto playerId = std::stoi(args[1]);
+        auto playerId = StringToInteger(args[1]);
 
         if (playerId < 0 || playerId >= gm->players.GetNumberOfObjects()) {
             gm->SendMessageToPlayer("Invalid ID!", player);
@@ -216,6 +216,17 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         for (int32_t i = 0; i < gm->players.GetNumberOfObjects(); i++) {
             gm->SendMessageToPlayer(std::to_string(i)+". "+gm->players.GetObjectByID(i)->GetName(), player);
         }
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/pete", [=](Player *player, ArgumentList args) {
+        if (player->GetVehicle()) {
+            gm->SendMessageToPlayer("you need to be on foot!", player);
+            return true;
+        }
+
+        player->SetPosition({61.4763f, 4.72524f, 107.708f});
 
         return true;
     });

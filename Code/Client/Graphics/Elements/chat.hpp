@@ -112,13 +112,6 @@ namespace chat
             }
         });
 
-        register_command("/pete", [&](std::vector<std::string> args) {
-            auto player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()->GetInterface();
-            if (player) {
-                player->humanObject.entity.position = {61.4763f, 4.72524f, 107.708f};
-            }
-        });
-
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             exit(0);

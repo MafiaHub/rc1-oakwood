@@ -76,6 +76,31 @@ static float DirToRotation360(zpl_vec3 dir) {
     return val;
 }
 
+static int StringToInteger(std::string text) {
+    try {
+        return std::stoi(text);
+    }
+    catch (...) {
+        return -1;
+    }
+
+    return -1;
+}
+
+static float StringToReal(std::string text)
+{
+    try
+    {
+        return std::stof(text);
+    }
+    catch (...)
+    {
+        return -1;
+    }
+
+    return -1;
+}
+
 #include <sstream>
 
 static void html_encode_string(std::string& data) {
