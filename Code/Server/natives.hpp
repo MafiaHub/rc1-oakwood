@@ -113,8 +113,6 @@ extern "C" {
     OAKGEN_NATIVE();
     void oak_player_set_position(librg_entity *entity, zpl_vec3 position) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
-        entity->position = position;
-
         librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
             librg_data_went(&data, entity->id);
             librg_data_wptr(&data, &position, sizeof(position));
