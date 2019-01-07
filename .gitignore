@@ -11,3 +11,4 @@ Vendors/[Cc]ef
 Tools/[Oo]akgen.exe
 Tools/premake/cache
 *.code-workspace
+Code/Plugins/LuaMod/LuaBindings.hpp

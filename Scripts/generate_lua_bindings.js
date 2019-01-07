@@ -153,7 +153,7 @@ function generateBindings() {
 
 generateFromDir('../Code/Shared/Oakwood', (generatedFile)=> {
   
-    fs.writeFile("../Code/LuaMod/LuaBindings.hpp", generatedFile, function(err) {
+    fs.writeFile("../Code/Plugins/LuaMod/LuaBindings.hpp", generatedFile, function(err) {
         if(err) {
             return console.log(err);
         }
