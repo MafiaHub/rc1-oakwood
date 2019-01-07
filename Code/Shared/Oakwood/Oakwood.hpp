@@ -99,6 +99,12 @@ public:
     //
 
     void AddCommandHandler(std::string command, std::function<bool(Player*,ArgumentList)> callback);
+    
+    //
+    // Helpers
+    //
+    
+    std::string ImplodeArgumentList(ArgumentList args);
 
     //
     // Object pools

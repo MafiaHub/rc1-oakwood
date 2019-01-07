@@ -55,6 +55,31 @@ inline auto split(std::string str, std::string token) {
     return result;
 }
 
+#include <ostream>
+#include <sstream>
+#include <iterator>
+
+static std::string implode(const std::vector<std::string>& parts, int index=0, const char *sep=" ") {
+    switch (parts.size())
+    {
+    case 0:
+        return "";
+    
+    case 1:
+        return parts[0];
+    
+    default:
+        std::ostringstream os;
+        std::copy(parts.begin()+index, parts.end()-1, std::ostream_iterator<std::string>(os, sep));
+        os << *parts.rbegin();
+        return os.str();
+    }
+    
+    std::ostringstream imploded;
+    
+    return imploded.str();
+}
+
 static zpl_vec3 ComputeDirVector(float angle) {
     zpl_vec3 dir = { 0 };
     dir.x = (float)(::sin(zpl_to_radians(angle)));

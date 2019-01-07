@@ -187,6 +187,11 @@ void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*
     commands[command] = callback;
 }
 
+std::string GameMode::ImplodeArgumentList(ArgumentList args)
+{
+    return implode(args, 1);
+}
+
 //
 // Player
 //

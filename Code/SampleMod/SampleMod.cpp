@@ -235,6 +235,18 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         player->Die();
         return true;
     });
+
+    gm->AddCommandHandler("/anim", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("USAGE: /anim [name]", player);
+            return true;
+        }
+
+        auto animName = gm->ImplodeArgumentList(args);
+
+        player->PlayAnimation(animName);
+        return true;
+    });
 }
 
 OAK_MOD_SHUTDOWN {
