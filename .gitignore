@@ -6,6 +6,7 @@
 # not weird folders
 Bin
 Build
+Shipping
 Vendors/[Cc]ef
 Tools/[Oo]akgen.exe
 Tools/premake/cache

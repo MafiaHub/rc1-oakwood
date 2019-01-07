@@ -16,6 +16,11 @@ project "Server"
         "../Shared/*.hpp",
         "../Shared/*.cpp"
     }
+    postbuildcommands {
+        -- copy additional files and stuff
+        "{COPY} " .. "../Files/plugins/ ../Bin/Debug/plugins",
+        "{COPY} " .. "../Files/plugins/ ../Bin/Release/plugins",
+    }
 	configuration "Debug"
 		debugdir "Bin/Debug"
 

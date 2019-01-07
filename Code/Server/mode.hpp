@@ -17,7 +17,8 @@ auto init_api() {
 #define xstr(x) str(x)
 #define str(x) #x
 
-auto load_dll(const char *name) {
+auto load_dll(const char *mod_name) {
+    zpl_string name = zpl_string_sprintf_buf(zpl_heap(), "plugins/%s", mod_name);
     if (!zpl_file_exists(name)) {
         zpl_printf("Gamemode '%s' not found! Exiting...\n", name);
         getchar();
@@ -45,6 +46,8 @@ auto load_dll(const char *name) {
     zpl_printf("================================\n");
     zpl_printf("Gamemode '%s' has been loaded!\nAuthor: %s\nVersion: %s\n", gm.name.c_str(), gm.author.c_str(), gm.version.c_str());
     zpl_printf("================================\n");
+
+    zpl_string_free(name);
 }
 
 auto free_dll() {
