@@ -1,11 +1,10 @@
 premake.path = premake.path .. ";Build"
-workspace "Oakwood"
+workspace "Oakwood Plugins"
     configurations { "Debug", "Release" }
 
     pic "On"
     symbols "On"
 
-    startproject "Launcher"
     characterset "MBCS"
 
     location "../Build/"
@@ -45,30 +44,15 @@ workspace "Oakwood"
 
     includedirs {
         ".",
-        "./Shared",
+        "../shared",
+        "../vendors/librg"
     }
 
     --
     -- Source subprojects
     --
 
-    dofile("../Vendors/premake5.lua")()
+    group "Plugins"
 
-    group "Client"
-
-    -- additional tools
-    if os.target() == "windows" then
-    dofile("../Tools/premake/helpers/winsdk.lua")
-    dofile("../Tools/premake/helpers/wincef.lua")("cef_binary_3.3440.1806.g65046b7_windows32", true)
-    end
-
-    include "Launcher"
-    include "Client"
-    include "Worker"
-
-    group "Server"
-
-    -- include "Plugins/LuaMod"
-    include "Plugins/SampleMod"
-    include "Server"
-    include "Oakgen"
+    -- include "LuaMod"
+    include "SampleMod"

@@ -29,3 +29,14 @@ project "Server"
             "pthread",
             "dl"
         }
+
+    -- This piece of code explicitly copies newly built SampleMod into the plugins directory.
+    filter "configurations:Debug"
+        postbuildcommands {
+            "{COPY} " .. "../Bin/Debug/SampleMod.dll ../Bin/Debug/plugins/SampleMod.dll"
+        }
+
+    filter "configurations:Release"
+        postbuildcommands {
+            "{COPY} " .. "../Bin/Release/SampleMod.dll ../Bin/Release/plugins/SampleMod.dll"
+        }
