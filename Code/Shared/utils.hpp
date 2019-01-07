@@ -194,7 +194,7 @@ static std::string ConvertColoredString(std::string text) {
 
 #include <iterator>
 
-static std::vector<std::string> SplitStringByNewline(const std::string &subject)
+static std::vector<std::string> SplitStringByWhitespace(const std::string &subject)
 {
     std::istringstream ss{subject};
     using StrIt = std::istream_iterator<std::string>;

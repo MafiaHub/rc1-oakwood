@@ -80,7 +80,7 @@ GameMode::GameMode(oak_api *mod) {
             return false;
         }
         
-        auto args = SplitStringByNewline(msg);
+        auto args = SplitStringByWhitespace(msg);
 
         bool is_handled = false;
 
