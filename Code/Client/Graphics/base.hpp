@@ -3,15 +3,21 @@
 #include "Graphics/d3d9/CDirect3D9Proxy.h"
 #include "utils.hpp"
 
-namespace nameplates {
+namespace nameplates 
+{
     inline void init(IDirect3DDevice9* device);
     inline void device_lost();
     inline void device_reset(IDirect3DDevice9* device);
     inline void render(IDirect3DDevice9* device);
 }
 
-namespace graphics {
-    
+namespace gamemap
+{
+    inline void init(IDirect3DDevice9* device);
+}
+
+namespace graphics 
+{
     typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);
     d3dcreate9_t d3dcreate9_original = nullptr;
     ID3DXSprite* main_sprite = nullptr;
@@ -128,6 +134,7 @@ namespace graphics {
         effects::init(device);
         cef::init(device);
         cefgui::init(device);
+        gamemap::init(device);
     }
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
@@ -153,6 +160,7 @@ namespace graphics {
         nameplates::device_reset(device);
         effects::device_reset(device);
         cef::device_reset(device);
+        gamemap::init(device);
     }
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
