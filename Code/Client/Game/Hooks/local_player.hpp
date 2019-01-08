@@ -1,4 +1,9 @@
 #pragma once
+namespace gamemap
+{
+    inline void render();
+};
+
 namespace hooks
 {
     //----------------------------------------------
@@ -250,14 +255,38 @@ namespace hooks
     typedef void(__thiscall* RemoveTemporaryActor_t)(void* _this, void* actor);
     RemoveTemporaryActor_t remove_temporary_actor_original = nullptr;
 
-    void __fastcall RemoveTemporaryActor(void* _this, DWORD edx, void* actor) {
-        
+    void __fastcall RemoveTemporaryActor(void* _this, DWORD edx, void* actor) { 
         local_player_remove_temporary_actor(actor);
         remove_temporary_actor_original(_this, actor);
+    }
+    
+    //----------------------------------------------
+    //C_Indicators Render game map hook
+    //----------------------------------------------
+    DWORD GameMapRenderHook_Back = 0x005FFA2C;
+    __declspec(naked) void GameMapRenderHook() {
+        __asm {
+            push    1
+            push    ecx
+            mov     edx, dword ptr ds : [eax]
+            push    2
+            push    5
+            push    eax
+            call    dword ptr[edx + 58h]
+
+            pushad
+                call gamemap::render
+            popad
+
+            jmp GameMapRenderHook_Back
+        }
     }
 }
 
 inline auto local_player_init() {
+
+    //G_Indicators blips rendering hook 
+    MemoryPatcher::InstallJmpHook(0x005FFA1F, (DWORD)&hooks::GameMapRenderHook);
 
     //Human
     MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);
