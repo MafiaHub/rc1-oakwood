@@ -75,7 +75,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto wep = get_weapon_by_id(player->GetCurrentWeapon());
 
         if (wep) {
-            // gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
+            //gm->SpawnWeaponDrop(player->GetPosition(), wep->model, wep->item);
         }
 
         player->ClearInventory();

@@ -284,7 +284,7 @@ inline auto vehicle_entityupdate(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
 
     zpl_vec3 target_rot_forward, 
-    target_rot_right, target_rot_up, target_pos;
+    target_rot_up, target_pos;
 
     librg_data_rptr(evnt->data, &target_rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &target_rot_up, sizeof(zpl_vec3));

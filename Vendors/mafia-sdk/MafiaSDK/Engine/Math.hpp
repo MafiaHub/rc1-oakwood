@@ -4,7 +4,7 @@
 */
 #pragma once
 
-class S_matrix;
+struct S_matrix;
 
 struct S_vector2
 {
@@ -12,7 +12,7 @@ struct S_vector2
     float y;
 };
 
-class S_vector
+struct S_vector
 {
 public:
 	S_vector operator*=(const S_matrix& mat)
@@ -78,8 +78,8 @@ public:
 	};
 };
 
-class S_quat;
-class S_matrix
+struct S_quat;
+struct S_matrix
 {
 public:
 	S_matrix operator*(const S_matrix& mat)
@@ -193,7 +193,7 @@ public:
 	float values[16];
 };
 
-class S_quat
+struct S_quat
 {
 public:
 	void Make(const S_matrix& mat)

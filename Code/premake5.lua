@@ -27,10 +27,7 @@ workspace "Oakwood"
 
     -- disabling as less warnings as possible
     filter "action:vs*"
-        defines {
-            "_CRT_SECURE_NO_WARNINGS",
-            "_WINSOCK_DEPRECATED_NO_WARNINGS",
-        }
+    
 
     if os.istarget('windows') then
         buildoptions "/std:c++latest"

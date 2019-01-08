@@ -74,13 +74,13 @@ namespace MafiaSDK
 			}
 		}
 
-        void LockControls(BOOL lock)
+        void LockControls(BOOL lockState)
         {
             unsigned long funcAddress = C_Player_Enum::FunctionAddresses::LockControls;
 
             __asm
             {
-                push lock
+                push lockState
                 mov ecx, this
                 call funcAddress
             }
