@@ -10,7 +10,7 @@ class Player;
 class Vehicle : public GameObject {
 public:
     friend class GameMode;
-    Vehicle(librg_entity *entity, mafia_vehicle *vehicle);
+    Vehicle(librg_entity *entity);
     ~Vehicle();
 
     //
@@ -31,6 +31,5 @@ public:
     void SetHeadingRotation(float angle);
     float GetHeadingRotation();
 
-private:
-    mafia_vehicle *vehicle;
+    mafia_vehicle *GetVehicle();
 };

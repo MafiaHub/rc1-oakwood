@@ -98,13 +98,14 @@ namespace MafiaSDK
 
     I3D_Material* m_GetSysIconFromRes(int res_id)
     {   
-        unsigned long funcAddress = 0x10016600;
+        /*unsigned long funcAddress = 0x10016600;
         __asm 
         {
             push res_id
             mov ecx, this
             call funcAddress
-        }
+        }*/
+        return 0;
     }
 
     auto I3DGetDriver() 

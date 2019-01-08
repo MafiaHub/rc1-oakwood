@@ -5,7 +5,6 @@ vt->send_msg = oak_send_msg;
 vt->player_fadeout = oak_player_fadeout;
 vt->player_inventory_add = oak_player_inventory_add;
 vt->player_spawn = oak_player_spawn;
-vt->player_respawn = oak_player_respawn;
 vt->player_set_model = oak_player_set_model;
 vt->player_set_position = oak_player_set_position;
 vt->player_set_health = oak_player_set_health;

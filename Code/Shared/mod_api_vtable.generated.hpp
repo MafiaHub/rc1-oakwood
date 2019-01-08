@@ -5,7 +5,6 @@ oak_send_msg_ptr *send_msg;
 oak_player_fadeout_ptr *player_fadeout;
 oak_player_inventory_add_ptr *player_inventory_add;
 oak_player_spawn_ptr *player_spawn;
-oak_player_respawn_ptr *player_respawn;
 oak_player_set_model_ptr *player_set_model;
 oak_player_set_position_ptr *player_set_position;
 oak_player_set_health_ptr *player_set_health;

@@ -10,7 +10,7 @@ class Vehicle;
 class Player : public GameObject {
 public:
     friend class GameMode;
-    Player(librg_entity *entity, mafia_player *ped);
+    Player(librg_entity *entity);
     ~Player();
 
     //
@@ -18,7 +18,6 @@ public:
     //
 
     void Spawn(zpl_vec3 pos);
-    void Respawn(zpl_vec3 pos);
 
     void SetModel(std::string name);
     void SetModelByID(int modelID);
@@ -49,12 +48,5 @@ public:
     Vehicle *GetVehicle();
     bool PutToVehicle(Vehicle *vehicle, int seatID);
 
-    //
-    // Utilities
-    //
-
-    void SetPed(mafia_player *ped);
-
-private:
-    mafia_player *ped;
+    mafia_player *GetPedestrian();
 };

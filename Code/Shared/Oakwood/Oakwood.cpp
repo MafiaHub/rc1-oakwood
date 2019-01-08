@@ -13,7 +13,7 @@ GameMode::GameMode(oak_api *mod) {
 
     mod->on_player_connected = [=](librg_event* evnt, librg_entity* entity, mafia_player* ped) {
         
-        Player *player = new Player(entity, ped);
+        Player *player = new Player(entity);
 
         player->SetModel("Tommy.i3d");
         player->SetHealth(100);
@@ -136,7 +136,7 @@ Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& mo
 {
     auto rot = ComputeDirVector(angle);
     auto entity = __gm->mod->vtable.vehicle_spawn(pos, rot, (char*)model.c_str(), show_in_radar);
-    auto vehicle = new Vehicle(entity, (mafia_vehicle*)entity->user_data);
+    auto vehicle = new Vehicle(entity);
     vehicles.AddObject(vehicle);
 
     return vehicle;
@@ -196,10 +196,9 @@ std::string GameMode::ImplodeArgumentList(ArgumentList args)
 // Player
 //
 
-Player::Player(librg_entity *entity, mafia_player *ped)
+Player::Player(librg_entity *entity)
 {
     this->entity = entity;
-    this->ped = ped;
 }
 
 Player::~Player()
@@ -209,12 +208,6 @@ Player::~Player()
 void Player::Spawn(zpl_vec3 pos)
 {
     __gm->mod->vtable.player_spawn(entity, pos);
-}
-
-void Player::Respawn(zpl_vec3 pos)
-{
-    this->entity = __gm->mod->vtable.player_respawn(entity, pos);
-    this->ped = (mafia_player*)this->entity->user_data;
 }
 
 void Player::SetModel(std::string name)
@@ -233,11 +226,13 @@ void Player::SetModelByID(int modelID)
 
 std::string Player::GetModel()
 {
+    auto ped = GetPedestrian();
     return std::string(ped->model);
 }
 
 std::string Player::GetName()
 {
+    auto ped = GetPedestrian();
     return std::string(ped->name);
 }
 
@@ -275,12 +270,17 @@ void Player::AddItem(inventory_item *item)
 
 void Player::ClearInventory()
 {
+    /* TODO */
+    auto ped = GetPedestrian();
+
     for (size_t i = 0; i < 8; i++)
         ped->inventory.items[i] = { -1, 0, 0, 0 };
 }
 
 u32 Player::GetCurrentWeapon()
 {
+    auto ped = GetPedestrian();
+
     return ped->current_weapon_id;
 }
 
@@ -311,6 +311,7 @@ void Player::SetHealth(f32 health)
 
 f32 Player::GetHealth()
 {
+    auto ped = GetPedestrian();
     return ped->health / 2.0f;
 }
 
@@ -338,19 +339,18 @@ bool Player::PutToVehicle(Vehicle *vehicle, int seatID)
     return __gm->mod->vtable.player_put_to_vehicle(this->entity, vehicle->GetEntity(), seatID);
 }
 
-void Player::SetPed(mafia_player *ped)
+mafia_player* Player::GetPedestrian()
 {
-    this->ped = ped;
+    return (mafia_player*)entity->user_data;
 }
 
 //
 // Vehicle
 //
 
-Vehicle::Vehicle(librg_entity *entity, mafia_vehicle *vehicle)
+Vehicle::Vehicle(librg_entity *entity)
 {
     this->entity = entity;
-    this->vehicle = vehicle;
 }
 
 Vehicle::~Vehicle()
@@ -364,7 +364,8 @@ void Vehicle::ShowOnRadar(bool visibility)
 
 bool Vehicle::GetRadarVisibility()
 {
-    return this->vehicle->is_car_in_radar;
+    auto vehicle = GetVehicle();
+    return vehicle->is_car_in_radar;
 }
 
 int Vehicle::GetPlayerSeatID(Player *player) 
@@ -407,6 +408,12 @@ void Vehicle::SetHeadingRotation(float angle)
 
 float Vehicle::GetHeadingRotation()
 {
+    auto vehicle = GetVehicle();
     auto angle = DirToRotation180(vehicle->rot_forward);
     return angle;
+}
+
+mafia_vehicle *Vehicle::GetVehicle()
+{
+    return (mafia_vehicle *)entity->user_data;
 }
