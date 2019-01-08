@@ -5,7 +5,7 @@ namespace gamemap
 
     constexpr double convert_width_coef         = 1.338827f;
     constexpr double convert_height_coef        = 1.63396f;
-    constexpr int blip_size                     = 20;
+    constexpr int original_blip_size            = 20;
 
     #define MAFIA_VERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1 )
     struct mafia_vertex {
@@ -22,8 +22,19 @@ namespace gamemap
             auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
             if (player_frame) {
                 auto player_pos = player_frame->GetInterface()->mPosition;
-                zpl_vec2 center_offset = { (player_pos.x - position.x) / convert_width_coef, (player_pos.z - position.z) / convert_height_coef };
-                return { -center_offset.x + center_player_minimap.x, center_offset.y + center_player_minimap.y };
+        
+                float x_coef = convert_width_coef * (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
+                float y_coef = convert_height_coef * (900.0f / (float)MafiaSDK::GetIGraph()->Scrn_sy());
+
+                zpl_vec2 center_offset = { 
+                    (player_pos.x - position.x) / x_coef,
+                    (player_pos.z - position.z) / y_coef
+                };
+
+                return { 
+                    -center_offset.x + center_player_minimap.x, 
+                    center_offset.y + center_player_minimap.y 
+                };
             }
         }
         return {};
@@ -31,6 +42,7 @@ namespace gamemap
 
     inline void draw_player_cursor(void* vertex_buffer) {
         
+        float blip_size = original_blip_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
         mafia_vertex* buffer = (mafia_vertex*)vertex_buffer;
         zpl_vec2 p1 = { buffer[0].x, buffer[0].y };
         zpl_vec2 p2 = { buffer[1].x, buffer[1].y };
