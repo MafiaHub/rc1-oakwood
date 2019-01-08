@@ -1,6 +1,8 @@
 #pragma once
 
 inline auto vehicle_clientstreamer_update(librg_event* evnt) {
+    printf("Vehicle update '%d'\n", evnt->entity->id);
+
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));

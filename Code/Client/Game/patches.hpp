@@ -30,7 +30,7 @@ auto mod_init_patches() {
 
     MafiaSDK::C_Game_Patches::PatchDisableLogos();
     MafiaSDK::C_Game_Patches::PatchDisablePleaseWait();
-    MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
+    //MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
     MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
     MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
     MafiaSDK::C_Game_Patches::PatchRemovePlayer();

@@ -376,14 +376,17 @@ inline auto vehicle_entityremove(librg_event *evnt) {
 inline auto vehicle_clientstreamer_update(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
 
+    printf("Vehicle try to send update: %d\n", evnt->entity->id);
     if (!vehicle) {
         librg_event_reject(evnt);
+        printf("Vehicle no user data !!!!!!: %d\n", evnt->entity->id);
         return;
     }
 
-    auto car_int = reinterpret_cast<MafiaSDK::C_Car *>(vehicle->car)->GetInterface();
+    auto car_int = vehicle->car->GetInterface();
     if (!car_int) {
         librg_event_reject(evnt);
+        printf("Vehicle nullptr car !!!!!!: %d\n", evnt->entity->id);
         return;
     }
 
@@ -423,7 +426,6 @@ inline auto vehicle_clientstreamer_update(librg_event *evnt) {
             if ( ( (tyre_entity_flags & FLAT_TYRE_FLAG) && !(mafia_tyre->flags & FLAT_TYRE_FLAG)) ||
                 mafia_tyre->health != tyre_health) {
                 librg_send(&network_context, NETWORK_VEHICLE_WHEEL_UPDATE, data, {
-                    
                     DWORD tyre_flag = 0x0;
                     if (tyre_entity_flags & FLAT_TYRE_FLAG)
                         tyre_flag = FLAT_TYRE_FLAG;

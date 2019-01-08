@@ -113,6 +113,7 @@ auto main() -> int {
             gm.on_server_tick();
 
         masterlist_update();
+        debug_bandwidth();
         vehicles_streamer_update();
         zpl_sleep_ms(1);
     }
