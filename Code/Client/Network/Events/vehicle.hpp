@@ -367,6 +367,9 @@ inline auto vehicle_entityremove(librg_event *evnt) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
         vehicle_despawn(vehicle);
+
+        delete vehicle;
+        evnt->entity->user_data = nullptr;
     }
 }
 

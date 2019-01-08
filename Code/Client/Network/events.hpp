@@ -17,6 +17,14 @@ void on_librg_connect(librg_event* evnt) {
 
     effects::is_enabled = false;  
     cefgui::main_browser->visible = true;
+
+    local_player.entity_id = evnt->entity->id;
+    
+    auto new_player = new mafia_player;
+    strcpy(new_player->name, GlobalConfig.username.c_str());
+    evnt->entity->type = TYPE_PLAYER;
+    evnt->entity->user_data = (void*)new_player;
+
 }
 
 void on_librg_disconnect(librg_event* evnt) {
