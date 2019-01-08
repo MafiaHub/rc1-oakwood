@@ -72,7 +72,6 @@ namespace MafiaSDK
 		{
 			__declspec(naked) void AfterDrawAll_Hook()
 			{
-
 				__asm
 				{
 					pushad
@@ -100,6 +99,35 @@ namespace MafiaSDK
 		{
 			return reinterpret_cast<C_Indicators_Interface*>(this);
 		}
+
+        void SetCompass(MafiaSDK::I3D_Frame* frame)
+        {
+            DWORD func = 0x005FA020;
+            __asm 
+            {
+                push frame
+                mov ecx, this
+                call func
+            }
+
+
+            func = 0x005FA030;
+            __asm
+            {
+                push frame
+                mov ecx, this
+                call func
+            }
+
+
+            func = 0x005FA040;
+            __asm
+            {
+                push frame
+                mov ecx, this
+                call func
+            }
+        }
 
 		void WideScreenSetRatio(float ratio)
 		{

@@ -134,7 +134,6 @@ namespace graphics
         effects::init(device);
         cef::init(device);
         cefgui::init(device);
-        gamemap::init(device);
     }
 
     inline auto device_lost(IDirect3DDevice9* device) -> void {
@@ -160,9 +159,9 @@ namespace graphics
         nameplates::device_reset(device);
         effects::device_reset(device);
         cef::device_reset(device);
-        gamemap::init(device);
     }
 
+    input::KeyToggle print_pos(VK_F2);
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
         IDirect3DStateBlock9* pStateBlock = NULL;
@@ -192,6 +191,17 @@ namespace graphics
         cefgui::update();
         cef::tick();
         cef::render_browsers();
+
+        if (print_pos) {
+            auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
+            if (local_player) {
+                auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
+                if (player_frame) {
+                    auto player_pos = player_frame->GetInterface()->mPosition;
+                    printf("Pos: %f %f\n", player_pos.x, player_pos.z);
+                }
+            }
+        }
 
         pStateBlock->Apply();
         pStateBlock->Release();
