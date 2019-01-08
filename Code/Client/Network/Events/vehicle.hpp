@@ -237,6 +237,8 @@ inline auto vehicle_entitycreate(librg_event *evnt) {
     librg_data_rptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_rptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
+    printf("Vehicle create '%d'\n", evnt->entity->id);
+
     u32 deltas_count = librg_data_ru32(evnt->data);
 
     if (!vehicle->deform_deltas.empty()) vehicle->deform_deltas.clear();
@@ -281,42 +283,70 @@ inline auto vehicle_game_tick(mafia_vehicle *vehicle, f64 delta) {
 }
 
 inline auto vehicle_entityupdate(librg_event *evnt) {
-    auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
-
-    zpl_vec3 target_rot_forward, 
-    target_rot_up, target_pos;
+   
+    //NOTE(DavoSK): First we need to read all data so we can skip event
+    zpl_vec3 target_rot_forward, target_rot_up, target_pos, rot_speed, speed;
 
     librg_data_rptr(evnt->data, &target_rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &target_rot_up, sizeof(zpl_vec3));
-    librg_data_rptr(evnt->data, &vehicle->rot_speed, sizeof(zpl_vec3));
-    librg_data_rptr(evnt->data, &vehicle->speed, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, &rot_speed, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, &speed, sizeof(zpl_vec3));
 
-    vehicle->engine_rpm = librg_data_rf32(evnt->data);
-    vehicle->engine_health = librg_data_rf32(evnt->data);
-    vehicle->wheel_angle = librg_data_rf32(evnt->data);
-    vehicle->fuel = librg_data_rf32(evnt->data);
-    vehicle->accelerating = librg_data_rf32(evnt->data);
-    vehicle->hand_break = librg_data_rf32(evnt->data);
-    vehicle->break_val = librg_data_rf32(evnt->data);
-    vehicle->clutch = librg_data_rf32(evnt->data);
-    vehicle->gear = librg_data_ri32(evnt->data);
-    vehicle->horn = librg_data_ru8(evnt->data);
-    vehicle->siren = librg_data_ru8(evnt->data);
-    vehicle->engine_on = librg_data_ru8(evnt->data);
-    target_pos = evnt->entity->position;
+    f32 engine_rpm          = librg_data_rf32(evnt->data);
+    f32 engine_health       = librg_data_rf32(evnt->data);
+    f32 wheel_angle         = librg_data_rf32(evnt->data);
+    f32 fuel                = librg_data_rf32(evnt->data);
+    f32 accelerating        = librg_data_rf32(evnt->data);
+    f32 hand_break          = librg_data_rf32(evnt->data);
+    f32 break_val           = librg_data_rf32(evnt->data);
+    f32 clutch              = librg_data_rf32(evnt->data);
+    i32 gear                = librg_data_ri32(evnt->data);
+    u8 horn                 = librg_data_ru8(evnt->data);
+    u8 siren                = librg_data_ru8(evnt->data);
+    u8 engine_on            = librg_data_ru8(evnt->data);
+    
+    auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
+
+    if (!vehicle || !vehicle->car) {
+        librg_event_reject(evnt);
+        return;
+    }
 
     auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
-    vehicle_int->engine_health = vehicle->engine_health;
-    vehicle_int->wheel_angle = vehicle->wheel_angle;
-    vehicle_int->fuel = vehicle->fuel;
-    vehicle_int->accelerating = vehicle->accelerating;
-    vehicle_int->hand_break = vehicle->hand_break;
-    vehicle_int->break_val = vehicle->break_val;
-    vehicle_int->clutch = vehicle->clutch;
-    vehicle_int->horn = vehicle->horn;
-    vehicle_int->siren = vehicle->siren;
-    vehicle_int->speed = EXPAND_VEC(vehicle->speed);
-    vehicle_int->rot_speed = EXPAND_VEC(vehicle->rot_speed);
+    if (!vehicle_int) {
+        librg_event_reject(evnt);
+        return;
+    }
+
+    //NOTE(DavoSK): Update mafia_vehicle structure 
+    vehicle->engine_rpm         = engine_rpm;
+    vehicle->engine_health      = engine_health;
+    vehicle->wheel_angle        = wheel_angle;
+    vehicle->fuel               = fuel;
+    vehicle->accelerating       = accelerating;
+    vehicle->hand_break         = hand_break;
+    vehicle->break_val          = break_val;
+    vehicle->clutch             = clutch;
+    vehicle->gear               = gear;
+    vehicle->horn               = horn;
+    vehicle->siren              = siren;
+    vehicle->engine_on          = engine_on;
+    vehicle->speed              = speed;
+    vehicle->rot_speed          = rot_speed;
+    target_pos                  = evnt->entity->position;
+
+    //NOTE(DavoSK): Now update gameobject interface
+    vehicle_int->engine_health  = vehicle->engine_health;
+    vehicle_int->wheel_angle    = vehicle->wheel_angle;
+    vehicle_int->fuel           = vehicle->fuel;
+    vehicle_int->accelerating   = vehicle->accelerating;
+    vehicle_int->hand_break     = vehicle->hand_break;
+    vehicle_int->break_val      = vehicle->break_val;
+    vehicle_int->clutch         = vehicle->clutch;
+    vehicle_int->horn           = vehicle->horn;
+    vehicle_int->siren          = vehicle->siren;
+    vehicle_int->speed          = EXPAND_VEC(vehicle->speed);
+    vehicle_int->rot_speed      = EXPAND_VEC(vehicle->rot_speed);
 
     if (vehicle_int->engine_on != vehicle->engine_on) {
         vehicle->car->SetEngineOn(vehicle->engine_on, true);
@@ -333,6 +363,7 @@ inline auto vehicle_entityupdate(librg_event *evnt) {
 inline auto vehicle_entityremove(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     if (vehicle && vehicle->car) {
+        printf("Vehicle remove '%d'\n", evnt->entity->id);
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
         vehicle_despawn(vehicle);

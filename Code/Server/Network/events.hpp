@@ -20,7 +20,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 
     librg_entity_control_set(evnt->ctx, evnt->entity->id, evnt->peer);
     enet_peer_timeout(evnt->peer, 10, 5000, 10000);
-    evnt->entity->stream_range = 1200.0f;
+    evnt->entity->stream_range = 500.0f;
 
     if (gm.on_player_connected)
         gm.on_player_connected(evnt, evnt->entity, ped);
