@@ -1,5 +1,17 @@
 #pragma once
 
+/* 
+    This framework offers end-user features for server developers to easily design their
+    game modes for their server.
+
+    Oakwood Framework encapsulates the server's low-level modding API and helps you micro-manage some server aspects, it encapsulates game objects to
+    easily understandable classes that define the behavior on a server. It also brings various features built on top, that
+    accelerate the game mode development, such as command handling, game object management and a couple of utility helpers.
+
+    This module should preferably be used when writing language bindings, as it's the most complete suite of tools yet to date.
+    You can, however, use this framework in a native C++ environment if you're comfortable with that.
+*/
+
 #include "mod_api.hpp"
 
 class GameObject
