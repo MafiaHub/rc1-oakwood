@@ -1,5 +1,6 @@
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
+#define OAKWOOD_SERVER 1
 #include "librg/librg.h"
 
 /*
@@ -23,6 +24,11 @@
 #define HTTP_IMPLEMENTATION
 #include "http/http.h"
 #include "http/mongoose.h"
+
+/*
+* Console stuff
+*/
+#include "console.hpp"
 
 /* 
 * Shared
@@ -77,13 +83,9 @@ void unregister_console_events();
 
 auto main() -> int {
 
-    #ifdef _WIN32  
-        std::setlocale(LC_ALL, "C");
-        SetConsoleOutputCP(CP_UTF8);
-    #endif
-    
-    zpl_printf("================================\n");  
-    zpl_printf("%s", banner_text);
+    console_init();
+    console_printf("================================\n");
+    console_printf(banner_text);
 
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     register_console_events();
@@ -100,10 +102,9 @@ auto main() -> int {
     GlobalConfig.players = 0;
 
     mod_log("Loading gamemode...");
-
     load_dll(GlobalConfig.gamemode.c_str());
 
-    mod_log("Initializing webserver at :"+std::to_string(GlobalConfig.port) + "...");
+    mod_log("Initializing webserver at :" + std::to_string(GlobalConfig.port) + "...");
     webserver_start();
 
     while (true) {
@@ -113,7 +114,7 @@ auto main() -> int {
             gm.on_server_tick();
 
         masterlist_update();
-        debug_bandwidth();
+        console_render();
         vehicles_streamer_update();
         zpl_sleep_ms(1);
     }

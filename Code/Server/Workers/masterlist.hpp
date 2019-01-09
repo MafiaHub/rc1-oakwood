@@ -78,7 +78,7 @@ void masterlist_push() {
             req->reason_phrase, masterlist_response(req).c_str(), req->status_code);
 
         if (req->status_code == 502) {
-            zpl_printf("Masterlist is down! Please, contact developers!\n");
+            mod_log("Masterlist is down! Please, contact developers!");
         }
 
         http_release(req);
@@ -90,7 +90,7 @@ void masterlist_push() {
         http_release(req);
 
         if (!was_push_successful)
-            zpl_printf("Successfully registered to the masterlist!\n");
+            mod_log("Successfully registered to the masterlist!");
 
         was_push_successful = true;
         req = nullptr;
