@@ -67,7 +67,7 @@ inline auto player_connection_disconnect(librg_event* evnt) -> void {
 
 inline auto player_send_spawn(librg_entity* player_ent) -> void {
     auto player = (mafia_player*)player_ent->user_data;
-    librg_send_to(&network_context, NETWORK_PLAYER_SPAWN, player_ent->client_peer, data, {
+    librg_send(&network_context, NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, player_ent->id);
         librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3));
         librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));

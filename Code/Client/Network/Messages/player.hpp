@@ -64,14 +64,10 @@
 
 librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg) {
     
-    u32 local_player_entity_id  = librg_data_ru32(msg->data);
-    auto new_player_entity      = librg_entity_fetch(&network_context, local_player_entity_id);
-    auto new_player_data        = new mafia_player;
-
     zpl_vec3 position, rotation;
     player_inventory inventory;
     char model[32];
-
+    u32 player_entity_id  = librg_data_ru32(msg->data);
     librg_data_rptr(msg->data, &position, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, &rotation, sizeof(zpl_vec3));
     librg_data_rptr(msg->data, model, sizeof(char) * 32);
@@ -79,20 +75,28 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
     u32 current_wep = librg_data_ru32(msg->data);
     f32 health = librg_data_rf32(msg->data);
 
-    auto ped = player_spawn(
-        position, 
-        rotation,
-        inventory, 
-        model, 
-        current_wep, 
-        health, 
-        true, 
-        0,
-        false);
+    auto new_player_entity = librg_entity_fetch(&network_context, player_entity_id);
+    if (new_player_entity && new_player_entity->user_data) {
 
-    new_player_data->ped = ped;
-    new_player_entity->user_data = new_player_data;
-    local_player.entity_id = local_player_entity_id;
+        auto player_data = (mafia_player*)new_player_entity->user_data;
+        auto is_local_player = player_entity_id == local_player.entity_id;
+
+        if (player_data->ped)
+            player_despawn(player_data->ped);
+
+        auto ped = player_spawn(
+            position,
+            rotation,
+            inventory,
+            model,
+            current_wep,
+            health,
+            is_local_player,
+            0,
+            false);
+
+        player_data->ped = ped;
+    }
 });
 
 librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {

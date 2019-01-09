@@ -1,7 +1,7 @@
 #pragma once
 namespace gamemap
 {
-    inline void render();
+    inline void draw_player_cursor(void* vertex_buffer);
 };
 
 namespace hooks
@@ -263,22 +263,17 @@ namespace hooks
     //----------------------------------------------
     //C_Indicators Render game map hook
     //----------------------------------------------
-    DWORD GameMapRenderHook_Back = 0x005FFA2C;
-    __declspec(naked) void GameMapRenderHook() {
+    DWORD player_cursor_back = 0x005FFF8B;
+    __declspec(naked) void PlayerCursorHook() {
         __asm {
-            push    1
-            push    ecx
-            mov     edx, dword ptr ds : [eax]
-            push    2
-            push    5
-            push    eax
-            call    dword ptr[edx + 58h]
-
+            LEA ECX, DWORD PTR SS : [ESP + 0x8C]
             pushad
-                call gamemap::render
+            push ecx
+            call gamemap::draw_player_cursor
+            add esp, 0x4
             popad
 
-            jmp GameMapRenderHook_Back
+            JMP player_cursor_back
         }
     }
 }
@@ -286,7 +281,7 @@ namespace hooks
 inline auto local_player_init() {
 
     //G_Indicators blips rendering hook 
-    MemoryPatcher::InstallJmpHook(0x005FFA1F, (DWORD)&hooks::GameMapRenderHook);
+    MemoryPatcher::InstallJmpHook(0x005FFF77, (DWORD)&hooks::PlayerCursorHook);
 
     //Human
     MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);

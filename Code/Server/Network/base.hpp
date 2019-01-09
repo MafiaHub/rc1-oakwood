@@ -18,6 +18,6 @@ inline auto mod_init_networking() {
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_UPDATE, on_librg_clientstreamer_update);
     librg_event_add(&network_context, LIBRG_ENTITY_UPDATE, on_librg_entityupdate);
     librg_event_add(&network_context, LIBRG_ENTITY_CREATE, on_librg_entitycreate);
-
+    
     mod_add_network_messages();
 }

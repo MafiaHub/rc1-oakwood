@@ -2,6 +2,12 @@
 
 #define VEHICLE_SELECTION_TIME 2.0f
 
+void debug_bandwidth() {
+
+    /*printf("Total recieved data: %d\n", network_context.network.host->totalReceivedData / 1024);
+    printf("Total send data: %d\n", network_context.network.host->totalSentData / 1024);*/
+}
+
 void vehicles_streamer_update() {
     zpl_local_persist f64 last_streamers_selection = 0.0f;
 

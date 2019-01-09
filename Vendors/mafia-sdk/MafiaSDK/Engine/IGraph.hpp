@@ -21,13 +21,29 @@ namespace MafiaSDK
 {
     constexpr unsigned long IGraph_Constance = 0x00647EE0;
     
+    enum PRIMITIVE_TYPE
+    {
+        POINTLIST = 0,
+        LINELIST = 1,
+        LINESTRIP = 2,
+        TRIANGLELIST = 3,
+        TRIANGLEFAN = 4,
+        TRIANGLESTRIP = 5,
+    };
+
+    enum LS3D_STREAM_TYPE
+    {
+        BORDER = 0,
+        FILLED = 1
+    };
+
     class IGraph 
     {
         public:
         virtual class IShow * __stdcall CreateIShow(void);								// 0000  0000
 		virtual enum  LS3D_RESULT __stdcall CreateITexture(char *,char *,unsigned int,class ITexture * *);								// 0001  0004
 		virtual class ITexture * __stdcall CreateITexture(void);								// 0002  0008
-		virtual bool __stdcall SetTexture(class ITexture *);								// 0003  000C
+		virtual bool __stdcall SetTexture(ITexture *);								// 0003  000C
 		virtual void * __stdcall GetMainHWND(void);								// 0004  0010
 		virtual void * __stdcall GetChildHWND(void);								// 0005  0014
 		virtual void __stdcall SetAppName(char const *);								// 0006  0018
@@ -46,8 +62,8 @@ namespace MafiaSDK
 		virtual enum  LS3D_RESULT __stdcall SetViewPort(struct LS3D_VIEWPORT *);								// 0019  004C
 		virtual struct LS3D_VIEWPORT * __stdcall GetViewPort(void);								// 0020  0050
 		virtual void __stdcall SetWorldMatrix(struct S_matrix const &);								// 0021  0054
-		virtual enum  LS3D_RESULT __stdcall DrawPrimitiveList(enum  PRIMITIVE_TYPE,unsigned int,void *,enum  LS3D_STREAM_TYPE);								// 0022  0058
-		virtual enum  LS3D_RESULT __stdcall DrawIndexedPrimitiveList(enum  PRIMITIVE_TYPE,unsigned int,void *,unsigned int,void *,enum  LS3D_STREAM_TYPE);								// 0023  005C
+		virtual enum  LS3D_RESULT __stdcall DrawPrimitiveList(PRIMITIVE_TYPE,unsigned int,void *, LS3D_STREAM_TYPE);								// 0022  0058
+		virtual enum  LS3D_RESULT __stdcall DrawIndexedPrimitiveList(PRIMITIVE_TYPE,unsigned int,void *,unsigned int,void *, LS3D_STREAM_TYPE);								// 0023  005C
 		virtual enum  LS3D_RESULT __stdcall Init(struct IGRAPH_INIT_DESC *);								// 0024  0060
 		virtual void sub_10070190(void);								// 0025  0064
 		virtual bool __stdcall IsInit(void);								// 0026  0068

@@ -208,24 +208,31 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
 
 inline auto player_entityupdate(librg_event* evnt) -> void {
     
-    auto player = (mafia_player *)evnt->entity->user_data;
-    if (!player) {
-        librg_event_reject(evnt);
-        return;
-    }
-
+    //NOTE(DavoSK): We need to read data before we can skip event ! 
     zpl_vec3 recv_pose, recv_rotation;
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
-    auto health                 = librg_data_rf32(evnt->data);
-    player->animation_state		= librg_data_ru8(evnt->data);
-    player->is_crouching		= librg_data_ru8(evnt->data);
-    player->is_aiming			= librg_data_ru8(evnt->data);
-    player->aiming_time			= librg_data_ru32(evnt->data);
-    player->ping                = librg_data_ru32(evnt->data);
+    auto health         = librg_data_rf32(evnt->data);
+    u8 animation_state  = librg_data_ru8(evnt->data);
+    u8 is_crouching     = librg_data_ru8(evnt->data);
+    u8 is_aiming        = librg_data_ru8(evnt->data);
+    u32 aiming_time     = librg_data_ru32(evnt->data);
+    u32 ping            = librg_data_ru32(evnt->data);
 
-    auto player_int = player->ped->GetInterface();
+    auto player = (mafia_player *)evnt->entity->user_data;
+    if (!player || !player->ped) {
+        librg_event_reject(evnt);
+        return;
+    }
     
+    //NOTE(DavoSK): If player exists we update mafia_player structure and gameobject
+    auto player_int = player->ped->GetInterface();
+    player->animation_state     = animation_state;
+    player->is_crouching        = is_crouching;
+    player->is_aiming           = is_aiming;
+    player->aiming_time         = aiming_time;
+    player->ping                = ping;
+
     player->interp.pose.start = player->interp.pose.target;
     player->interp.pose.target = recv_pose;
 
@@ -286,6 +293,8 @@ inline auto player_entityremove(librg_event* evnt) -> void {
         }
 
         player_despawn(player->ped);
+        delete player;
+        evnt->entity->user_data = nullptr;
     }
 }
 
@@ -298,7 +307,6 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
     }
 
     auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
-
     if (!player_int || !player_int->humanObject.entity.frame || 
         !player_int->humanObject.entity.frame->GetInterface()) {
         librg_event_reject(evnt);
