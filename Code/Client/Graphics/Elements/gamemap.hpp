@@ -6,6 +6,8 @@ namespace gamemap
     constexpr double convert_width_coef         = 1.338827f;
     constexpr double convert_height_coef        = 1.63396f;
     constexpr int original_blip_size            = 20;
+    constexpr int convert_map_pos_x             = 160;
+    constexpr int convert_map_pos_y             = 117;
 
     #define MAFIA_VERTEX (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_SPECULAR | D3DFVF_TEX1 )
     struct mafia_vertex {
@@ -15,6 +17,19 @@ namespace gamemap
         DWORD spec;
         float tu, tv;
     };
+
+
+    inline bool is_marker_inbounds(zpl_vec2 position, float blip_size) {
+
+        //NOTE(DavoSK): Position is also gap from each size
+        float screen_x = (float)MafiaSDK::GetIGraph()->Scrn_sx();
+        float screen_y = (float)MafiaSDK::GetIGraph()->Scrn_sy();
+        float pos_x = convert_map_pos_x * (1600.0f / screen_x);
+        float pos_y = convert_map_pos_y * (900.0f / screen_y);
+
+        return (position.x >= pos_x && position.y >= position.y) &&
+            (position.x + blip_size <= screen_x - pos_x && position.y + blip_size <= screen_y - pos_y);
+    }
 
     inline zpl_vec2 translate_object_to_map(zpl_vec3 position) {
         auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
@@ -65,26 +80,28 @@ namespace gamemap
                         zpl_vec3 frame_pos = EXPAND_VEC(frame->GetInterface()->mPosition);
                         auto blip_pos = translate_object_to_map(frame_pos);
 
-                        //NOTE(DavoSK): Draw border
-                        constexpr int border = 2;
-                        const mafia_vertex rect_border[] = {
-                            { blip_pos.x - border,			    blip_pos.y - border,	               0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 0.0 },
-                            { blip_pos.x + blip_size + border,	blip_pos.y - border,			       0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 0.0 },
-                            { blip_pos.x - border,			    blip_pos.y + blip_size + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 1.0 },
-                            { blip_pos.x + blip_size + border,	blip_pos.y + blip_size + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 1.0 },
-                        };
+                        if (is_marker_inbounds(blip_pos, blip_size)) {
+                            //NOTE(DavoSK): Draw border
+                            constexpr int border = 2;
+                            const mafia_vertex rect_border[] = {
+                                { blip_pos.x - border,			    blip_pos.y - border,	               0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 0.0 },
+                                { blip_pos.x + blip_size + border,	blip_pos.y - border,			       0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 0.0 },
+                                { blip_pos.x - border,			    blip_pos.y + blip_size + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 1.0 },
+                                { blip_pos.x + blip_size + border,	blip_pos.y + blip_size + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 1.0 },
+                            };
 
-                        MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_border, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
+                            MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_border, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
 
-                        //NOTE(DavoSK): Draw player blip
-                        const mafia_vertex rect_blip[] = {
-                            { blip_pos.x,			    blip_pos.y,	               0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 0.0, 0.0 },
-                            { blip_pos.x + blip_size,	blip_pos.y,			       0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 0.0 },
-                            { blip_pos.x,			    blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 0.0, 1.0 },
-                            { blip_pos.x + blip_size,	blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 1.0 },
-                        };
-                        
-                        MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_blip, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
+                            //NOTE(DavoSK): Draw player blip
+                            const mafia_vertex rect_blip[] = {
+                                { blip_pos.x,			    blip_pos.y,	               0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 0.0, 0.0 },
+                                { blip_pos.x + blip_size,	blip_pos.y,			       0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 0.0 },
+                                { blip_pos.x,			    blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 0.0, 1.0 },
+                                { blip_pos.x + blip_size,	blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 1.0 },
+                            };
+
+                            MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_blip, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
+                        }
                     }
                 }
             }

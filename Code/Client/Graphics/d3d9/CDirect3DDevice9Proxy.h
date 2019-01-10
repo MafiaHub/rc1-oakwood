@@ -235,7 +235,7 @@ HRESULT STDMETHODCALLTYPE CDirect3DDevice9Proxy::Reset(D3DPRESENT_PARAMETERS * p
     
     if (SUCCEEDED(hResult))
         graphics::device_reset(m_pD3DDevice);
-    
+
     return hResult;
 }
 

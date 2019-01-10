@@ -64,7 +64,7 @@ namespace crashhandler
         char buff[500];
         char address[100];
         GetAdressAsModule((DWORD)ExceptionInfo->ExceptionRecord->ExceptionAddress, address);
-        sprintf(buff, "Crash occured at address: %p Code: %x \\nRegisters: \\nEAX: %p \\tECX: %p\\nEDX: %p \\tEBX: %p\\nESP: %p \\tEBP: %p\\nESI: %p \\tEDI: %p\\nModule: %s\\n",
+        sprintf(buff, "Crash occured at address: %p Code: %x \nRegisters: \nEAX: %p \tECX: %p\nEDX: %p \tEBX: %p\nESP: %p \tEBP: %p\nESI: %p \tEDI: %p\nModule: %s\n",
             ExceptionInfo->ExceptionRecord->ExceptionAddress,
             ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ContextRecord->Eax,
             ExceptionInfo->ContextRecord->Ecx, ExceptionInfo->ContextRecord->Edx, ExceptionInfo->ContextRecord->Ebx,

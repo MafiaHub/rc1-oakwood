@@ -166,7 +166,7 @@ namespace graphics
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
-        if (device) {
+        if (device && global_device) {
             IDirect3DStateBlock9* pStateBlock = NULL;
             device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 

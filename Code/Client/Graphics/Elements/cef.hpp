@@ -177,9 +177,11 @@ namespace cef {
 
         void InitTexture(IDirect3DDevice9* device) {
             mTextureMutex.lock();
-            if (FAILED(D3DXCreateTexture(device, mPixelBufferWidth, mPixelBufferHeight, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
-                MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
-                return;
+            if (device) {
+                if (FAILED(D3DXCreateTexture(device, mPixelBufferWidth, mPixelBufferHeight, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
+                    MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
+                    return;
+                }
             }
             mTextureMutex.unlock();
         }
@@ -284,6 +286,7 @@ namespace cef {
         settings.remote_debugging_port = 7777;
         settings.windowless_rendering_enabled = true;
         settings.no_sandbox = true;
+        
 
         if (!CefInitialize(args, settings, minimal, nullptr)) {
             printf("CEF [Error] unable to initalize cef...\n");
@@ -377,16 +380,18 @@ namespace cef {
     }
 
     void device_reset(IDirect3DDevice9* device) {
-        
-        if (FAILED(D3DXCreateSprite(device, &rendering_sprite))) {
-            MessageBox(NULL, "Failed to create the sprite", "Error init Initialization", MB_OK);
-            return;
-        }
+       
+        if (device) {
+            if (FAILED(D3DXCreateSprite(device, &rendering_sprite))) {
+                MessageBox(NULL, "Failed to create the sprite", "Error init Initialization", MB_OK);
+                return;
+            }
 
-        if (!browsers.empty()) {
-            for (auto handle : browsers) {
-                if (handle) {
-                    handle->renderer->InitTexture(device);
+            if (!browsers.empty()) {
+                for (auto handle : browsers) {
+                    if (handle) {
+                        handle->renderer->InitTexture(device);
+                    }
                 }
             }
         }
@@ -401,7 +406,7 @@ namespace cef {
                 if (handle->visible) {
                     
                     handle->renderer->GetTexture([=](auto texture) {
-                        if (texture) {
+                        if (texture && rendering_sprite != nullptr) {
                             rendering_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
                         }
                     });
