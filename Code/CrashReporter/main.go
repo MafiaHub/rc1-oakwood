@@ -31,9 +31,21 @@ func main() {
 		return
 	}
 
+	name := data[0]
+
+	if name == "" {
+		name = "Unknown"
+	}
+
+	host := data[1]
+
+	if host == "" {
+		host = "Not connected"
+	}
+
 	respData := crashRequest{
-		Name: data[0],
-		Host: data[1],
+		Name: name,
+		Host: host,
 		Dump: data[2],
 	}
 
