@@ -1,9 +1,8 @@
 #pragma once
-
 void init_chat_commands() {
     register_command("/q", [&](std::vector<std::string> args) {
         librg_network_stop(&network_context);
-        exit(0);
+        mod_shutdown();
     });
 
     register_command("/npc", [&](std::vector<std::string> args) {

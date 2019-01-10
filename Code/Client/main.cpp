@@ -49,6 +49,7 @@ using json = nlohmann::json;
 #include <queue>
 #include <mutex>
 #include <atomic>
+#include <psapi.h>
 
 /*
 * DX & DInput

@@ -69,19 +69,21 @@ namespace graphics
 
     inline void draw_box(IDirect3DDevice9* device, float x, float y, float width, float height, DWORD color) {
         
-        const Vertex2D rect[] = {
-            { x,			y,			0.0f, 1.0f,	color },
-            { x + width,	y,			0.0f, 1.0f,	color },
-            { x,			y + height, 0.0f, 1.0f,	color },
-            { x + width,	y + height, 0.0f, 1.0f,	color },
-        };
+        if (device) {
+            const Vertex2D rect[] = {
+                { x,			y,			0.0f, 1.0f,	color },
+                { x + width,	y,			0.0f, 1.0f,	color },
+                { x,			y + height, 0.0f, 1.0f,	color },
+                { x + width,	y + height, 0.0f, 1.0f,	color },
+            };
 
-        device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
-        device->SetPixelShader(NULL);
-        device->SetVertexShader(NULL);
-        device->SetRenderState(D3DRS_ZENABLE, FALSE);
-        device->SetTexture(0, NULL);
-        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &rect, sizeof(Vertex2D));
+            device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+            device->SetPixelShader(NULL);
+            device->SetVertexShader(NULL);
+            device->SetRenderState(D3DRS_ZENABLE, FALSE);
+            device->SetTexture(0, NULL);
+            device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &rect, sizeof(Vertex2D));
+        }
     }
 
     /*
@@ -111,11 +113,12 @@ namespace graphics
     }
 
     inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device) {
-        IDirect3DSurface9* back_buffer = nullptr;
-        device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
-
         D3DSURFACE_DESC back_buffer_desc;
-        back_buffer->GetDesc(&back_buffer_desc);
+        if (device) {
+            IDirect3DSurface9* back_buffer = nullptr;
+            device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
+            back_buffer->GetDesc(&back_buffer_desc);
+        }
         return back_buffer_desc;
     }
 
@@ -136,7 +139,7 @@ namespace graphics
         cefgui::init(device);
     }
 
-    inline auto device_lost(IDirect3DDevice9* device) -> void {
+    inline auto device_lost() -> void {
 
         if (global_device) {
             global_device = nullptr;
@@ -161,49 +164,39 @@ namespace graphics
         cef::device_reset(device);
     }
 
-    input::KeyToggle print_pos(VK_F2);
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
-        IDirect3DStateBlock9* pStateBlock = NULL;
-        device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+        if (device) {
+            IDirect3DStateBlock9* pStateBlock = NULL;
+            device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
-        IDirect3DDevice9_SetVertexShader(device, NULL);
-        IDirect3DDevice9_SetFVF(device, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
-        IDirect3DDevice9_SetRenderState(device, D3DRS_ZENABLE, D3DZB_FALSE);
-        IDirect3DDevice9_SetRenderState(device, D3DRS_CULLMODE, D3DCULL_NONE);
-        IDirect3DDevice9_SetRenderState(device, D3DRS_LIGHTING, FALSE);
+            IDirect3DDevice9_SetVertexShader(device, NULL);
+            IDirect3DDevice9_SetFVF(device, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
+            IDirect3DDevice9_SetRenderState(device, D3DRS_ZENABLE, D3DZB_FALSE);
+            IDirect3DDevice9_SetRenderState(device, D3DRS_CULLMODE, D3DCULL_NONE);
+            IDirect3DDevice9_SetRenderState(device, D3DRS_LIGHTING, FALSE);
 
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-        IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
-        IDirect3DDevice9_SetRenderState(device, D3DRS_ALPHABLENDENABLE, TRUE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+            IDirect3DDevice9_SetTextureStageState(device, 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+            IDirect3DDevice9_SetRenderState(device, D3DRS_ALPHABLENDENABLE, TRUE);
 
-        IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-        IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-        IDirect3DDevice9_SetPixelShader(device, NULL);
+            IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+            IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+            IDirect3DDevice9_SetPixelShader(device, NULL);
 
-        nameplates::render(device);
-        effects::render(device);
-        cefgui::update();
-        cef::tick();
-        cef::render_browsers();
+            nameplates::render(device);
+            effects::render(device);
+            cefgui::update();
+            cef::tick();
+            cef::render_browsers();
 
-        if (print_pos) {
-            auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
-            if (local_player) {
-                auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
-                if (player_frame) {
-                    auto player_pos = player_frame->GetInterface()->mPosition;
-                    printf("Pos: %f %f\n", player_pos.x, player_pos.z);
-                }
-            }
+            pStateBlock->Apply();
+            pStateBlock->Release();
         }
-
-        pStateBlock->Apply();
-        pStateBlock->Release();
     }
 }

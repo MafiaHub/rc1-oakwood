@@ -13,6 +13,19 @@ std::mutex timeCheck;
 #include <cef.hpp>
 CefRefPtr<OakwoodCefApp> cefapp;
 
+static LONG WINAPI TerminateInstantly(LPEXCEPTION_POINTERS pointers) {
+    if (pointers->ExceptionRecord->ExceptionCode == STATUS_BREAKPOINT) {
+        TerminateProcess(GetCurrentProcess(), 0xDEADCAFE);
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
+
+void shutdown() {
+    AddVectoredExceptionHandler(FALSE, TerminateInstantly);
+    CefShutdown();
+    TerminateProcess(GetCurrentProcess(), 0);
+}
+
 int CALLBACK WinMain(HINSTANCE wininst, HINSTANCE pi, LPSTR cmdline, int nCmdShow) {
     // a hack to get current directory
     const char *prefix = "--log-file=\"";
@@ -44,8 +57,7 @@ int CALLBACK WinMain(HINSTANCE wininst, HINSTANCE pi, LPSTR cmdline, int nCmdSho
             timeCheck.lock();
             if (zpl_time_now() - lastCoreUpdate > 5.0) {
                 if (isCoreUpdated) {
-                    CefShutdown();
-                    exit(0);
+                    shutdown();
                     break;
                 }
             }

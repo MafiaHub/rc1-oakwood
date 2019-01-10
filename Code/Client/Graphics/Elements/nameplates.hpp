@@ -36,7 +36,9 @@ namespace nameplates {
     }
 
     inline void init(IDirect3DDevice9* device) {
-        nameplate_font = graphics::create_font(device, "tahoma-bold", 36, true);
+        if (device) {
+            nameplate_font = graphics::create_font(device, "tahoma-bold", 36, true);
+        }
     }
 
     /*
@@ -59,65 +61,67 @@ namespace nameplates {
     * Recreated all freed elements after device is reseted
     */
     inline void device_reset(IDirect3DDevice9* device) {
-        init(device);
+        if (device) {
+            init(device);
+        }
     }
 
     inline void render(IDirect3DDevice9* device) {
+        if (device) {
+            iterate_players([=](mafia_player* player) {
+                if (player->ped && player->ped->GetInterface()->neckFrame) {
+                    auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
+                    auto player_health = player->health;
 
-        iterate_players([=](mafia_player* player) {
-            if (player->ped && player->ped->GetInterface()->neckFrame) {
-                auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
-                auto player_health = player->health;
+                    auto current_i3d_camera = get_current_i3dcamera();
+                    if (current_i3d_camera == nullptr) return;
 
-                auto current_i3d_camera = get_current_i3dcamera();
-                if (current_i3d_camera == nullptr) return;
+                    S_vector camera_pos = current_i3d_camera->GetInterface()->mPosition;
+                    auto screen = world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
 
-                S_vector camera_pos = current_i3d_camera->GetInterface()->mPosition;
-                auto screen = world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
+                    if (screen.z < 1.0f) {
+                        zpl_vec3 vec = {};
+                        zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(camera_pos));
+                        auto dist = zpl_vec3_mag(vec);
+                        auto dist_sq = zpl_sqrt(dist);
+                        auto distance_scale = (1.0f / dist_sq);
+                        auto size = graphics::get_text_size(nameplate_font, player->name);
+                        size.cx = size.cx * distance_scale;
 
-                if (screen.z < 1.0f) {
+                        graphics::draw_text(nameplate_font, player->name, screen.x - (size.cx / 2), screen.y, distance_scale, 0xFFFFFFFF, true);
 
-                    zpl_vec3 vec = {};
-                    zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(camera_pos));
-                    auto dist = zpl_vec3_mag(vec);
-                    auto dist_sq = zpl_sqrt(dist);
-                    auto distance_scale = (1.0f / dist_sq);
-                    auto size = graphics::get_text_size(nameplate_font, player->name);
-                    size.cx = size.cx * distance_scale;
-                    
-                    graphics::draw_text(nameplate_font, player->name, screen.x - (size.cx / 2), screen.y, distance_scale, 0xFFFFFFFF, true);
-                    
-                    constexpr auto health_width = 135.0f;
-                    constexpr auto health_height = 15.0f;
-                    constexpr auto health_gap = 20.0f;
+                        constexpr auto health_width = 135.0f;
+                        constexpr auto health_height = 15.0f;
+                        constexpr auto health_gap = 20.0f;
 
-                    auto scaled_width = health_width / dist_sq;
-                    auto scaled_height = health_height / dist_sq;
+                        auto scaled_width = health_width / dist_sq;
+                        auto scaled_height = health_height / dist_sq;
 
-                    if (scaled_width > health_width)
-                        scaled_width = health_width;
+                        if (scaled_width > health_width)
+                            scaled_width = health_width;
 
-                    if (scaled_height > health_height)
-                        scaled_height = health_height;
+                        if (scaled_height > health_height)
+                            scaled_height = health_height;
 
-                    screen.y += scaled_height + (health_gap * distance_scale);
+                        screen.y += scaled_height + (health_gap * distance_scale);
 
-                    zpl_vec3 health_color_min = { 255.0f, 0.0f, 0.0f };
-                    zpl_vec3 health_color_max = { 0.0f, 255.0f, 0.0f };
-                    zpl_vec3 calculated_color, background_color;
-                    f32 health = zpl_clamp(player_health / 200.0f, 0.0f, 1.0f);
-                    zpl_vec3_lerp(&calculated_color, health_color_min, health_color_max, health);
-                    zpl_vec3_mul(&background_color, calculated_color, 0.2f);
+                        zpl_vec3 health_color_min = { 255.0f, 0.0f, 0.0f };
+                        zpl_vec3 health_color_max = { 0.0f, 255.0f, 0.0f };
+                        zpl_vec3 calculated_color, background_color;
+                        f32 health = zpl_clamp(player_health / 200.0f, 0.0f, 1.0f);
+                        zpl_vec3_lerp(&calculated_color, health_color_min, health_color_max, health);
+                        zpl_vec3_mul(&background_color, calculated_color, 0.2f);
 
-                    DWORD final_color = mod_vec3_to_color(calculated_color);
-                    DWORD final_bg_color = mod_vec3_to_color(background_color);
+                        DWORD final_color = mod_vec3_to_color(calculated_color);
+                        DWORD final_bg_color = mod_vec3_to_color(background_color);
 
-                    auto width = (player_health * scaled_width) / 200.0f;
-                    auto healthbar_x = screen.x - (scaled_width / 2);
-                    graphics::draw_box(device, healthbar_x - 2.0f, screen.y - 2.0f, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
-                    graphics::draw_box(device, healthbar_x, screen.y, width, scaled_height, final_color);
+                        auto width = (player_health * scaled_width) / 200.0f;
+                        auto healthbar_x = screen.x - (scaled_width / 2);
+                        graphics::draw_box(device, healthbar_x - 2.0f, screen.y - 2.0f, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
+                        graphics::draw_box(device, healthbar_x, screen.y, width, scaled_height, final_color);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 }

@@ -1,4 +1,5 @@
 #pragma once
+inline void mod_shutdown();
 namespace gamemap
 {
     inline void draw_player_cursor(void* vertex_buffer);
@@ -276,9 +277,31 @@ namespace hooks
             JMP player_cursor_back
         }
     }
+   
+    //----------------------------------------------
+    //Proper exit handling
+    //----------------------------------------------
+    void OnGameExit() {
+        mod_shutdown();
+    }
+
+    __declspec(naked) void OnGameExitHook() {
+        __asm {
+            pushad
+            call OnGameExit
+            popad
+            retn
+        }
+    }
 }
 
 inline auto local_player_init() {
+
+    //Engine exit hook ( for quiting window )
+    MemoryPatcher::InstallJmpHook(0x1008E8B0, (DWORD)&hooks::OnGameExitHook);
+
+    //Game exit hook ( for exiting from menu )
+    MemoryPatcher::InstallJmpHook(0x00612485, (DWORD)&hooks::OnGameExitHook);
 
     //G_Indicators blips rendering hook 
     MemoryPatcher::InstallJmpHook(0x005FFF77, (DWORD)&hooks::PlayerCursorHook);

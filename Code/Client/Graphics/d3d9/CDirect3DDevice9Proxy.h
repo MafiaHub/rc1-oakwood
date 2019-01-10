@@ -10,7 +10,7 @@
 namespace graphics {
     inline auto end_scene(IDirect3DDevice9*) -> void;
     inline auto device_reset(IDirect3DDevice9*) -> void;
-    inline auto device_lost(IDirect3DDevice9*) -> void;
+    inline auto device_lost() -> void;
 }
 
 
@@ -229,14 +229,13 @@ UINT STDMETHODCALLTYPE CDirect3DDevice9Proxy::GetNumberOfSwapChains() {
 }
 
 HRESULT STDMETHODCALLTYPE CDirect3DDevice9Proxy::Reset(D3DPRESENT_PARAMETERS * pPresentationParameters) {
-    graphics::device_lost(m_pD3DDevice);
+    graphics::device_lost();
 
     HRESULT hResult = m_pD3DDevice->Reset(pPresentationParameters);
-
-    if (SUCCEEDED(hResult)) {
+    
+    if (SUCCEEDED(hResult))
         graphics::device_reset(m_pD3DDevice);
-    }
-
+    
     return hResult;
 }
 

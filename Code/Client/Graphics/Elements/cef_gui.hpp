@@ -1,7 +1,7 @@
 #pragma once
 
 #include <unordered_map>
-
+inline void mod_shutdown();
 namespace effects 
 {
     extern bool is_enabled;
@@ -88,7 +88,6 @@ namespace cefgui
         
         /* TODO: Move this to a better place */
         init_cef_commands();
-
         init_chat_commands();
     }
 } // namespace chat
