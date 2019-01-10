@@ -298,11 +298,11 @@ namespace hooks
 inline auto local_player_init() {
 
     //Engine exit hook ( for quiting window )
-   /* MemoryPatcher::InstallJmpHook(0x1008E8B0, (DWORD)&hooks::OnGameExitHook);
+    MemoryPatcher::InstallJmpHook(0x1008E8B0, (DWORD)&hooks::OnGameExitHook);
 
     //Game exit hook ( for exiting from menu )
     MemoryPatcher::InstallJmpHook(0x00612485, (DWORD)&hooks::OnGameExitHook);
-   */
+    
     //G_Indicators blips rendering hook 
     MemoryPatcher::InstallJmpHook(0x005FFF77, (DWORD)&hooks::PlayerCursorHook);
 
