@@ -352,7 +352,7 @@ auto mod_player_add_events() {
     librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
         // TODO: password sending
         char nickname[32];
-        strcpy(nickname, GlobalConfig.username.c_str());
+        strcpy(nickname, GlobalConfig.username);
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
     });
 }

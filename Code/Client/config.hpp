@@ -11,7 +11,12 @@ view_distance = 0
 auto init_config() {
     auto json = config_get(config_file_name, mod_default_config);
 
-    json_apply(json, GlobalConfig.server_address, ip, string, 0);
-    json_apply(json, GlobalConfig.username, username, string, 0);
+    std::string server_addr, cur_username;
+
+    json_apply(json, server_addr, ip, string, 0);
+    json_apply(json, cur_username, username, string, 0);
     json_apply(json, GlobalConfig.view_distance, view_distance, integer, 0);
+
+    strcpy(GlobalConfig.username, cur_username.c_str());
+    strcpy(GlobalConfig.server_address, server_addr.c_str());
 }

@@ -53,7 +53,7 @@ namespace menu {
         set_text_if_found(Component::QuickConnectTitle, "Quck connect");
         set_text_if_found(Component::ConnectButton, "Connect");
         set_text_if_found(Component::ServerIPLabel,	"Enter IP:");
-        set_text_if_found(Component::ConnectIP, GlobalConfig.server_address.c_str());
+        set_text_if_found(Component::ConnectIP, GlobalConfig.server_address);
         set_string_if_found(Component::ServerImage, "freeride0.bmp");
 
         //game menu
@@ -183,17 +183,14 @@ namespace menu {
                 u32 profile_count = (first_elm - last_elm) / 84;
             
                 if (component_id <= Component::FirstProfile + profile_count) {
-                    auto text = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(component_id));
-                    
-                    if (GlobalConfig.username.empty()) {
-                        GlobalConfig.username = text;
-                    }
+                    strcpy(GlobalConfig.username, MafiaSDK::GetGMMenu()->GetText(component_id));
                 }
             }
 
             if (component_id == Component::ConnectButton) {
-                GlobalConfig.server_address = std::string((const char*)MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
-                if (!GlobalConfig.server_address.empty()) {
+              
+                strcpy(GlobalConfig.server_address, MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
+                if (strlen(GlobalConfig.server_address)) {
                     
                     auto player = get_local_player();
                     if (player) {
@@ -209,8 +206,8 @@ namespace menu {
 
             if (component_id >= Component::DummyServer && component_id < Component::DummyServer + servers.size()) {
                 auto server_item_idx = (component_id - Component::DummyServer);
-                GlobalConfig.server_address = std::string(servers.at(server_item_idx).server_ip.c_str());
-                if (!GlobalConfig.server_address.empty()) {
+                strcpy(GlobalConfig.server_address, servers.at(server_item_idx).server_ip.c_str());
+                if (strlen(GlobalConfig.server_address)) {
                     MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }
             }

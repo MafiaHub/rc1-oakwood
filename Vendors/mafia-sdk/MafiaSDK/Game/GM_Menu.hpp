@@ -1,5 +1,5 @@
 /*
-Copyright 2018 Dávid Svitana
+Copyright 2018 DÃ¡vid Svitana
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -222,7 +222,7 @@ namespace MafiaSDK
 			}
 		}
 
-		unsigned int GetText(unsigned int component_id)
+		char* GetText(unsigned int component_id)
 		{
 			unsigned long funcAddr = GM_Menu_Enum::GetText;
 

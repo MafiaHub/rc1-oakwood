@@ -21,7 +21,7 @@ void on_librg_connect(librg_event* evnt) {
     local_player.entity_id = evnt->entity->id;
     
     auto new_player = new mafia_player;
-    strcpy(new_player->name, GlobalConfig.username.c_str());
+    strcpy(new_player->name, GlobalConfig.username);
     evnt->entity->type = TYPE_PLAYER;
     evnt->entity->user_data = (void*)new_player;
 
@@ -29,7 +29,7 @@ void on_librg_connect(librg_event* evnt) {
 
 void on_librg_disconnect(librg_event* evnt) {
 
-    cefgui::add_message("Disconnected from " + GlobalConfig.server_address + ".");
+    cefgui::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
     auto player = get_local_player();
     if(player && player->ped) {
         player_despawn(player->ped);

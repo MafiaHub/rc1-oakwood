@@ -73,8 +73,8 @@ f64 last_update = 0.0f;
 bool hit_hook_skip = true;
 
 struct _GlobalConfig {
-    std::string server_address;
-    std::string username;
+    char server_address[32];
+    char username[32];
     float view_distance;
     std::string localpath;
     std::string gamepath;

@@ -18,7 +18,6 @@ namespace gamemap
         float tu, tv;
     };
 
-
     inline bool is_marker_inbounds(zpl_vec2 position, float blip_size) {
 
         //NOTE(DavoSK): Position is also gap from each size

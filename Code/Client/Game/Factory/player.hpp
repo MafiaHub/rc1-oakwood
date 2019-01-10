@@ -58,7 +58,7 @@ auto player_spawn(zpl_vec3 position,
             }
 
             player->ped = new_ped;
-            strcpy(player->name, GlobalConfig.username.c_str());
+            strcpy(player->name, GlobalConfig.username);
         }
     }
 

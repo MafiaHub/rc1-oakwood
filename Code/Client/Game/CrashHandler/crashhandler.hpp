@@ -5,26 +5,53 @@ namespace crashhandler
     * Method for posting crash report to the server
     * that creates new process for sending data 
     */
+    inline PROCESS_INFORMATION launch_process(std::string app, std::string arg) {
+        STARTUPINFOW si;
+        PROCESS_INFORMATION pi; // The function returns this
+        ZeroMemory(&si, sizeof(si));
+        si.cb = sizeof(si);
+        ZeroMemory(&pi, sizeof(pi));
+
+        //Prepare CreateProcess args
+        std::wstring app_w(app.length(), L' '); // Make room for characters
+        std::copy(app.begin(), app.end(), app_w.begin()); // Copy string to wstring.
+
+        std::wstring arg_w(arg.length(), L' '); // Make room for characters
+        std::copy(arg.begin(), arg.end(), arg_w.begin()); // Copy string to wstring.
+
+        std::wstring input = app_w + L" " + arg_w;
+        wchar_t* arg_concat = const_cast<wchar_t*>(input.c_str());
+        const wchar_t* app_const = app_w.c_str();
+
+        // Start the child process.
+        if (!CreateProcessW(
+            NULL,      // app path
+            arg_concat,     // Command line (needs to include app path as first argument. args seperated by whitepace)
+            NULL,           // Process handle not inheritable
+            NULL,           // Thread handle not inheritable
+            FALSE,          // Set handle inheritance to FALSE
+            0,              // No creation flags
+            NULL,           // Use parent's environment block
+            NULL,           // Use parent's starting directory
+            &si,            // Pointer to STARTUPINFO structure
+            &pi)           // Pointer to PROCESS_INFORMATION structure
+            )
+        {
+            printf("CreateProcess failed (%d).\n", GetLastError());
+            throw std::exception("Could not create child process");
+        }
+        else
+        {
+            std::cout << "[] Successfully launched child process" << std::endl;
+        }
+        return pi;
+    }
+
     inline void send_report(char* report_buffer) {
 
-        STARTUPINFOA siStartupInfo;
-        PROCESS_INFORMATION piProcessInfo;
-        memset(&siStartupInfo, 0, sizeof(siStartupInfo));
-        memset(&piProcessInfo, 0, sizeof(piProcessInfo));
-        siStartupInfo.cb = sizeof(siStartupInfo);
-
-        char starting_param[1000];
-        sprintf(starting_param, "bin\\oakreport.exe \"%s|%s|%s\"", GlobalConfig.username.c_str(), 
-            GlobalConfig.server_address.c_str(), report_buffer);
-        
-        if (!CreateProcessA(NULL,
-            starting_param, 0, 0, false,
-            CREATE_SUSPENDED, 0, 0,
-            &siStartupInfo, &piProcessInfo)) {
-            MessageBoxA(NULL, "Creating proccess failed !", "Error", MB_OK);
-        }
-        DWORD pId = piProcessInfo.dwProcessId;
-        ResumeThread(piProcessInfo.hThread);
+        std::string starting_params = "\"" + std::string(GlobalConfig.username) + "|" + std::string(GlobalConfig.server_address) + "|" + std::string(report_buffer) + "\"";
+        auto stuff = launch_process("bin\\oakreport.exe", starting_params);
+        ResumeThread(stuff.hThread);
     }
 
     /*
@@ -80,7 +107,6 @@ namespace crashhandler
 
         return EXCEPTION_EXECUTE_HANDLER;
     }
-
 
     /*
     * Function wich inits exception handler to specific callback 

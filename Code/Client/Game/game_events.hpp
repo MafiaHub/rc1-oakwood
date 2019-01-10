@@ -115,7 +115,7 @@ auto mod_bind_events() {
             }
 
             cefgui::add_message("Welcome to Mafia Oakwood 0.1");
-            cefgui::add_message("Connecting to " + GlobalConfig.server_address + " ...");
+            cefgui::add_message("Connecting to " + std::string(GlobalConfig.server_address) + " ...");
             mod_librg_connect();
 
             effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
