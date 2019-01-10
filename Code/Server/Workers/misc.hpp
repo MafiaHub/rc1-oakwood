@@ -2,10 +2,38 @@
 
 #define VEHICLE_SELECTION_TIME 2.0f
 
-void debug_bandwidth() {
+zpl_global f64 last_console_update  = 0.0f;
+zpl_global f64 last_fps_update      = 0.0f;
+zpl_global u32 fps_counter          = 0;
+zpl_global u32 computed_fps         = 0;
 
-    /*printf("Total recieved data: %d\n", network_context.network.host->totalReceivedData / 1024);
-    printf("Total send data: %d\n", network_context.network.host->totalSentData / 1024);*/
+void console_render() {
+
+    f64 current_time = zpl_time_now();
+    f64 diff = current_time - last_fps_update;
+   
+    fps_counter++;
+    if (diff >= 1.0) {
+        computed_fps = fps_counter;
+        fps_counter = 0;
+        last_fps_update = current_time;
+    }
+
+    //NOTE(DavoSK): Update our debug tag every 200ms
+    if (current_time - last_console_update > 0.2f) {
+        console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d | Players: %d / %d",
+            132,
+            130,
+            console_update_loader(),
+            132,
+            network_context.network.host->totalReceivedData / 1024,
+            network_context.network.host->totalSentData / 1024,
+            computed_fps,
+            (u32)GlobalConfig.players,
+            (u32)GlobalConfig.max_players);
+
+        last_console_update = current_time;
+    }
 }
 
 void vehicles_streamer_update() {

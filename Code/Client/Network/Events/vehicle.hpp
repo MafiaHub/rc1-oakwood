@@ -375,18 +375,14 @@ inline auto vehicle_entityremove(librg_event *evnt) {
 
 inline auto vehicle_clientstreamer_update(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
-
-    printf("Vehicle try to send update: %d\n", evnt->entity->id);
     if (!vehicle) {
         librg_event_reject(evnt);
-        printf("Vehicle no user data !!!!!!: %d\n", evnt->entity->id);
         return;
     }
 
     auto car_int = vehicle->car->GetInterface();
     if (!car_int) {
         librg_event_reject(evnt);
-        printf("Vehicle nullptr car !!!!!!: %d\n", evnt->entity->id);
         return;
     }
 
