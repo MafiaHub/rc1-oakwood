@@ -14,7 +14,7 @@ namespace crashhandler
         siStartupInfo.cb = sizeof(siStartupInfo);
 
         char starting_param[1000];
-        sprintf(starting_param, "CrashReporter.exe \"%s|%s|%s\"", GlobalConfig.username.c_str(), 
+        sprintf(starting_param, "bin\\oakreport.exe \"%s|%s|%s\"", GlobalConfig.username.c_str(), 
             GlobalConfig.server_address.c_str(), report_buffer);
         
         if (!CreateProcessA(NULL,
