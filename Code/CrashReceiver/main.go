@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
-const channelWebhook = "https://discordapp.com/api/webhooks/532935596260458497/PHa2RhPwLXRqb3jGWuuvx-vK7HIvMLecU82iepP7aj74hOgLwtLF23cmLFxlfPpvf9kQ"
+var channelWebhook string
 
 type crashReport struct {
 	Name     string `json:"name"`
@@ -30,15 +31,15 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&data)
 
 	if err != nil {
-		log.Printf("Invalid request received from %s!\n", r.Host)
+		log.Printf("Invalid request received from %s!\n", r.RemoteAddr)
 		return
 	}
 
-	log.Printf("New crash report has been received from %s@%s!\n", data.Name, r.Host)
+	log.Printf("New crash report has been received from %s@%s!\n", data.Name, r.RemoteAddr)
 
 	respData := webhookRequest{
 		URL:      channelWebhook,
-		Content:  fmt.Sprintf("Crash has been detected for user **%s** playing at **%s**!\n```\n%s```", data.Name, data.HostName, data.Dump),
+		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**!```\n%s```¯\\_(ツ)_/¯", data.Name, data.HostName, data.Dump),
 		Username: "Crash Reporter",
 		Avatar:   "https://cdn.discordapp.com/attachments/233249310727340032/532897486751268874/MafiaHub.png",
 	}
@@ -57,6 +58,7 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	channelWebhook = os.Args[1]
 	http.HandleFunc("/push", handleCrashReport)
 
 	fmt.Printf("Starting crash report server...\n")
