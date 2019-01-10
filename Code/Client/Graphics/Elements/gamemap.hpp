@@ -5,7 +5,8 @@ namespace gamemap
 
     constexpr double convert_width_coef         = 1.338827f;
     constexpr double convert_height_coef        = 1.63396f;
-    constexpr int original_blip_size            = 20;
+    constexpr int original_blip_size            = 15;
+    constexpr int original_blip_car_size        = 8;
     constexpr int convert_map_pos_x             = 160;
     constexpr int convert_map_pos_y             = 117;
 
@@ -97,6 +98,41 @@ namespace gamemap
                                 { blip_pos.x + blip_size,	blip_pos.y,			       0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 0.0 },
                                 { blip_pos.x,			    blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 0.0, 1.0 },
                                 { blip_pos.x + blip_size,	blip_pos.y + blip_size,    0.0f, 1.0f,	0xFF40AEF9,  0xFF40AEF9, 1.0, 1.0 },
+                            };
+
+                            MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_blip, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
+                        }
+                    }
+                }
+            }
+
+            float blip_size_car = original_blip_car_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
+            if (entity->type == TYPE_VEHICLE && entity->user_data) {
+                mafia_vehicle* vehicle = (mafia_vehicle*)entity->user_data;
+                if (vehicle->car) {
+                    auto car_frame = vehicle->car->GetInterface()->entity.frame;
+                    if (car_frame) {
+                        zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->mPosition);
+                        auto blip_pos = translate_object_to_map(frame_pos);
+
+                        if (is_marker_inbounds(blip_pos, blip_size_car)) {
+                            //NOTE(DavoSK): Draw border
+                            constexpr int border = 2;
+                            const mafia_vertex rect_border[] = {
+                                { blip_pos.x - border,			        blip_pos.y - border,	                   0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 0.0 },
+                                { blip_pos.x + blip_size_car + border,	blip_pos.y - border,			           0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 0.0 },
+                                { blip_pos.x - border,			        blip_pos.y + blip_size_car + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 0.0, 1.0 },
+                                { blip_pos.x + blip_size_car + border,	blip_pos.y + blip_size_car + border,       0.0f, 1.0f,	0xFF000000,  0xFF000000, 1.0, 1.0 },
+                            };
+
+                            MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_border, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
+
+                            //NOTE(DavoSK): Draw player blip
+                            const mafia_vertex rect_blip[] = {
+                                { blip_pos.x,			        blip_pos.y,	                   0.0f, 1.0f,	0xFF696969,  0xFF696969, 0.0, 0.0 },
+                                { blip_pos.x + blip_size_car,	blip_pos.y,			           0.0f, 1.0f,	0xFF696969,  0xFF696969, 1.0, 0.0 },
+                                { blip_pos.x,			        blip_pos.y + blip_size_car,    0.0f, 1.0f,	0xFF696969,  0xFF696969, 0.0, 1.0 },
+                                { blip_pos.x + blip_size_car,	blip_pos.y + blip_size_car,    0.0f, 1.0f,	0xFF696969,  0xFF696969, 1.0, 1.0 },
                             };
 
                             MafiaSDK::GetIGraph()->DrawPrimitiveList(MafiaSDK::PRIMITIVE_TYPE::TRIANGLESTRIP, 2, (void*)rect_blip, MafiaSDK::LS3D_STREAM_TYPE::FILLED);
