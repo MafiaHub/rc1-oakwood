@@ -76,7 +76,10 @@ namespace cefgui
         if (!global_device) return;
 
         auto desc = graphics::get_backbuffer_desc(global_device);
-        cefgui::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/app.html").c_str(), desc.Width, desc.Height, 1);
+        if (cefgui::main_browser == nullptr)
+            cefgui::main_browser = cef::browser_create(global_device, (std::string("http://") + GlobalConfig.server_address + ":27010/app.html").c_str(), desc.Width, desc.Height, 1);
+        else
+            cef::url_set(cefgui::main_browser, (std::string("http://") + GlobalConfig.server_address + ":27010/app.html").c_str());
     }
 
     #include "Natives/cef_commands.hpp"
