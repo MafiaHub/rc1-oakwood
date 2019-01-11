@@ -57,19 +57,6 @@ void car_target_position_update(mafia_vehicle *car) {
     // }
 
     vehicle_int->position = EXPAND_VEC(new_position);
-
-    //NOTE(DavoSK): Try to update occupants
-    for (int i = 0; i < 4; i++) {
-        if (car->seats[i] != -1) {
-            auto entity = librg_entity_fetch(&network_context, car->seats[i]);
-            if (entity && entity->user_data) {
-                auto player = (mafia_player*)entity->user_data;
-                if (player->ped) {
-                    player->ped->GetInterface()->entity.position = EXPAND_VEC(new_position);
-                }
-            }
-        }
-    }
 }
 
 void car_target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_time, bool valid_velocityz, f32 velocityz) {
