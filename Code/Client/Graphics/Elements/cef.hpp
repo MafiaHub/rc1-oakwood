@@ -477,7 +477,7 @@ namespace cef {
     // =======================================================================//
 
     bool IsKeyDown(WPARAM wparam) {
-        return (GetKeyState(wparam) & 0x8000) != 0;
+        return input::is_key_down(wparam);
     }
 
     int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam)

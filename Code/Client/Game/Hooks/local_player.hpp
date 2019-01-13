@@ -147,13 +147,13 @@ namespace hooks
     //----------------------------------------------
     //CHuman::DoSoot(const S_Vector) custom jmp hook
     //----------------------------------------------
-    typedef bool(__thiscall* C_Human_Do_Shoot_t)(void* _this, BOOL do_shoot, const S_vector&);
+    typedef bool(__thiscall* C_Human_Do_Shoot_t)(void* _this, BOOL do_shoot, S_vector* pos);
     C_Human_Do_Shoot_t human_do_shoot_original = nullptr;
 
-    BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, const S_vector& pos) {
+    BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, S_vector* pos) {
 
-        if (do_shoot && _this == get_local_ped()) {
-            local_player_shoot(pos);
+        if (do_shoot && pos && _this == get_local_ped()) {
+            local_player_shoot(*pos);
         }
         return human_do_shoot_original(_this, do_shoot, pos);
     }

@@ -25,6 +25,7 @@ void on_librg_connect(librg_event* evnt) {
     evnt->entity->type = TYPE_PLAYER;
     evnt->entity->user_data = (void*)new_player;
 
+    cef::browser_reload(cefgui::main_browser);
 }
 
 void on_librg_disconnect(librg_event* evnt) {
