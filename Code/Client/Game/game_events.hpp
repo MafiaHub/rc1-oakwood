@@ -84,9 +84,7 @@ auto interpolate_cam(f64 delta_time) {
         passed_time += delta_time * 0.11f;
     }
 }
-
 f64 delta_time = 0.0f;
-MafiaSDK::I3D_Material* blank_material = nullptr;
 
 auto mod_bind_events() {
 
@@ -100,7 +98,6 @@ auto mod_bind_events() {
         
         //TODO(DavoSK): Move it to sdk
         *(BOOL*)(0x006C406C) = true;
-        *(BYTE*)(0x101C59CC) = 1;
       
         auto mission_id = MafiaSDK::GetCurrentMissionID();
         if (mission_id == MafiaSDK::C_Mission_Enum::MissionID::FREERIDE || 

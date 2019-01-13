@@ -180,6 +180,7 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
     // fix shooting ( fixed ammo for now :) )
     *(BYTE*)((DWORD)ped->ped + 0x4A4) = 50;
     *(BYTE*)((DWORD)ped->ped + 0x4A8) = 50;
+    *(float*)((DWORD)ped->ped + 0x5F4) = ped->aim;
 
     auto player_int = ped->ped->GetInterface();
     if (player_int->playersCar || player_int->carLeavingOrEntering || ped->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
@@ -217,6 +218,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     u8 is_crouching     = librg_data_ru8(evnt->data);
     u8 is_aiming        = librg_data_ru8(evnt->data);
     u32 aiming_time     = librg_data_ru32(evnt->data);
+    f32 aim             = librg_data_rf32(evnt->data);
     u32 ping            = librg_data_ru32(evnt->data);
 
     auto player = (mafia_player *)evnt->entity->user_data;
@@ -231,6 +233,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     player->is_crouching        = is_crouching;
     player->is_aiming           = is_aiming;
     player->aiming_time         = aiming_time;
+    player->aim                 = aim;
     player->ping                = ping;
 
     player->interp.pose.start = player->interp.pose.target;
@@ -244,6 +247,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
         player_int->isDucking	= player->is_crouching;
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
+        *(float*)((DWORD)player_int + 0x5F4) = player->aim;
     }
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
@@ -323,6 +327,7 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
     player->is_crouching	= player_int->humanObject.isDucking;
     player->is_aiming		= player_int->humanObject.isAiming;
     player->aiming_time		= *(DWORD*)((DWORD)player_int + 0xAD4);
+    player->aim             = *(float*)((DWORD)player_int + 0x5F4);
 
     librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3));
@@ -330,6 +335,7 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
     librg_data_wu8(evnt->data, player->animation_state);
     librg_data_wu8(evnt->data, player->is_crouching);
     librg_data_wu8(evnt->data, player->is_aiming);
+    librg_data_wf32(evnt->data, player->aim);
     librg_data_wu64(evnt->data, player->aiming_time);
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {

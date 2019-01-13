@@ -30,13 +30,13 @@ auto mod_init_patches() {
 
     MafiaSDK::C_Game_Patches::PatchDisableLogos();
     MafiaSDK::C_Game_Patches::PatchDisablePleaseWait();
-    //MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
     MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
     MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
     MafiaSDK::C_Game_Patches::PatchRemovePlayer();
-    
+    MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
+
     // 0004E034A
     // Force update car physics
-    BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";
-    MemoryPatcher::PatchAddress(0x0004E034A, patchCarPhysics, sizeof(patchCarPhysics));
+    // BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";
+    // MemoryPatcher::PatchAddress(0x0004E034A, patchCarPhysics, sizeof(patchCarPhysics));
 }

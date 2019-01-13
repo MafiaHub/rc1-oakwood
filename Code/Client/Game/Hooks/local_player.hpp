@@ -147,27 +147,15 @@ namespace hooks
     //----------------------------------------------
     //CHuman::DoSoot(const S_Vector) custom jmp hook
     //----------------------------------------------
-    void OnDoShoot(S_vector* pos, MafiaSDK::C_Player* player) {
+    typedef bool(__thiscall* C_Human_Do_Shoot_t)(void* _this, BOOL do_shoot, const S_vector&);
+    C_Human_Do_Shoot_t human_do_shoot_original = nullptr;
 
-        player->Do_Shoot(1, *pos);
+    BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, const S_vector& pos) {
 
-        if (player == get_local_ped())
-            local_player_shoot(*pos);
-    }
-
-    DWORD shoot_fix_jmp_back = 0x00591424;
-    __declspec(naked) void DoShoot() {
-        __asm {
-            LEA ECX, DWORD PTR SS : [ESP + 0x38]
-            pushad
-            push esi
-            push ecx
-            call OnDoShoot
-            add esp, 0x8
-            popad
-
-            jmp shoot_fix_jmp_back
+        if (do_shoot && _this == get_local_ped()) {
+            local_player_shoot(pos);
         }
+        return human_do_shoot_original(_this, do_shoot, pos);
     }
 
     //----------------------
@@ -308,16 +296,17 @@ inline auto local_player_init() {
 
     //Human
     MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&hooks::PoseSetPoseAimed);
-    MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal);
-    MemoryPatcher::InstallJmpHook(0x00591416, (DWORD)&hooks::DoShoot);
+    MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&hooks::PoseSetPoseNormal); 
     MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&hooks::ThrowGrenade);
-
-    //MemoryPatcher::InstallJmpHook(0x0057A7CB, (DWORD)&hooks::PlayerFall);
     MemoryPatcher::InstallJmpHook(0x005A543B, (DWORD)&hooks::PlayerOnSink);
 
     //Disable dealocation second remove actor
     MemoryPatcher::InstallJmpHook(0x005A7F44, 0x005A7F4B);
 
+    hooks::human_do_shoot_original = reinterpret_cast<hooks::C_Human_Do_Shoot_t>(
+        DetourFunction((PBYTE)0x00583590, (PBYTE)&hooks::HumanDoShoot)
+    );
+    
     hooks::remove_temporary_actor_original = reinterpret_cast<hooks::RemoveTemporaryActor_t>(
         DetourFunction((PBYTE)0x005A79A0, (PBYTE)&hooks::RemoveTemporaryActor)
     );
