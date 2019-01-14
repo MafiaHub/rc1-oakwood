@@ -21,6 +21,7 @@ namespace cefgui
     constexpr unsigned int VK_T = 0x54;
 
     input::KeyToggle key_chat_open(VK_T);
+    input::KeyToggle key_reload(VK_F2);
 
     auto register_command(const std::string &name, std::function<void(std::vector<std::string>)> ptr) {
         if (ptr != nullptr) {
@@ -68,6 +69,12 @@ namespace cefgui
                 CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("executeEvent");
                 json send_msg = {{"type", "update-input"}, {"blocked", input::InputState.input_blocked}};                
                 send_message(msg, send_msg);
+            }
+        }
+
+        if (key_reload) {
+            if (main_browser) {
+                main_browser->browser->Reload();
             }
         }
     }

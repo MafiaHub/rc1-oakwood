@@ -23,7 +23,7 @@ void webserver_start() {
     mg_set_protocol_http_websocket(nc);
     s_http_server_opts.document_root = "static";
     s_http_server_opts.enable_directory_listing = "yes";
-    
+
     auto web_loop = [=]() { 
         while (web_server_running) {
             mg_mgr_poll(&mgr, 200);
