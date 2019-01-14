@@ -19,14 +19,18 @@ namespace hooks
         for(auto forbidden_type : forbidden_objects) {
             if(type == forbidden_type && frame != NULL) {
 
+                //NOTE(DavoSK): We dont delete frame just set off
                 MafiaSDK::I3D_Frame* frame_ex = (MafiaSDK::I3D_Frame*)frame;
+                if(frame_ex) 
+                    frame_ex->SetOn(false);
                 //NOTE(DavoSK): Dont spawn actor but we need to call destructor of frame
-                __asm {
+                /*__asm {
                     mov eax, frame
                     push eax
                     mov ecx, [eax]
                     call dword ptr ds : [ecx]
-                }
+                }*/
+
                 return nullptr;
             }
         }

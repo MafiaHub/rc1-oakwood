@@ -113,7 +113,7 @@ namespace crashhandler
         StackWalkerToSend sw;
         sw.ShowCallstack(GetCurrentThread(), ExceptionInfo->ContextRecord);
 
-        //send_report((char*)buffer_to_send.str().c_str());
+        send_report((char*)buffer_to_send.str().c_str());
         FILE* log = fopen("crashdump.txt", "a");
         if (log) {
             fprintf(log, "---\nMINIDUMP\n%s\n", buffer_to_send.str().c_str());
