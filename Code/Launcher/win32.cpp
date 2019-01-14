@@ -110,10 +110,10 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
         }
 
         /* config reading */
-      /*  if (!_strcmpi(exportFn, "RegQueryValueExA")) {
+        if (!_strcmpi(exportFn, "RegQueryValueExA")) {
             return static_cast<LPVOID>(RegQueryValueExA_Hook);
         }
-        */
+        
         /* tell game where binaries are located */
         if (!_strcmpi(exportFn, "GetModuleFileNameA")) {
             return static_cast<LPVOID>(GetModuleFileNameA_Hook);
