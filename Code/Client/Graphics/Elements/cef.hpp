@@ -72,6 +72,7 @@ namespace cef {
             mPixelBufferHeight = h;
             mPopupBuffer = nullptr;
             mPixelBufferRow = nullptr;
+            mTexture = nullptr;
         }
 
         ~OakwoodRenderHandler() {
