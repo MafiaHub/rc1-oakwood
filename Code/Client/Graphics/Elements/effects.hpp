@@ -97,7 +97,7 @@ namespace effects {
 
     inline void render(IDirect3DDevice9* device) {
 
-        if(device && is_enabled && effect) {
+        if(device && is_enabled && effect && vertex_buffer && back_buffer_texture) {
             
             u32 passes;
             effect->Begin(&passes, 0);

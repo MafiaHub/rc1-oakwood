@@ -50,11 +50,6 @@ namespace nameplates {
             nameplate_font->Release();
             nameplate_font = nullptr;
         }
-
-        if (nameplate_font) {
-            nameplate_font->Release();
-            nameplate_font = nullptr;
-        }
     }
 
     /* 
@@ -67,7 +62,7 @@ namespace nameplates {
     }
 
     inline void render(IDirect3DDevice9* device) {
-        if (device) {
+        if (device && nameplate_font) {
             iterate_players([=](mafia_player* player) {
                 if (player->ped && player->ped->GetInterface()->neckFrame) {
                     auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;

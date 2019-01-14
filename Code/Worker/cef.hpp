@@ -20,6 +20,10 @@ public:
         cmd->AppendSwitch("use-fake-ui-for-media-stream");
         cmd->AppendSwitch("enable-speech-input");
         cmd->AppendSwitch("off-screen-rendering-enabled");
+
+        // some GPUs are in the GPU blacklist as 'forcing D3D9'
+        // this just forces D3D11 anyway.
+        cmd->AppendSwitchWithValue("use-angle", "d3d11");
     }
 
     void OnContextReleased(CefRefPtr<CefBrowser>, CefRefPtr<CefFrame>, CefRefPtr<CefV8Context> context) override {

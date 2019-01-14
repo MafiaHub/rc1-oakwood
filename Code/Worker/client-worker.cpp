@@ -49,6 +49,7 @@ int CALLBACK WinMain(HINSTANCE wininst, HINSTANCE pi, LPSTR cmdline, int nCmdSho
     __HrLoadAllImportsForDll("libcef.dll");
  
     CefMainArgs args(wininst);
+        
     cefapp = new OakwoodCefApp;
 
     lastCoreUpdate = zpl_time_now();

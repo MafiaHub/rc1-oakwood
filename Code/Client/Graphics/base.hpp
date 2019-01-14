@@ -118,6 +118,7 @@ namespace graphics
             IDirect3DSurface9* back_buffer = nullptr;
             device->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
             back_buffer->GetDesc(&back_buffer_desc);
+            back_buffer->Release();
         }
         return back_buffer_desc;
     }
@@ -133,15 +134,17 @@ namespace graphics
 
         global_device = device;
         init_main_sprite(device);
+        
         nameplates::init(device);
         effects::init(device);
         cef::init(device);
         cefgui::init(device);
+        input::hook_window();
     }
-
+    IDirect3DStateBlock9* pStateBlock = NULL;
     inline auto device_lost() -> void {
-
         if (global_device) {
+            global_device->Release();
             global_device = nullptr;
         }
 
@@ -159,15 +162,17 @@ namespace graphics
         
         global_device = device;
         init_main_sprite(device);
-        nameplates::device_reset(device);
         effects::device_reset(device);
+        nameplates::device_reset(device);
         cef::device_reset(device);
+
+        if (input::InputState.input_blocked)
+            input::block_input(false);
     }
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
         if (device && global_device) {
-            IDirect3DStateBlock9* pStateBlock = NULL;
             device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
 
             IDirect3DDevice9_SetVertexShader(device, NULL);
@@ -195,8 +200,11 @@ namespace graphics
             cef::tick();
             cef::render_browsers();
 
-            pStateBlock->Apply();
-            pStateBlock->Release();
+            if (pStateBlock) {
+                pStateBlock->Apply();
+                pStateBlock->Release();
+                pStateBlock = nullptr;
+            }
         }
     }
 }

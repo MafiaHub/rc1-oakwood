@@ -119,6 +119,7 @@ HRESULT STDMETHODCALLTYPE CDirect3D9Proxy::CreateDevice(UINT Adapter, D3DDEVTYPE
 
     if (SUCCEEDED(hr)) {
         graphics::init(*ppReturnedDeviceInterface);
+        //input::hook_window();
         *ppReturnedDeviceInterface = new CDirect3DDevice9Proxy( this, *ppReturnedDeviceInterface );
     }
 

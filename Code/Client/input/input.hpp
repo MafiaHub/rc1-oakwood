@@ -126,9 +126,8 @@ namespace input {
     */
     LRESULT __stdcall mod_wndproc_hook_keyboard(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-        if(wndproc_combined(hWnd, uMsg, wParam, lParam))
-            return true;
-
+        wndproc_combined(hWnd, uMsg, wParam, lParam);
+        
         return CallWindowProc(mod_wndproc_original_keyboard, hWnd, uMsg, wParam, lParam);
     }
 
@@ -137,8 +136,8 @@ namespace input {
     */
     LRESULT __stdcall mod_wndproc_hook_mouse(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-        if(wndproc_combined(hWnd, uMsg, wParam, lParam))
-            return true;
+        wndproc_combined(hWnd, uMsg, wParam, lParam);
+        //return true;
 
         return CallWindowProc(mod_wndproc_original_mouse, hWnd, uMsg, wParam, lParam);
     }

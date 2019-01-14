@@ -85,8 +85,6 @@ namespace cefgui
 
     auto init(IDirect3DDevice9 *device) {
 
-        auto back_buffer = graphics::get_backbuffer_desc(device);
-        
         /* TODO: Move this to a better place */
         init_cef_commands();
         init_chat_commands();

@@ -4,6 +4,12 @@
 #include "include/wrapper/cef_helpers.h"
 #include <windowsx.h>
 
+namespace graphics
+{
+    extern ID3DXSprite* main_sprite;
+    inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device);
+};
+
 namespace cef {
 
     class OakwoodRenderHandler;
@@ -28,7 +34,6 @@ namespace cef {
 
     f64 last_core_update = 0.0f;
     CefRefPtr<CefMinimal> minimal;
-    ID3DXSprite* rendering_sprite = nullptr;
     std::vector<object*> browsers;
 
     using native_function = std::function<void(CefRefPtr<CefListValue>)>;
@@ -58,7 +63,7 @@ namespace cef {
         std::mutex mTextureMutex;
         IDirect3DTexture9* mTexture;
 
-        OakwoodRenderHandler(IDirect3DDevice9* device, int w, int h, int zindex) {
+        OakwoodRenderHandler(int w, int h, int zindex) {
 
             mFlipYPixels = false;
             mBufferDepth = 4;
@@ -67,8 +72,6 @@ namespace cef {
             mPixelBufferHeight = h;
             mPopupBuffer = nullptr;
             mPixelBufferRow = nullptr;
-
-            InitTexture(device);
         }
 
         ~OakwoodRenderHandler() {
@@ -175,12 +178,38 @@ namespace cef {
             mTextureMutex.unlock();
         }
 
-        void InitTexture(IDirect3DDevice9* device) {
+        void InitTexture(IDirect3DDevice9* device, bool restore) {
             mTextureMutex.lock();
             if (device) {
+                if (mTexture) {
+                    mTexture->Release();
+                    mTexture = nullptr;
+                }
+
                 if (FAILED(D3DXCreateTexture(device, mPixelBufferWidth, mPixelBufferHeight, NULL, NULL, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &mTexture))) {
                     MessageBox(NULL, "Failed to create the texture for web-view", "Error CEF M2ORenderHandler Initialization", MB_OK);
                     return;
+                }
+
+                if (restore) {
+                    if (mPixelBufferWidth > 0 && mPixelBufferHeight > 0) {
+                        D3DLOCKED_RECT rect;
+                        if (mTexture) {
+                            if (SUCCEEDED(mTexture->LockRect(0, &rect, NULL, D3DLOCK_DISCARD))) {
+
+                                unsigned char *pDestPixels = (unsigned char*)rect.pBits;
+                                unsigned char *pSourcePixels = (unsigned char *)mPixelBuffer;
+
+                                for (int y = 0; y < mPixelBufferHeight; ++y) {
+                                    memcpy(pDestPixels, pSourcePixels, mPixelBufferWidth * 4);
+                                    pSourcePixels += rect.Pitch;
+                                    pDestPixels += rect.Pitch;
+                                }
+
+                                mTexture->UnlockRect(NULL);
+                            }
+                        }
+                    }
                 }
             }
             mTextureMutex.unlock();
@@ -245,15 +274,27 @@ namespace cef {
         virtual ~CefMinimal() = default;
         void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) override {
             command_line->AppendSwitch("enable-begin-frame-scheduling");
-            command_line->AppendSwitch("force-gpu-rasterization");
-            command_line->AppendSwitchWithValue("disable-features", "TouchpadAndWheelScrollLatching");
-            command_line->AppendSwitch("disable-smooth-scrolling");
-            command_line->AppendSwitchWithValue("disable-features", "AsyncWheelEvents");
-            command_line->AppendSwitch("disable-direct-composition");
-            command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
             command_line->AppendSwitch("enable-experimental-web-platform-features");
-            command_line->AppendSwitch("transparent-painting-enabled");
+            command_line->AppendSwitch("enable-media-stream");
+            command_line->AppendSwitch("use-fake-ui-for-media-stream");
+            command_line->AppendSwitch("enable-speech-input");
+            command_line->AppendSwitch("ignore-gpu-blacklist");
+            command_line->AppendSwitch("enable-usermedia-screen-capture");
+            command_line->AppendSwitch("disable-direct-composition");
+            command_line->AppendSwitchWithValue("default-encoding", "utf-8");
+            command_line->AppendSwitch("disable-gpu-vsync");
+            command_line->AppendSwitchWithValue("autoplay-policy", "no-user-gesture-required");
+            command_line->AppendSwitch("force-gpu-rasterization");
             command_line->AppendSwitch("off-screen-rendering-enabled");
+
+            // some GPUs are in the GPU blacklist as 'forcing D3D9'
+            // this just forces D3D11 anyway.
+            command_line->AppendSwitchWithValue("use-angle", "d3d11");
+
+            // M65 enables these by default, but CEF doesn't pass the required phase data at this time (2018-03-31)
+            // this breaks scrolling 'randomly' - after a middle click, and some other scenarios
+            // also disable CrossSiteDocumentBlockingAlways and CrossSiteDocumentBlockingIfIsolating (CORB) to avoid blocked cross-origin responses
+            command_line->AppendSwitchWithValue("disable-features", "TouchpadAndWheelScrollLatching,AsyncWheelEvents,CrossSiteDocumentBlockingAlways,CrossSiteDocumentBlockingIfIsolating");
             command_line->AppendSwitchWithValue("oakwood-dir", CefString(GlobalConfig.localpath));
         }
 
@@ -267,11 +308,10 @@ namespace cef {
     // =======================================================================//
     int init(IDirect3DDevice9* device) {
 
-        minimal = new CefMinimal();
-
         CefSettings settings;
         CefMainArgs args(GetModuleHandle(nullptr));
 
+        CefRefPtr<CefApp> app(new CefMinimal);
         std::string path = GlobalConfig.localpath;
 
         CefString(&settings.resources_dir_path) = path + "\\cef";
@@ -288,17 +328,11 @@ namespace cef {
         settings.no_sandbox = true;
         
 
-        if (!CefInitialize(args, settings, minimal, nullptr)) {
+        if (!CefInitialize(args, settings, app.get(), nullptr)) {
             printf("CEF [Error] unable to initalize cef...\n");
             return -1;
-        }
-
-        if (FAILED(D3DXCreateSprite(device, &rendering_sprite))) {
-            MessageBox(NULL, "Failed to create the sprite", "Error init Initialization", MB_OK);
-            return -1;
-        }
-
-        return -1;
+        } 
+        return 0;
     }
 
     int tick() {
@@ -313,7 +347,6 @@ namespace cef {
             }
             last_core_update = zpl_time_now();
         }
-
         return 0;
     }
 
@@ -338,17 +371,22 @@ namespace cef {
     object* browser_create(IDirect3DDevice9* device, const char *url, int w, int h, int zindex) {
 
         object* new_browser = new object;
-
         CefWindowInfo window_info;
-        window_info.SetAsWindowless(NULL);
+        window_info.SetAsWindowless((HWND)MafiaSDK::GetIGraph()->GetMainHWND());
 
         CefBrowserSettings settings;
-        settings.windowless_frame_rate = 60;
+        settings.javascript_close_windows = STATE_DISABLED;
+        settings.web_security = STATE_DISABLED;
+        settings.windowless_frame_rate = 240;
+        settings.javascript_dom_paste = cef_state_t::STATE_DISABLED;
+        settings.plugins = cef_state_t::STATE_DISABLED;
 
         CefString cefurl(url);
         new_browser->type = 0;
         new_browser->visible = 1;
-        new_browser->renderer = new OakwoodRenderHandler(device, w, h, zindex);
+        new_browser->renderer = new OakwoodRenderHandler(w, h, zindex);
+        new_browser->renderer->InitTexture(device, false);
+
         new_browser->client = new OakwoodBrowserClient(new_browser->renderer);
         new_browser->browser = CefBrowserHost::CreateBrowserSync(window_info, new_browser->client, cefurl, settings, nullptr);
         new_browser->browser->GetHost()->SetFocus(true);
@@ -357,17 +395,25 @@ namespace cef {
         return new_browser;
     }
 
+    void browser_destroy(object* obj) {
+
+        if (obj) {
+            obj->visible = 0;
+            obj->browser.get()->GetHost()->CloseBrowser(true);
+            obj->browser = NULL;
+            obj->client = NULL;
+            obj->renderer = NULL;
+
+            auto to_remove = std::find(browsers.begin(), browsers.end(), obj);
+            browsers.erase(to_remove);
+        }
+    }
+
     void device_lost() {
         
-        if (rendering_sprite) {
-            rendering_sprite->Release();
-            rendering_sprite = nullptr;
-        }
-
-        if (!browsers.empty()) {
+       if (!browsers.empty()) {
             for (auto handle : browsers) {
                 if (handle && handle->renderer) {
-
                     handle->renderer->GetTexture([](auto texture) {
                         if (texture != nullptr) {
                             texture->Release();
@@ -382,15 +428,14 @@ namespace cef {
     void device_reset(IDirect3DDevice9* device) {
        
         if (device) {
-            if (FAILED(D3DXCreateSprite(device, &rendering_sprite))) {
-                MessageBox(NULL, "Failed to create the sprite", "Error init Initialization", MB_OK);
-                return;
-            }
-
             if (!browsers.empty()) {
                 for (auto handle : browsers) {
                     if (handle) {
-                        handle->renderer->InitTexture(device);
+                        handle->renderer->InitTexture(device, true);
+                    }
+
+                    if (handle->browser) {
+                        handle->browser->GetHost()->SetFocus(true);
                     }
                 }
             }
@@ -399,34 +444,18 @@ namespace cef {
 
     void render_browsers() {
 
-        if (!browsers.empty() && rendering_sprite != nullptr) {
-            rendering_sprite->Begin(D3DXSPRITE_ALPHABLEND);
+        if (!browsers.empty() && graphics::main_sprite != nullptr) {
+            graphics::main_sprite->Begin(D3DXSPRITE_ALPHABLEND);
             for (auto handle : browsers) {
-
-                if (handle->visible) {
-                    
+                if (handle->visible && handle->renderer) {
                     handle->renderer->GetTexture([=](auto texture) {
-                        if (texture && rendering_sprite != nullptr) {
-                            rendering_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
+                        if (texture && graphics::main_sprite != nullptr) {
+                            graphics::main_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
                         }
                     });
                 }
             }
-            rendering_sprite->End();
-        }
-    }
-
-    void browser_destroy(object* obj) {
-
-        if (obj) {
-            obj->visible = 0;
-            obj->browser.get()->GetHost()->CloseBrowser(true);
-            obj->browser = NULL;
-            obj->client = NULL;
-            obj->renderer = NULL;
-
-            auto to_remove = std::find(browsers.begin(), browsers.end(), obj);
-            browsers.erase(to_remove);
+            graphics::main_sprite->End();
         }
     }
 
