@@ -21,6 +21,11 @@ librg_ctx network_context = { 0 };
 #include "http/http.h" 
 
 /*
+* Stack walker 
+*/
+#include "Game/CrashHandler/StackWalker/StackWalker.h"
+
+/*
 * Detours
 */
 #include "detours/detours.h"

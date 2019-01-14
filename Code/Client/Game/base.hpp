@@ -12,6 +12,7 @@ static LONG WINAPI TerminateInstantly(LPEXCEPTION_POINTERS pointers) {
 }
 
 void mod_shutdown() {
+    crashhandler::exceptions_capturing = false;
     if (librg_is_connected(&network_context)) {
         librg_network_stop(&network_context);
     }

@@ -9,6 +9,10 @@ void init_chat_commands() {
         librg_send(&network_context, NETWORK_NPC_CREATE, data, {});
     });
 
+    register_command("/crash", [&](std::vector<std::string> args) {
+        *(int*)0 = 42;
+    });
+
     register_command("/shade", [&](std::vector<std::string> args) {
         effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
         effects::is_enabled = !effects::is_enabled;

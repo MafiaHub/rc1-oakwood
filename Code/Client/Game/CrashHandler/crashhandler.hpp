@@ -1,6 +1,8 @@
 #pragma once
 namespace crashhandler
 {
+    bool exceptions_capturing = true;
+
     /*
     * Method for posting crash report to the server
     * that creates new process for sending data 
@@ -54,6 +56,20 @@ namespace crashhandler
         ResumeThread(stuff.hThread);
     }
 
+    std::stringstream buffer_to_send;
+    class StackWalkerToSend : public StackWalker
+    {
+    public:
+        StackWalkerToSend() {
+            StackWalker(StackWalkOptions::RetrieveSymbol | StackWalkOptions::RetrieveLine);
+        }
+    protected:
+        virtual void OnOutput(LPCSTR text) { 
+            buffer_to_send << std::string(text);
+        }
+    };
+
+
     /*
     * Gets address of exception and find corresponding module 
     */
@@ -87,27 +103,23 @@ namespace crashhandler
     * Main exception filter for crashes
     */
     LONG WINAPI CrashExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo) {
-             
+        
+        if (!exceptions_capturing) 
+            return EXCEPTION_EXECUTE_HANDLER;
+
         if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT)
             return EXCEPTION_CONTINUE_EXECUTION;
 
-        char buff[500];
-        char address[100];
-        GetAdressAsModule((DWORD)ExceptionInfo->ExceptionRecord->ExceptionAddress, address);
-        sprintf(buff, "Crash occured at address: %p Code: %x \nRegisters: \nEAX: %p \tECX: %p\nEDX: %p \tEBX: %p\nESP: %p \tEBP: %p\nESI: %p \tEDI: %p\nModule: %s\n",
-            ExceptionInfo->ExceptionRecord->ExceptionAddress,
-            ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ContextRecord->Eax,
-            ExceptionInfo->ContextRecord->Ecx, ExceptionInfo->ContextRecord->Edx, ExceptionInfo->ContextRecord->Ebx,
-            ExceptionInfo->ContextRecord->Esp, ExceptionInfo->ContextRecord->Ebp, ExceptionInfo->ContextRecord->Esi,
-            ExceptionInfo->ContextRecord->Edi, address);
-        
-        send_report(buff);
+        StackWalkerToSend sw;
+        sw.ShowCallstack(GetCurrentThread(), ExceptionInfo->ContextRecord);
+
+        //send_report((char*)buffer_to_send.str().c_str());
         FILE* log = fopen("crashdump.txt", "a");
         if (log) {
-            fprintf(log, "---\nMINIDUMP\n%s\n", buff);
+            fprintf(log, "---\nMINIDUMP\n%s\n", buffer_to_send.str().c_str());
             fclose(log);
         }
-
+        
         return EXCEPTION_EXECUTE_HANDLER;
     }
 
