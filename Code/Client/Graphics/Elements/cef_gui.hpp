@@ -22,6 +22,7 @@ namespace cefgui
 
     input::KeyToggle key_chat_open(VK_T);
     input::KeyToggle key_reload(VK_F2);
+    input::KeyToggle key_unrequire(VK_ESCAPE);
 
     auto register_command(const std::string &name, std::function<void(std::vector<std::string>)> ptr) {
         if (ptr != nullptr) {
@@ -76,6 +77,10 @@ namespace cefgui
             if (main_browser) {
                 main_browser->browser->Reload();
             }
+        }
+
+        if (key_unrequire) {
+            input::block_input(false);
         }
     }
     

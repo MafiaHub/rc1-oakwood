@@ -6,11 +6,12 @@
 
 namespace graphics
 {
-    extern ID3DXSprite* main_sprite;
     inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device);
 };
 
 namespace cef {
+
+    ID3DXSprite* cef_sprite = nullptr;
 
     class OakwoodRenderHandler;
     class OakwoodBrowserClient;
@@ -332,7 +333,12 @@ namespace cef {
         if (!CefInitialize(args, settings, app.get(), nullptr)) {
             printf("CEF [Error] unable to initalize cef...\n");
             return -1;
-        } 
+        }
+
+        if (FAILED(D3DXCreateSprite(device, &cef_sprite))) {
+            MessageBox(NULL, "Unable to create sprite for drawing cef", "cef.hpp", MB_OK);
+            return -1;
+        }
         return 0;
     }
 
@@ -412,6 +418,11 @@ namespace cef {
 
     void device_lost() {
         
+       if (cef_sprite) {
+            cef_sprite->Release();
+            cef_sprite = nullptr;
+       }
+
        if (!browsers.empty()) {
             for (auto handle : browsers) {
                 if (handle && handle->renderer) {
@@ -427,8 +438,12 @@ namespace cef {
     }
 
     void device_reset(IDirect3DDevice9* device) {
-       
         if (device) {
+            if (FAILED(D3DXCreateSprite(device, &cef_sprite))) {
+                MessageBox(NULL, "Unable to create sprite for drawing cef", "cef.hpp", MB_OK);
+                return;
+            }
+
             if (!browsers.empty()) {
                 for (auto handle : browsers) {
                     if (handle) {
@@ -445,18 +460,18 @@ namespace cef {
 
     void render_browsers() {
 
-        if (!browsers.empty() && graphics::main_sprite != nullptr) {
-            graphics::main_sprite->Begin(D3DXSPRITE_ALPHABLEND);
+        if (!browsers.empty() && cef_sprite != nullptr) {
+            cef_sprite->Begin(D3DXSPRITE_ALPHABLEND);
             for (auto handle : browsers) {
                 if (handle->visible && handle->renderer) {
                     handle->renderer->GetTexture([=](auto texture) {
-                        if (texture && graphics::main_sprite != nullptr) {
-                            graphics::main_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
+                        if (texture && cef_sprite != nullptr) {
+                            cef_sprite->Draw(texture, NULL, NULL, NULL, 0xFFFFFFFF);
                         }
                     });
                 }
             }
-            graphics::main_sprite->End();
+            cef_sprite->End();
         }
     }
 

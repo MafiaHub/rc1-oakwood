@@ -87,7 +87,10 @@ namespace crashhandler
     * Main exception filter for crashes
     */
     LONG WINAPI CrashExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo) {
-        
+             
+        if (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_BREAKPOINT)
+            return EXCEPTION_CONTINUE_EXECUTION;
+
         char buff[500];
         char address[100];
         GetAdressAsModule((DWORD)ExceptionInfo->ExceptionRecord->ExceptionAddress, address);

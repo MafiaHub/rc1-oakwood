@@ -141,6 +141,7 @@ namespace graphics
         cefgui::init(device);
         input::hook_window();
     }
+
     IDirect3DStateBlock9* pStateBlock = NULL;
     inline auto device_lost() -> void {
         if (global_device) {
