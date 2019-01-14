@@ -6,16 +6,23 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 
+	"github.com/asdine/storm"
 	jsoniter "github.com/json-iterator/go"
 )
 
-var channelWebhook string
+var (
+	reports        *storm.DB
+	channelWebhook string
+)
 
 type crashReport struct {
 	Name     string `json:"name"`
 	Dump     string `json:"dump"`
 	HostName string `json:"host"`
+	reportId int
 }
 
 type webhookRequest struct {
@@ -23,6 +30,13 @@ type webhookRequest struct {
 	Content  string `json:"content"`
 	Username string `json:"username"`
 	Avatar   string `json:"avatar_url"`
+}
+
+type storedReport struct {
+	Pk   int    `storm:"id,increment"`
+	Name string `storm:"index"`
+	Host string `storm:"index"`
+	Dump string
 }
 
 func handleCrashReport(w http.ResponseWriter, r *http.Request) {
@@ -37,15 +51,30 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("New crash report has been received from %s@%s!\n", data.Name, r.RemoteAddr)
 
+	rep := storedReport{
+		Name: data.Name,
+		Host: data.HostName,
+		Dump: data.Dump,
+	}
+
+	reports.Save(&rep)
+	sendReportLink(rep)
+}
+
+func sendReportLink(data storedReport) {
 	respData := webhookRequest{
 		URL:      channelWebhook,
-		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**!```\n%s```¯\\_(ツ)_/¯", data.Name, data.HostName, data.Dump),
+		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**\nCheck http://oakmaster.madaraszd.net:8001/report/%d/ for more information!", data.Name, data.Name, data.Pk),
 		Username: "Crash Reporter",
 		Avatar:   "https://cdn.discordapp.com/attachments/233249310727340032/532897486751268874/MafiaHub.png",
 	}
 
 	js, _ := jsoniter.Marshal(respData)
-	req, _ := http.NewRequest("POST", channelWebhook, bytes.NewBuffer(js))
+	req, err := http.NewRequest("POST", channelWebhook, bytes.NewBuffer(js))
+	if err != nil {
+		log.Printf("Could not create web request: %v\n", err)
+		return
+	}
 	req.Header.Set("Content-Type", "application/json")
 	cli := &http.Client{}
 	resp, rerr := cli.Do(req)
@@ -57,9 +86,37 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 	resp.Body.Close()
 }
 
+func showReport(w http.ResponseWriter, r *http.Request) {
+	id := string([]byte(strings.TrimPrefix(r.URL.Path, "/report/"))[:1])
+
+	var rep storedReport
+	idconv, _ := strconv.Atoi(id)
+	err := reports.One("Pk", idconv, &rep)
+	if err != nil {
+		log.Printf("Could not open report '%s': %v\n", id, err)
+		w.WriteHeader(404)
+		w.Write([]byte("Report not found!"))
+		return
+	}
+
+	w.WriteHeader(200)
+	w.Write([]byte(rep.Dump))
+}
+
 func main() {
+	var err error
+	reports, err = storm.Open("reports.db")
+
+	if err != nil {
+		log.Fatalf("Could not open database.\n")
+		return
+	}
+
+	defer reports.Close()
+
 	channelWebhook = os.Args[1]
 	http.HandleFunc("/push", handleCrashReport)
+	http.HandleFunc("/report/", showReport)
 
 	fmt.Printf("Starting crash report server...\n")
 	if err := http.ListenAndServe(":8001", nil); err != nil {
