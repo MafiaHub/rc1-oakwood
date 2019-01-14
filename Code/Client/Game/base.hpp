@@ -4,7 +4,6 @@
 #include "commands.hpp"
 #include "patches.hpp"
 #include "game_events.hpp"
-#include "Hooks/engine.hpp"
 #include "CrashHandler/crashhandler.hpp"
 
 static LONG WINAPI TerminateInstantly(LPEXCEPTION_POINTERS pointers) {
@@ -27,7 +26,6 @@ void mod_shutdown() {
 inline auto mod_pre_init_game() {
     graphics::hook();
     input::hook();
-    hooks::engine::init();
     crashhandler::init();
     //voip::init();
 

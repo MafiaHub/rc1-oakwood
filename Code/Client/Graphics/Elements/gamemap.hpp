@@ -24,11 +24,13 @@ namespace gamemap
         //NOTE(DavoSK): Position is also gap from each size
         float screen_x = (float)MafiaSDK::GetIGraph()->Scrn_sx();
         float screen_y = (float)MafiaSDK::GetIGraph()->Scrn_sy();
+
+        //NOTE(DavoSK): Gap size from 0 0 to map start position
         float pos_x = convert_map_pos_x * (1600.0f / screen_x);
         float pos_y = convert_map_pos_y * (900.0f / screen_y);
 
-        return (position.x >= pos_x && position.y >= position.y) &&
-            (position.x + blip_size <= screen_x - pos_x && position.y + blip_size <= screen_y - pos_y);
+        return (position.x + blip_size >= pos_x && position.y + blip_size >= pos_y) &&
+               (position.x + blip_size <= (screen_x - pos_x) && position.y + blip_size <= (screen_y - pos_y));
     }
 
     inline zpl_vec2 translate_object_to_map(zpl_vec3 position) {
@@ -58,6 +60,8 @@ namespace gamemap
     inline void draw_player_cursor(void* vertex_buffer) {
         
         float blip_size = original_blip_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
+        float blip_size_car = original_blip_car_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
+
         mafia_vertex* buffer = (mafia_vertex*)vertex_buffer;
         zpl_vec2 p1 = { buffer[0].x, buffer[0].y };
         zpl_vec2 p2 = { buffer[1].x, buffer[1].y };
@@ -106,7 +110,6 @@ namespace gamemap
                 }
             }
 
-            float blip_size_car = original_blip_car_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
             if (entity->type == TYPE_VEHICLE && entity->user_data) {
                 mafia_vehicle* vehicle = (mafia_vehicle*)entity->user_data;
                 if (vehicle->car) {
@@ -114,8 +117,8 @@ namespace gamemap
                     if (car_frame) {
                         zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->mPosition);
                         auto blip_pos = translate_object_to_map(frame_pos);
-
-                        if (is_marker_inbounds(blip_pos, blip_size_car)) {
+                        
+                        if (is_marker_inbounds(blip_pos, blip_size_car) && vehicle->car->GetOwner(0) != (DWORD)get_local_ped()) {
                             //NOTE(DavoSK): Draw border
                             constexpr int border = 2;
                             const mafia_vertex rect_border[] = {
