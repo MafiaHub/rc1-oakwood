@@ -7,9 +7,7 @@
 #include "CrashHandler/crashhandler.hpp"
 
 static LONG WINAPI TerminateInstantly(LPEXCEPTION_POINTERS pointers) {
-    if (pointers->ExceptionRecord->ExceptionCode == STATUS_BREAKPOINT) {
-        TerminateProcess(GetCurrentProcess(), 0xDEADCAFE);
-    }
+    TerminateProcess(GetCurrentProcess(), 0xDEADCAFE);
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
@@ -19,6 +17,7 @@ void mod_shutdown() {
     }
 
     AddVectoredExceptionHandler(FALSE, TerminateInstantly);
+    SetUnhandledExceptionFilter(TerminateInstantly);
     CefShutdown();
     TerminateProcess(GetCurrentProcess(), 0);
 }
