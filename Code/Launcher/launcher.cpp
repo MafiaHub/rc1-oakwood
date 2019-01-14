@@ -5,6 +5,7 @@
 /* system libraries */
 #include "shellapi.h" // CommandLineToArgvW
 #include <string>
+#include <algorithm>
 
 #include "settings.h"
 
@@ -110,6 +111,8 @@ int main()
         zpl_json_free(&root);
         zpl_mfree(content);
     }
+
+    std::replace(gamepath.begin(), gamepath.end(), '\\', '/');
 
     zpl_printf("[info] gamepath: %s\n", gamepath.c_str());
     if (!zpl_file_exists(concat(gamepath, "Game.exe"))) {
