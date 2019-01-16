@@ -13,8 +13,15 @@ project "Server"
         "../../Vendors/http/mongoose.h",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
+        "../../Vendors/librg/*.h",
+        "../../Vendors/librg/*.hpp",
         "../Shared/*.hpp",
         "../Shared/*.cpp"
+    }
+    includedirs {
+        "../Shared",
+        "../../Vendors/librg",
+        "../../Vendors"
     }
 	configuration "Debug"
 		debugdir "Bin/Debug"
@@ -22,5 +29,6 @@ project "Server"
     configuration "linux or macosx"
         links {
             "pthread",
+            "curses",
             "dl"
         }

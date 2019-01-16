@@ -16,6 +16,10 @@
 #include <vector>
 #include <thread>
 
+#ifdef ZPL_SYSTEM_UNIX
+#include <signal.h>
+#endif
+
 #include "librg/librg_ext.h"
 
 /*

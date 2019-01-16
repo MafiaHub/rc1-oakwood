@@ -1,4 +1,4 @@
-#/bin/bash 2>nul || goto :windows
+#/bin/sh 2>nul || goto :windows
 
 unameOut="$(uname -s)"
 case "${unameOut}" in
@@ -8,7 +8,7 @@ case "${unameOut}" in
     *)          machine="unknown"
 esac
 
-if [[ $1 == "clean" ]]
+if [[ $1 == "clean" ]] 
 then
     # Invoke premake5's clean action
     echo "Performing clean action..."

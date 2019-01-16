@@ -4,6 +4,7 @@
 .DS_store
 Bin
 Build
+Build_Win
 Shipping
 Vendors/[Cc]ef
 Tools/[Oo]akgen.exe

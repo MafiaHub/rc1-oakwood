@@ -51,17 +51,19 @@ workspace "Oakwood"
 
     dofile("../Vendors/premake5.lua")()
 
-    group "Client"
-
-    -- additional tools
     if os.target() == "windows" then
-    dofile("../Tools/premake/helpers/winsdk.lua")
-    dofile("../Tools/premake/helpers/wincef.lua")("cef_binary_3.3440.1806.g65046b7_windows32", true)
-    end
+        group "Client"
 
-    include "Launcher"
-    include "Client"
-    include "Worker"
+        -- additional tools
+        if os.target() == "windows" then
+        dofile("../Tools/premake/helpers/winsdk.lua")
+        dofile("../Tools/premake/helpers/wincef.lua")("cef_binary_3.3440.1806.g65046b7_windows32", true)
+        end
+
+        include "Launcher"
+        include "Client"
+        include "Worker"
+    end
     
     group "Plugins"
     

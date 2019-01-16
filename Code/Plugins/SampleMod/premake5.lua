@@ -12,7 +12,11 @@ project "SampleMod"
         "**.cpp",
         "**.rc"
     }
-
+    includedirs {
+        "../../Shared",
+        "../../../Vendors/librg",
+        "../../../Vendors"
+    }
     configuration "linux or macosx"
         links {
             "pthread",

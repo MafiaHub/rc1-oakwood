@@ -7,6 +7,11 @@ project "Oakgen"
         "**.cc",
         "../../Vendors/librg/zpl.h"
     }
+    includedirs {
+        "../Shared",
+        "../../Vendors/librg",
+        "../../Vendors"
+    }
     postbuildcommands {
 		"{COPY} ../Bin/%{cfg.buildcfg}/Oakgen.exe ../Tools/"
 	}

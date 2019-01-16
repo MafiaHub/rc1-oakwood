@@ -4,14 +4,7 @@
 #define MASTERLIST_PUSH_TIME 30.0f
 #define MASTERLIST_PUSH_TIMEOUT 5.0f
 #define MASTERLIST_POLL_TIME 1.0f
-#define MASTERLIST_FORMAT R"FOO({
-    "host": "%s",
-    "name": "%s",
-    "players": %d,
-    "maxPlayers": %d,
-    "pass": %s,
-    "port": "%d"
-})FOO"
+#define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\""
 
 http_t* masterlist_form_request() {
     zpl_local_persist char buf[512] = { 0 };
