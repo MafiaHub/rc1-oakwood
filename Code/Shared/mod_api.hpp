@@ -5,7 +5,7 @@
     The low-level modding API acts as a bridge between the server core and community-created plugins.
 
     A plugin, in terms of Mafia Oakwood, is a DLL containing a code responsible for defining the gameplay logic.
-    The modding API is mostly suited for utilities developers, who are capable of adding extensions to the server core and extend it's functionality.
+    The modding API is mostly suited for developers, who are capable of adding extensions to the server core and extend its functionality.
 
     Such an example is Oakwood Framework, which uses the modding API and extends the core's feature list by providing easy-to-use wrappers and helpers.
     Feel free to explore the API and do something creative!
