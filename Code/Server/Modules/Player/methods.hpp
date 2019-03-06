@@ -1,3 +1,34 @@
+/* Player */
+
+inline auto player_send_spawn(librg_entity* player_ent) -> void {
+    auto player = (mafia_player*)player_ent->user_data;
+    librg_send(&network_context, NETWORK_PLAYER_SPAWN, data, {
+        librg_data_wu32(&data, player_ent->id);
+        librg_data_wptr(&data, &player_ent->position, sizeof(zpl_vec3));
+        librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
+        librg_data_wptr(&data, player->model, sizeof(char) * 32);
+        librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
+        librg_data_wu32(&data, player->current_weapon_id);
+        librg_data_wf32(&data, player->health);
+    });
+}
+
+/* Inventory */
+
+librg_entity *spawn_weapon_drop(zpl_vec3 position, char *model, inventory_item item) {
+    mafia_weapon_drop *drop = new mafia_weapon_drop();
+
+    drop->weapon = item;
+    strncpy(drop->model, model, strlen(model));
+
+    auto new_weapon_entity			= librg_entity_create(&network_context, TYPE_WEAPONDROP);
+    new_weapon_entity->position		= position;
+    new_weapon_entity->position.y	+= 0.7f;
+    new_weapon_entity->user_data	= drop;
+
+    return new_weapon_entity;
+}
+
 inline auto player_inventory_debug(librg_entity* player_ent) -> void {
     auto player = (mafia_player*)player_ent->user_data;
     printf("-----------[INV]-----------\n");

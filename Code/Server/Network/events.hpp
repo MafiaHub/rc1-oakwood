@@ -1,9 +1,6 @@
 #pragma once
 
 #include "event_data.hpp"
-#include "Events/player.hpp"
-#include "Events/vehicle.hpp"
-#include "Events/door.hpp"
 
 auto on_librg_connection_request(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);

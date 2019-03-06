@@ -61,7 +61,7 @@ librg_ctx network_context = { 0 };
 
 #include "config.hpp"
 #include "mode.hpp"
-#include "commands.hpp"
+#include "modules.hpp"
 #include "Network/base.hpp"
 
 #define OAKGEN_NATIVE()
