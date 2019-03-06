@@ -1,6 +1,8 @@
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
 #define OAKWOOD_SERVER 1
+#define OAKGEN_NATIVE()
+#define OAKGEN_FORWARD()
 #include "librg/librg.h"
 
 /*
@@ -15,10 +17,6 @@
 #include <clocale>
 #include <vector>
 #include <thread>
-
-#ifdef ZPL_SYSTEM_UNIX
-#include <signal.h>
-#endif
 
 #include "librg/librg_ext.h"
 
@@ -62,17 +60,23 @@ librg_ctx network_context = { 0 };
 // #define OAK_DISABLE_SIGNAL_HANDLING
 
 #include "config.hpp"
+#include "opts.hpp"
 #include "mode.hpp"
 #include "modules.hpp"
 #include "Network/base.hpp"
+#include "natives.hpp"
 
-#define OAKGEN_NATIVE()
-#define OAKGEN_FORWARD()
+/* 
+* Workers
+*/
 
 #include "Workers/masterlist.hpp"
 #include "Workers/webserver.hpp"
 #include "Workers/misc.hpp"
-#include "natives.hpp"
+
+/* 
+* Entry point
+*/
 
 const char *banner_text = R"foo(
  .88888.   .d888888  dP     dP dP   dP   dP  .88888.   .88888.  888888ba     8888ba.88ba   888888ba  
@@ -84,8 +88,7 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
                                                                                                      
 )foo";
 
-int main() {
-
+int main(int argc, char **argv) {
     console::init();
     console::printf("================================\n");
     console::printf(banner_text);
@@ -93,12 +96,14 @@ int main() {
     console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
     console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
     console::printf("================================\n"); 
-    
+    opts::init(argc, argv);
+
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     register_console_events();
 #endif
 
     config::init();
+    opts::replace();
     gamemode::init();
     network::init();
     webserver::init();
@@ -125,6 +130,7 @@ void shutdown_server() {
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     unregister_console_events();
 #endif
-
+    
+    opts::free();
     zpl_exit(0);
 }

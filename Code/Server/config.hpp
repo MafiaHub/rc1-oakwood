@@ -11,7 +11,7 @@ namespace config {
         #define default_gamemode "SampleMod.dylib"
     #endif
 
-    constexpr const char* config_file_name = "config/server.json";
+    static const char* file_name = "config/server.json";
     static const char *mod_default_config = "max_players = 16\n"\
         "name = \"default oakwood server\""\
         "host = \"\""\
@@ -25,7 +25,7 @@ namespace config {
     auto init() {
         mod_log("Loading config...");
         
-        auto json = config_get(config_file_name, mod_default_config);
+        auto json = config_get(file_name, mod_default_config);
         
         json_apply(json, GlobalConfig.host, host, string, "");
         json_apply(json, GlobalConfig.name, name, string, "default oakwood server");
