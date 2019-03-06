@@ -21,10 +21,10 @@ namespace misc {
 
         //NOTE(DavoSK): Update our debug tag every 200ms
         if (current_time - last_console_update > 0.2f) {
-            console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
+            console::draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
                 132,
                 130,
-                console_update_loader(),
+                console::update_loader(),
                 132,
                 network_context.network.host->totalReceivedData / 1024,
                 network_context.network.host->totalSentData / 1024,

@@ -14,7 +14,7 @@ std::string get_platform_path() {
 
 inline auto mod_log(const char* msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console_printf("[Oakwood MP] %s\n", msg);
+    console::printf("[Oakwood MP] %s\n", msg);
 #else
     printf("[Oakwood MP] %s\n", msg);
 #endif
@@ -22,7 +22,7 @@ inline auto mod_log(const char* msg) -> void {
 
 inline auto mod_log(std::string msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console_printf("[Oakwood MP] %s\n", msg.c_str());
+    console::printf("[Oakwood MP] %s\n", msg.c_str());
 #else
     printf("[Oakwood MP] %s\n", msg.c_str());
 #endif
@@ -30,7 +30,7 @@ inline auto mod_log(std::string msg) -> void {
 
 inline auto mod_debug(const char* msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console_printf("[DEBUG] %s\n", msg);
+    console::printf("[DEBUG] %s\n", msg);
 #else
     printf("[DEBUG] %s\n", msg);
 #endif

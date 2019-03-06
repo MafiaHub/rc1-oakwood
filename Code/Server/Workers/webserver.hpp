@@ -12,7 +12,7 @@
         }
     }
 
-    void start() {
+    void init() {
         mod_log("Initializing webserver at :" + std::to_string(GlobalConfig.port) + "...");
         mg_mgr_init(&mgr, NULL);
         nc = mg_bind(&mgr, std::to_string(GlobalConfig.port).c_str(), ev_handler);

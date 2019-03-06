@@ -86,9 +86,9 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
 
 int main() {
 
-    console_init();
-    console_printf("================================\n");
-    console_printf(banner_text);
+    console::init();
+    console::printf("================================\n");
+    console::printf(banner_text);
 
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     register_console_events();
@@ -97,10 +97,10 @@ int main() {
     config::init();
     gamemode::init();
     network::init();
+    webserver::init();
     
     gamemode::load_dll(GlobalConfig.gamemode.c_str());
 
-    webserver::start();
 
     while (true) {
         network::update();
