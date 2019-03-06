@@ -55,6 +55,9 @@ typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
 #define OAK_VEHICLE_SPAWN(name) librg_entity* name(zpl_vec3 position, zpl_vec3 rotation, char* model, b32 show_in_radar)
 typedef OAK_VEHICLE_SPAWN(oak_vehicle_spawn_ptr);
 
+#define OAK_VEHICLE_DESTROY(name) void name(librg_entity *entity)
+typedef OAK_VEHICLE_DESTROY(oak_vehicle_destroy_ptr);
+
 #define OAK_VEHICLE_SHOW_ON_RADAR(name) void name(librg_entity *entity, b32 state)
 typedef OAK_VEHICLE_SHOW_ON_RADAR(oak_vehicle_show_on_radar_ptr);
 

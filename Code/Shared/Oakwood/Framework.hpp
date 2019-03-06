@@ -17,11 +17,18 @@
 class GameObject
 {
 public:
+    GameObject() { removed = false; }
+    virtual ~GameObject() {}
     b32 CompareWith(librg_entity *entity);
     inline librg_entity *GetEntity() { return entity; }
+    b32 IsBeingRemoved() { return removed; }
+    void FlagForRemoval() { removed = true; }
 
 protected:
     librg_entity *entity;
+
+private:
+    b32 removed;
 };
 
 #include "Player.hpp"
@@ -62,6 +69,7 @@ public:
     }
 
     inline void RemoveObject(T *object) {
+        object->FlagForRemoval();
         objects.erase(std::remove(objects.begin(), objects.end(), object), objects.end());
     }
 

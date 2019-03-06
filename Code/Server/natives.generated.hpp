@@ -17,6 +17,7 @@ vt->player_put_to_vehicle = oak_player_put_to_vehicle;
 vt->player_die = oak_player_die;
 vt->drop_spawn = oak_drop_spawn;
 vt->vehicle_spawn = oak_vehicle_spawn;
+vt->vehicle_destroy = oak_vehicle_destroy;
 vt->vehicle_show_on_radar = oak_vehicle_show_on_radar;
 vt->vehicle_get_player_seat_id = oak_vehicle_get_player_seat_id;
 vt->vehicle_set_position = oak_vehicle_set_position;

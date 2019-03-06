@@ -196,7 +196,7 @@ std::string GameMode::ImplodeArgumentList(ArgumentList args)
 // Player
 //
 
-Player::Player(librg_entity *entity)
+Player::Player(librg_entity *entity) : GameObject()
 {
     this->entity = entity;
 }
@@ -348,13 +348,15 @@ mafia_player* Player::GetPedestrian()
 // Vehicle
 //
 
-Vehicle::Vehicle(librg_entity *entity)
+Vehicle::Vehicle(librg_entity *entity) : GameObject()
 {
     this->entity = entity;
 }
 
 Vehicle::~Vehicle()
 {
+    if (!this->IsBeingRemoved())
+        __gm->mod->vtable.vehicle_destroy(this->entity);
 }
 
 void Vehicle::ShowOnRadar(bool visibility)

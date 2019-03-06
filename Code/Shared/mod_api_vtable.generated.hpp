@@ -17,6 +17,7 @@ oak_player_put_to_vehicle_ptr *player_put_to_vehicle;
 oak_player_die_ptr *player_die;
 oak_drop_spawn_ptr *drop_spawn;
 oak_vehicle_spawn_ptr *vehicle_spawn;
+oak_vehicle_destroy_ptr *vehicle_destroy;
 oak_vehicle_show_on_radar_ptr *vehicle_show_on_radar;
 oak_vehicle_get_player_seat_id_ptr *vehicle_get_player_seat_id;
 oak_vehicle_set_position_ptr *vehicle_set_position;

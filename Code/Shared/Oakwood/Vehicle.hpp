@@ -11,7 +11,7 @@ class Vehicle : public GameObject {
 public:
     friend class GameMode;
     Vehicle(librg_entity *entity);
-    ~Vehicle();
+    virtual ~Vehicle() override;
 
     //
     // Natives
