@@ -33,3 +33,44 @@ void destroy_vehicle(librg_entity *entity) {
     entity->user_data = nullptr;
     librg_entity_destroy(&network_context, entity->id);
 }
+
+void set_pos(librg_entity *entity, zpl_vec3 position) {
+    entity->position = position;
+
+    librg_send(&network_context, NETWORK_VEHICLE_SET_POS, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, &position, sizeof(position));
+    });
+}
+
+void set_dir(librg_entity *entity, zpl_vec3 dir) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->rot_forward = dir;
+
+    librg_send(&network_context, NETWORK_VEHICLE_SET_DIR, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, &dir, sizeof(dir));
+    });
+}
+
+int get_player_seat_id(librg_entity *entity, librg_entity *player) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (vehicle->seats[i] == player->id)
+            return i;
+    }
+
+    return -1;
+}
+
+void set_radar_vis(librg_entity *entity, b32 state) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->is_car_in_radar = state;
+
+    librg_send(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wu8(&data, (u8)state);
+    });
+}

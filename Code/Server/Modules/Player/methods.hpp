@@ -154,7 +154,7 @@ inline auto inventory_remove(
     });
 }
 
-auto player_inventory_send(librg_entity *player_ent) {
+auto inventory_send(librg_entity *player_ent) {
     auto player = (mafia_player *)player_ent->user_data;
 
     if (player) {
@@ -163,4 +163,131 @@ auto player_inventory_send(librg_entity *player_ent) {
             librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
         });
     }
+}
+
+void die(librg_entity *entity, b32 forced = false) {
+    auto player = (mafia_player*)entity->user_data;
+
+    if (player->health == 0.0f) return;
+
+    player->health = 0.0f;
+
+    if (player->vehicle_id != -1) {
+        auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+        if (vehicle_ent && vehicle_ent->user_data) {
+            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+            for (int i = 0; i < 4; i++) {
+                if (vehicle->seats[i] == entity->id) {
+                    vehicle->seats[i] = -1;
+                    player->vehicle_id = -1;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (gm.on_player_died)
+        gm.on_player_died(entity, player);
+}
+
+b32 put_to_vehicle(librg_entity *entity, librg_entity *vehicle_ent, int seat_id) {
+    auto player = (mafia_player*)entity->user_data;
+    auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+    if (vehicle->seats[seat_id] != -1)
+        return false;
+
+    if (player->vehicle_id != -1)
+        return false;
+
+    if (seat_id < 0 || seat_id > 3)
+        return false;
+
+    vehicle->seats[seat_id] = entity->id;
+    player->vehicle_id = vehicle_ent->id;
+
+    if (seat_id == 0 && vehicle->seats[0] == -1) {
+        librg_entity_control_set(&network_context, vehicle_ent->id, entity->client_peer);
+    }
+    
+    librg_send(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_went(&data, vehicle_ent->id);
+        librg_data_wi32(&data, seat_id);
+    });
+}
+
+void play_anim(librg_entity *entity, const char *text) {
+    librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {        
+        char animation[32];
+        strcpy(animation, text);
+
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, animation, sizeof(char) * 32);
+    });
+}
+
+void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
+    librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
+        librg_data_wptr(&data, &pos, sizeof(pos));
+        librg_data_wptr(&data, &rot, sizeof(rot));
+    });
+}
+
+void unlock_camera(librg_entity *entity) {
+    librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+}
+
+void set_pos(librg_entity *entity, zpl_vec3 position) {
+    entity->position = position;
+    librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, &position, sizeof(position));
+    });
+}
+
+void set_rot(librg_entity *entity, zpl_vec3 rotation) {
+    auto player = (mafia_player*)(entity->user_data);
+
+    if(player) {
+        player->rotation = rotation;
+    }
+
+    librg_send(&network_context, NETWORK_PLAYER_SET_ROT, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, &rotation, sizeof(rotation));
+    });
+}
+
+void set_health(librg_entity *entity, float health) {
+    if (health == 0.0f) {
+        die(entity);
+    } else {
+        auto player = (mafia_player*)entity->user_data;
+        player->health = health;
+
+        librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
+            librg_data_went(&data, entity->id);
+            librg_data_wf32(&data, health);
+        });
+    }
+}
+
+void set_model(librg_entity *entity, char *modelName) {
+    auto player = (mafia_player *)entity->user_data;
+
+    strncpy(player->model, modelName, 32);
+
+    librg_send(&network_context, NETWORK_PLAYER_SET_MODEL, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wptr(&data, (void*)player->model, sizeof(char) * 32);
+    });
+}
+
+void fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color) {
+    librg_send_to(&network_context, NETWORK_SEND_FADEOUT, entity->client_peer, data, {
+        librg_data_wu8(&data, fadeout);
+        librg_data_wu32(&data, duration);
+        librg_data_wu32(&data, color);
+    });
 }
