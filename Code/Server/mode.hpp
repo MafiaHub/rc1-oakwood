@@ -9,17 +9,11 @@ auto set_up_natives() -> void;
 namespace gamemode {
     zpl_dll_handle dll_handle = 0;
 
-
-    auto init() {
-        mod_log("Loading gamemode...");
-        set_up_natives();
-    }
-
     #define xstr(x) str(x)
     #define str(x) #x
 
-    auto load_dll(const char *mod_name) {
-        mod_log("Loading gamemode...");
+    auto load_dll() {
+        const char *mod_name = GlobalConfig.gamemode.c_str();
         
         zpl_string name = zpl_string_sprintf_buf(zpl_heap(), "plugins/%s", mod_name);
         if (!zpl_file_exists(name)) {
@@ -64,6 +58,12 @@ namespace gamemode {
         proc(&gm);
         
         zpl_dll_unload(dll_handle);
+    }
+
+    auto init() {
+        mod_log("Loading gamemode...");
+        set_up_natives();
+        load_dll();
     }
 }
 #undef xstr

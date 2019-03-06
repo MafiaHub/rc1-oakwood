@@ -104,11 +104,9 @@ int main(int argc, char **argv) {
 
     config::init();
     opts::replace();
-    gamemode::init();
     network::init();
     webserver::init();
-    
-    gamemode::load_dll(GlobalConfig.gamemode.c_str());
+    gamemode::init();
 
     while (true) {
         network::update();
