@@ -11,11 +11,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_broadcast_msg_color(const char* text, u32 color) {
-        librg_send(&network_context, NETWORK_SEND_CONSOLE_MSG, data, {
-            librg_data_wu32(&data, strlen(text));
-            librg_data_wu32(&data, color);
-            librg_data_wptr(&data, (void*)text, strlen(text));
-        });
+        modules::misc::broadcast_msg_color(text, color);
     }
 
     OAKGEN_NATIVE();
@@ -25,23 +21,12 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_chat_print(const char* text) {
-        librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-            auto len = strlen(text);
-            librg_data_wu16(&data, len);
-            librg_data_wptr(&data, (void *)text, len);
-        });
+        modules::misc::chat_print(text);
     }
 
     OAKGEN_NATIVE();
     void oak_send_msg(const char* text, librg_entity *receiver) {
-        if (!receiver->client_peer)
-            return;
-
-        librg_send_to(&network_context, NETWORK_SEND_CHAT_MSG, receiver->client_peer, data, {
-            auto len = strlen(text);
-            librg_data_wu16(&data, len);
-            librg_data_wptr(&data, (void *)text, len);
-        });
+        modules::misc::send_msg(text, receiver);
     }
 
 
@@ -126,14 +111,7 @@ extern "C" {
     librg_entity* oak_player_get_vehicle(librg_entity *entity) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) { return nullptr; };
 
-        auto player = (mafia_player*)entity->user_data;
-
-        if (player->vehicle_id != -1) {
-            auto vehicle = librg_entity_fetch(&network_context, player->vehicle_id);
-            return vehicle;
-        }
-
-        return nullptr;
+        return modules::player::get_vehicle(entity);
     }
 
     OAKGEN_NATIVE();

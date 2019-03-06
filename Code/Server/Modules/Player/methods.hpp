@@ -291,3 +291,14 @@ void fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color) {
         librg_data_wu32(&data, color);
     });
 }
+
+librg_entity *get_vehicle(librg_entity *entity) {
+    auto player = (mafia_player*)entity->user_data;
+
+    if (player->vehicle_id != -1) {
+        auto vehicle = librg_entity_fetch(&network_context, player->vehicle_id);
+        return vehicle;
+    }
+
+    return nullptr;
+}
