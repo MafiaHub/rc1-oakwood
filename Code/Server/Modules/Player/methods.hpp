@@ -215,6 +215,8 @@ b32 put_to_vehicle(librg_entity *entity, librg_entity *vehicle_ent, int seat_id)
         librg_data_went(&data, vehicle_ent->id);
         librg_data_wi32(&data, seat_id);
     });
+
+    return true;
 }
 
 void play_anim(librg_entity *entity, const char *text) {

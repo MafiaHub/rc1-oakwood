@@ -19,6 +19,8 @@ namespace gamemode {
     #define str(x) #x
 
     auto load_dll(const char *mod_name) {
+        mod_log("Loading gamemode...");
+        
         zpl_string name = zpl_string_sprintf_buf(zpl_heap(), "plugins/%s", mod_name);
         if (!zpl_file_exists(name)) {
             zpl_printf("Gamemode '%s' not found! Exiting...\n", name);

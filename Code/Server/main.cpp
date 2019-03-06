@@ -98,7 +98,6 @@ int main() {
     gamemode::init();
     network::init();
     
-    mod_log("Loading gamemode...");
     gamemode::load_dll(GlobalConfig.gamemode.c_str());
 
     webserver::start();
