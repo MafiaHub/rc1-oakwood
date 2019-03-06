@@ -235,6 +235,13 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
+    void oak_vehicle_destroy(librg_entity *entity) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+
+        modules::vehicle::destroy_vehicle(entity);
+    }
+
+    OAKGEN_NATIVE();
     void oak_vehicle_show_on_radar(librg_entity *entity, b32 state) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
 

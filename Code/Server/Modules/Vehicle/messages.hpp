@@ -105,10 +105,7 @@ void add_messages() {
                     librg_data_wu32(data, vehicle_ent->id);
                 });
 
-                if (gm.on_vehicle_destroyed)
-                    gm.on_vehicle_destroyed(vehicle_ent);
-
-                librg_entity_destroy(&network_context, vehicle_ent->id);
+                destroy_vehicle(vehicle_ent);
             }
         }
     });
