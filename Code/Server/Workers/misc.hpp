@@ -21,7 +21,7 @@ void console_render() {
 
     //NOTE(DavoSK): Update our debug tag every 200ms
     if (current_time - last_console_update > 0.2f) {
-        console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d | Players: %d / %d",
+        console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
             132,
             130,
             console_update_loader(),
@@ -29,6 +29,7 @@ void console_render() {
             network_context.network.host->totalReceivedData / 1024,
             network_context.network.host->totalSentData / 1024,
             computed_fps,
+            1000.0f / computed_fps,
             (u32)GlobalConfig.players,
             (u32)GlobalConfig.max_players);
 

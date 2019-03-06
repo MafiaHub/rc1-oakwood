@@ -55,7 +55,7 @@ inline void console_init_w32() {
 
 inline void console_draw_w32(const char* format, va_list va) {
     auto std_out = GetStdHandle(STD_OUTPUT_HANDLE);
-    char formated_tag[80];
+    char formated_tag[180];
     vsprintf(formated_tag, format, va);
 
     CONSOLE_SCREEN_BUFFER_INFO buffer_info;
