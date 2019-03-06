@@ -359,6 +359,7 @@ auto mod_player_add_events() {
         // TODO: password sending
         char nickname[32];
         strcpy(nickname, GlobalConfig.username);
+        librg_data_wu16(evnt->data, OAK_BUILD_VERSION);
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
     });
 }

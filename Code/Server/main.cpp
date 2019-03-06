@@ -38,6 +38,7 @@
 /* 
 * Shared
 */
+#include "version.hpp"
 #include "structs.hpp"
 #include "messages.hpp"
 #include "helpers.hpp"
@@ -83,13 +84,16 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
                                                                                                      
 )foo";
 
-
 int main() {
 
     console::init();
     console::printf("================================\n");
     console::printf(banner_text);
-
+    console::printf("Build version: %d\n", OAK_BUILD_VERSION);
+    console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
+    console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
+    console::printf("================================\n"); 
+    
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     register_console_events();
 #endif
@@ -101,22 +105,26 @@ int main() {
     
     gamemode::load_dll(GlobalConfig.gamemode.c_str());
 
-
     while (true) {
         network::update();
         misc::vehicles_streamer_update(); 
-        masterlist::update();
         misc::console_update_stats();
+        masterlist::update();
         zpl_sleep_ms(1);
     }
+
     return 0;
 }
 
 void shutdown_server() {
     mod_log("Server is shutting down...");
-    unregister_console_events();
     gamemode::free_dll();
     webserver::stop();
     network::shutdown();
+
+#ifndef OAK_DISABLE_SIGNAL_HANDLING
+    unregister_console_events();
+#endif
+
     zpl_exit(0);
 }

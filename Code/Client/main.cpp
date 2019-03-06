@@ -67,6 +67,7 @@ IDirect3DDevice9* global_device = nullptr;
 /*
 * Shared
 */
+#include "version.hpp"
 #include "structs.hpp"
 #include "messages.hpp"
 #include "helpers.hpp"

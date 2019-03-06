@@ -3,6 +3,12 @@
 #include "event_data.hpp"
 
 auto on_librg_connection_request(librg_event* evnt) -> void {
+    auto build_ver = librg_data_ru16(evnt->data);
+
+    if (build_ver != OAK_BUILD_VERSION) {
+        librg_event_reject(evnt);
+    }
+
     librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
 }
 
@@ -22,21 +28,21 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
     if (gm.on_player_connected)
         gm.on_player_connected(evnt, evnt->entity, ped);
 
-    printf("Player '%s' has been connected!\n", ped->name);
+    mod_log(zpl_bprintf("Player '%s' has been connected!\n", ped->name));
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
 
     if (evnt->entity && evnt->entity->type == TYPE_PLAYER)
     {
-        if (evnt->entity->user_data) {
-            auto player = (mafia_player*)evnt->entity->user_data;
-            printf("Player '%s' has been disconnected!\n", player->name);
-        }
+        auto player = (mafia_player *)evnt->entity->user_data;
+
+        ZPL_ASSERT_NOT_NULL(player);
 
         if (gm.on_player_disconnected)
             gm.on_player_disconnected(evnt, evnt->entity);
 
+        mod_log(zpl_bprintf("Player '%s' has been disconnected!\n", player->name));
         modules::player::connection_disconnect(evnt);
         GlobalConfig.players--;
     }
