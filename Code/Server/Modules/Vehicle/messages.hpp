@@ -1,4 +1,4 @@
-void vehicle_add_messages() {
+void add_messages() {
     librg_network_add(&network_context, NETWORK_VEHICLE_WHEEL_DROPOUT, [](librg_message* msg) {
 
         zpl_vec3 speed, unk;

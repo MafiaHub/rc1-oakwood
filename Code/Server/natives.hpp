@@ -62,7 +62,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_inventory_add(librg_entity *entity, inventory_item *item) {
-        player_inventory_add(entity, item);
+        modules::player::inventory_add(entity, item);
     }
 
     OAKGEN_NATIVE();
@@ -70,7 +70,7 @@ extern "C" {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER){};
 
         entity->position = EXPAND_VEC(pos);
-        player_send_spawn(entity);
+        modules::player::send_spawn(entity);
     }
 
     OAKGEN_NATIVE();
@@ -222,7 +222,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     librg_entity* oak_drop_spawn(zpl_vec3 position, char *model, inventory_item item) {
-        return spawn_weapon_drop(position, model, item);
+        return modules::player::spawn_weapon_drop(position, model, item);
     }
 
     //
@@ -231,7 +231,7 @@ extern "C" {
 
     OAKGEN_NATIVE();
     librg_entity* oak_vehicle_spawn(zpl_vec3 position, zpl_vec3 rotation, char* model, b32 show_in_radar) {
-        return spawn_vehicle(position, rotation, model, show_in_radar);
+        return modules::vehicle::spawn_vehicle(position, rotation, model, show_in_radar);
     }
 
     OAKGEN_NATIVE();

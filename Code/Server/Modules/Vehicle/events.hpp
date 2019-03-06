@@ -1,5 +1,5 @@
 
-inline auto vehicle_clientstreamer_update(librg_event* evnt) {
+inline auto clientstreamer_update(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
@@ -19,7 +19,7 @@ inline auto vehicle_clientstreamer_update(librg_event* evnt) {
     vehicle->engine_on			= librg_data_ru8(evnt->data);
 }
 
-inline auto vehicle_entityupdate(librg_event* evnt) {
+inline auto entityupdate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
@@ -39,7 +39,7 @@ inline auto vehicle_entityupdate(librg_event* evnt) {
     librg_data_wu8(evnt->data, vehicle->engine_on);
 }
 
-inline auto vehicle_entitycreate(librg_event* evnt) {
+inline auto entitycreate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));

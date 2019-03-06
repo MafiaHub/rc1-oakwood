@@ -94,31 +94,20 @@ int main() {
     register_console_events();
 #endif
 
-    init_config();
-    init_api();
-
-    mod_log("Initializing librg service...");
-    mod_init_networking();
+    config::init();
+    gamemode::init();
+    network::init();
     
-    librg_address addr = { (i32)GlobalConfig.port };
-    librg_network_start(&network_context, addr);
-    GlobalConfig.players = 0;
-
     mod_log("Loading gamemode...");
-    load_dll(GlobalConfig.gamemode.c_str());
+    gamemode::load_dll(GlobalConfig.gamemode.c_str());
 
-    mod_log("Initializing webserver at :" + std::to_string(GlobalConfig.port) + "...");
-    webserver_start();
+    webserver::start();
 
     while (true) {
-        librg_tick(&network_context);
-
-        if (gm.on_server_tick)
-            gm.on_server_tick();
-
-        masterlist_update();
-        console_render();
-        vehicles_streamer_update();
+        network::update();
+        misc::vehicles_streamer_update(); 
+        masterlist::update();
+        misc::console_update_stats();
         zpl_sleep_ms(1);
     }
     return 0;
@@ -127,13 +116,8 @@ int main() {
 void shutdown_server() {
     mod_log("Server is shutting down...");
     unregister_console_events();
-
-    mod_log("Shutting down the gamemode...");
-    free_dll();
-    mod_log("Stopping the webserver...");
-    webserver_stop();
-    mod_log("Stopping librg service...");
-    librg_network_stop(&network_context);
-    librg_free(&network_context);
+    gamemode::free_dll();
+    webserver::stop();
+    network::shutdown();
     zpl_exit(0);
 }

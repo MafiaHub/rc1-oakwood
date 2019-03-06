@@ -1,6 +1,6 @@
 /* Player */
 
-inline auto player_send_spawn(librg_entity* player_ent) -> void {
+inline auto send_spawn(librg_entity* player_ent) -> void {
     auto player = (mafia_player*)player_ent->user_data;
     librg_send(&network_context, NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, player_ent->id);
@@ -29,7 +29,7 @@ librg_entity *spawn_weapon_drop(zpl_vec3 position, char *model, inventory_item i
     return new_weapon_entity;
 }
 
-inline auto player_inventory_debug(librg_entity* player_ent) -> void {
+inline auto inventory_debug(librg_entity* player_ent) -> void {
     auto player = (mafia_player*)player_ent->user_data;
     printf("-----------[INV]-----------\n");
     for (size_t i = 0; i < 8; i++) {
@@ -40,7 +40,7 @@ inline auto player_inventory_debug(librg_entity* player_ent) -> void {
     printf("-----------[INV]-----------\n");
 }
 
-inline auto player_inventory_full(librg_entity* player_ent) -> bool {
+inline auto inventory_full(librg_entity* player_ent) -> bool {
     auto player = (mafia_player*)player_ent->user_data;
     for (size_t i = 0; i < 8; i++) {
         if (player->inventory.items[i].weaponId == -1)
@@ -49,7 +49,7 @@ inline auto player_inventory_full(librg_entity* player_ent) -> bool {
     return true;
 }
 
-inline auto player_inventory_exists(librg_entity* player_ent, int id) -> bool {
+inline auto inventory_exists(librg_entity* player_ent, int id) -> bool {
     auto player = (mafia_player*)player_ent->user_data;
     for (size_t i = 0; i < 8; i++) {
         auto item = player->inventory.items[i];
@@ -60,7 +60,7 @@ inline auto player_inventory_exists(librg_entity* player_ent, int id) -> bool {
     return false;
 }
 
-inline auto player_inventory_add(
+inline auto inventory_add(
     librg_entity* player_ent, 
     inventory_item* item, 
     bool announce = false, 
@@ -69,13 +69,13 @@ inline auto player_inventory_add(
     auto player = (mafia_player*)player_ent->user_data;
 
     //inventory full dont add weapon
-    if (player_inventory_full(player_ent)) {
+    if (inventory_full(player_ent)) {
         mod_debug("player_inventory_add inv full !");
         return;
     }
 
     //if weapon exists skip
-    if (player_inventory_exists(player_ent, item->weaponId)) {
+    if (inventory_exists(player_ent, item->weaponId)) {
         mod_debug("player_inventory_add weapon exists !");
         return;
     }
@@ -114,14 +114,14 @@ inline auto player_inventory_add(
     });
 }
 
-inline auto player_inventory_remove(
+inline auto inventory_remove(
     librg_entity* player_ent, 
     int id, 
     bool announce = false,
     bool weapon_dropped = false) -> void {
 
     //do weapon exists in inventory ?
-    if (!player_inventory_exists(player_ent, id)) return;
+    if (!inventory_exists(player_ent, id)) return;
     
     //remove weapon from inventory
     auto player = (mafia_player*)player_ent->user_data;

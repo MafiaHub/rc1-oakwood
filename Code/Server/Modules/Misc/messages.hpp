@@ -1,4 +1,4 @@
-void misc_add_messages() {
+void add_messages() {
     librg_network_add(&network_context, NETWORK_NPC_CREATE, [](librg_message* msg) {
 
         auto entity = librg_entity_find(&network_context, msg->peer);

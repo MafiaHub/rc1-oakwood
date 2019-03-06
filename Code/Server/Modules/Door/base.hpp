@@ -1,1 +1,3 @@
-#include "events.hpp"
+namespace door {
+    #include "events.hpp"
+}

@@ -37,7 +37,7 @@ auto on_librg_connection_disconnect(librg_event* evnt) -> void {
         if (gm.on_player_disconnected)
             gm.on_player_disconnected(evnt, evnt->entity);
 
-        player_connection_disconnect(evnt);
+        modules::player::connection_disconnect(evnt);
         GlobalConfig.players--;
     }
 }
@@ -45,13 +45,13 @@ auto on_librg_connection_disconnect(librg_event* evnt) -> void {
 auto on_librg_clientstreamer_update(librg_event* evnt) -> void {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_clientstreamer_update(evnt);
+            modules::player::clientstreamer_update(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_clientstreamer_update(evnt);
+            modules::vehicle::clientstreamer_update(evnt);
         } break;
         case TYPE_DOOR: {
-            door_clientstreamer_update(evnt);
+            modules::door::clientstreamer_update(evnt);
         } break;
     }
 }
@@ -59,10 +59,10 @@ auto on_librg_clientstreamer_update(librg_event* evnt) -> void {
 auto on_librg_entityupdate(librg_event* evnt) -> void {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_entityupdate(evnt);
+            modules::player::entityupdate(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_entityupdate(evnt);
+            modules::vehicle::entityupdate(evnt);
         } break;
         case TYPE_WEAPONDROP: {
         } break;
@@ -72,16 +72,16 @@ auto on_librg_entityupdate(librg_event* evnt) -> void {
 auto on_librg_entitycreate(librg_event* evnt) -> void {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_entitycreate(evnt);
+            modules::player::entitycreate(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_entitycreate(evnt);
+            modules::vehicle::entitycreate(evnt);
         } break;
         case TYPE_WEAPONDROP: {
-            drop_entitycreate(evnt);
+            modules::player::drop_entitycreate(evnt);
         } break;
         case TYPE_DOOR: {
-            door_entitycreate(evnt);
+            modules::door::entitycreate(evnt);
         } break;
     }
 }

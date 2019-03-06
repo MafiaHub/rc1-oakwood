@@ -1,1 +1,3 @@
-#include "messages.hpp"
+namespace misc {
+    #include "messages.hpp"
+}

@@ -1,4 +1,4 @@
-void player_add_messages() {
+void add_messages() {
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
 
@@ -321,7 +321,7 @@ void player_add_messages() {
         
         spawn_weapon_drop(entity->position, model, item);
         
-        player_inventory_remove(entity, item.weaponId, true, true);
+        inventory_remove(entity, item.weaponId, true, true);
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message* msg) {
@@ -331,7 +331,7 @@ void player_add_messages() {
         auto entity				= librg_entity_fetch(&network_context, id);
         auto weapon_drop		= (mafia_weapon_drop*)entity->user_data;
 
-        player_inventory_add(player_entity, &weapon_drop->weapon, true, true);
+        inventory_add(player_entity, &weapon_drop->weapon, true, true);
 
         if (entity) {
             if (entity->user_data) 
