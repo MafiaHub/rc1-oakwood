@@ -158,7 +158,7 @@ void player_add_messages() {
         auto seat_id = librg_data_ri32(msg->data);
         auto unk3 = librg_data_ri32(msg->data);
 
-    if (sender_ent->user_data && vehicle_ent) {
+        if (sender_ent->user_data && vehicle_ent) {
 
             auto vehicle = (mafia_vehicle *)vehicle_ent->user_data;
             auto sender = (mafia_player*)sender_ent->user_data;

@@ -6,7 +6,7 @@
     #define default_gamemode "SampleMod.dll"
 #elif __linux__
     #define default_gamemode "SampleMod.so"
-#elif
+#elif __APPLE__
     #define default_gamemode "SampleMod.dylib"
 #endif
 
