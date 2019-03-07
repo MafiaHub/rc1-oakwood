@@ -69,7 +69,6 @@ librg_ctx network_context = { 0 };
 /* 
 * Workers
 */
-
 #include "Workers/masterlist.hpp"
 #include "Workers/webserver.hpp"
 #include "Workers/misc.hpp"
@@ -113,7 +112,7 @@ int main(int argc, char **argv) {
         misc::vehicles_streamer_update(); 
         misc::console_update_stats();
         masterlist::update();
-        zpl_sleep_ms(1);
+        zpl_yield();
     }
 
     return 0;

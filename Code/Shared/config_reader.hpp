@@ -4,7 +4,7 @@
 do { \
     zpl_json_object *NAME;\
     zpl_json_find(OBJ, #NAME, false, &NAME);\
-    VAR = (NAME && NAME->STR) ? NAME->STR : DEF; \
+    VAR = (NAME) ? NAME->STR : DEF; \
 } while (0)
 
 inline auto config_get(const char *filename, const char *default_cfg) -> zpl_json_object* {

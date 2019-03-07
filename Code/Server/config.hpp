@@ -16,7 +16,7 @@ namespace config {
         "name = \"default oakwood server\""\
         "host = \"\""\
         "password = \"\""\
-        "visible = true"\
+        "visible = true "\
         "port = 27010\n"\
         "gamemode = \"" default_gamemode "\"";
 
@@ -32,13 +32,17 @@ namespace config {
         json_apply(json, GlobalConfig.max_players, max_players, integer, 16);
         json_apply(json, GlobalConfig.gamemode, gamemode, string, default_gamemode);
         json_apply(json, GlobalConfig.port, port, integer, 27010);
-        json_apply(json, GlobalConfig.visible, visible, constant, true);
+        json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
+
+        if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
+            GlobalConfig.visible = false;
 
         zpl_printf("================================\n");
         zpl_printf("Name: %s\n", GlobalConfig.name.c_str());
         zpl_printf("Module: %s\n", GlobalConfig.gamemode.c_str());
         zpl_printf("Max players: %d\n", GlobalConfig.max_players);
         zpl_printf("Port: %d\n", GlobalConfig.port);
+        zpl_printf("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");
         zpl_printf("================================\n");
     }
 }
