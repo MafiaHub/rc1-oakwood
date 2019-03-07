@@ -4,7 +4,6 @@
 */
 
 #include "version.hpp"
-#define LIBRG_NO_DEPRECATIONS
 #define OAKWOOD_SERVER 1
 #define OAKGEN_NATIVE()
 #define OAKGEN_FORWARD()
@@ -14,6 +13,7 @@
 */
 
 #define LIBRG_IMPLEMENTATION
+#define LIBRG_NO_DEPRECATIONS
 #include "librg/librg.h"
 
 /*
@@ -33,6 +33,7 @@
 /* 
 * STL-powered includes
 */
+
 #include "librg/librg_ext.h"
 
 /*
