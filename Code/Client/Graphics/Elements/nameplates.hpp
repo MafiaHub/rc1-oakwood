@@ -72,7 +72,7 @@ namespace nameplates {
                     if (current_i3d_camera == nullptr) return;
 
                     S_vector camera_pos = current_i3d_camera->GetInterface()->mPosition;
-                    auto screen = world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
+                    auto screen = graphics::world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
 
                     if (screen.z < 1.0f) {
                         zpl_vec3 vec = {};

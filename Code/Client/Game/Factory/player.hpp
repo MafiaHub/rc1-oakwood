@@ -50,7 +50,7 @@ auto player_spawn(zpl_vec3 position,
 
         MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
 
-        auto player = get_local_player();
+        auto player = modules::player::get_local_player();
         if (player) {
             local_player.dead = false;
             if (player->ped) {
@@ -79,7 +79,7 @@ auto player_spawn(zpl_vec3 position,
     
     //TODO(DavoSK): Make it more fancy !
     //Select right weapon
-    hooks::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
+    modules::player::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
     new_ped->Do_ChangeWeapon(0, 0);
     new_ped->ChangeWeaponModel();
 

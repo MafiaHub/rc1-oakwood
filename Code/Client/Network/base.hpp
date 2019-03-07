@@ -9,7 +9,6 @@
 inline auto mod_librg_connect() -> void {
     librg_address addr = { 27010, GlobalConfig.server_address};
     librg_network_start(&network_context, addr);
-    cefgui::load_browser();
 }
 
 inline auto mod_init_networking() {

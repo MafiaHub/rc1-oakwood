@@ -56,13 +56,13 @@ workspace "Oakwood"
 
         -- additional tools
         if os.target() == "windows" then
-        dofile("../Tools/premake/helpers/winsdk.lua")
-        dofile("../Tools/premake/helpers/wincef.lua")("cef_binary_3.3440.1806.g65046b7_windows32", true)
+            dofile("../Tools/premake/helpers/winsdk.lua")
+            --dofile("../Tools/premake/helpers/wincef.lua")("cef_binary_3.3440.1806.g65046b7_windows32", false)
         end
 
         include "Launcher"
         include "Client"
-        include "Worker"
+        --include "Worker"
     end
     
     group "Plugins"

@@ -31,12 +31,6 @@ librg_ctx network_context = { 0 };
 #include "detours/detours.h"
 
 /*
-* VoIP
-*/
-#include <opus/include/opus.h>
-#include <bass/bass.h>
-
-/*
 * Temp json parser
 */
 #include "nlohmann/json.hpp"
@@ -91,18 +85,27 @@ struct _GlobalConfig {
     float interp_time_player = 0.08f;
 } GlobalConfig;
 
+struct data {
+    data() :
+        dead(false) {
+    }
+
+    u32 entity_id;
+    zpl_vec3 pose;
+    bool dead;
+} local_player;
+
 /*
 * Mod includes 
 */
 #include "config.hpp"
-#include "Game/VoIP/main.hpp"
 #include "Input/input.hpp"
 #include "Game/Factory/defs.hpp"
 #include "Game/Commands/defs.hpp"
-#include "Graphics/elements_pre.hpp"
+#include "modules.hpp"
 #include "Network/base.hpp"
 #include "Graphics/base.hpp"
-#include "Graphics/elements_post.hpp"
+#include "Graphics/elements.hpp"
 #include "Game/base.hpp"
 
 ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {

@@ -1,11 +1,4 @@
 #pragma once
-
-#include "Events/local_player.hpp"
-#include "Events/player.hpp"
-#include "Events/weapon_drop.hpp"
-#include "Events/vehicle.hpp"
-#include "Events/door.hpp"
-
 inline auto mod_librg_connect() -> void;
 
 void on_librg_connect(librg_event* evnt) {
@@ -15,23 +8,18 @@ void on_librg_connect(librg_event* evnt) {
     MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
 
-    effects::is_enabled = false;  
-    cefgui::main_browser->visible = true;
-
     local_player.entity_id = evnt->entity->id;
     
     auto new_player = new mafia_player;
     strcpy(new_player->name, GlobalConfig.username);
     evnt->entity->type = TYPE_PLAYER;
     evnt->entity->user_data = (void*)new_player;
-
-    cef::browser_reload(cefgui::main_browser);
 }
 
 void on_librg_disconnect(librg_event* evnt) {
 
-    cefgui::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
-    auto player = get_local_player();
+    //chat::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
+    auto player = modules::player::get_local_player();
     if(player && player->ped) {
         player_despawn(player->ped);
         player->ped = nullptr;
@@ -44,16 +32,16 @@ void on_librg_disconnect(librg_event* evnt) {
 void on_librg_entity_create(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_entitycreate(evnt);
+            modules::player::entitycreate(evnt);
         } break;
         case TYPE_WEAPONDROP: {
-            drop_entitycreate(evnt);
+            //entitycreate(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_entitycreate(evnt);
+            modules::vehicle::entitycreate(evnt);
         } break;
         case TYPE_DOOR: {
-            door_entitycreate(evnt);
+            modules::door::entitycreate(evnt);
         } break;
     }
 }
@@ -61,10 +49,10 @@ void on_librg_entity_create(librg_event* evnt) {
 void on_librg_entity_update(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_entityupdate(evnt);
+            modules::player::entityupdate(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_entityupdate(evnt);
+            modules::vehicle::entityupdate(evnt);
         } break;
     }
 }
@@ -72,16 +60,16 @@ void on_librg_entity_update(librg_event* evnt) {
 void on_librg_entity_remove(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_entityremove(evnt);
+            modules::player::entityremove(evnt);
         } break;
         case TYPE_WEAPONDROP: {
-            drop_entityremove(evnt);
+            //drop_entityremove(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_entityremove(evnt);
+            modules::vehicle::entityremove(evnt);
         } break;
         case TYPE_DOOR: {
-            door_entityremove(evnt);
+            modules::door::entityremove(evnt);
         } break;
     }
 }
@@ -89,13 +77,13 @@ void on_librg_entity_remove(librg_event* evnt) {
 void on_librg_clientstreamer_update(librg_event* evnt) {
     switch (evnt->entity->type) {
         case TYPE_PLAYER: {
-            player_clientstreamer_update(evnt);
+            modules::player::clientstreamer_update(evnt);
         } break;
         case TYPE_VEHICLE: {
-            vehicle_clientstreamer_update(evnt);
+            modules::vehicle::clientstreamer_update(evnt);
         } break;
         case TYPE_DOOR: {
-            door_clientstreamer_update(evnt);
+            modules::door::clientstreamer_update(evnt);
         } break;
     }
 }
@@ -117,5 +105,11 @@ auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_UPDATE, on_librg_clientstreamer_update);
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_ADD, on_librg_clientstreamer_add);
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_REMOVE, on_librg_clientstreamer_remove);
-    mod_player_add_events();
+    
+    librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
+        char nickname[32];
+        strcpy(nickname, GlobalConfig.username);
+        librg_data_wu16(evnt->data, OAK_BUILD_VERSION);
+        librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
+    });
 }

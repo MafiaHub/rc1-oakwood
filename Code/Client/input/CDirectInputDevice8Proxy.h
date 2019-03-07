@@ -184,27 +184,10 @@ HRESULT APIENTRY CDirectInputDevice8Proxy::SetActionMap(LPDIACTIONFORMAT lpdiAct
 }
 
 HRESULT APIENTRY CDirectInputDevice8Proxy::SetCooperativeLevel(HWND hwnd, DWORD dwFlags) {
+
     DWORD dwCustomFlags = dwFlags;
-
-    if (m_DeviceType == DIDEVICE_TYPE_MOUSE) {
-        // mod_assert(hwnd);
-
-        // idk wtf is dis, but also kinda helps ?
-        // mod_log("dxinput: setting non-exclusive\n");
-        // if ((dwCustomFlags & DISCL_EXCLUSIVE) != 0) {
-        //     dwCustomFlags &= ~(DISCL_EXCLUSIVE);
-        // }
-
-        //dwCustomFlags |= DISCL_NONEXCLUSIVE;
-        //dwCustomFlags |= DISCL_FOREGROUND;
-
-        // enabled native-feel mouse
-        // good for windwed mode, with cursor showing
-        // mod_log("dxinput: setting background mode\n");
-        // if ((dwCustomFlags & DISCL_FOREGROUND) != 0) {
-        //     dwCustomFlags &= ~(DISCL_FOREGROUND);
-        // }
-        // dwCustomFlags |= DISCL_BACKGROUND;
+    if (m_DeviceType == DIDEVICE_TYPE_KEYBOARD) {
+        dwCustomFlags = DISCL_FOREGROUND | DISCL_NONEXCLUSIVE;
     }
 
     cachedHWND  = hwnd;

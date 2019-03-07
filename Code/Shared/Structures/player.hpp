@@ -7,13 +7,6 @@ struct body_health {
 	f32 right_leg;
 };
 
-#ifdef MAFIA_SDK_IMPLEMENTATION
-struct voip_channel_t {
-	HSTREAM playback_stream;
-	OpusDecoder *decoder;
-};
-#endif
-
 enum {
 	CLIENTSIDE_PLAYER_WAITING_FOR_VEH = (1 << 10)
 };
@@ -35,7 +28,6 @@ struct mafia_player {
 
 #ifdef MAFIA_SDK_IMPLEMENTATION
 		nickname_texture		= nullptr;
-		voice_channel			= nullptr;
 		last_talked				= 0;
 		clientside_flags		= 0;
 #endif
@@ -71,6 +63,5 @@ struct mafia_player {
 	f32 last_talked;
 	MafiaSDK::C_Human* ped;
 	IDirect3DTexture9* nickname_texture;
-	voip_channel_t* voice_channel;
 #endif
 };

@@ -1,7 +1,6 @@
 #pragma once
 #include "Graphics/d3d9/CDirect3DDevice9Proxy.h"
 #include "Graphics/d3d9/CDirect3D9Proxy.h"
-#include "utils.hpp"
 
 namespace nameplates 
 {
@@ -34,9 +33,20 @@ namespace graphics
     }
 
     inline auto hook() {
-        while (!GetModuleHandle("d3d9.dll")) Sleep(100);
         d3dcreate9_original = (d3dcreate9_t)(DetourFunction(DetourFindFunction((char*)"d3d9.dll", (char*)"Direct3DCreate9"), (PBYTE)d3dcreate9_hook));
     }
+
+	inline auto world_to_screen(D3DXVECTOR3 input) -> D3DXVECTOR3 {
+		D3DXVECTOR3 out;
+		D3DVIEWPORT9 viewport;
+		global_device->GetViewport(&viewport);
+		D3DXMATRIX projection, view, world;
+		global_device->GetTransform(D3DTS_VIEW, &view);
+		D3DXMatrixIdentity(&world);
+		global_device->GetTransform(D3DTS_PROJECTION, &projection);
+		D3DXVec3Project(&out, &input, &viewport, &projection, &view, &world);
+		return out;
+	}
 
     inline auto create_font(IDirect3DDevice9* device, const char* font_name, unsigned int size, bool bold) -> ID3DXFont* {
         
@@ -136,9 +146,6 @@ namespace graphics
         init_main_sprite(device);
         
         nameplates::init(device);
-        effects::init(device);
-        cef::init(device);
-        cefgui::init(device);
         input::hook_window();
     }
 
@@ -155,17 +162,13 @@ namespace graphics
         }
 
         nameplates::device_lost();
-        effects::device_lost();
-        cef::device_lost();
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
         
         global_device = device;
         init_main_sprite(device);
-        effects::device_reset(device);
         nameplates::device_reset(device);
-        cef::device_reset(device);
 
         if (input::InputState.input_blocked)
             input::block_input(false);
@@ -196,10 +199,6 @@ namespace graphics
             IDirect3DDevice9_SetPixelShader(device, NULL);
 
             nameplates::render(device);
-            effects::render(device);
-            cefgui::update();
-            cef::tick();
-            cef::render_browsers();
 
             if (pStateBlock) {
                 pStateBlock->Apply();

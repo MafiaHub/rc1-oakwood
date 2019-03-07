@@ -6,7 +6,7 @@
 // !
 // =======================================================================//
 
-void player_target_position_update(mafia_player *player) {
+void target_position_update(mafia_player *player) {
 
     if (player->interp.pos.finish_time > 0.0) {
         // Grab the current game position
@@ -39,10 +39,10 @@ void player_target_position_update(mafia_player *player) {
     }
 }
 
-void player_target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 interpTime) {
+void target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 interpTime) {
 
     auto player_int = player->ped->GetInterface();
-    player_target_position_update(player);
+    target_position_update(player);
 
     zpl_vec3 local_pos = EXPAND_VEC(player_int->entity.position);
     player->interp.pos.start = local_pos;
@@ -63,7 +63,7 @@ void player_target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 i
 // !
 // =======================================================================//
 
-void player_target_rotation_update(mafia_player *player) {
+void target_rotation_update(mafia_player *player) {
 
     auto player_int = player->ped->GetInterface();
 
@@ -103,9 +103,9 @@ zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
     return {one_axis(a.x, b.x), one_axis(a.y, b.y), one_axis(a.z, b.z)};
 }
 
-void player_target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 interp_time) {
+void target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 interp_time) {
 
-    player_target_rotation_update(player);
+    target_rotation_update(player);
     auto player_int = player->ped->GetInterface();
 
     // Grab the current game rotation
@@ -119,10 +119,9 @@ void player_target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 i
     player->interp.rot.last_alpha = 0.0f;
 }
 
-inline auto player_entitycreate(librg_event* evnt) -> void {
+inline auto entitycreate(librg_event* evnt) -> void {
 
     auto player					= new mafia_player();
-    player->voice_channel		= nullptr;//voip::create_remote();
     player->vehicle_id			= librg_data_ri32(evnt->data);
     player->streamer_entity_id	= librg_data_ri32(evnt->data);
     
@@ -159,7 +158,7 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
     player->ped = new_ped;
 
     if(player->streamer_entity_id == local_player.entity_id) {
-        auto me = get_local_ped();
+        auto me = modules::player::get_local_ped();
         auto action = player->ped->GetActionManager()->NewFollow(me, 3.0f, 13, 2, 0, 0);
         player->ped->GetActionManager()->NewTurnTo(me, action->action_id);
         player->ped->GetActionManager()->AddJob(action);
@@ -174,7 +173,7 @@ inline auto player_entitycreate(librg_event* evnt) -> void {
     
 }
 
-inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
+inline auto game_tick(mafia_player* ped, f64 delta) -> void {
 
     // TODO(DavoSK): Move it to MafiaSDK
     // fix shooting ( fixed ammo for now :) )
@@ -190,8 +189,8 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
     if (player_int->isInAnimWithCar)
         player_int->isInAnimWithCar = 0;
 
-    player_target_position_update(ped);
-    player_target_rotation_update(ped);
+    target_position_update(ped);
+    target_rotation_update(ped);
 
     // Pose interpolation
     {
@@ -207,7 +206,7 @@ inline auto player_game_tick(mafia_player* ped, f64 delta) -> void {
     }
 }
 
-inline auto player_entityupdate(librg_event* evnt) -> void {
+inline auto entityupdate(librg_event* evnt) -> void {
     
     //NOTE(DavoSK): We need to read data before we can skip event ! 
     zpl_vec3 recv_pose, recv_rotation;
@@ -239,8 +238,8 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     player->interp.pose.start = player->interp.pose.target;
     player->interp.pose.target = recv_pose;
 
-    player_target_position_set(player, evnt->entity->position, GlobalConfig.interp_time_player);
-    player_target_rotation_set(player, recv_rotation, GlobalConfig.interp_time_player);
+    target_position_set(player, evnt->entity->position, GlobalConfig.interp_time_player);
+    target_rotation_set(player, recv_rotation, GlobalConfig.interp_time_player);
 
     if (!player_int->carLeavingOrEntering) {
         player_int->animState	= player->animation_state;
@@ -270,7 +269,7 @@ inline auto player_entityupdate(librg_event* evnt) -> void {
     }
 }
 
-inline auto player_entityremove(librg_event* evnt) -> void {
+inline auto entityremove(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
@@ -302,7 +301,7 @@ inline auto player_entityremove(librg_event* evnt) -> void {
     }
 }
 
-inline auto player_clientstreamer_update(librg_event* evnt) -> void {
+inline auto clientstreamer_update(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
     
     if (!player) {
@@ -352,14 +351,4 @@ inline auto player_clientstreamer_update(librg_event* evnt) -> void {
             }
         }
     }
-}
-
-auto mod_player_add_events() {
-    librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
-        // TODO: password sending
-        char nickname[32];
-        strcpy(nickname, GlobalConfig.username);
-        librg_data_wu16(evnt->data, OAK_BUILD_VERSION);
-        librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
-    });
 }

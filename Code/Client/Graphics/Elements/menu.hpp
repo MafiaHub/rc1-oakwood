@@ -189,7 +189,7 @@ namespace menu {
                 strcpy(GlobalConfig.server_address, MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
                 if (strlen(GlobalConfig.server_address)) {
                     
-                    auto player = get_local_player();
+                    auto player = modules::player::get_local_player();
                     if (player) {
                         zpl_zero_item(player);
                     }

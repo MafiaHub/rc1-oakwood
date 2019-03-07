@@ -1,4 +1,4 @@
-inline auto door_entitycreate(librg_event *evnt) {
+inline auto entitycreate(librg_event *evnt) {
     auto new_door = new mafia_door();
     auto name_len = librg_data_ru32(evnt->data);
     librg_data_rptr(evnt->data, new_door->name, name_len);
@@ -6,27 +6,27 @@ inline auto door_entitycreate(librg_event *evnt) {
     new_door->open_side = librg_data_ru8(evnt->data);
     new_door->name[name_len] = '\0';
 
-    auto door_found = (MafiaSDK::C_Door *)MafiaSDK::GetMission()->FindActorByName(new_door->name);
+    auto found = (MafiaSDK::C_Door *)MafiaSDK::GetMission()->FindActorByName(new_door->name);
     
-    if(door_found) {
+    if(found) {
         
         //NOTE(DavoSK): If doors are not opening set open angle
-        auto door_int = door_found->GetInterface();
+        auto door_int = found->GetInterface();
 
         if (door_int->current_state != 2 && door_int->current_state != 3) {
             //NOTE(DavoSK): We need to set direction byte & calculate percentage of open
             door_int->open_direction = new_door->open_side;
             auto set_angle = new_door->angle / door_int->open_percent_koef;
-            door_found->SetOpenAngle(set_angle);
+            found->SetOpenAngle(set_angle);
         }
 
-        new_door->door = door_found;
+        new_door->door = found;
     }
 
     evnt->entity->user_data = new_door;
 }
 
-inline auto door_clientstreamer_update(librg_event *evnt) {
+inline auto clientstreamer_update(librg_event *evnt) {
     auto door = (mafia_door*)evnt->entity->user_data;
     
     if (!door || !door->door) {
@@ -39,7 +39,7 @@ inline auto door_clientstreamer_update(librg_event *evnt) {
     librg_data_wu8(evnt->data, door_int->open_direction);
 }
 
-inline auto door_entityremove(librg_event *evnt) {
+inline auto entityremove(librg_event *evnt) {
     auto door = (mafia_door *)evnt->entity->user_data;
     
     if(door) {

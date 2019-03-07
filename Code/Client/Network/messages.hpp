@@ -2,8 +2,9 @@
 
 auto mod_add_network_messages() {
     
-    #include "Messages/player.hpp"
-    #include "Messages/misc.hpp"
-    #include "Messages/voip.hpp"
-    #include "Messages/vehicle.hpp"
+    modules::player::add_messages();
+    modules::misc::add_messages();
+    modules::vehicle::add_messages();
+    //#include "Messages/misc.hpp"
+    //#include "Messages/vehicle.hpp"
 }

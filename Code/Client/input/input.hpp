@@ -14,71 +14,11 @@ namespace input {
         bool input_blocked = false;
     } InputState;
 
-    std::unordered_map<unsigned long, bool> key_states_unfocused;
-
-    class KeyToggle {
-    public:
-        KeyToggle(int key) :mKey(key), mActive(false) {}
-        operator bool() {
-
-            if (InputState.input_blocked) {
-                if (key_states_unfocused[mKey]) {
-                    if (!mActive) {
-                        mActive = true;
-                        return true;
-                    }
-                }
-                else mActive = false;
-            }
-            else {
-                unsigned short scan_code = MapVirtualKey(mKey, MAPVK_VK_TO_VSC_EX);
-                switch (mKey) {
-                case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
-                case VK_PRIOR: case VK_NEXT: case VK_END: case VK_HOME:
-                case VK_INSERT: case VK_DELETE: case VK_DIVIDE: case VK_NUMLOCK:
-                    scan_code += 0x80;
-                    break;
-                }
-
-                if (MafiaSDK::GetIGraph()->TestKey(scan_code)) {
-                    if (!mActive) {
-                        mActive = true;
-                        return true;
-                    }
-                }
-                else mActive = false;
-            }
-
-            return false;
-        }
-    private:
-        int mKey;
-        bool mActive;
-    };
+    std::unordered_map<unsigned long, bool> curent_key_states;
 
     inline bool is_key_down(DWORD key) {
-        if (InputState.input_blocked) {
-            return key_states_unfocused[key];
-        }
-        else {
-            unsigned short scan_code = MapVirtualKey(key, MAPVK_VK_TO_VSC_EX);
-            switch (key) {
-            case VK_LEFT: case VK_UP: case VK_RIGHT: case VK_DOWN:
-            case VK_PRIOR: case VK_NEXT: case VK_END: case VK_HOME:
-            case VK_INSERT: case VK_DELETE: case VK_DIVIDE: case VK_NUMLOCK:
-                scan_code += 0x80;
-                break;
-            }
-
-            return MafiaSDK::GetIGraph()->TestKey(scan_code);
-        }
-
-        return false;
+        return curent_key_states[key];
     }
-}
-
-namespace cef {
-    void inject_winproc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, bool& pass, LRESULT& lresult);
 }
 
 #include "input/CDirectInputDevice8Proxy.h"
@@ -110,14 +50,15 @@ namespace input {
     
         // Process gui input only when our window is focues
         if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
-            key_states_unfocused[wParam] = true;
+            curent_key_states[wParam] = true;
              
         if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
-            key_states_unfocused[wParam] = false;
+            curent_key_states[wParam] = false;
 
         LRESULT result;
         bool pass;
-        cef::inject_winproc(hWnd, uMsg, wParam, lParam, pass, result);
+        
+        //cef::inject_winproc(hWnd, uMsg, wParam, lParam, pass, result);
         return result;
     }
 
@@ -146,11 +87,6 @@ namespace input {
     * Wait till dinput is loaded then hook
     */
     inline auto hook() {
-        
-        while (!GetModuleHandle("dinput8.dll")) {
-            Sleep(100);
-        }
-        
         original_dxi8create = (input_dxi8create_t)(DetourFunction(DetourFindFunction((char*)"dinput8.dll", (char*)"DirectInput8Create"), (PBYTE)input_dxi8create_hook));
     }
 

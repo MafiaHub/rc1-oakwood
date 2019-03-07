@@ -118,7 +118,7 @@ namespace gamemap
                         zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->mPosition);
                         auto blip_pos = translate_object_to_map(frame_pos);
                         
-                        if (is_marker_inbounds(blip_pos, blip_size_car) && vehicle->car->GetOwner(0) != (DWORD)get_local_ped()) {
+                        if (is_marker_inbounds(blip_pos, blip_size_car) && vehicle->car->GetOwner(0) != (DWORD)modules::player::get_local_ped()) {
                             //NOTE(DavoSK): Draw border
                             constexpr int border = 2;
                             const mafia_vertex rect_border[] = {

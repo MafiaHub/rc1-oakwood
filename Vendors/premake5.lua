@@ -5,10 +5,8 @@ return function()
     }
 
     libdirs {
-        "../Vendors/bass",
         "../Vendors/d3d9",
         "../Vendors/detours",
-        "../Vendors/lua/lib",
-        "../Vendors/opus/lib",
+        "../Vendors/lua/lib"
     }
 end

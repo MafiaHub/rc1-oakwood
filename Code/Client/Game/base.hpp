@@ -19,7 +19,6 @@ void mod_shutdown() {
 
     AddVectoredExceptionHandler(FALSE, TerminateInstantly);
     SetUnhandledExceptionFilter(TerminateInstantly);
-    CefShutdown();
     TerminateProcess(GetCurrentProcess(), 0);
 }
 

@@ -6,7 +6,7 @@
 // !
 // =======================================================================//
 
-void car_target_position_update(mafia_vehicle *car) {
+void target_position_update(mafia_vehicle *car) {
     if (car->interp.pos.finish_time == 0) {
         return;
     }
@@ -59,10 +59,10 @@ void car_target_position_update(mafia_vehicle *car) {
     vehicle_int->position = EXPAND_VEC(new_position);
 }
 
-void car_target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_time, bool valid_velocityz, f32 velocityz) {
+void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_time, bool valid_velocityz, f32 velocityz) {
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-    car_target_position_update(car);
+    target_position_update(car);
 
     { /* UpdateUnderFloorFix */
         bool force_localz = false;
@@ -111,7 +111,13 @@ void car_target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp
 // !
 // =======================================================================//
 
-void car_target_rotation_update(mafia_vehicle *car) {
+zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
+
+    auto one_axis = [](float a, float b) { return a - b; };
+    return { one_axis(a.x, b.x), one_axis(a.y, b.y), one_axis(a.z, b.z) };
+}
+
+void target_rotation_update(mafia_vehicle *car) {
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
     
@@ -173,12 +179,13 @@ void car_target_rotation_update(mafia_vehicle *car) {
     }
 }
 
-void car_target_rotation_set(mafia_vehicle *car, 
+
+void target_rotation_set(mafia_vehicle *car, 
     zpl_vec3 target_rot_forward, 
     zpl_vec3 target_rot_up, 
     f32 interp_time) {
 
-    car_target_rotation_update(car);
+    target_rotation_update(car);
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
 
@@ -223,7 +230,7 @@ void car_target_rotation_set(mafia_vehicle *car,
     car->interp.rot_up.last_alpha = 0.0f;
 }
 
-inline auto vehicle_entitycreate(librg_event *evnt) {
+inline auto entitycreate(librg_event *evnt) {
 
     auto vehicle = new mafia_vehicle();
     zpl_vec3 position;
@@ -271,18 +278,18 @@ inline auto vehicle_entitycreate(librg_event *evnt) {
     evnt->entity->flags |= ENTITY_INTERPOLATED;
 }
 
-inline auto vehicle_game_tick(mafia_vehicle *vehicle, f64 delta) {
+inline auto game_tick(mafia_vehicle *vehicle, f64 delta) {
 
     if(!vehicle || !vehicle->car) return;
 
-    car_target_position_update(vehicle);
-    car_target_rotation_update(vehicle);
+    target_position_update(vehicle);
+    target_rotation_update(vehicle);
 
     auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
     vehicle_int->engine_rpm = vehicle->engine_rpm;
 }
 
-inline auto vehicle_entityupdate(librg_event *evnt) {
+inline auto entityupdate(librg_event *evnt) {
    
     //NOTE(DavoSK): First we need to read all data so we can skip event
     zpl_vec3 target_rot_forward, target_rot_up, target_pos, rot_speed, speed;
@@ -356,11 +363,11 @@ inline auto vehicle_entityupdate(librg_event *evnt) {
         vehicle->car->SetGear(vehicle->gear);
     }
 
-    car_target_rotation_set(vehicle, target_rot_forward, target_rot_up, GlobalConfig.interp_time_vehicle);
-    car_target_position_set(vehicle, target_pos, GlobalConfig.interp_time_vehicle, true, vehicle_int->speed.z);
+    target_rotation_set(vehicle, target_rot_forward, target_rot_up, GlobalConfig.interp_time_vehicle);
+    target_position_set(vehicle, target_pos, GlobalConfig.interp_time_vehicle, true, vehicle_int->speed.z);
 }
 
-inline auto vehicle_entityremove(librg_event *evnt) {
+inline auto entityremove(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     if (vehicle && vehicle->car) {
         printf("Vehicle remove '%d'\n", evnt->entity->id);
@@ -373,7 +380,7 @@ inline auto vehicle_entityremove(librg_event *evnt) {
     }
 }
 
-inline auto vehicle_clientstreamer_update(librg_event *evnt) {
+inline auto clientstreamer_update(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     if (!vehicle) {
         librg_event_reject(evnt);
@@ -438,5 +445,3 @@ inline auto vehicle_clientstreamer_update(librg_event *evnt) {
         }
     }*/
 }
-
-#include "Game/Hooks/vehicle.hpp"

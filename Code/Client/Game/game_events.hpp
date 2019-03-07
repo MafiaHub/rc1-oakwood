@@ -1,12 +1,4 @@
 #pragma once
-
-#include "Game/Hooks/scene.hpp"
-
-namespace effects {
-    extern bool is_enabled;
-    inline void load(std::string effect_file);
-}
-
 u32 transition_idx	= 0;
 f64 last_time		= 0.0f;
 f64 passed_time		= 2.0f;
@@ -88,11 +80,10 @@ f64 delta_time = 0.0f;
 
 auto mod_bind_events() {
 
-    scene_init();
-    local_player_init();
-    vehicle_init();
-    drop_init();
-
+    modules::misc::init();
+    modules::player::init();
+    modules::vehicle::init();
+    modules::door::init();
   
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
         
@@ -110,18 +101,15 @@ auto mod_bind_events() {
                     bridge->Shutdown(TRUE);
                 }
             }
-
-            cefgui::add_message("Welcome to Mafia Oakwood 0.1");
-            cefgui::add_message("Connecting to " + std::string(GlobalConfig.server_address) + " ...");
+             
+            //cefgui::add_message("Welcome to Mafia Oakwood 0.1");
+            //cefgui::add_message("Connecting to " + std::string(GlobalConfig.server_address) + " ...");
             mod_librg_connect();
-
-            effects::load(GlobalConfig.localpath + "files/Cinematic.fx");
-            effects::is_enabled = true;
         }
     });
 
     MafiaSDK::C_Game_Hooks::HookLocalPlayerFallDown([&]() {
-        local_player_died();
+        modules::player::died();
         local_player.dead = true;
     });
 
@@ -133,28 +121,26 @@ auto mod_bind_events() {
             interpolate_cam(delta_time);
 
         librg_tick(&network_context);
-        //voip::network_tick();
-
         librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx *ctx, librg_entity *entity) {
             switch (entity->type) {
             case TYPE_WEAPONDROP: {
-                auto weapon_drop = (mafia_weapon_drop*)entity->user_data;
+                /*auto weapon_drop = (mafia_weapon_drop*)entity->user_data;
                 if (weapon_drop && weapon_drop->weapon_drop_actor) {
                     drop_game_tick(weapon_drop);
-                }
+                }*/
             } break;
 
             case TYPE_PLAYER: {
                 auto player = (mafia_player*)entity->user_data;
                 if (player && player->ped && player->streamer_entity_id != local_player.entity_id) {
-                    player_game_tick(player, delta_time);
+                    modules::player::game_tick(player, delta_time);
                 }
             } break;
 
             case TYPE_VEHICLE: {
                 auto vehicle = (mafia_vehicle*)entity->user_data;
                 if (vehicle && vehicle->car) {
-                    vehicle_game_tick(vehicle, delta_time);
+                    modules::vehicle::game_tick(vehicle, delta_time);
                 }
             } break;
             }

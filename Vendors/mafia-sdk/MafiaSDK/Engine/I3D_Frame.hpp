@@ -65,7 +65,7 @@ namespace MafiaSDK
             return reinterpret_cast<I3D_Frame_Interface*>(this);
         }
 
-        void SetScale(struct S_vector const & scale)
+        void SetScale(const S_vector& scale)
         {
             unsigned long addressFunc = I3D_Frame_Enum::FunctionsAddresses::SetScale;
 
@@ -79,7 +79,7 @@ namespace MafiaSDK
             this->Update();
         }
 
-        void SetRot(struct S_quat & const rot)
+        void SetRot(const S_quat& rot)
         {
             unsigned long addressFunc = I3D_Frame_Enum::FunctionsAddresses::SetRot;
 
