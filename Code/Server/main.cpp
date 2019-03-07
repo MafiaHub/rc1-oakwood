@@ -1,13 +1,25 @@
-#define LIBRG_IMPLEMENTATION
+/* 
+* OAKWOOD MULTIPLAYER - SERVER
+* (C) 2019 Oakwood Team. All Rights Reserved.
+*/
+
+#include "version.hpp"
 #define LIBRG_NO_DEPRECATIONS
 #define OAKWOOD_SERVER 1
 #define OAKGEN_NATIVE()
 #define OAKGEN_FORWARD()
+
+/* 
+* Networking library
+*/
+
+#define LIBRG_IMPLEMENTATION
 #include "librg/librg.h"
 
 /*
-* STD Includes
+* STL includes
 */
+
 #include <iostream>
 #include <string>
 #include <functional>
@@ -18,46 +30,52 @@
 #include <vector>
 #include <thread>
 
+/* 
+* STL-powered includes
+*/
 #include "librg/librg_ext.h"
 
 /*
-* HTTP lib
+* HTTP library
 */
+
 #define HTTP_IMPLEMENTATION
 #include "http/http.h"
 #include "http/mongoose.h"
 
 /*
-* Console stuff
+* Console I/O and signal handling
 */
+
 #include "console.hpp"
 #include "signal_handling.hpp"
 
 /* 
 * Shared
 */
-#include "version.hpp"
+
 #include "structs.hpp"
 #include "messages.hpp"
 #include "helpers.hpp"
 
-struct _GlobalConfig {
-    std::string name;
-    std::string host;
-    i64 port;
-    i64 players;
-    i64 max_players;
-    std::string gamemode;
-    b32 visible;
-} GlobalConfig;
+/* 
+* Globals
+*/
 
+#include "server.hpp"
 
-librg_ctx network_context = { 0 };
+/* 
+* Switches
+*/
 
 #define OAK_CHAT_DISABLE_STYLING
 
 /* Useful when debugging crashes. */
 // #define OAK_DISABLE_SIGNAL_HANDLING
+
+/* 
+* Core
+*/
 
 #include "config.hpp"
 #include "opts.hpp"
@@ -69,6 +87,7 @@ librg_ctx network_context = { 0 };
 /* 
 * Workers
 */
+
 #include "Workers/masterlist.hpp"
 #include "Workers/webserver.hpp"
 #include "Workers/misc.hpp"

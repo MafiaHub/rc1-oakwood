@@ -17,7 +17,7 @@
         mg_mgr_init(&mgr, NULL);
         nc = mg_bind(&mgr, std::to_string(GlobalConfig.port).c_str(), ev_handler);
         if (nc == NULL) {
-            printf("[Oakwood MP] Failed to create listener for webserver check ports !\n");
+            printf("[Oakwood MP] Failed to create listener for webserver, check ports !\n");
             return;
         }
 

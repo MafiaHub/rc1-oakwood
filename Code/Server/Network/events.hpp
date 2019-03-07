@@ -1,7 +1,5 @@
 #pragma once
 
-#include "event_data.hpp"
-
 auto on_librg_connection_request(librg_event* evnt) -> void {
     auto build_ver = librg_data_ru16(evnt->data);
 
