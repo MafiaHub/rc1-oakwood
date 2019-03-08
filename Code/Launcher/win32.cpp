@@ -135,6 +135,5 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
 
     // invoke original entry point
     entry_point();
-
     return 0;
 }

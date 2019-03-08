@@ -58,7 +58,6 @@ public:
     HWND cachedHWND;
     DWORD cachedFlags;
     bool masterAquired;
-
 private:
     IDirectInputDevice8 *m_pIDirectInputDevice8;
     eDIDeviceType m_DeviceType;
@@ -135,8 +134,23 @@ struct mod_di_keys_t {
 };
 
 HRESULT APIENTRY CDirectInputDevice8Proxy::GetDeviceState(DWORD cbData, LPVOID lpvData) {
-    HRESULT hResult = m_pIDirectInputDevice8->GetDeviceState(cbData, lpvData);
-    return hResult;
+
+    HRESULT hResult = 0;
+    DWORD   dwNumItems = INFINITE;
+
+    if (input::InputState.input_blocked) {       
+        // Need to call GetDeviceState here to drain the input buffer.
+        // Otherwise, once we let go of our hook, the game will get all the
+        // movements on the device.
+        hResult = m_pIDirectInputDevice8->GetDeviceState(cbData, lpvData);
+
+        // Clear the buffer so the game won't get any events.
+        memset(lpvData, 0, cbData);
+        m_pIDirectInputDevice8->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), NULL, &dwNumItems, 0);
+        return hResult;
+    }
+
+    return m_pIDirectInputDevice8->GetDeviceState(cbData, lpvData);
 }
 
 HRESULT APIENTRY CDirectInputDevice8Proxy::GetEffectInfo(LPDIEFFECTINFO pdei, REFGUID rguid) {

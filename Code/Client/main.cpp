@@ -8,6 +8,10 @@
 
 librg_ctx network_context = { 0 };
 
+#include "Graphics/imgui/imgui.h"
+#include "Graphics/imgui/imgui_impl_dx9.h"
+#include "Graphics/imgui/imgui_impl_win32.h"
+
 /*
 * Mafia SDK
 */

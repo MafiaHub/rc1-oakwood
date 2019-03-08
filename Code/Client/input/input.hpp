@@ -1,6 +1,7 @@
 #pragma once
 
 struct CDirectInputDevice8Proxy;
+extern IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 namespace input {
     enum {
@@ -55,11 +56,7 @@ namespace input {
         if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
             curent_key_states[wParam] = false;
 
-        LRESULT result;
-        bool pass;
-        
-        //cef::inject_winproc(hWnd, uMsg, wParam, lParam, pass, result);
-        return result;
+        return ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
     }
 
     /* 
@@ -68,7 +65,6 @@ namespace input {
     LRESULT __stdcall mod_wndproc_hook_keyboard(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         wndproc_combined(hWnd, uMsg, wParam, lParam);
-        
         return CallWindowProc(mod_wndproc_original_keyboard, hWnd, uMsg, wParam, lParam);
     }
 
@@ -78,8 +74,6 @@ namespace input {
     LRESULT __stdcall mod_wndproc_hook_mouse(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
         wndproc_combined(hWnd, uMsg, wParam, lParam);
-        //return true;
-
         return CallWindowProc(mod_wndproc_original_mouse, hWnd, uMsg, wParam, lParam);
     }
 
@@ -98,19 +92,10 @@ namespace input {
         if (do_block) {
             InputState.devices[ZINPUT_MOUSE]->masterAquired = false;
             InputState.devices[ZINPUT_MOUSE]->Unacquire();
-
-            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = false;
-            InputState.devices[ZINPUT_KEYBOARD]->Unacquire();
-
             ShowCursor(TRUE);
-        }
-        else {
+        } else {
             InputState.devices[ZINPUT_MOUSE]->masterAquired = true;
             InputState.devices[ZINPUT_MOUSE]->Acquire();
-
-            InputState.devices[ZINPUT_KEYBOARD]->masterAquired = true;
-            InputState.devices[ZINPUT_KEYBOARD]->Acquire();
-
             ShowCursor(FALSE);
         }
 
