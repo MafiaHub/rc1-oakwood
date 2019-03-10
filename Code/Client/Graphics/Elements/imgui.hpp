@@ -1,50 +1,63 @@
 namespace imgui {
+    
+    ImVec4      ColorsOriginal[ImGuiCol_COUNT];
+
+    #include "imgui/chat.hpp"
+
     inline void render() {
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-            ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-            if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-                counter++;
-
-            ImGui::SameLine();
-            ImGui::Text("counter = %d", counter);
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
+        ImGuiStyle& style = ImGui::GetStyle();
+        if (input::InputState.input_blocked) {
+            style.Colors[ImGuiCol_WindowBg]         = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
+            style.Colors[ImGuiCol_TitleBg]          = ImVec4(0.36f, 0.36f, 0.36f, 1.0f);
+            style.Colors[ImGuiCol_ChildWindowBg]    = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
+        }
+        else {
+            style.Colors[ImGuiCol_WindowBg]         = ImVec4(0.28f, 0.28f, 0.28f, 0.5);
+            style.Colors[ImGuiCol_TitleBg]          = ImVec4(0.36f, 0.36f, 0.36f, 0.5f);
+            style.Colors[ImGuiCol_ChildWindowBg]    = ImVec4(0.28f, 0.28f, 0.28f, 0.0f);
         }
 
-        //toggle input for imgui here temporary
-        if (input::is_key_down(VK_F1))
-            input::toggle_block_input();
+        chat::render();
 
         ImGui::EndFrame();
         ImGui::Render();
         ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
     }
 
+    auto GetCustomGlyphRanges() -> const ImWchar * {
+        static const ImWchar ranges[] =
+        {
+            0x0020, 0x00FF, // Basic Latin + Latin Supplement
+            0x0100, 0x017F, // Latin Extended-A
+            0x0400, 0x052F, // Cyrillic + Cyrillic Supplement
+            0x2DE0, 0x2DFF, // Cyrillic Extended-A
+            0xA640, 0xA69F, // Cyrillic Extended-B
+            0,
+        };
+        return &ranges[0];
+    }
+
     inline void init_style() {
+
         ImGuiStyle& style = ImGui::GetStyle();
         style.GrabRounding = 0.f;
         style.WindowRounding = 0.f;
         style.ScrollbarRounding = 0.f;
         style.FrameRounding = 0.f;
         style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-
-        auto io = ImGui::GetIO();
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\verdana.ttf", 16);
         
+        auto io = ImGui::GetIO();
+        io.FontDefault = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\verdana.ttf", 15, NULL, GetCustomGlyphRanges());
+        io.FontAllowUserScaling = true;
+
         style.Colors[ImGuiCol_Text] = ImVec4(0.73f, 0.73f, 0.73f, 1.00f);
         style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
-        style.Colors[ImGuiCol_WindowBg] = ImVec4(0.26f, 0.26f, 0.26f, 0.95f);
-        style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.28f, 0.28f, 0.28f, 1.00f);
+        style.Colors[ImGuiCol_WindowBg] = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
+        style.Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.28f, 0.28f, 0.28f, 1.0f);
         style.Colors[ImGuiCol_PopupBg] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
         style.Colors[ImGuiCol_Border] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
         style.Colors[ImGuiCol_BorderShadow] = ImVec4(0.26f, 0.26f, 0.26f, 1.00f);
@@ -80,6 +93,8 @@ namespace imgui {
         style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.32f, 0.52f, 0.65f, 1.00f);
         style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.20f, 0.20f, 0.20f, 0.50f);
+
+        memcpy(ColorsOriginal, style.Colors, sizeof(ImVec4) * ImGuiCol_COUNT);
     }
 
     inline void init(IDirect3DDevice9* device) {
@@ -89,5 +104,17 @@ namespace imgui {
         init_style();
         ImGui_ImplWin32_Init(MafiaSDK::GetIGraph()->GetMainHWND());
         ImGui_ImplDX9_Init(device);
+
+        chat::init();
+    }
+
+    inline void device_reset(IDirect3DDevice9* device) {
+        init(device);
+    }
+
+    inline void device_lost() {
+        ImGui_ImplDX9_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
     }
 }

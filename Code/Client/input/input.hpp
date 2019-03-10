@@ -20,6 +20,25 @@ namespace input {
     inline bool is_key_down(DWORD key) {
         return curent_key_states[key];
     }
+
+    class KeyToggle {
+    public:
+        KeyToggle(int key) :mKey(key), mActive(false) {}
+        operator bool() {
+            if (is_key_down(mKey)) {
+                if (!mActive) {
+                    mActive = true;
+                    return true;
+                }
+            }
+            else
+                mActive = false;
+            return false;
+        }
+    private:
+        int mKey;
+        bool mActive;
+    };
 }
 
 #include "input/CDirectInputDevice8Proxy.h"

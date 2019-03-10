@@ -16,6 +16,8 @@ namespace gamemap {
 namespace imgui {
     inline void render();
     inline void init(IDirect3DDevice9* device);
+    inline void device_reset(IDirect3DDevice9* device);
+    inline void device_lost();
 }
 
 #include "graphics.hpp"

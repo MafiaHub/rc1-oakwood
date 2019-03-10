@@ -3,13 +3,13 @@ namespace graphics
     typedef IDirect3D9 *(WINAPI * d3dcreate9_t)(UINT);
     d3dcreate9_t d3dcreate9_original = nullptr;
     ID3DXSprite* main_sprite = nullptr;
+    IDirect3DStateBlock9* state_block = nullptr;
 
     IDirect3D9* WINAPI d3dcreate9_hook(UINT SDKVersion) {
         IDirect3D9 *new_direct = d3dcreate9_original(SDKVersion);
-        if (new_direct) {
+        if (new_direct)
             return new CDirect3D9Proxy(new_direct);
-        }
-
+     
         MessageBox(NULL, "Unable to create Direct3D9 interface.", "Fatal error", MB_ICONERROR);
         TerminateProcess(GetCurrentProcess(), 0);
         return NULL;
@@ -37,7 +37,7 @@ namespace graphics
         ID3DXFont* to_create = nullptr;
 
         if (FAILED(D3DXCreateFont(device, size, 0, (bold ? FW_BOLD : FW_NORMAL), 1, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY, (DEFAULT_PITCH | FF_DONTCARE), font_name, &to_create))) {
-            MessageBox(NULL, "Unable to create font", "nameplates.hpp", MB_OK);
+            MessageBox(NULL, "Unable to create font", __FILE__, MB_OK);
             return nullptr;
         }
 
@@ -45,14 +45,12 @@ namespace graphics
     }
 
     inline auto get_text_size(ID3DXFont *font, const char *text)-> SIZE {
-
         if (font) {
             HDC dc = font->GetDC();
             SIZE size;
             GetTextExtentPoint32(dc, text, strlen(text), &size);
             return size;
         }
-
         return {};
     }
 
@@ -62,7 +60,6 @@ namespace graphics
     };
 
     inline void draw_box(IDirect3DDevice9* device, float x, float y, float width, float height, DWORD color) {
-
         if (device) {
             const Vertex2D rect[] = {
                 { x,			y,			0.0f, 1.0f,	color },
@@ -134,7 +131,6 @@ namespace graphics
         imgui::init(device);
     }
 
-    IDirect3DStateBlock9* pStateBlock = NULL;
     inline auto device_lost() -> void {
         if (global_device) {
             global_device->Release();
@@ -147,6 +143,7 @@ namespace graphics
         }
 
         nameplates::device_lost();
+        imgui::device_lost();
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
@@ -154,6 +151,7 @@ namespace graphics
         global_device = device;
         init_main_sprite(device);
         nameplates::device_reset(device);
+        imgui::device_reset(device);
 
         if (input::InputState.input_blocked)
             input::block_input(false);
@@ -162,7 +160,7 @@ namespace graphics
     inline auto end_scene(IDirect3DDevice9* device) -> void {
 
         if (device && global_device) {
-            device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+            device->CreateStateBlock(D3DSBT_ALL, &state_block);
 
             IDirect3DDevice9_SetVertexShader(device, NULL);
             IDirect3DDevice9_SetFVF(device, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
@@ -186,10 +184,10 @@ namespace graphics
             nameplates::render(device);
             imgui::render();
 
-            if (pStateBlock) {
-                pStateBlock->Apply();
-                pStateBlock->Release();
-                pStateBlock = nullptr;
+            if (state_block) {
+                state_block->Apply();
+                state_block->Release();
+                state_block = nullptr;
             }
         }
     }
