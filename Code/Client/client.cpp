@@ -33,6 +33,8 @@
 * STL-powered includes
 */
 
+#include "librg/librg_ext.h"
+
 /*
 * Stack walker 
 */
@@ -70,6 +72,7 @@
 /*
 * Direct3D and DirectInput
 */
+
 #include <d3d9.h>
 #include <d3d9/include/d3dx9.h>
 #include <dinput.h>
