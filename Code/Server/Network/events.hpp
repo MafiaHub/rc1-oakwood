@@ -1,9 +1,10 @@
 #pragma once
 
 auto on_librg_connection_request(librg_event* evnt) -> void {
+    auto build_magic = librg_data_ru64(evnt->data);
     auto build_ver = librg_data_ru16(evnt->data);
 
-    if (build_ver != OAK_BUILD_VERSION) {
+    if (build_magic != OAK_BUILD_MAGIC || build_ver != OAK_BUILD_VERSION) {
         librg_event_reject(evnt);
     }
 

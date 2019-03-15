@@ -109,6 +109,7 @@ auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
         char nickname[32];
         strcpy(nickname, GlobalConfig.username);
+        librg_data_wu64(evnt->data, OAK_BUILD_MAGIC);
         librg_data_wu16(evnt->data, OAK_BUILD_VERSION);
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
     });
