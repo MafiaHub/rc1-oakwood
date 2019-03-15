@@ -140,7 +140,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
     player->current_weapon_id = librg_data_ru32(evnt->data);
     player->health = librg_data_rf32(evnt->data);
 
-    auto new_ped = player_spawn(
+    auto new_ped = spawn(
         evnt->entity->position,
         player->rotation,
         player->inventory,
@@ -153,7 +153,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
 
     //TODO(DavoSK): Rework respawn/spawn
     if (player->ped != nullptr)
-        player_despawn(player->ped);
+        despawn(player->ped);
 
     player->ped = new_ped;
 
@@ -295,7 +295,7 @@ inline auto entityremove(librg_event* evnt) -> void {
             }
         }
 
-        player_despawn(player->ped);
+        despawn(player->ped);
         delete player;
         evnt->entity->user_data = nullptr;
     }

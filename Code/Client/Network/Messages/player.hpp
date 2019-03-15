@@ -34,7 +34,7 @@
                 false);
 
             if (player->ped) {
-                player_despawn(player->ped);
+                despawn(player->ped);
                 player->ped = new_ped;
             }
         }
@@ -82,7 +82,7 @@ librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg)
         auto is_local_player = player_entity_id == local_player.entity_id;
 
         if (player_data->ped)
-            player_despawn(player_data->ped);
+            despawn(player_data->ped);
 
         auto ped = player_spawn(
             position,

@@ -89,7 +89,7 @@ namespace crashhandler
                 TCHAR szModName[MAX_PATH];
                 if (GetModuleBaseName(hProcess, (HMODULE)close, szModName,
                     sizeof(szModName) / sizeof(TCHAR))) {
-                    sprintf(outbuffer, "%s+0x%p", szModName, (addr - close));
+                    sprintf(outbuffer, "%s+0x%p", szModName, (void *)(addr - close));
                     return;
                 }
             }

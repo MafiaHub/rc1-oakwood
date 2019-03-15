@@ -272,7 +272,7 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->engine_on = librg_data_ru8(evnt->data);
     vehicle->fuel = librg_data_rf32(evnt->data);
     vehicle->accelerating = librg_data_rf32(evnt->data);
-    vehicle->car = vehicle_spawn(position, vehicle);
+    vehicle->car = spawn(position, vehicle);
 
     evnt->entity->user_data = (void *)vehicle;
     evnt->entity->flags |= ENTITY_INTERPOLATED;
@@ -373,7 +373,7 @@ inline auto entityremove(librg_event *evnt) {
         printf("Vehicle remove '%d'\n", evnt->entity->id);
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
-        vehicle_despawn(vehicle);
+        despawn(vehicle);
 
         delete vehicle;
         evnt->entity->user_data = nullptr;

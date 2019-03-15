@@ -19,9 +19,9 @@ void add_messages() {
             auto is_local_player = player_entity_id == local_player.entity_id;
 
             if (player_data->ped)
-                player_despawn(player_data->ped);
+                despawn(player_data->ped);
 
-            auto ped = player_spawn(
+            auto ped = spawn(
                 position,
                 rotation,
                 inventory,

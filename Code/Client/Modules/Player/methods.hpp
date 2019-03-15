@@ -1,4 +1,112 @@
 #pragma once
+
+extern auto get_local_player() -> mafia_player*;
+
+auto spawn(zpl_vec3 position, 
+                  zpl_vec3 rotation,
+                  player_inventory inventory,
+                  char *model,
+                  u32 current_wep,
+                  f32 health,
+                  bool is_local_player, 
+                  int expectedWeaponId,
+                  bool is_in_car) -> MafiaSDK::C_Player *{
+    
+    S_vector default_scale = { 1.0f, 1.0f, 1.0f };
+    S_vector default_pos = EXPAND_VEC(position);
+
+    auto player_model = (MafiaSDK::I3D_Model*)MafiaSDK::I3DGetDriver()->CreateFrame(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+    while(MafiaSDK::GetModelCache()->Open(player_model, model, NULL, NULL, NULL, NULL))  {
+        printf("Error: Unable to create player model <%s> !\n", model);
+    }
+
+    player_model->SetName("testing_player");
+    player_model->SetScale(default_scale);
+    player_model->SetWorldPos(default_pos);
+    player_model->Update();
+
+    MafiaSDK::C_Player *new_ped = nullptr;
+
+    if (is_local_player)
+        new_ped = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Player));
+    else
+        new_ped = reinterpret_cast<MafiaSDK::C_Player*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Enemy));
+
+    new_ped->Init(player_model);
+
+    if (!is_local_player)
+        new_ped->SetBehavior(MafiaSDK::C_Human_Enum::BehaviorStates::DoesntReactOnWeapon);
+
+    new_ped->SetShooting(1.0f);
+    new_ped->SetActive(1);
+    MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
+
+    if (is_local_player) { 
+        auto game = MafiaSDK::GetMission()->GetGame();
+        if (game) {
+            game->GetCamera()->SetCar(NULL);
+            game->GetCamera()->SetMode(true, 1);
+            game->GetCamera()->SetPlayer(new_ped);
+            game->SetLocalPlayer(new_ped);
+        }
+
+        MafiaSDK::GetIndicators()->PlayerSetWingmanLives(100);
+
+        auto player = get_local_player();
+        if (player) {
+            local_player.dead = false;
+            if (player->ped) {
+                despawn(player->ped);
+            }
+
+            player->ped = new_ped;
+            strcpy(player->name, GlobalConfig.username);
+        }
+    }
+
+    new_ped->GetInterface()->humanObject.health = health;
+
+    if (!is_in_car) {
+        new_ped->GetInterface()->humanObject.entity.position = default_pos;
+        new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
+    }
+
+    //Foreach every weapon in inventory and give it to the player
+    for (size_t i = 0; i < 8; i++) {
+        S_GameItem* item = (S_GameItem*)&inventory.items[i];
+        if (item->weaponId != expectedWeaponId) {
+            new_ped->G_Inventory_AddItem(*item);
+        }
+    }
+    
+    //TODO(DavoSK): Make it more fancy !
+    //Select right weapon
+    modules::player::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
+    new_ped->Do_ChangeWeapon(0, 0);
+    new_ped->ChangeWeaponModel();
+
+    //If player have hands do holster
+    if (current_wep == 0)
+        new_ped->Do_Holster();
+
+    return new_ped;
+}
+
+auto despawn(MafiaSDK::C_Human* player) -> void {
+    if (player) {
+        MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(player);
+        /*DWORD frame = *(DWORD*)(player + 0x68);
+        if (frame) {
+            __asm {
+                mov eax, frame
+                push eax
+                mov ecx, [eax]
+                call dword ptr ds : [ecx]
+            }
+        }*/
+    }
+}
+
 inline auto get_local_entity() {
     return librg_entity_fetch(&network_context, local_player.entity_id);
 }
@@ -42,7 +150,7 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
     return nullptr;
 }
 
-auto player_inventory_send() {
+auto inventory_send() -> void {
     player_inventory inv = {0};
 
     auto local_ped = get_local_ped();
@@ -62,7 +170,7 @@ auto player_inventory_send() {
 /* 
 * todo add reason killer and so one ...
 */
-inline auto died() {
+inline auto died() -> void {
 
     if (local_player.dead) return;
 
@@ -130,7 +238,7 @@ inline auto weapondrop(inventory_item* item, char* model) -> void {
         librg_data_wptr(&data, wep_model, sizeof(char) * 32);
     });
 
-    player_inventory_send();
+    inventory_send();
 }
 
 inline auto weaponchange(u32 index) -> void {
@@ -139,7 +247,7 @@ inline auto weaponchange(u32 index) -> void {
         librg_data_wu32(&data, index);
     });
 
-    player_inventory_send();
+    inventory_send();
 }
 
 inline auto fromcar() -> void {
@@ -150,13 +258,13 @@ inline auto fromcar() -> void {
 inline auto reload() -> void {
     librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});
 
-    player_inventory_send();	
+    inventory_send();	
 }
 
 inline auto holster() -> void {
     librg_send(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, data, {});
 
-    player_inventory_send();
+    inventory_send();
 }
 
 inline auto weaponpickup(librg_entity* item_entity) -> void {
@@ -171,20 +279,20 @@ inline auto weaponpickup(librg_entity* item_entity) -> void {
         auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
         local_ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
         local_ped->Do_ChangeWeapon(0, 0);
-        player_inventory_send();
+        inventory_send();
     }
 }
 
-inline auto throwgrenade(const S_vector & pos) {
+inline auto throwgrenade(const S_vector & pos) -> void {
     S_vector vec_copy = pos;
     librg_send(&network_context, NETWORK_PLAYER_THROW_GRENADE, data, {
         librg_data_wptr(&data, &vec_copy, sizeof(S_vector));
     });
 
-    player_inventory_send();
+    inventory_send();
 }
 
-inline auto useactor(DWORD actor, int action, int seat_id, int unk3) {
+inline auto useactor(DWORD actor, int action, int seat_id, int unk3) -> void {
 
     auto vehicle_ent = get_vehicle_from_base((void*)actor);
     if (!vehicle_ent) return;
@@ -216,7 +324,7 @@ inline void use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state
     }
 }
 
-inline auto hijack(DWORD car, int seat) {
+inline auto hijack(DWORD car, int seat) -> void {
 
     auto vehicle_ent = get_vehicle_from_base((void*)car);
     if (!vehicle_ent) return;
@@ -227,7 +335,7 @@ inline auto hijack(DWORD car, int seat) {
     });
 }
 
-inline auto remove_temporary_actor(void* base) {
+inline auto remove_temporary_actor(void* base) -> void {
 
     auto player_ent = get_player_from_base(base);
     if (player_ent) {
@@ -251,5 +359,5 @@ inline auto remove_temporary_actor(void* base) {
     }
 }
 
-inline auto car_destruct(void* base) {
+inline auto car_destruct(void* base) -> void {
 }

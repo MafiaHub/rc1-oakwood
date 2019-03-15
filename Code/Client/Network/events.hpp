@@ -21,7 +21,7 @@ void on_librg_disconnect(librg_event* evnt) {
     //chat::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
     auto player = modules::player::get_local_player();
     if(player && player->ped) {
-        player_despawn(player->ped);
+        modules::player::despawn(player->ped);
         player->ped = nullptr;
     }
 
