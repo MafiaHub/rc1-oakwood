@@ -107,7 +107,7 @@ namespace chat {
         if (/*MafiaSDK::GetGMMenu() ||*/ !MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB)) 
             return;
 
-        ImGui::Begin("Mafia Multiplayer - Chat",
+        ImGui::Begin("Mafia: Oakwood - Chat",
             nullptr,
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoCollapse |
