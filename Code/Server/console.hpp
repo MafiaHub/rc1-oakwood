@@ -125,7 +125,7 @@ namespace console {
     #else
     inline void init_unix() {
 
-        std::setlocale(LC_ALL, "");
+        /* std::setlocale(LC_ALL, "");
         std::setlocale(LC_NUMERIC, "C");
         std::setlocale(LC_COLLATE, "C");
 
@@ -152,11 +152,12 @@ namespace console {
         console_data.wnd_menu = subwin(stdscr, 1, COLS, 0, 0);
         wbkgd(console_data.wnd_menu, COLOR_PAIR(1));
         move(1, 0);
-        refresh();
+        refresh(); */
     }
 
     inline void draw_unix(const char* format, va_list va) {
-        int attr = COLOR_PAIR(1);
+        vprintf(format, va);
+        /* int attr = COLOR_PAIR(1);
         wmove(console_data.wnd_menu, 0, 0);
 
         char formated_tag[200];
@@ -203,7 +204,7 @@ namespace console {
             wnoutrefresh(console_data.wnd_menu);
             doupdate();
             refresh();
-        }
+        } */
     }
     #endif
 
