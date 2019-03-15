@@ -3,7 +3,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #else
-#include <curses.h>
 #include <unistd.h>
 #include <err.h>
 #include <string.h>
