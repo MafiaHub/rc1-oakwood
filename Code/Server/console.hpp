@@ -232,7 +232,8 @@ namespace console {
     #ifdef _WIN32
         vprintf(format, arglist);
     #else 
-        vwprintw(stdscr, format, arglist);
+        //vwprintw(stdscr, format, arglist);
+        vprintf(format, arglist);
     #endif
         va_end(arglist);
     }
