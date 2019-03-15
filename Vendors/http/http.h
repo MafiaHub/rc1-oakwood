@@ -445,10 +445,10 @@ http_t* http_post( char const* url, void const* data, size_t size, void* memctx 
     HTTP_SOCKET socket = http_internal_connect( address, port );
     if( socket == HTTP_INVALID_SOCKET ) return NULL;
 
-    #ifndef _WIN32
+    /* #ifndef _WIN32
     int optval=1;
     signal(SIGPIPE, SIG_IGN);
-    #endif
+    #endif */
     
     http_internal_t* internal = http_internal_create( size, memctx );
     internal->socket = socket;
