@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
     console::init();
     console::printf("================================\n");
     console::printf(banner_text);
-    console::printf("Build version: %d\n", OAK_BUILD_VERSION);
+    console::printf("Build version: %s (%d)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
     console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
     console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
     console::printf("================================\n"); 

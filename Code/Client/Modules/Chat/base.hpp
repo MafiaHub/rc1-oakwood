@@ -13,6 +13,7 @@ namespace chat {
     i64 chat_history_index;
     unsigned int chat_current_msg;
     constexpr unsigned int VK_T = 0x54;
+    bool is_focused = false;
    
     /* keys definitions */
     input::KeyToggle key_chat_open(VK_T);
@@ -123,8 +124,15 @@ namespace chat {
 
     inline void render() {
 
+        if (key_chat_open && librg_is_connected(&network_context)) {
+            is_focused = !is_focused;
+        }
+
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 
             !librg_is_connected(&network_context)) 
+            return;
+
+        if (modules::pausemenu::is_enabled)
             return;
 
         ImGui::Begin("Mafia: Oakwood - Chat",
@@ -151,10 +159,14 @@ namespace chat {
         }
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
-            ImGui::SetKeyboardFocusHere(0);
+
+            if (is_focused)
+                ImGui::SetKeyboardFocusHere(0);
+
             ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
 
             if (key_chat_send) {
+                is_focused = false;
                 if (strlen(add_text)) {
                     bool is_command = false;
 
