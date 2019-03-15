@@ -24,7 +24,7 @@ namespace console {
     #ifdef _WIN32
         CHAR_INFO screen_buffer[SCREEN_BUFFER_SIZE];
     #else
-        WINDOW* wnd_menu = nullptr;
+        //WINDOW* wnd_menu = nullptr;
     #endif
     } console_data;
 
