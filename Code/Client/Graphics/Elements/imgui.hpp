@@ -2,8 +2,6 @@ namespace imgui {
     
     ImVec4      ColorsOriginal[ImGuiCol_COUNT];
 
-    #include "imgui/chat.hpp"
-
     inline void render() {
         ImGui_ImplDX9_NewFrame();
         ImGui_ImplWin32_NewFrame();
@@ -21,7 +19,7 @@ namespace imgui {
             style.Colors[ImGuiCol_ChildWindowBg]    = ImVec4(0.28f, 0.28f, 0.28f, 0.0f);
         }
 
-        chat::render();
+        modules::chat::render();
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -105,7 +103,7 @@ namespace imgui {
         ImGui_ImplWin32_Init(MafiaSDK::GetIGraph()->GetMainHWND());
         ImGui_ImplDX9_Init(device);
 
-        chat::init();
+        modules::chat::init();
     }
 
     inline void device_reset(IDirect3DDevice9* device) {
