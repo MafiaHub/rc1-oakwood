@@ -26,7 +26,7 @@ inline auto mod_pre_init_game() {
     crashhandler::init();
     //voip::init();
 
-    init_config();
+    config::init();
     mod_bind_events();
     mod_init_networking();
     //alloc_console();
