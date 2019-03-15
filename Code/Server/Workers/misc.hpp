@@ -9,6 +9,10 @@ namespace misc {
     zpl_global u32 computed_fps         = 0;
 
     void console_update_stats() {
+        #ifndef _WIN32
+            return;
+        #endif
+
         f64 current_time = zpl_time_now();
         f64 diff = current_time - last_fps_update;
     
