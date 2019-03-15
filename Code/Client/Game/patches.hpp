@@ -34,7 +34,7 @@ auto mod_init_patches() {
     MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
     MafiaSDK::C_Game_Patches::PatchRemovePlayer();
     MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
-
+    MafiaSDK::C_Game_Patches::PatchDisableInventory();
     // 0004E034A
     // Force update car physics
     // BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";

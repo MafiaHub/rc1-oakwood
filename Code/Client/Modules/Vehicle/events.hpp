@@ -5,6 +5,8 @@
 // ! Position Interpolation
 // !
 // =======================================================================//
+#define VEHICLE_THRESHOLD_FOR_SPEED 0.6f
+#define VEHICLE_INTERPOLATION_THRESHOLD 15
 
 void target_position_update(mafia_vehicle *car) {
     if (car->interp.pos.finish_time == 0) {
@@ -38,23 +40,24 @@ void target_position_update(mafia_vehicle *car) {
     zpl_vec3 new_position;
     zpl_vec3_add(&new_position, current_position, compensation);
 
-    // Check if the distance to interpolate is too far.
-    // vec3 velocity = car->CCar->m_pVehicle.m_vSpeed;
-    // f32 threshold = (VEHICLE_INTERPOLATION_THRESHOLD * zplm_vec3_mag(velocity)) * M2O_TICKRATE_SERVER / 0.1f;
+    //Check if the distance to interpolate is too far.
+    zpl_vec3 velocity = EXPAND_VEC(car->speed);
+    f32 threshold = zpl_vec3_mag(velocity) * 1.5f;
+    
+    zpl_vec3 distance;
+    zpl_vec3_sub(&distance, current_position, car->interp.pos.target);
 
-    // // There is a reason to have this condition this way: To prevent NaNs generating new NaNs after interpolating (Comparing with NaNs always results to false).
-    // if (!(zplm_vec3_mag(currentPosition - car->interp.pos.target) <= threshold)) {
-    //     // Abort all interpolation
-    //     if (car->interp.rot.finishTime != 0) {
-    //         car->CCar->SetRot(zplm_quat_from_eular(
-    //             zplm_vec3_to_radians(car->interp.rot.target)
-    //         ));
-    //     }
+    if (!(zpl_vec3_mag(distance) <= threshold)) {
+        new_position = car->interp.pos.target;
+        car->interp.pos.finish_time = 0;
 
-    //     newPosition = car->interp.pos.target;
-    //     car->interp.pos.finishTime = 0;
-    //     car->interp.rot.finishTime = 0;
-    // }
+        vehicle_int->rot_forward = EXPAND_VEC(car->interp.rot_forward.target);
+        vehicle_int->rot_up = EXPAND_VEC(car->interp.rot_up.target);
+        vehicle_int->rot_speed = { 0.0f, 0.0f, 0.0f };
+
+        car->interp.rot_forward.finish_time = 0;
+        car->interp.rot_up.finish_time      = 0;
+    }
 
     vehicle_int->position = EXPAND_VEC(new_position);
 }
@@ -149,6 +152,7 @@ void target_rotation_update(mafia_vehicle *car) {
 
         zpl_vec3 compensated;
         zpl_vec3_add(&compensated, rotation_forward, compensation);
+
         vehicle_int->rot_forward = EXPAND_VEC(compensated);
     }
 
@@ -175,6 +179,7 @@ void target_rotation_update(mafia_vehicle *car) {
 
         zpl_vec3 compensated_up;
         zpl_vec3_add(&compensated_up, rotation_up, compensation_up);
+
         vehicle_int->rot_up = EXPAND_VEC(compensated_up);
     }
 }

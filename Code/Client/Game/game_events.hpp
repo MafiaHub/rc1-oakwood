@@ -84,6 +84,7 @@ auto mod_bind_events() {
     modules::player::init();
     modules::vehicle::init();
     modules::door::init();
+    modules::weapondrop::init();
   
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
         
