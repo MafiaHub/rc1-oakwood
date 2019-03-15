@@ -124,7 +124,7 @@ namespace chat {
     inline void render() {
 
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 
-            network_context.network.peer == nullptr) 
+            !librg_is_connected(&network_context)) 
             return;
 
         ImGui::Begin("Mafia: Oakwood - Chat",
