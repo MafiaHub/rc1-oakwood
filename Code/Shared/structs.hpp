@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include "Structures/inventory.hpp"
 #include "Structures/player.hpp"
