@@ -6,7 +6,7 @@ namespace config {
     #ifdef _WIN32 
         #define default_gamemode "SampleMod.dll"
     #elif __linux__
-        #define default_gamemode "SampleMod.so"
+        #define default_gamemode "libSampleMod.so"
     #elif __APPLE__
         #define default_gamemode "SampleMod.dylib"
     #endif
