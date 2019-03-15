@@ -71,6 +71,23 @@ namespace chat {
             librg_network_stop(&network_context);
             ExitProcess(ERROR_SUCCESS);
         });
+
+        register_command("/crash", [&](std::vector<std::string> args) {
+            *(int*)0 = 42;
+        });
+
+        register_command("/savepos", [&](std::vector<std::string> args) {
+            auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
+
+            std::ofstream pos_file("positions.txt");
+            auto pos = local_player->GetInterface()->humanObject.entity.position;
+            auto dir = local_player->GetInterface()->humanObject.entity.rotation;
+            zpl_vec3 position = EXPAND_VEC(pos);
+            zpl_vec3 direction = EXPAND_VEC(dir);
+            auto rot = DirToRotation180(direction);
+
+            pos_file << position.x << " " << position.y << " " << position.z << ", " << rot << std::endl;
+        });
     }
 
     void input_text_replace(ImGuiInputTextCallbackData *data, const char *str) {
