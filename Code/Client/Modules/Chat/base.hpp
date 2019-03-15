@@ -79,6 +79,8 @@ namespace chat {
         register_command("/savepos", [&](std::vector<std::string> args) {
             auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
 
+            if (!local_player) return;
+
             std::ofstream pos_file("positions.txt");
             auto pos = local_player->GetInterface()->humanObject.entity.position;
             auto dir = local_player->GetInterface()->humanObject.entity.rotation;
