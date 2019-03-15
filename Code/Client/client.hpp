@@ -26,3 +26,5 @@ struct data {
     zpl_vec3 pose;
     bool dead;
 } local_player;
+
+IDirect3DDevice9* global_device = nullptr;
