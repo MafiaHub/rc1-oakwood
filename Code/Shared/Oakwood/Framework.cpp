@@ -144,7 +144,7 @@ Vehicle* GameMode::SpawnVehicle(zpl_vec3 pos, float angle, const std::string& mo
 
 Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
 {
-    if (modelID < 0 || modelID >= VehicleCatalogue.size())
+    if (modelID < 0 || modelID >= (int)VehicleCatalogue.size())
         return nullptr;
 
     auto modelName = VehicleCatalogue.at(modelID).second.c_str();
