@@ -317,7 +317,7 @@ void add_messages() {
 
         if (entity) {
             if (entity->user_data) 
-                delete entity->user_data;
+                delete (mafia_player *)entity->user_data;
             librg_entity_destroy(&network_context, id);
         }
     });

@@ -29,7 +29,7 @@ void destroy_vehicle(librg_entity *entity) {
     if (gm.on_vehicle_destroyed)
         gm.on_vehicle_destroyed(entity);
 
-    delete entity->user_data;
+    delete (mafia_vehicle *)entity->user_data;
     entity->user_data = nullptr;
     librg_entity_destroy(&network_context, entity->id);
 }

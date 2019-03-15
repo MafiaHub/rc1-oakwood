@@ -144,7 +144,7 @@ static std::string ConvertColoredString(std::string text) {
             char hex_col[7] = {0};
             char *hexp = hex_col;
 
-            while (zpl_char_is_hex_digit(*e) && hex_col[5] == NULL) {
+            while (zpl_char_is_hex_digit(*e) && hex_col[5] == 0) {
                 *hexp++ = *e++;
             }
 
