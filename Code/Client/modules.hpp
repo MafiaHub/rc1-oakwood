@@ -13,5 +13,6 @@ namespace modules {
     #include "Modules/Player/base.hpp"
     #include "Modules/Vehicle/base.hpp"
     #include "Modules/Misc/base.hpp"
-    #include "Modules/WeaponDrop/base.hpp"
+    #include "Modules/WeaponDrop/base.hpp"  
+    #include "Modules/PauseMenu/base.hpp"
 }

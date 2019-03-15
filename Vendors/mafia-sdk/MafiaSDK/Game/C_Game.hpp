@@ -54,6 +54,11 @@ namespace MafiaSDK
             MemoryPatcher::InstallNopPatch(0x5BFDDC, 60);
         }
 
+        inline void PatchDisablePauseMenu()
+        {
+            MemoryPatcher::InstallJmpHook(0x005BE919, 0x005BE9C9);
+        }
+
         inline void PatchDisablePleaseWait()
         {
             // Disable - Please Wait text
