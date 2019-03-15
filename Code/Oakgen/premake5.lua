@@ -13,7 +13,7 @@ project "Oakgen"
         "../../Vendors"
     }
     postbuildcommands {
-		"{COPY} ../Bin/%{cfg.buildcfg}/Oakgen.exe ../Tools/"
+		"{COPY} ../Bin/%{cfg.buildcfg}/Oakgen* ../Tools/"
 	}
 	configuration "Debug"
 		debugdir "Bin/Debug"

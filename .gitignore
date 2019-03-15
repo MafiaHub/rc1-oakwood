@@ -11,3 +11,5 @@ Tools/[Oo]akgen.exe
 Tools/premake/cache
 *.code-workspace
 Code/Plugins/LuaMod/LuaBindings.hpp
+Tools/Oakgen.pdb
+Tools/Oakgen.ilk
