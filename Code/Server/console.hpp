@@ -20,7 +20,7 @@
 namespace console {
     struct _console_data {
         char info_tag[80];
-        int loader_state = 0;
+        int loader_state;
     #ifdef _WIN32
         CHAR_INFO screen_buffer[SCREEN_BUFFER_SIZE];
     #else
@@ -238,12 +238,13 @@ namespace console {
         va_end(arglist);
     }
 
-    inline char update_loader() {
-        console_data.loader_state++;
-        if (console_data.loader_state > 3)
-            console_data.loader_state = 0;
+    char update_loader() {
+        static char cnt = -1;
+        cnt++;
+        if (cnt > 3)
+            cnt = 0;
 
-        switch (console_data.loader_state) {
+        switch (cnt) {
         case 0:
             return '/';
         case 1:

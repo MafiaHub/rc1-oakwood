@@ -167,9 +167,6 @@ auto inventory_send(librg_entity *player_ent) {
 
 void die(librg_entity *entity, b32 forced = false) {
     auto player = (mafia_player*)entity->user_data;
-
-    if (player->health == 0.0f) return;
-
     player->health = 0.0f;
 
     if (player->vehicle_id != -1) {
