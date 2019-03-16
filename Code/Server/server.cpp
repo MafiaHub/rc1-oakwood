@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
         misc::vehicles_streamer_update(); 
         misc::console_update_stats();
         masterlist::update();
-        zpl_sleep_ms(1);
+        zpl_yield();
     }
 
     return 0;

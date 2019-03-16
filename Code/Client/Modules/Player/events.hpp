@@ -296,7 +296,7 @@ inline auto entityremove(librg_event* evnt) -> void {
         }
 
         despawn(player->ped);
-        delete player;
+        delete (mafia_player *)player;
         evnt->entity->user_data = nullptr;
     }
 }
