@@ -21,6 +21,7 @@ namespace imgui {
 
         modules::chat::render();
         modules::pausemenu::render();
+        modules::debug::render();
 
         ImGui::EndFrame();
         ImGui::Render();

@@ -209,5 +209,4 @@ public:
 		*(DWORD*)(address + 1) = (unsigned long)function - (address + 5);
 		VirtualProtect((void*)address, 5, lpflOldProtect, &lpflOldProtect);
 	}
-
 };

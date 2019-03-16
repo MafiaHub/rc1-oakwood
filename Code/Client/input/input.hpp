@@ -2,6 +2,8 @@
 
 struct CDirectInputDevice8Proxy;
 extern IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+#define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
+#define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
 
 namespace input {
     enum {
@@ -13,6 +15,9 @@ namespace input {
     struct InputState_ {
         CDirectInputDevice8Proxy* devices[4];
         bool input_blocked = false;
+        POINT mouse_move_delta;
+        bool rmb_down;
+        bool lmb_down;
     } InputState;
 
     std::unordered_map<unsigned long, bool> curent_key_states;
@@ -66,6 +71,7 @@ namespace input {
     * Function wich gets messsages from both of windows
     * Used as main entrypoint for every messages transfered to input of GUI library
     */
+    POINT last_mouse_pos;
     LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     
         // Process gui input only when our window is focues
@@ -74,6 +80,30 @@ namespace input {
              
         if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
             curent_key_states[wParam] = false;
+
+        if (uMsg == WM_MOUSEMOVE || uMsg == WM_MOUSELAST) {
+            auto current_x = GET_X_LPARAM(lParam);
+            auto current_y = GET_Y_LPARAM(lParam);
+
+            InputState.mouse_move_delta.x = current_x - last_mouse_pos.x;
+            InputState.mouse_move_delta.y = current_y - last_mouse_pos.y;
+
+            last_mouse_pos = { current_x, current_y };
+        }
+
+        if (uMsg == WM_LBUTTONDOWN) {
+            InputState.lmb_down = true;
+        }
+        else if (uMsg == WM_LBUTTONUP) {
+            InputState.lmb_down = false;
+        }
+
+        if (uMsg == WM_RBUTTONDOWN) {
+            InputState.rmb_down = true;
+        }
+        else if (uMsg == WM_RBUTTONUP) {
+            InputState.rmb_down = false;
+        }
 
         return ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam);
     }
