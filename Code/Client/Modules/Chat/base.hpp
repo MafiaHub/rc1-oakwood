@@ -126,6 +126,7 @@ namespace chat {
 
         if (key_chat_open && librg_is_connected(&network_context)) {
             is_focused = !is_focused;
+            input::toggle_block_input();
         }
 
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 

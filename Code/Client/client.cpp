@@ -3,6 +3,9 @@
 * (C) 2019 Oakwood Team. All Rights Reserved.
 */
 
+#define ZPL_IMPLEMENTATION
+#include "librg/zpl.h"
+
 #include "version.hpp"
 
 /* 

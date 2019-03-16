@@ -3,6 +3,9 @@
 * (C) 2019 Oakwood Team. All Rights Reserved.
 */
 
+#define ZPL_IMPLEMENTATION
+#include "librg/zpl.h"
+
 #include "version.hpp"
 #define OAKWOOD_SERVER 1
 #define OAKGEN_NATIVE()
@@ -111,7 +114,7 @@ int main(int argc, char **argv) {
     console::init();
     console::printf("================================\n");
     console::printf(banner_text);
-    console::printf("Build version: %s (%d)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
+    console::printf("Build version: %s (%x)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
     console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
     console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
     console::printf("================================\n"); 
@@ -132,7 +135,7 @@ int main(int argc, char **argv) {
         misc::vehicles_streamer_update(); 
         misc::console_update_stats();
         masterlist::update();
-        zpl_yield();
+        zpl_sleep_ms(1);
     }
 
     return 0;
