@@ -65,13 +65,13 @@ namespace nameplates {
         if (device && nameplate_font) {
             iterate_players([=](mafia_player* player) {
                 if (player->ped && player->ped->GetInterface()->neckFrame) {
-                    auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->mPosition;
+                    auto player_pos = player->ped->GetInterface()->neckFrame->GetInterface()->position;
                     auto player_health = player->health;
 
                     auto current_i3d_camera = get_current_i3dcamera();
                     if (current_i3d_camera == nullptr) return;
 
-                    S_vector camera_pos = current_i3d_camera->GetInterface()->mPosition;
+                    S_vector camera_pos = current_i3d_camera->GetInterface()->position;
                     auto screen = graphics::world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
 
                     if (screen.z < 1.0f) {

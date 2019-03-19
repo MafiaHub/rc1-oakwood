@@ -21,10 +21,11 @@ namespace MafiaSDK
 {
 	struct I3D_Frame_Interface
 	{
-		PADDING(I3D_Frame_Interface, _pad0, 0x40);
-		S_vector mPosition;
-		S_vector mRotation;
-        PADDING(I3D_Frame_Interface, _pad1, 0xA8);
+        PADDING(I3D_Frame_Interface, _pad1, 0x40);
+		//S_matrix frame_matrix;
+		S_vector position;
+		S_vector rotation;
+        PADDING(I3D_Frame_Interface, _pad2, 0xA8);
         char* name;
 	};
 
@@ -79,6 +80,11 @@ namespace MafiaSDK
             this->Update();
         }
 
+        S_vector GetScale()
+        {
+            return *(S_vector*)((DWORD)this + 0x90);
+        }
+
         void SetRot(const S_quat& rot)
         {
             unsigned long addressFunc = I3D_Frame_Enum::FunctionsAddresses::SetRot;
@@ -91,6 +97,11 @@ namespace MafiaSDK
             }
 
             this->Update();
+        }
+
+        S_matrix GetMatrix() 
+        {
+            return *(S_matrix*)((DWORD)this + 0x10);
         }
     };
 }

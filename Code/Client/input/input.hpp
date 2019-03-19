@@ -16,8 +16,8 @@ namespace input {
         CDirectInputDevice8Proxy* devices[4];
         bool input_blocked = false;
         POINT mouse_move_delta;
-        bool rmb_down;
-        bool lmb_down;
+        bool rmb_down = false;
+        bool lmb_down = false;
     } InputState;
 
     std::unordered_map<unsigned long, bool> curent_key_states;

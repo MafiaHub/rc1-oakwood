@@ -38,7 +38,7 @@ namespace gamemap
         if (local_player) {
             auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
             if (player_frame) {
-                auto player_pos = player_frame->GetInterface()->mPosition;
+                auto player_pos = player_frame->GetInterface()->position;
         
                 float x_coef = convert_width_coef * (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
                 float y_coef = convert_height_coef * (900.0f / (float)MafiaSDK::GetIGraph()->Scrn_sy());
@@ -81,7 +81,7 @@ namespace gamemap
                 if (player->ped) {
                     auto frame = player->ped->GetInterface()->entity.frame;
                     if (frame) {
-                        zpl_vec3 frame_pos = EXPAND_VEC(frame->GetInterface()->mPosition);
+                        zpl_vec3 frame_pos = EXPAND_VEC(frame->GetInterface()->position);
                         auto blip_pos = translate_object_to_map(frame_pos);
 
                         if (is_marker_inbounds(blip_pos, blip_size)) {
@@ -115,7 +115,7 @@ namespace gamemap
                 if (vehicle->car) {
                     auto car_frame = vehicle->car->GetInterface()->entity.frame;
                     if (car_frame) {
-                        zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->mPosition);
+                        zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->position);
                         auto blip_pos = translate_object_to_map(frame_pos);
                         
                         if (is_marker_inbounds(blip_pos, blip_size_car) && vehicle->car->GetOwner(0) != (DWORD)modules::player::get_local_ped()) {

@@ -106,10 +106,13 @@ public:
 
 	S_vector GetScale()
 	{
+        S_vector to_get;
 		DWORD S_matrix__get_scale = 0x0060FC42;
 		__asm {
-			mov eax, this
-			push eax
+            mov eax, this
+            push eax
+            lea eax, to_get;
+            push eax
 			call S_matrix__get_scale
 		}
 	}
@@ -169,7 +172,7 @@ public:
 		}		
 	}
 
-	S_vector GetUScale()
+	float GetUScale()
 	{
 		DWORD S_matrix__get_uscale = 0x0060FCEA;
 		__asm {

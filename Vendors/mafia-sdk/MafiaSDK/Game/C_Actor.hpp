@@ -43,6 +43,11 @@ namespace MafiaSDK
 			return reinterpret_cast<C_Actor_Interface*>(this);
 		}
 
+        I3D_Frame* GetFrame()
+        {
+            return *reinterpret_cast<I3D_Frame**>((DWORD)this + 0x68);
+        }
+
 		void Init( I3D_Frame* frame )
 		{
 			__asm

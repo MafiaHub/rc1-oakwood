@@ -50,12 +50,28 @@ namespace MafiaSDK
         };
     };
 
+    struct I3D_bsphere 
+    {
+        float offsetX;
+        float offsetY;
+        float offsetZ;
+        float radius;
+    };
+
+    struct I3D_bbox
+    {
+        float unk1;
+        float unk2;
+        float unk3;
+        float unk4;
+    };
+
 	class I3D_Driver
 	{
 	public:
-        virtual enum  LS3D_RESULT __stdcall Init(unsigned int);								// 0000  0000
-        virtual enum  LS3D_RESULT __stdcall Close(void);								// 0001  0004
-        virtual void __stdcall Tick(int);								// 0002  0008
+        virtual enum  LS3D_RESULT __stdcall Init(unsigned int);								                    // 0000  0000
+        virtual enum  LS3D_RESULT __stdcall Close(void);								                        // 0001  0004
+        virtual void __stdcall Tick(int);								                                        // 0002  0008
         virtual int __stdcall GetTickTime(void)const;								// 0003  000C
         virtual enum  LS3D_RESULT __stdcall GetStats(enum  I3DSTATSINDEX, void *);								// 0004  0010
         virtual enum  LS3D_RESULT __stdcall SetState(enum  I3D_RENDERSTATE, int);								// 0005  0014
@@ -63,15 +79,15 @@ namespace MafiaSDK
         virtual enum  LS3D_RESULT __stdcall Render(class I3D_scene * const);								// 0007  001C
         virtual void __stdcall DrawPoint(struct S_vector const &, struct S_vector const &, unsigned int);								// 0008  0020
         virtual void __stdcall DrawPoint2D(int, int, struct S_vector const &, unsigned int);								// 0009  0024
-        virtual void sub_10016B20(void);								// 0010  0028
-        virtual void sub_10016D70(void);								// 0011  002C
+        virtual void __stdcall DrawLine(const struct S_vector& a2, const struct S_vector& a3, const struct S_vector& a4, unsigned int a5);  // 0010  0028
+        virtual void sub_10016B20(void); // 0011  002C
         virtual void __stdcall DrawLines(struct S_vector const *, unsigned int, unsigned short const *, unsigned int, struct S_vector const &, unsigned int, unsigned int);								// 0012  0030
         virtual enum  LS3D_RESULT __stdcall DrawTriangles(void const *, unsigned int, unsigned short const *, unsigned int, struct S_vector const &, unsigned int, unsigned int, struct I3D_text_coor *);								// 0013  0034
         virtual void __stdcall DrawTextA(struct S_vector const &, char const *, unsigned char, float);								// 0014  0038
         virtual void __stdcall DrawText2D(int, int, char const *, unsigned char, float);								// 0015  003C
         virtual void __stdcall DrawSprite(struct S_vector const &, class I3D_Material * const, unsigned char, float);								// 0016  0040
-        virtual void __stdcall DrawBox(struct I3D_bbox const &, struct S_vector const *, struct S_vector const *, unsigned short);								// 0017  0044
-        virtual void __stdcall DrawSphere(struct S_matrix const &, struct I3D_bsphere const &, struct S_vector const &, unsigned short);								// 0018  0048
+        virtual void __stdcall DrawBox(I3D_bbox const &, struct S_vector& const, struct S_vector& const, unsigned short);								// 0017  0044
+        virtual void __stdcall DrawSphere(struct S_matrix const &,I3D_bsphere const &, struct S_vector const &, unsigned short);								// 0018  0048
         virtual class I3D_visual * __stdcall CreateVisual(enum  I3D_VISUAL_TYPE);								// 0019  004C
         virtual class I3D_Frame * __stdcall CreateFrame(I3D_Driver_Enum::FrameType);								// 0020  0050
         virtual class I3D_Material * __stdcall CreateMaterial(void);								// 0021  0054

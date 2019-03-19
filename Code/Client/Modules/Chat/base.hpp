@@ -126,7 +126,7 @@ namespace chat {
 
         if (key_chat_open && librg_is_connected(&network_context)) {
             is_focused = !is_focused;
-            input::toggle_block_input();
+            input::block_input(is_focused);
         }
 
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 
@@ -134,6 +134,9 @@ namespace chat {
             return;
 
         if (modules::pausemenu::is_enabled)
+            return;
+
+        if (modules::debug::is_enabled)
             return;
 
         ImGui::Begin("Mafia: Oakwood - Chat",

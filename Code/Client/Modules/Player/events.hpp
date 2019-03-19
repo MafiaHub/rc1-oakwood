@@ -316,7 +316,7 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
         return;
     }
 
-    auto frame_position = player_int->humanObject.entity.frame->GetInterface()->mPosition;
+    auto frame_position = player_int->humanObject.entity.frame->GetInterface()->position;
 
     evnt->entity->position	= EXPAND_VEC(frame_position);
     player->rotation		= EXPAND_VEC(player_int->humanObject.entity.rotation);
