@@ -1,4 +1,11 @@
 #pragma once
+struct shoot_data_t {
+    S_vector pos;
+    S_vector dir;
+    S_vector screen_coord;
+    DWORD player_base;
+} local_shoot_data;
+std::unordered_map<void*, shoot_data_t> shoot_queue;
 
 auto spawn(zpl_vec3 position, 
                   zpl_vec3 rotation,
@@ -30,7 +37,7 @@ inline auto hit(
     float damage,
     MafiaSDK::C_Actor* attacker, 
     unsigned int player_part) -> void;
-inline auto shoot(S_vector pos) -> void;
+inline auto shoot(shoot_data_t data) -> void;
 inline auto weapondrop(inventory_item* item, char* model) -> void;
 inline auto weaponchange(u32 index) -> void;
 inline auto fromcar() -> void;

@@ -1,4 +1,30 @@
 //----------------------------------------------
+//C_game::NewShoot((C_actor*, S_vector const&, S_vector const&, float, int, I3D_frame*, int))
+//----------------------------------------------
+typedef DWORD(__thiscall* C_game__NewShoot_t)(void* _this, MafiaSDK::C_Actor* arg1, S_vector arg2, S_vector arg3, float arg4, int arg5, MafiaSDK::I3D_Frame* arg6, int arg7);
+C_game__NewShoot_t game_shoot_original = nullptr;
+DWORD __fastcall C_game__NewShoot(void* _this, DWORD edx, MafiaSDK::C_Actor* arg1, S_vector arg2, S_vector arg3, float arg4, int arg5, MafiaSDK::I3D_Frame* arg6, int arg7) {
+    S_vector pos = arg2;
+    S_vector dir = arg3;
+
+    auto local_ped = get_local_ped();
+    // if shooter is local_player we want to send shoot message
+    if (arg1 == local_ped && local_shoot_data.player_base == (DWORD)arg1) {
+        local_shoot_data.pos = arg2;
+        local_shoot_data.dir = arg3;
+        modules::player::shoot(local_shoot_data);
+    }
+    else if (local_ped != arg1 && arg1 != nullptr) {
+        auto shoot_data = shoot_queue[arg1];
+        pos = shoot_data.pos;
+        dir = shoot_data.dir;
+    }
+
+    return game_shoot_original(_this, arg1, pos, dir, arg4, arg5, arg6, arg7);
+}
+
+
+//----------------------------------------------
 //C_Human::PoseSetPoseAimed() && C_Human::PoseSetPoseNormal
 //----------------------------------------------
 auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, S_vector pose) -> int {
@@ -144,7 +170,8 @@ C_Human_Do_Shoot_t human_do_shoot_original = nullptr;
 BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, S_vector* pos) {
 
 	if (do_shoot && pos && _this == modules::player::get_local_ped()) {
-        modules::player::shoot(*pos);
+        local_shoot_data.screen_coord = *pos;
+        local_shoot_data.player_base = (DWORD)_this;
 	}
 	return human_do_shoot_original(_this, do_shoot, pos);
 }
@@ -279,6 +306,11 @@ inline auto init() {
 
     //Disable dealocation second remove actor
     MemoryPatcher::InstallJmpHook(0x005A7F44, 0x005A7F4B);
+
+    game_shoot_original = reinterpret_cast<C_game__NewShoot_t>(
+        DetourFunction((PBYTE)0x005A84A0, (PBYTE)&C_game__NewShoot)
+    );
+
 
     human_do_shoot_original = reinterpret_cast<C_Human_Do_Shoot_t>(
         DetourFunction((PBYTE)0x00583590, (PBYTE)&HumanDoShoot)

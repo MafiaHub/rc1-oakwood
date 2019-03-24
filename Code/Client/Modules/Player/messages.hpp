@@ -131,14 +131,18 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
-        zpl_vec3 pos;
+        shoot_data_t shoot_data;
         librg_entity_id id = librg_data_rent(msg->data);
-        librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
-        S_vector target = EXPAND_VEC(pos);
+        librg_data_rptr(msg->data, &shoot_data.pos, sizeof(zpl_vec3));
+        librg_data_rptr(msg->data, &shoot_data.dir, sizeof(zpl_vec3));
+        librg_data_rptr(msg->data, &shoot_data.screen_coord, sizeof(zpl_vec3));
 
+        S_vector target = EXPAND_VEC(shoot_data.screen_coord);
         auto entity = librg_entity_fetch(&network_context, id);
         if (entity) {
             auto player = (mafia_player*)entity->user_data;
+            
+            shoot_queue[(void*)player->ped] = shoot_data;
             *(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
             player->ped->Do_Shoot(true, target);
             player->ped->Do_Shoot(false, target);

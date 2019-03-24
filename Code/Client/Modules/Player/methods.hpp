@@ -221,10 +221,12 @@ inline auto hit(
     });
 }
 
-inline auto shoot(S_vector pos) -> void {
+inline auto shoot(shoot_data_t data_shot) -> void {
 
     librg_send(&network_context, NETWORK_PLAYER_SHOOT, data, {
-        librg_data_wptr(&data, &pos, sizeof(S_vector));
+        librg_data_wptr(&data, &data_shot.pos, sizeof(S_vector));
+        librg_data_wptr(&data, &data_shot.dir, sizeof(S_vector));
+        librg_data_wptr(&data, &data_shot.screen_coord, sizeof(S_vector));
     });
 }
 
