@@ -276,7 +276,10 @@ __declspec(naked) void PlayerCursorHook() {
 //Proper exit handling
 //----------------------------------------------
 void OnGameExit() {
-	//mod_shutdown();
+    if (librg_is_connected(&network_context)) {
+        librg_network_stop(&network_context);
+    }
+    exit(0);
 }
 
 __declspec(naked) void OnGameExitHook() {
@@ -310,7 +313,6 @@ inline auto init() {
     game_shoot_original = reinterpret_cast<C_game__NewShoot_t>(
         DetourFunction((PBYTE)0x005A84A0, (PBYTE)&C_game__NewShoot)
     );
-
 
     human_do_shoot_original = reinterpret_cast<C_Human_Do_Shoot_t>(
         DetourFunction((PBYTE)0x00583590, (PBYTE)&HumanDoShoot)
