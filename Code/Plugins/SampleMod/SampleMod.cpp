@@ -51,18 +51,19 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         gm->SpawnVehicleByID(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.modelID);
     }
 
-    // Register several events
+    // Load extra cars from file
     std::string currentLine;
-    std::ifstream inputFile("savedcars.txt");
+    std::ifstream inputFile("files/savedcars.txt");
     while (inputFile.good()) {
         std::getline(inputFile, currentLine);
         zpl_vec3 pos;
         int model_id;
         float dir;
-        ::sscanf(currentLine.c_str(), "%d %f %f %f %f", &model_id, &dir, &pos.x, &pos.y, &pos.z);
+        ::sscanf(currentLine.c_str(), "%d %f %f %f %f", &model_id, &dir, EXPLODE_VEC(&pos));
         gm->SpawnVehicleByID(pos, dir, model_id);
     }
 
+    // Register several events
     gm->SetOnPlayerConnected([=](Player *player) {
         gm->BroadcastMessage("Player " + player->GetName() + " joined the server.");
 
