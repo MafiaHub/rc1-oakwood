@@ -130,7 +130,6 @@ namespace imgui {
         ImGui_ImplDX9_Init(device);
 
         modules::chat::init();
-        modules::pausemenu::init();
     }
 
     inline void device_reset(IDirect3DDevice9* device) {

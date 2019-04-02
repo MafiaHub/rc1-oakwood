@@ -1,9 +1,5 @@
 namespace pausemenu {
     input::KeyToggle esc_key(VK_ESCAPE);
-    
-    inline void init() {
-
-    }
 
     inline bool check_input() {
         bool state = !!esc_key;
