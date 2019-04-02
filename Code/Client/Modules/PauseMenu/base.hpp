@@ -4,12 +4,13 @@ namespace pausemenu {
     inline bool check_input() {
         bool state = !!esc_key;
         if (state && librg_is_connected(&network_context)) {
-            input::block_input(state);
-
             if (menuActiveState == Menu_Pause) {
                 menuActiveState = Menu_Chat;
                 input::block_input(false);
                 return false;
+            }
+            else {
+                input::block_input(true);
             }
 
             return true;
