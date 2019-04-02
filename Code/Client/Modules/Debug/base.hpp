@@ -1,3 +1,4 @@
+#ifdef OAKWOOD_DEBUG
 namespace debug {
     
     input::KeyToggle debug_key(VK_F2);
@@ -486,3 +487,4 @@ namespace debug {
         }
     }
 };
+#endif // OAKWOOD_DEBUG

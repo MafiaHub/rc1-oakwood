@@ -85,7 +85,10 @@ auto mod_bind_events() {
     modules::vehicle::init();
     modules::door::init();
     modules::weapondrop::init();
+
+#ifdef OAKWOOD_DEBUG
     modules::debug::init();
+#endif
   
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
         
@@ -122,7 +125,9 @@ auto mod_bind_events() {
         if (!librg_is_connected(&network_context))
             interpolate_cam(delta_time);
 
+#ifdef OAKWOOD_DEBUG
         modules::debug::game_update(delta_time);
+#endif
 
         librg_tick(&network_context);
         librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx *ctx, librg_entity *entity) {

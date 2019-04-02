@@ -136,8 +136,10 @@ namespace chat {
         if (modules::pausemenu::is_enabled)
             return;
 
+#ifdef OAKWOOD_DEBUG
         if (modules::debug::is_enabled)
             return;
+#endif
 
         ImGui::Begin("Mafia: Oakwood - Chat",
             nullptr,

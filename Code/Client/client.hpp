@@ -1,3 +1,5 @@
+#define OAKWOOD_DEBUG
+
 librg_ctx network_context = { 0 };
 
 f64 last_delta  = 0.0f;

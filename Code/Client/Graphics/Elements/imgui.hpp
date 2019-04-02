@@ -21,7 +21,10 @@ namespace imgui {
 
         modules::chat::render();
         modules::pausemenu::render();
+        
+#ifdef OAKWOOD_DEBUG
         modules::debug::render();
+#endif
 
         ImGui::EndFrame();
         ImGui::Render();
