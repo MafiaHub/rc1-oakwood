@@ -131,7 +131,7 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
-        shoot_data_t shoot_data;
+        shoot_info shoot_data;
         librg_entity_id id = librg_data_rent(msg->data);
         librg_data_rptr(msg->data, &shoot_data.pos, sizeof(zpl_vec3));
         librg_data_rptr(msg->data, &shoot_data.dir, sizeof(zpl_vec3));

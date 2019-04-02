@@ -221,7 +221,7 @@ inline auto hit(
     });
 }
 
-inline auto shoot(shoot_data_t data_shot) -> void {
+inline auto shoot(shoot_info data_shot) -> void {
 
     librg_send(&network_context, NETWORK_PLAYER_SHOOT, data, {
         librg_data_wptr(&data, &data_shot.pos, sizeof(S_vector));
