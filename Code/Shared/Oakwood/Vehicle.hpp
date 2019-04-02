@@ -35,4 +35,7 @@ public:
     float GetHeadingRotation();
 
     mafia_vehicle *GetVehicle();
+
+protected:
+    bool destroyedByGame;
 };

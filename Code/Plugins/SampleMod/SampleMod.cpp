@@ -54,7 +54,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     // Load extra cars from file
     std::string currentLine;
-    std::ifstream inputFile("files/savedcars.txt");
+    std::ifstream inputFile("static/savedcars.txt");
     while (inputFile.good()) {
         std::getline(inputFile, currentLine);
         zpl_vec3 pos;

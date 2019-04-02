@@ -68,7 +68,9 @@ GameMode::GameMode(oak_api *mod) {
             if (onVehicleDestroyed)
                 onVehicleDestroyed(vehicle);
 
+            vehicle->destroyedByGame = true;
             vehicles.RemoveObject(vehicle);
+            delete vehicle;
         }
     };
 
@@ -367,7 +369,7 @@ Vehicle::Vehicle(librg_entity *entity) : GameObject()
 
 Vehicle::~Vehicle()
 {
-    if (!this->IsBeingRemoved())
+    if (!this->IsBeingRemoved() && !destroyedByGame)
         __gm->mod->vtable.vehicle_destroy(this->entity);
 }
 
