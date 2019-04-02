@@ -235,12 +235,12 @@ namespace debug {
          
         if (selected_entity && selected_entity->user_data) {
           
-            if (ImGui::TreeNode("Librg related")) {
+            if (ImGui::TreeNode("Remote data")) {
                 render_librg_related();
                 ImGui::TreePop();
             }
 
-            if (ImGui::TreeNode("Mafia entity")) {
+            if (ImGui::TreeNode("Local data")) {
                 render_mafia_entity();
                 ImGui::TreePop();
             }
