@@ -128,8 +128,9 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         zpl_vec3_muleq(&dir, 1.5f);
         zpl_vec3_addeq(&position, dir);
         auto rot = player->GetRotation() - 90.0f;
-        gm->SpawnVehicleByID(position, rot, modelID);
-
+        auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
+        vehicle->ShowOnMap(true);
+        
         return true;
     });
 
@@ -146,6 +147,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto modelID = StringToInteger(args[1]);
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
+        vehicle->ShowOnMap(true);
 
         player->PutToVehicle(vehicle, 0);
 
