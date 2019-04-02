@@ -30,6 +30,21 @@ namespace network {
         
         mod_add_network_messages();
 
+#if LIBRG_DEBUG
+        librg_event_add(&network_context, LIBRG_ENTITY_CREATE, [](librg_event *evnt) {
+            printf("LIBRG_ENTITY_CREATE: %d\n", evnt->entity->id);
+        });
+        librg_event_add(&network_context, LIBRG_ENTITY_REMOVE, [](librg_event *evnt) {
+            printf("LIBRG_ENTITY_REMOVE: %d\n", evnt->entity->id);
+        });
+        librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_ADD, [](librg_event *evnt) {
+            printf("LIBRG_CLIENT_STREAMER_ADD: %d\n", evnt->entity->id);
+        });
+        librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_REMOVE, [](librg_event *evnt) {
+            printf("LIBRG_CLIENT_STREAMER_ADD: %d\n", evnt->entity->id);
+        });
+#endif
+
         librg_address addr = { (i32)GlobalConfig.port };
         librg_network_start(&network_context, addr);
         GlobalConfig.players = 0;

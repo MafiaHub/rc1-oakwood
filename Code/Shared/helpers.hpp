@@ -56,7 +56,7 @@ inline auto mod_get_nearest_player(librg_ctx* ctx, zpl_vec3 pos, i32 exception =
         zpl_vec3 final_vec;
         zpl_vec3_sub(&final_vec, entity->position, pos);
         float dist = zpl_vec3_mag(final_vec);
-        if (dist < smallest_distance) {
+        if (dist < smallest_distance && dist < entity->stream_range) {
             smallest_distance = dist;
             current_entity = entity;
         }

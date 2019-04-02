@@ -1403,6 +1403,13 @@ extern "C" {
         }
 
         zpl_array_append(ctx->entity.add_control_queue, msg);
+
+        librg_event event = {0}; {
+            event.entity = blob;
+            event.peer = peer;
+        }
+
+        librg_event_trigger(ctx, LIBRG_CLIENT_STREAMER_ADD, &event);
     }
 
     librg_peer *librg_entity_control_get(librg_ctx *ctx, librg_entity_id entity) {
@@ -1427,6 +1434,13 @@ extern "C" {
 
         blob->flags &= ~LIBRG_ENTITY_CONTROLLED;
         blob->control_peer = NULL;
+
+        librg_event event = {0}; {
+            event.peer = blob->control_peer;
+            event.entity = blob;
+        }
+
+        librg_event_trigger(ctx, LIBRG_CLIENT_STREAMER_REMOVE, &event);
     }
 
     void librg_entity_iterate(librg_ctx *ctx, u64 flags, librg_entity_cb callback) {
@@ -2567,6 +2581,7 @@ extern "C" {
             // add entity removes
             for (isize i = 0; i < zpl_array_count(last_snapshot->entries); ++i) {
                 librg_entity_id entity = (librg_entity_id)last_snapshot->entries[i].key;
+                librg_entity *eblob = librg_entity_fetch(ctx, entity);
 
                 // check if entity existed before
                 b32 not_existed = last_snapshot->entries[i].value;
@@ -2597,6 +2612,11 @@ extern "C" {
                 if (event.flags & LIBRG_EVENT_REJECTED) {
                     removed_entities--;
                     librg_data_set_wpos(reliable, curr_wsize);
+                }
+
+                if ((eblob->flags & LIBRG_ENTITY_CONTROLLED) && eblob->control_peer == blob->client_peer) {
+                    eblob->control_peer = NULL;
+                    eblob->flags &= ~LIBRG_ENTITY_CONTROLLED;
                 }
             }
 

@@ -105,7 +105,22 @@ auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_UPDATE, on_librg_clientstreamer_update);
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_ADD, on_librg_clientstreamer_add);
     librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_REMOVE, on_librg_clientstreamer_remove);
-    
+
+#ifdef LIBRG_DEBUG
+    librg_event_add(&network_context, LIBRG_ENTITY_CREATE, [](librg_event *evnt) {
+        printf("LIBRG_ENTITY_CREATE: %d\n", evnt->entity->id);
+    });
+    librg_event_add(&network_context, LIBRG_ENTITY_REMOVE, [](librg_event *evnt) {
+        printf("LIBRG_ENTITY_REMOVE: %d\n", evnt->entity->id);
+    });
+    librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_ADD, [](librg_event *evnt) {
+        printf("LIBRG_CLIENT_STREAMER_ADD: %d\n", evnt->entity->id);
+    });
+    librg_event_add(&network_context, LIBRG_CLIENT_STREAMER_REMOVE, [](librg_event *evnt) {
+        printf("LIBRG_CLIENT_STREAMER_ADD: %d\n", evnt->entity->id);
+    });
+#endif
+
     librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, [](librg_event *evnt) {
         char nickname[32];
         strcpy(nickname, GlobalConfig.username);
