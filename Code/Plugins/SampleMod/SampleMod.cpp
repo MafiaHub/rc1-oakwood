@@ -22,14 +22,14 @@
 struct VehicleSpawn {
     zpl_vec3 pos;
     float rot;
-    const char *model;
+    int modelID;
 };
 
 std::vector<VehicleSpawn> vehicle_spawns = {
-    {{-1991.89f, -5.09753f, 10.4476f}, 0.0f, "phantom00.i3d"},
-    {{-1974.2f, -4.8862f, 22.5578f}, 0.0f, "phantom00.i3d"},
-    {{-1981.11f, -4.98206f, 22.7471f}, 0.0f, "phantom00.i3d"},
-    {{-1991.69f, -5.12453f, 22.3242f}, 0.0f, "phantom00.i3d"},
+    {{-1991.89f, -5.09753f, 10.4476f}, 0.0f, 148}, // Manta Prototype
+    {{-1974.2f, -4.8862f, 22.5578f}, 0.0f, 148}, // Manta Prototype
+    {{-1981.11f, -4.98206f, 22.7471f}, 0.0f, 148}, // Manta Prototype
+    {{-1991.69f, -5.12453f, 22.3242f}, 0.0f, 148}, // Manta Prototype
 };
 
 GameMode *gm = nullptr;
@@ -48,7 +48,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     // Spawn default vehicles
     for (auto vehicle_spawn : vehicle_spawns) {
-        gm->SpawnVehicle(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.model);
+        gm->SpawnVehicleByID(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.modelID);
     }
 
     // Register several events
