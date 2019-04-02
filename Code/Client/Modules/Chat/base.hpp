@@ -68,6 +68,14 @@ namespace chat {
     }
 
     inline void init() {
+        zpl_local_persist bool itpl = false;
+
+        if (itpl) {
+            return;
+        }
+
+        itpl = true;
+
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
             ExitProcess(ERROR_SUCCESS);

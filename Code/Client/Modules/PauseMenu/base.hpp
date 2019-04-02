@@ -12,9 +12,10 @@ namespace pausemenu {
 
             if (menuActiveState == Menu_Pause) {
                 menuActiveState = Menu_Chat;
+                input::block_input(false);
                 return false;
             }
-            
+
             return true;
         }
         return false;

@@ -304,6 +304,7 @@ namespace debug {
             if (menuActiveState == Menu_DebugMode) {
                 menuActiveState = Menu_Chat;
                 modules::chat::is_focused = false;
+                input::block_input(false);
                 return false;
             }
         }
