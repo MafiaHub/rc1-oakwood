@@ -185,7 +185,10 @@ std::vector<std::pair<std::string, std::string>> VehicleCatalogue = {
     {"Bolt Truck Flatbed",					"truckA00.i3d"},
     {"Bolt Truck Covered",					"truckB00.i3d"},
     {"Bolt Truck",							"truckBx00.i3d"},
+    {"Manta Prototype",						"phantom00.i3d"}
 
+/* These vehicles are disabled because they are either prototypes or simply unfinished.
+    Some of these vehicles can cause sync issues, since they weren't primarily made for the physics system the game has.
     {"Black Dragon 4WD",					"blackdragon00.i3d"},
     {"Black Metal 4WD",						"chevroletm6H00.i3d"},
     {"Bob Mylan 4WD",						"hotrodp200.i3d"},
@@ -199,7 +202,6 @@ std::vector<std::pair<std::string, std::string>> VehicleCatalogue = {
     {"Hillbilly 5.1 FWD",					"Tbirdold00.i3d"},
     {"Hotrod",								"FordHOT00.i3d"},
     {"Luciferon FWD",						"hotrodp500.i3d"},
-    {"Manta Prototype",						"phantom00.i3d"},
     {"Manta Taxi FWD",						"phantomtaxi00.i3d"},
     {"Masseur",								"fordApick00.i3d"},
     {"Masseur Taxi",						"fordApickTaxi00.i3d"},
@@ -214,5 +216,5 @@ std::vector<std::pair<std::string, std::string>> VehicleCatalogue = {
     {"Moto",								"9motorka.i3d"},
     {"Toyota 4x4 Concept Car",				"toyota00.i3d"},
     {"Traktor",								"traktor.i3d"},
-    {"Xeon",								"xedos00.i3d"}
+    {"Xeon",								"xedos00.i3d"} */
 };

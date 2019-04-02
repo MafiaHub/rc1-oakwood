@@ -26,10 +26,10 @@ struct VehicleSpawn {
 };
 
 std::vector<VehicleSpawn> vehicle_spawns = {
-    {{-1991.89f, -5.09753f, 10.4476f}, 0.0f, "alfa00.i3d"},
-    {{-1974.2f, -4.8862f, 22.5578f}, 0.0f, "FordHOT00.i3d"},
-    {{-1981.11f, -4.98206f, 22.7471f}, 0.0f, "FThot00.i3d"},
-    {{-1991.69f, -5.12453f, 22.3242f}, 0.0f, "TBirdold00.i3d"},
+    {{-1991.89f, -5.09753f, 10.4476f}, 0.0f, "phantom00.i3d"},
+    {{-1974.2f, -4.8862f, 22.5578f}, 0.0f, "phantom00.i3d"},
+    {{-1981.11f, -4.98206f, 22.7471f}, 0.0f, "phantom00.i3d"},
+    {{-1991.69f, -5.12453f, 22.3242f}, 0.0f, "phantom00.i3d"},
 };
 
 GameMode *gm = nullptr;
