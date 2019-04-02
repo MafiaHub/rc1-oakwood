@@ -1,3 +1,4 @@
+// Undefine if this is a release build !!!
 #define OAKWOOD_DEBUG
 
 librg_ctx network_context = { 0 };
