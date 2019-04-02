@@ -8,9 +8,9 @@ namespace modules {
         inline void use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state);
     }
 
-    #include "Modules/PauseMenu/base.hpp"
     #include "Modules/Chat/base.hpp"
     #include "Modules/Debug/base.hpp"
+    #include "Modules/PauseMenu/base.hpp"
     #include "Modules/Door/base.hpp"
     #include "Modules/Player/base.hpp"
     #include "Modules/Vehicle/base.hpp"

@@ -7,6 +7,7 @@ namespace pausemenu {
             if (menuActiveState == Menu_Pause) {
                 menuActiveState = Menu_Chat;
                 input::block_input(false);
+                modules::chat::is_focused = false;
                 return false;
             }
             else {
