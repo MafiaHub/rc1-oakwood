@@ -1,310 +1,309 @@
 #pragma once
 
 const static char PlayerModelCatalogue[][200] = {
-	"Tommy",
-	"TommyBOXER",
-	"TommyCOAT",
-	"TommyCOATHAT",
-	"TommyDELNIK",
-	"TommyDELNIKHIGH",
-	"TommyFREERIDER",
-	"TommyGUN",
-	"TommyHAT",
-	"TommyHIGH",
-	"TommyHIGHBLOOD",
-	"TommyHighCOATHAT",
-	"TommyHighHAT",
-	"TommyNAHAC",
-	"TommyOLD",
-	"TommyOLDBLOOD",
-	"TommyPYTEL",
-	"TommyRACER",
-	"TommyRACER2",
-	"TommyRUKAV",
-	"TommySAILOR",
-	"TommyTAXIDRIVER",
-	"TommyTAXIdriverHIGH",
-	"AsisPZ1",
-	"Barman01",
-	"Bclerk01",
-	"Bclerk02",
-	"Bguard01",
-	"Bguard01M",
-	"Bguard02",
-	"Bguard03",
-	"Bguard03M",
-	"Biff",
-	"BigDig",
-	"BnkO01",
-	"BnkO02",
-	"BnkO03",
-	"BobAut01",
-	"Bookmaker01",
-	"Bookmaker02",
-	"Boxer01",
-	"Boxer02",
-	"Boxer03",
-	"Boxer04",
-	"Carlo",
-	"China1",
-	"Chulig1",
-	"Chulig1b",
-	"David",
-	"Delnik01",
-	"Delnik02",
-	"Delnik03",
-	"Detektiv01",
-	"Detektiv02",
-	"Detektiv03",
-	"Enemy01+",
-	"Enemy01",
-	"Enemy02+",
-	"Enemy02",
-	"Enemy03+",
-	"Enemy03",
-	"Enemy04",
-	"Enemy04BLOOD",
-	"Enemy04K",
-	"Enemy05",
-	"Enemy06+",
-	"Enemy06",
-	"Enemy07+",
-	"Enemy07",
-	"Enemy08+",
-	"Enemy08",
-	"Enemy08K",
-	"Enemy09+",
-	"Enemy09",
-	"Enemy09K",
-	"Enemy10+",
-	"Enemy10",
-	"Enemy10K",
-	"Enemy11K",
-	"Enemy12",
-	"Enemy12K",
-	"Enemy13C",
-	"Enemy91",
-	"Enemy92",
-	"FMVENemy11K",
-	"FREEgang01",
-	"FREEgang02",
-	"FrankHIGH",
-	"Friend1",
-	"Friend2",
-	"Gangster01",
-	"Gangster02",
-	"Gangster03",
-	"Gangster04",
-	"Gangster05",
-	"GodzMan1",
-	"Guard01",
-	"Guard02",
-	"Hasic01",
-	"HighCivil",
-	"HighCivilBLOOD",
-	"Homeless01",
-	"Hoolig01",
-	"Hoolig02",
-	"Hoolig03",
-	"Hoolig04",
-	"Hoolig05",
-	"Hoolig06",
-	"I04Delnik01+",
-	"I04Delnik01",
-	"Joe",
-	"Kasar",
-	"Knez",
-	"LifeG01",
-	"Lucas",
-	"Luigi",
-	"Malticka1",
-	"MorelloHIGH",
-	"MorelloLOW",
-	"NormanHIGH",
-	"Organizator01",
-	"Paulie",
-	"PaulieCOATHAT",
-	"PaulieCTHIGH",
-	"PaulieCorpse",
-	"PaulieHIGH",
-	"Pepe",
-	"PoliceMan01",
-	"PoliceMan02",
-	"Politik",
-	"PortGuard01",
-	"PortGuard02",
-	"ProdZ1",
-	"Prokur",
-	"Radni01",
-	"Radni02",
-	"Ralph",
-	"RalphHIGH",
-	"ReditelB",
-	"ReditelH",
-	"RidicNakladaku",
-	"SalMan01K",
-	"SalMan02K",
-	"SalMan03",
-	"SalMan03K",
-	"SalMan04",
-	"SalMan05",
-	"SalMan05K",
-	"Salieri2",
-	"SalieriHIGH",
-	"SalieriHIGH2",
-	"SalieriLOW",
-	"Sam",
-	"SamCOATHAT",
-	"SamHIGH",
-	"SamHIGHblood1",
-	"SamHIGHblood2",
-	"SamHIGHblood3",
-	"SamHIGHblood4",
-	"Samblood1",
-	"Sergio",
-	"SergioBLOOD",
-	"SynRad1",
-	"SynRad1BLOOD",
-	"SynRad1DEAD",
-	"Tony",
-	"VincenzoHIGH",
-	"VincenzoLOW",
-	"Vrabec",
-	"Vratny1",
-	"Vypravci",
-	"Vypravci2",
-	"WillG1",
-	"WillG2",
-	"WillMan01",
-	"WillMan02",
-	"Zavod1",
-	"Zavod2",
-	"Zavod3",
-	"ZavodFMV1",
-	"ZavodFMV2",
-	"civil02",
-	"civil03",
-	"civil04",
-	"civil05",
-	"civil06",
-	"civil11",
-	"civil11M",
-	"civil12",
-	"civil13",
-	"civil14",
-	"civil15",
-	"civil16",
-	"civil16M",
-	"civil17",
-	"civil18",
-	"civil19",
-	"civil19M",
-	"civil21",
-	"civil21N",
-	"civil22",
-	"civil31",
-	"civil32",
-	"civil33",
-	"civil34",
-	"civil35",
-	"civil36",
-	"civil36M",
-	"civil37",
-	"civil38",
-	"civil39",
-	"civil40",
-	"civil41",
-	"civil42",
-	"civil42M",
-	"civil43",
-	"civil44",
-	"civil51",
-	"civil51M",
-	"civil52",
-	"civil53",
-	"civil54",
-	"civil54M",
-	"civil55",
-	"civil55M",
-	"civil56",
-	"civil56M",
-	"civil57",
-	"civil57M",
-	"civil60",
-	"civil61",
-	"civil62",
-	"civil63",
-	"civil70",
-	"civil70M",
-	"civil71",
-	"civil72",
-	"frank",
-	"ohorelec01",
-	"pianist1",
-	"pol01",
-	"pol02",
-	"pol03",
-	"pol11",
-	"pol12",
-	"pol13",
-	"polim62",
-	"pumpar01",
-	"recep",
-	"sailor01",
-	"sailor01M",
-	"sailor02",
-	"sailor02M",
-	"sailor03",
-	"waiter01",
-	"waiter01M",
-	"waiter02",
-	"waiter02M",
-	"waiter03",
+	"Tommy",	// 0
+	"TommyBOXER",	// 1
+	"TommyCOAT",	// 2
+	"TommyCOATHAT",	// 3
+	"TommyDELNIK",	// 4
+	"TommyDELNIKHIGH",	// 5
+	"TommyFREERIDER",	// 6
+	"TommyGUN",	// 7
+	"TommyHAT",	// 8
+	"TommyHIGH",	// 9
+	"TommyHIGHBLOOD",	// 10
+	"TommyHighCOATHAT",	// 11
+	"TommyHighHAT",	// 12
+	"TommyNAHAC",	// 13
+	"TommyOLD",	// 14
+	"TommyOLDBLOOD",	// 15
+	"TommyPYTEL",	// 16
+	"TommyRACER",	// 17
+	"TommyRACER2",	// 18
+	"TommyRUKAV",	// 19
+	"TommySAILOR",	// 20
+	"TommyTAXIDRIVER",	// 21
+	"TommyTAXIdriverHIGH",	// 22
+	"AsisPZ1",	// 23
+	"Barman01",	// 24
+	"Bclerk01",	// 25
+	"Bclerk02",	// 26
+	"Bguard01",	// 27
+	"Bguard01M",	// 28
+	"Bguard02",	// 29
+	"Bguard03",	// 30
+	"Bguard03M",	// 31
+	"Biff",	// 32
+	"BigDig",	// 33
+	"BnkO01",	// 34
+	"BnkO02",	// 35
+	"BnkO03",	// 36
+	"BobAut01",	// 37
+	"Bookmaker01",	// 38
+	"Bookmaker02",	// 39
+	"Boxer01",	// 40
+	"Boxer02",	// 41
+	"Boxer03",	// 42
+	"Boxer04",	// 43
+	"Carlo",	// 44
+	"China1",	// 45
+	"Chulig1",	// 46
+	"Chulig1b",	// 47
+	"David",	// 48
+	"Delnik01",	// 49
+	"Delnik02",	// 50
+	"Delnik03",	// 51
+	"Detektiv01",	// 52
+	"Detektiv02",	// 53
+	"Detektiv03",	// 54
+	"Enemy01+",	// 55
+	"Enemy01",	// 56
+	"Enemy02+",	// 57
+	"Enemy02",	// 58
+	"Enemy03+",	// 59
+	"Enemy03",	// 60
+	"Enemy04",	// 61
+	"Enemy04BLOOD",	// 62
+	"Enemy04K",	// 63
+	"Enemy05",	// 64
+	"Enemy06+",	// 65
+	"Enemy06",	// 66
+	"Enemy07+",	// 67
+	"Enemy07",	// 68
+	"Enemy08+",	// 69
+	"Enemy08",	// 70
+	"Enemy08K",	// 71
+	"Enemy09+",	// 72
+	"Enemy09",	// 73
+	"Enemy09K",	// 74
+	"Enemy10+",	// 75
+	"Enemy10",	// 76
+	"Enemy10K",	// 77
+	"Enemy11K",	// 78
+	"Enemy12",	// 79
+	"Enemy12K",	// 80
+	"Enemy13C",	// 81
+	"Enemy91",	// 82
+	"Enemy92",	// 83
+	"FMVENemy11K",	// 84
+	"FREEgang01",	// 85
+	"FREEgang02",	// 86
+	"FrankHIGH",	// 87
+	"Friend1",	// 88
+	"Friend2",	// 89
+	"Gangster01",	// 90
+	"Gangster02",	// 91
+	"Gangster03",	// 92
+	"Gangster04",	// 93
+	"Gangster05",	// 94
+	"GodzMan1",	// 95
+	"Guard01",	// 96
+	"Guard02",	// 97
+	"Hasic01",	// 98
+	"HighCivil",	// 99
+	"HighCivilBLOOD",	// 100
+	"Homeless01",	// 101
+	"Hoolig01",	// 102
+	"Hoolig02",	// 103
+	"Hoolig03",	// 104
+	"Hoolig04",	// 105
+	"Hoolig05",	// 106
+	"Hoolig06",	// 107
+	"I04Delnik01+",	// 108
+	"I04Delnik01",	// 109
+	"Joe",	// 110
+	"Kasar",	// 111
+	"Knez",	// 112
+	"LifeG01",	// 113
+	"Lucas",	// 114
+	"Luigi",	// 115
+	"Malticka1",	// 116
+	"MorelloHIGH",	// 117
+	"MorelloLOW",	// 118
+	"NormanHIGH",	// 119
+	"Organizator01",	// 120
+	"Paulie",	// 121
+	"PaulieCOATHAT",	// 122
+	"PaulieCTHIGH",	// 123
+	"PaulieCorpse",	// 124
+	"PaulieHIGH",	// 125
+	"Pepe",	// 126
+	"PoliceMan01",	// 127
+	"PoliceMan02",	// 128
+	"Politik",	// 129
+	"PortGuard01",	// 130
+	"PortGuard02",	// 131
+	"ProdZ1",	// 132
+	"Prokur",	// 133
+	"Radni01",	// 134
+	"Radni02",	// 135
+	"Ralph",	// 136
+	"RalphHIGH",	// 137
+	"ReditelB",	// 138
+	"ReditelH",	// 139
+	"RidicNakladaku",	// 140
+	"SalMan01K",	// 141
+	"SalMan02K",	// 142
+	"SalMan03",	// 143
+	"SalMan03K",	// 144
+	"SalMan04",	// 145
+	"SalMan05",	// 146
+	"SalMan05K",	// 147
+	"Salieri2",	// 148
+	"SalieriHIGH",	// 149
+	"SalieriHIGH2",	// 150
+	"SalieriLOW",	// 151
+	"Sam",	// 152
+	"SamCOATHAT",	// 153
+	"SamHIGH",	// 154
+	"SamHIGHblood1",	// 155
+	"SamHIGHblood2",	// 156
+	"SamHIGHblood3",	// 157
+	"SamHIGHblood4",	// 158
+	"Samblood1",	// 159
+	"Sergio",	// 160
+	"SergioBLOOD",	// 161
+	"SynRad1",	// 162
+	"SynRad1BLOOD",	// 163
+	"SynRad1DEAD",	// 164
+	"Tony",	// 165
+	"VincenzoHIGH",	// 166
+	"VincenzoLOW",	// 167
+	"Vrabec",	// 168
+	"Vratny1",	// 169
+	"Vypravci",	// 170
+	"Vypravci2",	// 171
+	"WillG1",	// 172
+	"WillG2",	// 173
+	"WillMan01",	// 174
+	"WillMan02",	// 175
+	"Zavod1",	// 176
+	"Zavod2",	// 177
+	"Zavod3",	// 178
+	"ZavodFMV1",	// 179
+	"ZavodFMV2",	// 180
+	"civil02",	// 181
+	"civil03",	// 182
+	"civil04",	// 183
+	"civil05",	// 184
+	"civil06",	// 185
+	"civil11",	// 186
+	"civil11M",	// 187
+	"civil12",	// 188
+	"civil13",	// 189
+	"civil14",	// 190
+	"civil15",	// 191
+	"civil16",	// 192
+	"civil16M",	// 193
+	"civil17",	// 194
+	"civil18",	// 195
+	"civil19",	// 196
+	"civil19M",	// 197
+	"civil21",	// 198
+	"civil21N",	// 199
+	"civil22",	// 200
+	"civil31",	// 201
+	"civil32",	// 202
+	"civil33",	// 203
+	"civil34",	// 204
+	"civil35",	// 205
+	"civil36",	// 206
+	"civil36M",	// 207
+	"civil37",	// 208
+	"civil38",	// 209
+	"civil39",	// 210
+	"civil40",	// 211
+	"civil41",	// 212
+	"civil42",	// 213
+	"civil42M",	// 214
+	"civil43",	// 215
+	"civil44",	// 216
+	"civil51",	// 217
+	"civil51M",	// 218
+	"civil52",	// 219
+	"civil53",	// 220
+	"civil54",	// 221
+	"civil54M",	// 222
+	"civil55",	// 223
+	"civil55M",	// 224
+	"civil56",	// 225
+	"civil56M",	// 226
+	"civil57",	// 227
+	"civil57M",	// 228
+	"civil60",	// 229
+	"civil61",	// 230
+	"civil62",	// 231
+	"civil63",	// 232
+	"civil70",	// 233
+	"civil70M",	// 234
+	"civil71",	// 235
+	"civil72",	// 236
+	"frank",	// 237
+	"ohorelec01",	// 238
+	"pianist1",	// 239
+	"pol01",	// 240
+	"pol02",	// 241
+	"pol03",	// 242
+	"pol11",	// 243
+	"pol12",	// 244
+	"pol13",	// 245
+	"polim62",	// 246
+	"pumpar01",	// 247
+	"recep",	// 248
+	"sailor01",	// 249
+	"sailor01M",	// 250
+	"sailor02",	// 251
+	"sailor02M",	// 252
+	"sailor03",	// 253
+	"waiter01",	// 254
+	"waiter01M",	// 255
+	"waiter02",	// 256
+	"waiter02M",	// 257
+	"waiter03",	// 258
+	"Alice1",	// 259
+	"Berta",	// 260
+	"Bitch01",	// 261
+	"Bitch02",	// 262
+	"Bitch02Mask",	// 263
+	"Bitch03M",	// 264
+	"CarlZen1",	// 265
+	"Czena01",	// 266
+	"Czena02",	// 267
+	"Czena03",	// 268
+	"Czena04",	// 269
+	"Czena05",	// 270
+	"Czena06",	// 271
+	"Czena07",	// 272
+	"Czena07M",	// 273
+	"Czena08",	// 274
+	"Czena09",	// 275
+	"Czena09M",	// 276
+	"Czena10",	// 277
+	"Czena10M",	// 278
+	"Czena11",	// 279
+	"Czena11M",	// 280
+	"Czena12",	// 281
+	"Czena13",	// 282
+	"FMVCzena03",	// 283
+	"FMVCzena04",	// 284
+	"March1",	// 285
+	"Michelle",	// 286
+	"MichelleLOW",	// 287
+	"Milenka1",	// 288
+	"Sarah1",	// 289
+	"Sarah1Obl",	// 290
+	"Sarah2",	// 291
+	"Sarah2HIGH",	// 292
+	"Sarah2HIGHnaha",	// 293
+	"Sarah2LOW",	// 294
+	"Serv01",	// 295
+	"ZenaRad01",	// 296
+	"gab",	// 297
 
-	"Alice1",
-	"Berta",
-	"Bitch01",
-	"Bitch02",
-	"Bitch02Mask",
-	"Bitch03M",
-	"CarlZen1",
-	"Czena01",
-	"Czena02",
-	"Czena03",
-	"Czena04",
-	"Czena05",
-	"Czena06",
-	"Czena07",
-	"Czena07M",
-	"Czena08",
-	"Czena09",
-	"Czena09M",
-	"Czena10",
-	"Czena10M",
-	"Czena11",
-	"Czena11M",
-	"Czena12",
-	"Czena13",
-	"FMVCzena03",
-	"FMVCzena04",
-	"March1",
-	"Michelle",
-	"MichelleLOW",
-	"Milenka1",
-	"Sarah1",
-	"Sarah1Obl",
-	"Sarah2",
-	"Sarah2HIGH",
-	"Sarah2HIGHnaha",
-	"Sarah2LOW",
-	"Serv01",
-	"ZenaRad01",
-	"gab",
-
-	"ShadowGirlHIGH",
+	/* "ShadowGirlHIGH",
 	"ShadowMan",
 	"ShadowManHIGH",
 	"ShadowManLOW2",
 	"UfoPanak",
-	"invisible"
+	"invisible" */
 };
