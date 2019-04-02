@@ -290,6 +290,16 @@ inline auto game_tick(mafia_vehicle *vehicle, f64 delta) {
     target_position_update(vehicle);
     target_rotation_update(vehicle);
 
+    //NOTE(DavoSK): If vehicle is interpolated and we are inside of that vehicle 
+    //We do update camera ( nickname shaking fix )
+    for (int i = 0; i < 4; i++) {
+        if (vehicle->seats[i] == local_player.entity_id) {
+            MafiaSDK::GetMission()->GetGame()->GetCamera()->Tick(0);
+            break;
+        }
+    }
+   
+
     auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
     vehicle_int->engine_rpm = vehicle->engine_rpm;
 }
