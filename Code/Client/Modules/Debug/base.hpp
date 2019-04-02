@@ -2,7 +2,6 @@
 namespace debug {
     
     input::KeyToggle debug_key(VK_F2);
-    bool is_enabled = false;
 
     /* camera movement */
     S_vector debug_cam_pos;
@@ -280,16 +279,16 @@ namespace debug {
         }
     }
 
-    inline void render() {
-        if (debug_key) {
-            is_enabled = !is_enabled;
-            input::block_input(is_enabled);
+    inline bool check_input() {
+        bool state = !!debug_key;
+        if (state) {
+            input::block_input(state);
 
             // After we enable debug mode, camera should be near local player
             auto cam = MafiaSDK::GetMission()->GetGame()->GetCamera();
             auto local_ped = player::get_local_ped();
             if (cam && local_ped) {
-                if (is_enabled) {
+                if (menuActiveState != Menu_DebugMode) {
                     debug_cam_pos = local_ped->GetFrame()->GetInterface()->position;
                 }
                 else {
@@ -301,9 +300,19 @@ namespace debug {
                         cam->SetPlayer(local_ped);
                 }
             }
+
+            if (menuActiveState == Menu_DebugMode) {
+                menuActiveState = Menu_Chat;
+                modules::chat::is_focused = false;
+                return false;
+            }
         }
 
-        if (is_enabled && librg_is_connected(&network_context)) {
+        return state;
+    }
+
+    inline void render() {
+        if (librg_is_connected(&network_context)) {
             ImGui::Begin("Debug Menu", nullptr);
 
             //ImGui::SetWindowSize(ImVec2(500, 600));
@@ -407,9 +416,7 @@ namespace debug {
     }
 
     inline void game_update(f64 delta_time) {
-        
-        if (is_enabled) {
-
+        if (menuActiveState == Menu_DebugMode) {
             if (input::InputState.rmb_down) {               
                
                 auto current_pos = get_cursorpos();

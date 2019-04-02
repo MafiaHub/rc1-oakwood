@@ -7,6 +7,15 @@ f64 last_delta  = 0.0f;
 f64 last_update = 0.0f;
 bool hit_hook_skip = true;
 
+
+enum {
+    Menu_Pause,
+    Menu_Chat,
+    Menu_DebugMode,
+};
+
+int menuActiveState = Menu_Chat;
+
 struct _GlobalConfig {
     char server_address[32];
     char username[32];

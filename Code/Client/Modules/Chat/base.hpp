@@ -122,24 +122,20 @@ namespace chat {
         return FALSE;
     }
 
-    inline void render() {
+    inline bool check_input() {
+        // Chat is always enabled by other means...
+        return false;
+    }
 
+    inline void render() {
         if (key_chat_open && librg_is_connected(&network_context) && !is_focused) {
-            is_focused = !is_focused;
+            is_focused = true;
             input::block_input(is_focused);
         }
 
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 
             !librg_is_connected(&network_context)) 
             return;
-
-        if (modules::pausemenu::is_enabled)
-            return;
-
-#ifdef OAKWOOD_DEBUG
-        if (modules::debug::is_enabled)
-            return;
-#endif
 
         ImGui::Begin("Mafia: Oakwood - Chat",
             nullptr,
