@@ -119,8 +119,6 @@ ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {
     GlobalConfig.localpath = localpath;
     GlobalConfig.gamepath = gamepath;
 
-    mod_pre_init_game();
+    mod_init_game();
     mod_init_patches();
 }
-
-#include "stub.hpp"

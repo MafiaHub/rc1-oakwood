@@ -9,7 +9,7 @@ static LONG WINAPI TerminateInstantly(LPEXCEPTION_POINTERS pointers) {
     return EXCEPTION_CONTINUE_SEARCH;
 }
 
-inline auto mod_pre_init_game() {
+inline auto mod_init_game() {
     graphics::hook();
     input::hook();
     crashhandler::init();
