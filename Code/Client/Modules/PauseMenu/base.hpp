@@ -1,19 +1,24 @@
 namespace pausemenu {
     input::KeyToggle esc_key(VK_ESCAPE);
-    bool is_enabled = false;
 
-    inline void init() {
+    inline bool check_input() {
+        bool state = !!esc_key;
+        if (state && librg_is_connected(&network_context)) {
+            input::block_input(state);
 
+            if (menuActiveState == Menu_Pause) {
+                menuActiveState = Menu_Chat;
+                input::block_input(false);
+                return false;
+            }
+
+            return true;
+        }
+        return false;
     }
 
     inline void render() {
-        if (esc_key && librg_is_connected(&network_context)) {
-            is_enabled = !is_enabled;
-            input::block_input(is_enabled);
-        }
-
-        if (is_enabled && librg_is_connected(&network_context)) { 
-
+        if (librg_is_connected(&network_context)) { 
             ImGui::SetNextWindowPosCenter(ImGuiCond_Once);
             ImGui::Begin("Pause Menu",
                 nullptr,
@@ -31,15 +36,16 @@ namespace pausemenu {
             ImGui::Text("Current build: %s (%x)", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
             ImGui::Text("Current build date: %s %s", OAK_BUILD_DATE, OAK_BUILD_TIME);
             ImGui::Text("Current server IP: %s", GlobalConfig.server_address);
-          
-            //ImGui::SameLine();
-
-            if (ImGui::Button("Quit")) {
-                librg_network_stop(&network_context);
-                exit(0);
-            }
-            
-            ImGui::End();
         }
+        else {
+            ImGui::Text("You aren't connected to any server right now! :(");
+        }
+        
+        if (ImGui::Button("Quit")) {
+            librg_network_stop(&network_context);
+            exit(0);
+        }
+        
+        ImGui::End();
     }
 };

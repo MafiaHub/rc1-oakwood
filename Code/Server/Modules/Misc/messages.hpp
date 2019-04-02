@@ -46,7 +46,7 @@ void add_messages() {
 
             printf("[CHAT] %s\n", chat_line.c_str());
         }
-    });
+        });
 
     librg_network_add(&network_context, NETWORK_SEND_VOIP_DATA, [](librg_message* msg) {
 

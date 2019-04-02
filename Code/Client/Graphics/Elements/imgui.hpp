@@ -1,6 +1,11 @@
 namespace imgui {
-    
-    ImVec4      ColorsOriginal[ImGuiCol_COUNT];
+
+    #define CHECK_MENU_INPUT(func, ID) do {\
+        bool state = modules::func::check_input();\
+        if (state && menuActiveState != Menu_DebugMode) menuActiveState = ID;\
+    } while (0);
+
+    ImVec4 ColorsOriginal[ImGuiCol_COUNT];
 
     inline void render() {
         ImGui_ImplDX9_NewFrame();
@@ -19,12 +24,28 @@ namespace imgui {
             style.Colors[ImGuiCol_ChildWindowBg]    = ImVec4(0.28f, 0.28f, 0.28f, 0.0f);
         }
 
-        modules::chat::render();
-        modules::pausemenu::render();
-        
+        CHECK_MENU_INPUT(chat, Menu_Chat);
+        CHECK_MENU_INPUT(pausemenu, Menu_Pause);
+
 #ifdef OAKWOOD_DEBUG
-        modules::debug::render();
+        CHECK_MENU_INPUT(debug, Menu_DebugMode);
 #endif
+
+        switch (menuActiveState) {
+            case Menu_Chat: {
+                modules::chat::render();
+            } break;
+
+            case Menu_Pause: {
+                modules::pausemenu::render();
+            } break;
+
+#ifdef OAKWOOD_DEBUG
+            case Menu_DebugMode: {
+                modules::debug::render();
+            } break;
+#endif            
+        }
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -109,7 +130,6 @@ namespace imgui {
         ImGui_ImplDX9_Init(device);
 
         modules::chat::init();
-        modules::pausemenu::init();
     }
 
     inline void device_reset(IDirect3DDevice9* device) {
