@@ -2614,7 +2614,7 @@ extern "C" {
                     librg_data_set_wpos(reliable, curr_wsize);
                 }
 
-                if ((eblob->flags & LIBRG_ENTITY_CONTROLLED) && eblob->control_peer == blob->client_peer) {
+                if (eblob && (eblob->flags & LIBRG_ENTITY_CONTROLLED) && eblob->control_peer == blob->client_peer) {
                     eblob->control_peer = NULL;
                     eblob->flags &= ~LIBRG_ENTITY_CONTROLLED;
                 }
