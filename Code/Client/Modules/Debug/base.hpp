@@ -304,12 +304,9 @@ namespace debug {
         }
 
         if (is_enabled && librg_is_connected(&network_context)) {
-            ImGui::Begin("Debug Menu", nullptr, 
-                ImGuiWindowFlags_NoResize   |
-                ImGuiWindowFlags_NoCollapse |
-                ImGuiWindowFlags_NoMove);
+            ImGui::Begin("Debug Menu", nullptr);
 
-            ImGui::SetWindowSize(ImVec2(500, 600));
+            //ImGui::SetWindowSize(ImVec2(500, 600));
             
             if (selected_entity)
                 render_selected_entity();

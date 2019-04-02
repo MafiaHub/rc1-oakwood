@@ -124,7 +124,7 @@ namespace chat {
 
     inline void render() {
 
-        if (key_chat_open && librg_is_connected(&network_context)) {
+        if (key_chat_open && librg_is_connected(&network_context) && !is_focused) {
             is_focused = !is_focused;
             input::block_input(is_focused);
         }
@@ -144,6 +144,7 @@ namespace chat {
         ImGui::Begin("Mafia: Oakwood - Chat",
             nullptr,
             ImGuiWindowFlags_NoResize |
+            ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoScrollbar);
 
@@ -159,10 +160,6 @@ namespace chat {
 
         ImGui::SetScrollHere(1.0f);
         ImGui::EndChild();
-
-        if (!input::InputState.input_blocked && MafiaSDK::IsWindowFocused() && key_chat_open) {
-            input::toggle_block_input();
-        }
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 

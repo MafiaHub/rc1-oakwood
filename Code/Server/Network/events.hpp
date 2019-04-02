@@ -27,7 +27,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
     if (gm.on_player_connected)
         gm.on_player_connected(evnt, evnt->entity, ped);
 
-    mod_log(zpl_bprintf("Player '%s' has been connected!\n", ped->name));
+    mod_log(zpl_bprintf("Player '%s' has been connected!", ped->name));
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
@@ -41,7 +41,7 @@ auto on_librg_connection_disconnect(librg_event* evnt) -> void {
         if (gm.on_player_disconnected)
             gm.on_player_disconnected(evnt, evnt->entity);
 
-        mod_log(zpl_bprintf("Player '%s' has been disconnected!\n", player->name));
+        mod_log(zpl_bprintf("Player '%s' has been disconnected!", player->name));
         modules::player::connection_disconnect(evnt);
         GlobalConfig.players--;
     }
