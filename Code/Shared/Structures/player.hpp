@@ -40,6 +40,7 @@ struct mafia_player {
 	u8 animation_state;
 	u8 is_aiming;
 	u8 is_crouching;
+	u8 is_visible_on_map;
 	char model[32];
 	char name[32];
 	u32 aiming_time;

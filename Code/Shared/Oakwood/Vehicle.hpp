@@ -20,6 +20,9 @@ public:
     void ShowOnRadar(bool visibility);
     bool GetRadarVisibility();
 
+    void ShowOnMap(bool visibility);
+    bool GetMapVisibility();
+
     int GetPlayerSeatID(Player *player);
     
     void SetPosition(zpl_vec3 pos);

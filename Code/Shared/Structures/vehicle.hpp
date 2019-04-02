@@ -45,6 +45,7 @@ struct mafia_vehicle {
 	float engine_rpm;
 	float accelerating;
 	u8 is_car_in_radar;
+	u8 is_visible_on_map;
     zpl_vec3 rot_forward;
 	zpl_vec3 rot_right;
     zpl_vec3 rot_up;

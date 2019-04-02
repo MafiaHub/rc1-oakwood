@@ -130,6 +130,12 @@ extern "C" {
         return true;
     }
 
+    OAKGEN_NATIVE();
+    void oak_player_show_on_map(librg_entity *entity, b32 state) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
+        modules::player::set_map_vis(entity, state);
+    }
+
     //
     // Weapon drop
     //
@@ -158,6 +164,12 @@ extern "C" {
     void oak_vehicle_show_on_radar(librg_entity *entity, b32 state) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
         modules::vehicle::set_radar_vis(entity, state);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_show_on_map(librg_entity *entity, b32 state) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+        modules::vehicle::set_map_vis(entity, state);
     }
 
     OAKGEN_NATIVE();

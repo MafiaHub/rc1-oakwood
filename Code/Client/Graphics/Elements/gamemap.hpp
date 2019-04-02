@@ -112,7 +112,7 @@ namespace gamemap
 
             if (entity->type == TYPE_VEHICLE && entity->user_data) {
                 mafia_vehicle* vehicle = (mafia_vehicle*)entity->user_data;
-                if (vehicle->car) {
+                if (vehicle->car && vehicle->is_visible_on_map) {
                     auto car_frame = vehicle->car->GetInterface()->entity.frame;
                     if (car_frame) {
                         zpl_vec3 frame_pos = EXPAND_VEC(car_frame->GetInterface()->position);

@@ -36,6 +36,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
     librg_data_wptr(evnt->data, &player->inventory, sizeof(player_inventory));
     librg_data_wu32(evnt->data, player->current_weapon_id);
     librg_data_wf32(evnt->data, player->health);
+    librg_data_wu8(evnt->data, player->is_visible_on_map);
 }
 
 inline auto drop_entitycreate(librg_event* evnt) -> void {

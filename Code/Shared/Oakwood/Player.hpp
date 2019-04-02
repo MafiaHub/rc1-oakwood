@@ -23,6 +23,9 @@ public:
     void SetModelByID(int modelID);
     std::string GetModel();
 
+    void ShowOnMap(bool visibility);
+    bool GetMapVisibility();
+
     std::string GetName();
 
     void SetPosition(zpl_vec3 position);

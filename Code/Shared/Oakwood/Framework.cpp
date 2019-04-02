@@ -344,6 +344,18 @@ mafia_player* Player::GetPedestrian()
     return (mafia_player*)entity->user_data;
 }
 
+void Player::ShowOnMap(bool visibility)
+{
+    __gm->mod->vtable.player_show_on_map(this->entity, visibility);
+}
+
+bool Player::GetMapVisibility()
+{
+    auto playerData = GetPedestrian();
+    return playerData->is_visible_on_map;
+}
+
+
 //
 // Vehicle
 //
@@ -368,6 +380,17 @@ bool Vehicle::GetRadarVisibility()
 {
     auto vehicle = GetVehicle();
     return vehicle->is_car_in_radar;
+}
+
+void Vehicle::ShowOnMap(bool visibility)
+{
+    __gm->mod->vtable.vehicle_show_on_map(this->entity, visibility);
+}
+
+bool Vehicle::GetMapVisibility()
+{
+    auto vehicle = GetVehicle();
+    return vehicle->is_visible_on_map;
 }
 
 int Vehicle::GetPlayerSeatID(Player *player) 

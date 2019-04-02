@@ -73,4 +73,5 @@ inline auto entitycreate(librg_event* evnt) {
     librg_data_wu8(evnt->data, vehicle->engine_on);
     librg_data_wf32(evnt->data, vehicle->fuel);
     librg_data_wf32(evnt->data, vehicle->accelerating);
+    librg_data_wu8(evnt->data, vehicle->is_visible_on_map);
 }

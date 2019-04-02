@@ -74,3 +74,13 @@ void set_radar_vis(librg_entity *entity, b32 state) {
         librg_data_wu8(&data, (u8)state);
     });
 }
+
+void set_map_vis(librg_entity *entity, b32 state) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->is_visible_on_map = state;
+
+    librg_send(&network_context, NETWORK_VEHICLE_MAP_VISIBILITY, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wu8(&data, (u8)state);
+    });
+}

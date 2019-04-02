@@ -48,7 +48,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     // Spawn default vehicles
     for (auto vehicle_spawn : vehicle_spawns) {
-        gm->SpawnVehicleByID(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.modelID);
+        auto vehicle = gm->SpawnVehicleByID(vehicle_spawn.pos, vehicle_spawn.rot, vehicle_spawn.modelID);
+        vehicle->ShowOnMap(true);
     }
 
     // Load extra cars from file
@@ -60,7 +61,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         int model_id;
         float dir;
         ::sscanf(currentLine.c_str(), "%d %f %f %f %f", &model_id, &dir, EXPLODE_VEC(&pos));
-        gm->SpawnVehicleByID(pos, dir, model_id);
+        auto vehicle = gm->SpawnVehicleByID(pos, dir, model_id);
+        vehicle->ShowOnMap(true);
     }
 
     // Register several events
@@ -70,6 +72,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         add_weapons(player);
 
         player->Spawn(mode_generate_spawn());
+        player->ShowOnMap(true);
     });
 
     gm->SetOnPlayerDisconnected([=](Player *player) { 
@@ -92,6 +95,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         add_weapons(player);
 
         player->Spawn(mode_generate_spawn());
+        player->ShowOnMap(true);
 
         gm->BroadcastMessage("Player " + player->GetName() + " has died.");
     });

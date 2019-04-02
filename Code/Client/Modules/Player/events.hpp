@@ -139,6 +139,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, &player->inventory, sizeof(player_inventory));
     player->current_weapon_id = librg_data_ru32(evnt->data);
     player->health = librg_data_rf32(evnt->data);
+    player->is_visible_on_map = librg_data_ru8(evnt->data);
 
     auto new_ped = spawn(
         evnt->entity->position,

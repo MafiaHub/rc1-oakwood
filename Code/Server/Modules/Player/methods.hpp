@@ -301,3 +301,13 @@ librg_entity *get_vehicle(librg_entity *entity) {
 
     return nullptr;
 }
+
+void set_map_vis(librg_entity *entity, b32 state) {
+    auto player = (mafia_player*)entity->user_data;
+    player->is_visible_on_map = state;
+
+    librg_send(&network_context, NETWORK_PLAYER_MAP_VISIBILITY, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wu8(&data, (u8)state);
+    });
+}

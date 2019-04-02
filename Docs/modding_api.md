@@ -87,6 +87,9 @@ Kills the player forcefully.
 #### librg_entity* oak_drop_spawn(zpl_vec3 pos, char* model, inventory_item item)
 Spawns a weapon drop.
 
+#### oak_player_show_on_map(librg_entity* entity, bool state)
+Toggles map visibility on/off.
+
 ### Vehicle
 
 #### librg_entity* oak_vehicle_spawn(zpl_vec3 pos, zpl_vec3 rot, char* model, b32 show_in_radar)
@@ -94,6 +97,9 @@ Spawns a vehicle with a specified position, model and a heading vector. show_in_
 
 #### oak_vehicle_show_on_radar(librg_entity* entity, bool state)
 Toggles radar visibility on/off.
+
+#### oak_vehicle_show_on_map(librg_entity* entity, bool state)
+Toggles map visibility on/off.
 
 #### int oak_vehicle_get_player_seat_id(librg_entity* entity, librg_entity* player)
 Returns a seated player's seat ID or -1 if not seated.
