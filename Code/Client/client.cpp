@@ -95,6 +95,13 @@
 
 #include "client.hpp"
 
+/* 
+* Switches
+*/
+
+// Undefine to disable debug mode UI.
+#define OAKWOOD_DEBUG
+
 /*
 * Core
 */
