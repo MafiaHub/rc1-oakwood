@@ -27,6 +27,10 @@ struct VehicleSpawn {
     int modelID;
 };
 
+inline auto mode_generate_spawn() -> zpl_vec3 {
+    return { -1984.884277f, -5.032383f, 23.144674f };
+}
+
 #define VEHICLE_INACTIVE_REMOVAL_TIME 5.0f * 60.0f
 
 // Represents vehicle spawned by commands

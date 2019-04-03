@@ -9,10 +9,6 @@ weapon colt = { "2c1911.i3d",{ 9, 50, 50, 0 } };
 weapon grenade = { "2grenade.i3d",{ 15, 1, 1, 0 } };
 weapon palka = { "2palka.i3d",{ 4, 1, 1, 0 } };
 
-inline auto mode_generate_spawn() -> zpl_vec3 {
-    return { -1984.884277f, -5.032383f, 23.144674f };
-}
-
 weapon *weaponlist[] = {
     &grenade,
     &colt,
