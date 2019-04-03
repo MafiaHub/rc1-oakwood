@@ -4,8 +4,6 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
     auto build_magic = librg_data_ru64(evnt->data);
     auto build_ver = librg_data_ru64(evnt->data);
 
-    mod_log(zpl_bprintf("Incoming connection from %s ...", "someone"));
-
     if (build_magic != OAK_BUILD_MAGIC || build_ver != OAK_BUILD_VERSION) {
         mod_log(zpl_bprintf("Connection has been rejected!\nOur magic: %X\tTheir magic: %X\nOur version: %X\tTheir version: %X\n", OAK_BUILD_MAGIC, build_magic, OAK_BUILD_VERSION, build_ver));
         librg_event_reject(evnt);
