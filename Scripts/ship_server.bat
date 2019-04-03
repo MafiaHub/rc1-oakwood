@@ -42,6 +42,7 @@ del shared\helpers.hpp
 mkdir vendors
 mkdir vendors\librg
 echo f|xcopy /E %pr%\Vendors\librg vendors\librg\
+del vendors\librg\librg_ext.h
 
 mkdir tools
 mkdir tools\premake

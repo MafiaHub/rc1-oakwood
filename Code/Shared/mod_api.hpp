@@ -35,7 +35,6 @@
 
 #ifndef OAK_INTERNAL
 
-#include "librg_ext.h"
 #include "multiplayer.hpp"
 
 #endif
