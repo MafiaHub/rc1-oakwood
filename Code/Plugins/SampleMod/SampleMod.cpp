@@ -10,6 +10,7 @@
 
 #define ZPL_IMPLEMENTATION
 #include "zpl.h"
+#include "zpl_math.h"
 
 #include <Oakwood/Framework.hpp>
 #include "weapons.hpp"
@@ -130,8 +131,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto position = player->GetPosition();
         auto dir = ComputeDirVector(player->GetRotation());
-        zpl_vec3_muleq(&dir, 1.5f);
-        zpl_vec3_addeq(&position, dir);
+        dir *= 1.5f;
+        position += dir;
         auto rot = player->GetRotation() - 90.0f;
         auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
         vehicle->ShowOnMap(true);
