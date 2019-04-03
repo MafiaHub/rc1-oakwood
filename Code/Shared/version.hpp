@@ -17,7 +17,7 @@ inline auto get_version_hash(int ver) {
     static zpl_u64 hash = 0;
 
     if (hash == 0)
-        hash = zpl_murmur64(&ver, sizeof(ver));
+        hash = zpl_fnv64(&ver, sizeof(ver));
 
     return hash;
 }
