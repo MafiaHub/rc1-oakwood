@@ -22,7 +22,7 @@ inline auto get_version_hash(int ver) {
     return hash;
 }
 
-#define OAK_BUILD_MAGIC 0xDEADC0DEDEADBEEF
+#define OAK_BUILD_MAGIC (u64)0xDEADC0DEDEADBEEF
 #define OAK_BUILD_VERSION_BASE 3
 #define OAK_BUILD_VERSION get_version_hash(OAK_BUILD_VERSION_BASE)
 #define OAK_BUILD_VERSION_STR "RC1"

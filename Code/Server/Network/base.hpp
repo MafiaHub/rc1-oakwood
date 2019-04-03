@@ -30,7 +30,7 @@ namespace network {
         
         mod_add_network_messages();
 
-#if LIBRG_DEBUG
+#ifdef LIBRG_DEBUG
         librg_event_add(&network_context, LIBRG_ENTITY_CREATE, [](librg_event *evnt) {
             printf("LIBRG_ENTITY_CREATE: %d\n", evnt->entity->id);
         });
