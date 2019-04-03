@@ -18,6 +18,9 @@ void add_messages() {
             auto player_data = (mafia_player*)new_player_entity->user_data;
             auto is_local_player = player_entity_id == local_player.entity_id;
 
+            if (player_data->ped)
+                despawn(player_data->ped);
+
             auto ped = spawn(
                 position,
                 rotation,
@@ -28,11 +31,6 @@ void add_messages() {
                 is_local_player,
                 0,
                 false);
-
-            if (player_data->ped != nullptr) {
-                despawn(player_data->ped);
-                player_data->ped = nullptr;
-            }
 
             player_data->ped = ped;
         }

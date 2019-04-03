@@ -55,6 +55,11 @@ auto spawn(zpl_vec3 position,
         auto player = get_local_player();
         if (player) {
             local_player.dead = false;
+            if (player->ped) {
+                despawn(player->ped);
+            }
+
+            player->ped = new_ped;
             strcpy(player->name, GlobalConfig.username);
         }
     }
