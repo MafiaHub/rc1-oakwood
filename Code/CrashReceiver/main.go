@@ -22,7 +22,6 @@ type crashReport struct {
 	Name     string `json:"name"`
 	Dump     string `json:"dump"`
 	HostName string `json:"host"`
-	reportId int
 }
 
 type webhookRequest struct {
@@ -33,9 +32,9 @@ type webhookRequest struct {
 }
 
 type storedReport struct {
-	Pk   int    `storm:"id,increment"`
-	Name string `storm:"index"`
-	Host string `storm:"index"`
+	ID   int `storm:"id,increment"`
+	Name string
+	Host string
 	Dump string
 }
 
@@ -64,7 +63,7 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 func sendReportLink(data storedReport) {
 	respData := webhookRequest{
 		URL:      channelWebhook,
-		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**\nCheck http://oakmaster.madaraszd.net:8001/report/%d/ for more information!", data.Name, data.Host, data.Pk),
+		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**\nCheck http://oakmaster.madaraszd.net:8001/report/%d/ for more information!", data.Name, data.Host, data.ID),
 		Username: "Crash Reporter",
 		Avatar:   "https://cdn.discordapp.com/attachments/233249310727340032/532897486751268874/MafiaHub.png",
 	}
@@ -88,10 +87,11 @@ func sendReportLink(data storedReport) {
 
 func showReport(w http.ResponseWriter, r *http.Request) {
 	id := string([]byte(strings.TrimPrefix(r.URL.Path, "/report/"))[:1])
+	log.Printf("Fetching report %s ...\n", id)
 
 	var rep storedReport
 	idconv, _ := strconv.Atoi(id)
-	err := reports.One("Pk", idconv, &rep)
+	err := reports.One("ID", idconv, &rep)
 	if err != nil {
 		log.Printf("Could not open report '%s': %v\n", id, err)
 		w.WriteHeader(404)
