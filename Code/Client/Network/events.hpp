@@ -10,7 +10,7 @@ void on_librg_connect(librg_event* evnt) {
 
     local_player.entity_id = evnt->entity->id;
     
-    auto new_player = new mafia_player;
+    auto new_player = new mafia_player();
     strcpy(new_player->name, GlobalConfig.username);
     evnt->entity->type = TYPE_PLAYER;
     evnt->entity->user_data = (void*)new_player;

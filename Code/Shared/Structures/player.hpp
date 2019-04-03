@@ -27,6 +27,7 @@ struct mafia_player {
 			inventory.items[i] = { -1, 0, 0, 0 };
 
 #ifdef MAFIA_SDK_IMPLEMENTATION
+		ped = nullptr;
 		nickname_texture		= nullptr;
 		last_talked				= 0;
 		clientside_flags		= 0;
