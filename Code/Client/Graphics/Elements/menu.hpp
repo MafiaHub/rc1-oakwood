@@ -171,6 +171,14 @@ namespace menu {
         }
     }
 
+    DWORD JumpBackMenu = 0x00594896;
+    __declspec(naked) void HookMultipleMenus() {
+        __asm {
+            MOV EAX, 0x0A9
+            jmp JumpBackMenu
+        }
+    }
+
     inline auto init() {
 
         MafiaSDK::GM_Menu_Hooks::HookOnMenuItemClick([&](unsigned int component_id) {
@@ -252,5 +260,8 @@ namespace menu {
                 }
             }
         });
+        
+        //NOTE(DavoSK): Remove multiple AB selection menu
+        MemoryPatcher::InstallJmpHook(0x00594885, (DWORD)&HookMultipleMenus);
     }
 }
