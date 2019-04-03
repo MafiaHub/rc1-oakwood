@@ -23,9 +23,13 @@ inline auto get_version_hash(int ver) {
 }
 
 #define OAK_BUILD_MAGIC (u64)0xDEADC0DEDEADBEEF
+#ifndef OAK_BUILD_VERSION_BASE
 #define OAK_BUILD_VERSION_BASE 4
+#endif
 #define OAK_BUILD_VERSION get_version_hash(OAK_BUILD_VERSION_BASE)
 #define OAK_BUILD_VERSION_STR "RC1"
+#ifndef OAK_BUILD_CHANNEL
 #define OAK_BUILD_CHANNEL 1
+#endif
 #define OAK_BUILD_DATE __DATE__
 #define OAK_BUILD_TIME __TIME__
