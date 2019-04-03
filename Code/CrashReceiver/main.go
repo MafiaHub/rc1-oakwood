@@ -63,7 +63,7 @@ func handleCrashReport(w http.ResponseWriter, r *http.Request) {
 func sendReportLink(data storedReport) {
 	respData := webhookRequest{
 		URL:      channelWebhook,
-		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**\nCheck http://oakmaster.madaraszd.net:8001/report/%d/ for more information!", data.Name, data.Host, data.ID),
+		Content:  fmt.Sprintf("\nCrash has been detected for user **%s** playing at **%s**\nCheck http://report.oakwood-mp.net/report/%d/ for more information!", data.Name, data.Host, data.ID),
 		Username: "Crash Reporter",
 		Avatar:   "https://cdn.discordapp.com/attachments/233249310727340032/532897486751268874/MafiaHub.png",
 	}

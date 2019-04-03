@@ -50,7 +50,7 @@ func main() {
 	}
 
 	js, _ := jsoniter.Marshal(respData)
-	req, _ := http.NewRequest("POST", "http://oakmaster.madaraszd.net:8001/push", bytes.NewBuffer(js))
+	req, _ := http.NewRequest("POST", "http://report.oakwood-mp.net/push", bytes.NewBuffer(js))
 	req.Header.Set("Content-Type", "application/json")
 	cli := &http.Client{}
 	resp, rerr := cli.Do(req)
