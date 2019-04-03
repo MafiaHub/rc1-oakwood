@@ -180,6 +180,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto modelID = StringToInteger(args[1]);
 
+        if (modelID == -1) return true;
+
         auto position = player->GetPosition();
         auto dir = ComputeDirVector(player->GetRotation());
         dir *= 1.5f;
@@ -205,6 +207,9 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         }
 
         auto modelID = StringToInteger(args[1]);
+        
+        if (modelID == -1) return true;
+
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
         vehicle->ShowOnMap(true);
 
