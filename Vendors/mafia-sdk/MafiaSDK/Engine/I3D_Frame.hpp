@@ -103,6 +103,16 @@ namespace MafiaSDK
         {
             return *(S_matrix*)((DWORD)this + 0x10);
         }
+
+        void UpdateWMatrixProc()
+        {
+            DWORD update_mat = 0x0060fc30;
+
+            __asm {
+                mov ecx, this
+                call update_mat
+            }
+        }
     };
 }
 

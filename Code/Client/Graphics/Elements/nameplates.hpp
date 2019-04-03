@@ -61,48 +61,18 @@ namespace nameplates {
         }
     }
 
-    inline MafiaSDK::I3D_Frame* FindChildrenFrame(DWORD player_frame, const char* frame_name) {
-        
-        MafiaSDK::I3D_Frame* return_frame = nullptr;
-        DWORD update_mat = 0x0060FC30;
-        __asm {
-            mov ecx, player_frame
-            call update_mat
-        }
-
-
-        __asm {
-            mov eax, player_frame
-            push 0FFFFh
-            push frame_name
-            push    eax
-            mov     ecx, dword ptr ds : [eax]
-            call    dword ptr[ecx + 38h]
-            mov return_frame, eax
-        }
-
-        __asm {
-            mov ecx, return_frame
-            call update_mat
-        }
-
-        return return_frame;
-    }
-
     inline void render(IDirect3DDevice9* device) {
         if (device && nameplate_font) {
             iterate_players([=](mafia_player* player) {
-                if (player->ped && player->ped->GetFrame()) {
-                  
-                    auto main_frame = player->ped->GetFrame();
-                    main_frame->Update();
+                if (player->ped && player->ped->GetInterface()->neckFrame) {
+                    auto neck_frame = player->ped->GetInterface()->neckFrame;
                     
-                    auto found_frame = FindChildrenFrame((DWORD)player->ped->GetFrame(), "neck");
-                    if (!found_frame) return;
-                    found_frame->Update();
-                
-
-                    auto player_pos = found_frame->GetInterface()->position;
+                    // Force an update of ped bones to make sure they're up to date when in car.
+                    // Otherwise the frame position is laging behind and causes nameplate stuttering.
+                    neck_frame->Update();
+                    neck_frame->UpdateWMatrixProc();
+                    
+                    auto player_pos = neck_frame->GetInterface()->position;
                     auto player_health = player->health;
 
                     auto current_i3d_camera = get_current_i3dcamera();
