@@ -99,8 +99,9 @@
 * Switches
 */
 
-// Undefine to disable debug mode UI.
+#if OAK_BUILD_CHANNEL == 1
 #define OAKWOOD_DEBUG
+#endif
 
 /*
 * Core
