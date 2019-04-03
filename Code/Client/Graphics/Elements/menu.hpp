@@ -31,6 +31,7 @@ namespace menu {
     struct ServerData {
         std::string server_name;
         std::string server_ip;
+        int port;
         std::string max_players;
         std::string current_players;
     };
@@ -161,6 +162,9 @@ namespace menu {
                     zpl_json_find(server_node, "players", false, &server_property);
                     new_server_data.current_players = "Players: " + std::to_string(server_property->integer);
 
+                    zpl_json_find(server_node, "port", false, &server_property);
+                    new_server_data.port = (int)std::atoi(server_property->string);
+
                     servers.push_back(new_server_data);
                 }
             }
@@ -204,6 +208,7 @@ namespace menu {
             if (component_id >= Component::DummyServer && component_id < Component::DummyServer + servers.size()) {
                 auto server_item_idx = (component_id - Component::DummyServer);
                 strcpy(GlobalConfig.server_address, servers.at(server_item_idx).server_ip.c_str());
+                GlobalConfig.port = servers.at(server_item_idx).port;
                 if (strlen(GlobalConfig.server_address)) {
                     MafiaSDK::GetGMMenu()->ReturnFromMenuExecute(29);
                 }

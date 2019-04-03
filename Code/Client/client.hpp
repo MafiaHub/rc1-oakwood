@@ -15,6 +15,7 @@ int menuActiveState = Menu_Chat;
 
 struct _GlobalConfig {
     char server_address[32];
+    int port = 27010;
     char username[32];
     float view_distance;
     std::string localpath;

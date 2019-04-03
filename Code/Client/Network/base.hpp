@@ -7,7 +7,8 @@
 *  Librg connect to server
 */
 inline auto mod_librg_connect() -> void {
-    librg_address addr = { 27010, GlobalConfig.server_address};
+    mod_log(zpl_bprintf("Connecting to %s:%d...", GlobalConfig.server_address, GlobalConfig.port));
+    librg_address addr = { GlobalConfig.port, GlobalConfig.server_address};
     librg_network_start(&network_context, addr);
 }
 
