@@ -1,6 +1,6 @@
 #pragma once
 
-#define MASTERLIST_HOST "http://oakmaster.madaraszd.net/push"
+#define MASTERLIST_HOST "http://master.oakwood-mp.net/push"
 #define MASTERLIST_PUSH_TIME 30.0f
 #define MASTERLIST_PUSH_TIMEOUT 5.0f
 #define MASTERLIST_POLL_TIME 1.0f
