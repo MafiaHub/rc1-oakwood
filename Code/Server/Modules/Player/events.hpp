@@ -60,11 +60,7 @@ inline auto connection_disconnect(librg_event* evnt) -> void {
                         player->vehicle_id = -1;
 
                         if (i == 0) {
-                            auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position, evnt->entity->id);
-                            if (streamer != nullptr)
-                                librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
-                            else 
-                                librg_entity_control_remove(&network_context, vehicle_ent->id);
+                            mod_vehicle_assign_nearest_player(&network_context, vehicle_ent, evnt->entity->id);
                         }
                     }
                 }

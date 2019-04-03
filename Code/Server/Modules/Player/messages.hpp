@@ -116,13 +116,7 @@ void add_messages() {
                             // Do we need this part code if player will not actualy change position until message is send
 
                             if (i == 0) {
-                                auto streamer = mod_get_nearest_player(&network_context, sender_vehicle_ent->position);
-                                if (streamer != nullptr) {
-                                    librg_entity_control_set(&network_context, sender_vehicle_ent->id, streamer->client_peer);
-                                }
-                                else {
-                                    librg_entity_control_remove(&network_context, sender_vehicle_ent->id);
-                                }
+                                mod_vehicle_assign_nearest_player(&network_context, sender_vehicle_ent);
                             }
 
                             break;
@@ -175,13 +169,7 @@ void add_messages() {
             if (seat_id == 0 && action == 1) {
                 librg_entity_control_set(&network_context, vehicle_ent->id, sender_ent->client_peer);
             } else if (seat_id == 0 && action == 2) {
-                auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position);
-                if (streamer != nullptr) {
-                    librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
-                }
-                else {
-                    librg_entity_control_remove(&network_context, vehicle_ent->id);
-                }
+                mod_vehicle_assign_nearest_player(&network_context, vehicle_ent);
             }
         }
     });

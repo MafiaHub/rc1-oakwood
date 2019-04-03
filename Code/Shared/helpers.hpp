@@ -65,6 +65,16 @@ inline auto mod_get_nearest_player(librg_ctx* ctx, zpl_vec3 pos, i32 exception =
     return current_entity;
 }
 
+inline auto mod_vehicle_assign_nearest_player(librg_ctx *ctx, librg_entity *vehicle, i32 exception = -1) {
+    auto streamer = mod_get_nearest_player(ctx, vehicle->position, exception);
+    if (streamer != nullptr) {
+        librg_entity_control_set(ctx, vehicle->id, streamer->client_peer);
+    }
+    else {
+        librg_entity_control_remove(ctx, vehicle->id);
+    }
+}
+
 inline auto mod_file_exist(std::string file_name) {
     std::ifstream infile(file_name);
     return infile.good();

@@ -52,13 +52,7 @@ namespace misc {
                     auto vehicle = (mafia_vehicle*)entity->user_data;
 
                     if (vehicle->seats[0] == -1) {
-                        auto streamer = mod_get_nearest_player(&network_context, entity->position);
-                        if (streamer != nullptr) {
-                            librg_entity_control_set(&network_context, entity->id, streamer->client_peer);
-                        }
-                        else {
-                            librg_entity_control_remove(&network_context, entity->id);
-                        }
+                        mod_vehicle_assign_nearest_player(&network_context, entity);
                     }
                 }
             });

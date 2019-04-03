@@ -177,6 +177,9 @@ void die(librg_entity *entity, b32 forced = false) {
                 if (vehicle->seats[i] == entity->id) {
                     vehicle->seats[i] = -1;
                     player->vehicle_id = -1;
+                    if (i == 0) {
+                        mod_vehicle_assign_nearest_player(&network_context, vehicle_ent);
+                    }
                     break;
                 }
             }

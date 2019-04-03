@@ -15,11 +15,8 @@ librg_entity *spawn_vehicle(zpl_vec3 position, zpl_vec3 rotation, char *model, b
     new_vehicle_entity->position	= position;
     new_vehicle_entity->user_data	= vehicle;
 
-    auto streamer = mod_get_nearest_player(&network_context, new_vehicle_entity->position);
-    if (streamer != nullptr) {
-        librg_entity_control_set(&network_context, new_vehicle_entity->id, streamer->client_peer);
-    }
-
+    mod_vehicle_assign_nearest_player(&network_context, new_vehicle_entity);
+    
     return new_vehicle_entity;
 }
 
