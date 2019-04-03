@@ -36,9 +36,8 @@
 #ifndef OAK_INTERNAL
 
 #include "librg_ext.h"
+#include "multiplayer.hpp"
 
-#include "messages.hpp"
-#include "helpers.hpp"
 #endif
 
 #include "mod_api_types.generated.hpp"

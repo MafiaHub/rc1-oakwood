@@ -108,8 +108,8 @@
 * Core
 */
 
-#include "config.hpp"
 #include "utils.hpp"
+#include "config.hpp"
 #include "Input/input.hpp"
 #include "modules.hpp"
 #include "Network/base.hpp"

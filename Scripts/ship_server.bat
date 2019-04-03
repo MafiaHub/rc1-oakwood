@@ -35,6 +35,9 @@ echo f|xcopy /E %pr%\Code\Plugins plugins\
 
 mkdir shared
 echo f|xcopy /E %pr%\Code\Shared shared\
+del shared\version.hpp
+del shared\messages.hpp
+del shared\helpers.hpp
 
 mkdir vendors
 mkdir vendors\librg

@@ -1,14 +1,7 @@
 #pragma once
-#ifdef _WIN32
-inline auto alloc_console() {
-    AllocConsole();
-    std::setlocale(LC_ALL, "C");
-    SetConsoleOutputCP(CP_UTF8);
-    freopen("CONIN$", "r", stdin);
-    freopen("CONOUT$", "w", stdout);
-    freopen("CONOUT$", "w", stderr);
-}
-#endif
+
+#define EXPAND_VEC(VEC) {VEC.x, VEC.y, VEC.z}
+#define EXPLODE_VEC(VEC) VEC.x, VEC.y, VEC.z
 
 inline auto split(std::string str, std::string token) {
     std::vector<std::string> result;
@@ -171,4 +164,42 @@ static std::vector<std::string> SplitStringByWhitespace(const std::string &subje
     using StrIt = std::istream_iterator<std::string>;
     std::vector<std::string> container{StrIt{ss}, StrIt{}};
     return container;
+}
+
+
+inline auto mod_log(const char* msg) -> void {
+#ifdef OAKWOOD_SERVER
+    console::printf("[Oakwood MP] %s\n", msg);
+#else
+    printf("[Oakwood MP] %s\n", msg);
+#endif
+}
+
+inline auto mod_log(std::string msg) -> void {
+#ifdef OAKWOOD_SERVER
+    console::printf("[Oakwood MP] %s\n", msg.c_str());
+#else
+    printf("[Oakwood MP] %s\n", msg.c_str());
+#endif
+}
+
+inline auto mod_debug(const char* msg) -> void {
+#ifdef OAKWOOD_SERVER
+    console::printf("[DEBUG] %s\n", msg);
+#else
+    printf("[DEBUG] %s\n", msg);
+#endif
+}
+
+inline auto mod_get_file_content(std::string file_name) {
+    std::ifstream ifs(file_name);
+    std::string content((std::istreambuf_iterator<char>(ifs)),
+        (std::istreambuf_iterator<char>()));
+
+    return content;
+}
+
+inline auto mod_file_exist(std::string file_name) {
+    std::ifstream infile(file_name);
+    return infile.good();
 }

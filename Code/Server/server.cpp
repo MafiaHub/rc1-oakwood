@@ -83,6 +83,7 @@
 * Core
 */
 
+#include "utils.hpp"
 #include "config.hpp"
 #include "opts.hpp"
 #include "mode.hpp"

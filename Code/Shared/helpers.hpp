@@ -1,6 +1,4 @@
 #pragma once
-#define EXPAND_VEC(VEC) {VEC.x, VEC.y, VEC.z}
-#define EXPLODE_VEC(VEC) VEC.x, VEC.y, VEC.z
 
 #ifdef _WIN32
 std::string get_platform_path() {
@@ -11,38 +9,6 @@ std::string get_platform_path() {
     return temp_path.erase(temp_pos, std::string::npos);
 }
 #endif
-
-inline auto mod_log(const char* msg) -> void {
-#ifdef OAKWOOD_SERVER
-    console::printf("[Oakwood MP] %s\n", msg);
-#else
-    printf("[Oakwood MP] %s\n", msg);
-#endif
-}
-
-inline auto mod_log(std::string msg) -> void {
-#ifdef OAKWOOD_SERVER
-    console::printf("[Oakwood MP] %s\n", msg.c_str());
-#else
-    printf("[Oakwood MP] %s\n", msg.c_str());
-#endif
-}
-
-inline auto mod_debug(const char* msg) -> void {
-#ifdef OAKWOOD_SERVER
-    console::printf("[DEBUG] %s\n", msg);
-#else
-    printf("[DEBUG] %s\n", msg);
-#endif
-}
-
-inline auto mod_get_file_content(std::string file_name) {
-    std::ifstream ifs(file_name);
-    std::string content((std::istreambuf_iterator<char>(ifs)),
-        (std::istreambuf_iterator<char>()));
-
-    return content;
-}
 
 inline auto mod_get_nearest_player(librg_ctx* ctx, zpl_vec3 pos, i32 exception = -1) {
     f32 smallest_distance = 1000.0f;
@@ -73,9 +39,4 @@ inline auto mod_vehicle_assign_nearest_player(librg_ctx *ctx, librg_entity *vehi
     else {
         librg_entity_control_remove(ctx, vehicle->id);
     }
-}
-
-inline auto mod_file_exist(std::string file_name) {
-    std::ifstream infile(file_name);
-    return infile.good();
 }
