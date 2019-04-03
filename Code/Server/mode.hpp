@@ -58,6 +58,7 @@ namespace gamemode {
         proc(&gm);
         
         zpl_dll_unload(dll_handle);
+        zpl_zero_item(&gm);
     }
 
     auto init() {

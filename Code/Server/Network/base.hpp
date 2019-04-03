@@ -7,13 +7,8 @@ namespace network {
     void update() {
         librg_tick(&network_context);
 
-        try {
-            if (gm.on_server_tick)
-                gm.on_server_tick();
-        }
-        catch (...) {
-            // Server might fail on shutdown, especially if on_server_tick was in progress, suppress that.
-        }
+        if (gm.on_server_tick)
+            gm.on_server_tick();
     }
 
     inline auto init() {
