@@ -13,12 +13,12 @@ namespace config {
 
     static const char* file_name = "config/server.json";
     static const char *mod_default_config = "max_players = 16\n"\
-        "name = \"default oakwood server\""\
-        "host = \"\""\
-        "password = \"\""\
-        "visible = true "\
+        "name = \"default oakwood server\"\n"\
+        "host = \"\"\n"\
+        "password = \"\"\n"\
+        "visible = true\n"\
         "port = 27010\n"\
-        "gamemode = \"" default_gamemode "\"";
+        "gamemode = \"" default_gamemode "\"\n";
 
 
 
