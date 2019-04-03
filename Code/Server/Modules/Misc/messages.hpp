@@ -22,13 +22,13 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message* msg) {
-        char text[128] = "";
+        char text[128] = { 0 };
 
         auto entity = librg_entity_find(&network_context, msg->peer);
         auto player = (mafia_player *)entity->user_data;
 
         auto text_len = librg_data_ru16(msg->data);
-        librg_data_rptr(msg->data, text, text_len);
+        librg_data_rptr(msg->data, text, text_len < 128 ? text_len : 128);
 
         auto is_handled = false;
 
