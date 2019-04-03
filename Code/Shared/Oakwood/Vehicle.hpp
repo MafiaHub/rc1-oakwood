@@ -24,6 +24,7 @@ public:
     bool GetMapVisibility();
 
     int GetPlayerSeatID(Player *player);
+    bool IsBeingStreamed();
     
     void SetPosition(zpl_vec3 pos);
     zpl_vec3 GetPosition();
@@ -35,6 +36,7 @@ public:
     float GetHeadingRotation();
 
     mafia_vehicle *GetVehicle();
+    void Destroy();
 
 protected:
     bool destroyedByGame;

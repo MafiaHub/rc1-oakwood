@@ -7,16 +7,21 @@ namespace network {
     void update() {
         librg_tick(&network_context);
 
-        if (gm.on_server_tick)
-            gm.on_server_tick();
+        try {
+            if (gm.on_server_tick)
+                gm.on_server_tick();
+        }
+        catch (...) {
+            // Server might fail on shutdown, especially if on_server_tick was in progress, suppress that.
+        }
     }
 
     inline auto init() {
         mod_log("Initializing librg service...");
-        network_context.max_entities		= 1024;
+        network_context.max_entities		= OAK_MAX_ENTITIES;
         network_context.max_connections		= GlobalConfig.max_players;
         network_context.mode				= LIBRG_MODE_SERVER;
-        network_context.tick_delay			= 32;
+        network_context.tick_delay			= OAK_TICK_DELAY;
         network_context.world_size			= { 32000.0f, 32000.0f, 32000.0f };
         
         librg_init(&network_context);

@@ -7,6 +7,7 @@
 #include "librg/zpl.h"
 
 #include "version.hpp"
+#include "multiplayer.hpp"
 
 /* 
 * Networking library

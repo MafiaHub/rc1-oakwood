@@ -26,9 +26,9 @@ void destroy_vehicle(librg_entity *entity) {
     if (gm.on_vehicle_destroyed)
         gm.on_vehicle_destroyed(entity);
 
+    librg_entity_destroy(&network_context, entity->id);
     delete (mafia_vehicle *)entity->user_data;
     entity->user_data = nullptr;
-    librg_entity_destroy(&network_context, entity->id);
 }
 
 void set_pos(librg_entity *entity, zpl_vec3 position) {

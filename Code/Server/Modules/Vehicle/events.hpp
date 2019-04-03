@@ -1,6 +1,11 @@
 
 inline auto clientstreamer_update(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
+
+    if (vehicle == nullptr) {
+        return;
+    }
+    
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->rot_speed, sizeof(zpl_vec3));
@@ -21,6 +26,12 @@ inline auto clientstreamer_update(librg_event* evnt) {
 
 inline auto entityupdate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
+    
+    if (vehicle == nullptr) {
+        librg_event_reject(evnt);
+        return;
+    }
+    
     librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_speed, sizeof(zpl_vec3));
@@ -41,6 +52,12 @@ inline auto entityupdate(librg_event* evnt) {
 
 inline auto entitycreate(librg_event* evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
+    
+    if (vehicle == nullptr) {
+        librg_event_reject(evnt);
+        return;
+    }
+    
     librg_data_wptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &vehicle->rot_speed, sizeof(zpl_vec3));

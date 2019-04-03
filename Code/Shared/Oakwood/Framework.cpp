@@ -97,6 +97,11 @@ GameMode::GameMode(oak_api *mod) {
         
         return is_handled;
     };
+
+    mod->on_server_tick = [=]() {
+        if (onServerTick)
+            onServerTick();
+    };
 }
 
 GameMode::~GameMode() {
@@ -402,6 +407,12 @@ int Vehicle::GetPlayerSeatID(Player *player)
     return __gm->mod->vtable.vehicle_get_player_seat_id(this->entity, player->GetEntity());
 }
 
+bool Vehicle::IsBeingStreamed()
+{
+    auto entity = GetEntity();
+    return entity->control_peer != nullptr;
+}
+
 void Vehicle::SetPosition(zpl_vec3 pos)
 {
     __gm->mod->vtable.vehicle_set_position(this->entity, pos);
@@ -443,4 +454,9 @@ float Vehicle::GetHeadingRotation()
 mafia_vehicle *Vehicle::GetVehicle()
 {
     return (mafia_vehicle *)entity->user_data;
+}
+
+void Vehicle::Destroy()
+{
+    __gm->mod->vtable.vehicle_destroy(GetEntity());
 }

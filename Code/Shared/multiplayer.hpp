@@ -1,0 +1,2 @@
+#define OAK_MAX_ENTITIES 65536
+#define OAK_TICK_DELAY 32

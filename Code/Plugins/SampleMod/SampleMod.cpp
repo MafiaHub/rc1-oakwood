@@ -19,12 +19,46 @@
 //
 // Entry point
 //
+GameMode *gm = nullptr;
 
 struct VehicleSpawn {
     zpl_vec3 pos;
     float rot;
     int modelID;
 };
+
+#define VEHICLE_INACTIVE_REMOVAL_TIME 5.0f * 60.0f
+
+// Represents vehicle spawned by commands
+class SpawnedVehicle {
+public:
+    SpawnedVehicle(Vehicle *car) {
+        spawnTime = zpl_time_now();
+        spawnedVehicle = car;
+    }
+
+    bool CheckForRemoval() {
+        if (zpl_time_now() - spawnTime > VEHICLE_INACTIVE_REMOVAL_TIME) {
+
+            if (spawnedVehicle->IsBeingStreamed()) {
+                spawnTime = zpl_time_now();
+                return false;
+            }
+
+            spawnedVehicle->Destroy();
+            mod_log("[SampleMod] Vehicle has been removed due to inactivity!");
+            return true;
+        }
+
+        return false;
+    }
+
+private:
+    f64 spawnTime;
+    Vehicle *spawnedVehicle;
+};
+
+std::vector<SpawnedVehicle> spawnedVehicles;
 
 std::vector<VehicleSpawn> vehicle_spawns = {
     {{-1991.89f, -5.09753f, 10.4476f}, 0.0f, 148}, // Manta Prototype
@@ -33,7 +67,6 @@ std::vector<VehicleSpawn> vehicle_spawns = {
     {{-1991.69f, -5.12453f, 22.3242f}, 0.0f, 148}, // Manta Prototype
 };
 
-GameMode *gm = nullptr;
 
 OAK_MOD_MAIN /* (oak_api *mod) */ {
 
@@ -116,6 +149,20 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
+    gm->SetOnServerTick([=]() {
+        // Handle spawned cars
+        {
+            spawnedVehicles.erase(
+                std::remove_if(
+                    spawnedVehicles.begin(),
+                    spawnedVehicles.end(),
+                    [](SpawnedVehicle& v) { return v.CheckForRemoval(); }
+                ),
+                spawnedVehicles.end()
+            );
+        }
+    });
+
     gm->AddCommandHandler("/car", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
             gm->SendMessageToPlayer("Usage: /car [modelID]", player);
@@ -136,6 +183,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto rot = player->GetRotation() - 90.0f;
         auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
         vehicle->ShowOnMap(true);
+
+        spawnedVehicles.push_back(SpawnedVehicle(vehicle));
         
         return true;
     });

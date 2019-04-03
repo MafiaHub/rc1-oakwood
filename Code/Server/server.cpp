@@ -7,6 +7,7 @@
 #include "librg/zpl.h"
 
 #include "version.hpp"
+#include "multiplayer.hpp"
 #define OAKWOOD_SERVER 1
 #define OAKGEN_NATIVE()
 #define OAKGEN_FORWARD()
