@@ -308,7 +308,7 @@ void Player::UnlockCamera()
 
 void Player::PlayAnimation(std::string animation)
 {
-    __gm->mod->vtable.player_play_animation(entity, animation.c_str());
+    __gm->mod->vtable.player_play_animation(entity, zpl_bprintf("%s.i3d", animation.c_str()));
 }
 
 void Player::SetHealth(f32 health)
