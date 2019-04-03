@@ -388,15 +388,6 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* msg) {
-        u32 msg_size = librg_data_ru32(msg->data);
-        u32 msg_color = librg_data_ru32(msg->data);
-        char* text = reinterpret_cast<char*>(malloc(msg_size));
-        librg_data_rptr(msg->data, text, msg_size);
-        text[msg_size] = '\0';
-        MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(text), msg_color);
-    });
-
     librg_network_add(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, [](librg_message* msg) {
         auto player_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
         auto vehicle_id = librg_data_rent(msg->data);

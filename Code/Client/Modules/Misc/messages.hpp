@@ -13,4 +13,13 @@ void add_messages() {
         auto color = librg_data_ru32(msg->data);
         MafiaSDK::GetIndicators()->FadeInOutScreen(do_fade, duration, color);
     });
+
+    librg_network_add(&network_context, NETWORK_SEND_CONSOLE_MSG, [](librg_message* msg) {
+        zpl_local_persist char msg_buf[256] = {0};
+        zpl_memset(msg_buf, 0, 256);
+        u32 msg_size = librg_data_ru32(msg->data);
+        u32 msg_color = librg_data_ru32(msg->data);
+        librg_data_rptr(msg->data, msg_buf, msg_size < 256 ? msg_size : 256);
+        MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(msg_buf), msg_color);
+    });
 }
