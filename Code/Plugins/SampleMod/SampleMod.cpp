@@ -233,6 +233,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto modelID = StringToInteger(args[1]);
 
+        if (modelID == -1) return true;
+
         player->SetModelByID(modelID);
 
         return true;
@@ -269,6 +271,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto playerId = StringToInteger(args[1]);
 
+        if (playerId == -1) return true;
+
         if (playerId < 0 || playerId >= gm->players.GetNumberOfObjects()) {
             gm->SendMessageToPlayer("Invalid ID!", player);
             return true;
@@ -285,7 +289,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
-    gm->AddCommandHandler("/listplayers", [=](Player *player, ArgumentList args) { 
+    gm->AddCommandHandler("/list", [=](Player *player, ArgumentList args) { 
         gm->SendMessageToPlayer("Online players:", player);
 
         for (int32_t i = 0; i < gm->players.GetNumberOfObjects(); i++) {
