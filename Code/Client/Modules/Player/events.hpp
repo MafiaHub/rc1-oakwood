@@ -40,7 +40,7 @@ void target_position_update(mafia_player *player) {
         zpl_vec3 distance;
         zpl_vec3_sub(&distance, current_position, player->interp.pos.target);
 
-        if (zpl_vec3_mag(distance) > distance_treshold) {
+        if (zpl_vec3_mag(distance) > distance_treshold && zpl_vec3_mag(player->interp.pos.target) > 0.01f) {
             new_position = player->interp.pos.target;
             player->interp.pos.finish_time = 0;
         }
