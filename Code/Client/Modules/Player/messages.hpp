@@ -115,6 +115,7 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
+        printf("[debug] NETWORK_PLAYER_FROM_CAR -> Intern_FromCar\n");
 
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));

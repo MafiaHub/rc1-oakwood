@@ -171,6 +171,7 @@ auto inventory_send() -> void {
 * todo add reason killer and so one ...
 */
 inline auto died() -> void {
+    printf("[debug] died -> Intern_FromCar\n");
 
     if (local_player.dead) return;
 
