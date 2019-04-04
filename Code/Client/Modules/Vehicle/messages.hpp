@@ -196,6 +196,7 @@ void add_messages() {
             auto vehicle = (mafia_vehicle*)entity->user_data;
             
             vehicle->car->RepairPosition(true);
+            vehicle->car->SetColsOn(vehicle->collision_state);
         }
     });
 }
