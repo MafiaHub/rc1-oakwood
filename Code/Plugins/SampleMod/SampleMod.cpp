@@ -215,6 +215,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         player->PutToVehicle(vehicle, 0);
 
+        spawnedVehicles.push_back(SpawnedVehicle(vehicle));
+
         return true;
     });
 
