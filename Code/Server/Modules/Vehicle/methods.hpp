@@ -81,3 +81,31 @@ void set_map_vis(librg_entity *entity, b32 state) {
         librg_data_wu8(&data, (u8)state);
     });
 }
+
+void set_transparency(librg_entity *entity, f32 transparency) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->transparency = transparency;
+
+    librg_send(&network_context, NETWORK_VEHICLE_SET_TRANSPARENCY, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wf32(&data, transparency);
+    });
+}
+
+void set_collision_state(librg_entity *entity, b32 state) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->collision_state = state;
+
+    librg_send(&network_context, NETWORK_VEHICLE_SET_COLLISION_STATE, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wu8(&data, (u8)state);
+    });
+}
+
+void repair(librg_entity *entity) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+
+    librg_send(&network_context, NETWORK_VEHICLE_REPAIR, data, {
+        librg_data_went(&data, entity->id);
+    });
+}

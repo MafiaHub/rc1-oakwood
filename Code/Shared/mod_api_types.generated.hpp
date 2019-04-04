@@ -76,3 +76,12 @@ typedef OAK_VEHICLE_SET_POSITION(oak_vehicle_set_position_ptr);
 #define OAK_VEHICLE_SET_DIRECTION(name) void name(librg_entity *entity, zpl_vec3 dir)
 typedef OAK_VEHICLE_SET_DIRECTION(oak_vehicle_set_direction_ptr);
 
+#define OAK_VEHICLE_SET_TRANSPARENCY(name) void name(librg_entity *entity, f32 transparency)
+typedef OAK_VEHICLE_SET_TRANSPARENCY(oak_vehicle_set_transparency_ptr);
+
+#define OAK_VEHICLE_SET_COLLISION_STATE(name) void name(librg_entity *entity, b32 state)
+typedef OAK_VEHICLE_SET_COLLISION_STATE(oak_vehicle_set_collision_state_ptr);
+
+#define OAK_VEHICLE_REPAIR(name) void name(librg_entity *entity)
+typedef OAK_VEHICLE_REPAIR(oak_vehicle_repair_ptr);
+

@@ -26,6 +26,9 @@ auto spawn(zpl_vec3 position,
         new_car->SetEngineOn(spawn_struct->engine_on, spawn_struct->engine_on);
     }
 
+    new_car->SetTransparency(spawn_struct->transparency);
+    new_car->SetColsOn(spawn_struct->collision_state);
+
     veh_inter->health           = spawn_struct->health;
     veh_inter->position			= EXPAND_VEC(position);
     veh_inter->rot_forward		= EXPAND_VEC(spawn_struct->rot_forward);

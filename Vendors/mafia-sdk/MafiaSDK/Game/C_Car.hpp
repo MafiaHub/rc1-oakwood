@@ -118,7 +118,7 @@ namespace MafiaSDK
             }
         }
 
-        void SetCollsOn(bool on)
+        void SetColsOn(bool on)
         {
             bool flipped = !on;
             __asm {

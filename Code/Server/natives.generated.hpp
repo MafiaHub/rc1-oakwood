@@ -24,3 +24,6 @@ vt->vehicle_show_on_map = oak_vehicle_show_on_map;
 vt->vehicle_get_player_seat_id = oak_vehicle_get_player_seat_id;
 vt->vehicle_set_position = oak_vehicle_set_position;
 vt->vehicle_set_direction = oak_vehicle_set_direction;
+vt->vehicle_set_transparency = oak_vehicle_set_transparency;
+vt->vehicle_set_collision_state = oak_vehicle_set_collision_state;
+vt->vehicle_repair = oak_vehicle_repair;

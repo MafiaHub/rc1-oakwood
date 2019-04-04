@@ -24,3 +24,6 @@ oak_vehicle_show_on_map_ptr *vehicle_show_on_map;
 oak_vehicle_get_player_seat_id_ptr *vehicle_get_player_seat_id;
 oak_vehicle_set_position_ptr *vehicle_set_position;
 oak_vehicle_set_direction_ptr *vehicle_set_direction;
+oak_vehicle_set_transparency_ptr *vehicle_set_transparency;
+oak_vehicle_set_collision_state_ptr *vehicle_set_collision_state;
+oak_vehicle_repair_ptr *vehicle_repair;

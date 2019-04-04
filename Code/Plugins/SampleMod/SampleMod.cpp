@@ -326,6 +326,54 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         player->PlayAnimation(animName);
         return true;
     });
+
+    gm->AddCommandHandler("/repair", [=](Player *player, ArgumentList args) {
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) return true;
+
+        vehicle->Repair();
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/transparency", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("USAGE: /transparency [value 0.0 - 1.0]", player);
+            return true;
+        }
+
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) return true;
+
+        auto val = StringToReal(args[1]);
+
+        if (val == -1) return true;
+
+        vehicle->SetTransparency(val);
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/cols", [=](Player *player, ArgumentList args) {
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) return true;
+
+        auto state = !vehicle->GetCollisionState();
+
+        vehicle->SetCollisionState(state);
+
+        if (!state) {
+            vehicle->SetTransparency(0.5f);
+        }
+        else {
+            vehicle->SetTransparency(1.0f);
+        }
+
+        return true;
+    });
 }
 
 OAK_MOD_SHUTDOWN {

@@ -191,6 +191,24 @@ extern "C" {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
         modules::vehicle::set_dir(entity, dir);
     }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_set_transparency(librg_entity *entity, f32 transparency) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+        modules::vehicle::set_transparency(entity, transparency);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_set_collision_state(librg_entity *entity, b32 state) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+        modules::vehicle::set_collision_state(entity, state);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_repair(librg_entity *entity) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+        modules::vehicle::repair(entity);
+    }
 }
 
 auto set_up_natives() -> void {

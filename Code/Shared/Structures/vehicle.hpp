@@ -25,6 +25,9 @@ struct mafia_vehicle {
 			tyres[i].health = 100.0f;
 			tyres[i].flags = 0x0;
 		}
+
+		transparency = 1.0f;
+		collision_state = true;
 	}
 
 	char model[32];
@@ -51,6 +54,8 @@ struct mafia_vehicle {
     zpl_vec3 rot_up;
     zpl_vec3 rot_speed;
 	zpl_vec3 speed;
+	f32 transparency;
+	b32 collision_state;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
     std::vector<mafia_vehicle_deform> deform_deltas;

@@ -32,6 +32,14 @@ public:
     void SetDirection(zpl_vec3 dir);
     zpl_vec3 GetDirection();
 
+    void SetTransparency(float transparency);
+    float GetTransparency();
+
+    void SetCollisionState(bool state);
+    bool GetCollisionState();
+
+    void Repair();
+
     void SetHeadingRotation(float angle);
     float GetHeadingRotation();
 

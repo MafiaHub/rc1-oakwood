@@ -438,6 +438,32 @@ zpl_vec3 Vehicle::GetDirection()
     return  { 0.0f, 0.0f, 0.0f };
 }
 
+void Vehicle::SetTransparency(float transparency)
+{
+    __gm->mod->vtable.vehicle_set_transparency(this->entity, transparency);
+}
+
+float Vehicle::GetTransparency()
+{
+    return GetVehicle()->transparency;
+}
+
+void Vehicle::SetCollisionState(bool state)
+{
+    __gm->mod->vtable.vehicle_set_collision_state(this->entity, state);
+}
+
+bool Vehicle::GetCollisionState()
+{
+    return GetVehicle()->collision_state;
+}
+
+void Vehicle::Repair()
+{
+    __gm->mod->vtable.vehicle_repair(this->entity);
+}
+
+
 void Vehicle::SetHeadingRotation(float angle)
 {
     auto dir = ComputeDirVector(angle);
