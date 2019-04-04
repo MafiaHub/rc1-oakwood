@@ -28,7 +28,8 @@ void add_messages() {
         auto player = (mafia_player *)entity->user_data;
 
         auto text_len = librg_data_ru16(msg->data);
-        librg_data_rptr(msg->data, text, text_len < 128 ? text_len : 128);
+        text_len = zpl_min(text_len, 128);
+        librg_data_rptr(msg->data, text, text_len);
 
         auto is_handled = false;
 

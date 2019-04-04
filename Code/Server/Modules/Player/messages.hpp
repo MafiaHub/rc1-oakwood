@@ -178,6 +178,8 @@ void add_messages() {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
         auto door_name_len = librg_data_ru32(msg->data);
         char door_name[32];
+
+        door_name_len = zpl_min(door_name_len, 32);
         librg_data_rptr(msg->data, door_name, door_name_len);
         door_name[door_name_len] = '\0';
 
