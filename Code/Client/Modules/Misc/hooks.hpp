@@ -44,7 +44,7 @@ float vd_min = 20.0f;
 float vd_max = 450.0f;
 float vd_value = GlobalConfig.view_distance > 0.0f ? GlobalConfig.view_distance : vd_max;
 
-void __declspec(naked)VD_Hook_1_0_ENG() {
+void __declspec(naked)HandleFogSettings() {
 	_asm {
 		ADD[ESP], 0x2;
 		FLD DWORD PTR DS : [ESP + 0x0B8];	
@@ -70,6 +70,6 @@ inline auto init() {
     auto vd_value2 = vd_value - 20.0f;
     MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
     MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)&vd_value2, 4);
-    MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)VD_Hook_1_0_ENG);
+    MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)HandleFogSettings);
     MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
 }
