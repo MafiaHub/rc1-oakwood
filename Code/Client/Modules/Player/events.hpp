@@ -281,6 +281,8 @@ inline auto entityupdate(librg_event* evnt) -> void {
 }
 
 inline auto entityremove(librg_event* evnt) -> void {
+    printf("[debug] entityremove -> Intern_FromCar\n");
+
     auto player = (mafia_player *)evnt->entity->user_data;
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
