@@ -17,7 +17,6 @@
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
 #include "librg/librg.h"
-#include "Network/interpolation.hpp"
 
 /*
 * STL Includes
