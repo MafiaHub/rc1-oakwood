@@ -34,6 +34,8 @@ namespace MafiaSDK
 		{
 			Engine = 0x004E1CE0,
 			SetEngineOn = 0x004CB5B0,
+            SetTransparency = 0x004233E0,
+            RepairPosition = 0x0041E690,
 			SetGear = 0x004CB070,
 			GearSnd = 0x004ED810,
 			GetSeatProperty = 0x0041DC30,
@@ -91,6 +93,43 @@ namespace MafiaSDK
 				call functionAddress
 			}
 		}
+
+        void SetTransparency(float alpha)
+        {
+            unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::SetTransparency;
+
+            __asm
+            {
+                push alpha
+                mov ecx, this
+                call functionAddress
+            }
+        }
+
+        void RepairPosition(bool repairWindows)
+        {
+            unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::RepairPosition;
+
+            __asm
+            {
+                push repairWindows
+                mov ecx, this
+                call functionAddress
+            }
+        }
+
+        void SetCollsOn(bool on)
+        {
+            bool flipped = !on;
+            __asm {
+                mov esi, this
+                mov dl, on
+                mov cl, flipped
+                mov byte ptr ds : [esi + 0x201B] , dl
+                mov byte ptr ds : [esi + 0x221A] , cl
+                mov byte ptr ds : [esi + 0x20F4] , cl
+            }
+        }
 
 		/* --- C_Vehicle Function here :) --- */
 		void SetEngineOn(BOOL arg1, BOOL arg2)
