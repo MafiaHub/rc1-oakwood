@@ -279,7 +279,7 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->accelerating = librg_data_rf32(evnt->data);
     vehicle->is_visible_on_map = librg_data_ru8(evnt->data);
     vehicle->transparency = librg_data_rf32(evnt->data);
-    vehicle->collision_state = librg_data_ru32(evnt->data);
+    vehicle->collision_state = librg_data_ru8(evnt->data);
 
     vehicle->car = spawn(position, vehicle);
 
