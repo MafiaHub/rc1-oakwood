@@ -351,6 +351,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         if (val == -1) return true;
 
+        val = zpl_clamp(val, 0, 1);
+
         vehicle->SetTransparency(val);
 
         return true;
