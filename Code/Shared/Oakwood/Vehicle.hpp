@@ -43,6 +43,9 @@ public:
     void SetHeadingRotation(float angle);
     float GetHeadingRotation();
 
+    void SetFuel(float fuel);
+    float GetFuel();
+
     mafia_vehicle *GetVehicle();
     void Destroy();
 

@@ -209,6 +209,12 @@ extern "C" {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
         modules::vehicle::repair(entity);
     }
+
+    OAKGEN_NATIVE();
+    void oak_vehicle_set_fuel(librg_entity *entity, f32 fuel) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_VEHICLE) {};
+        modules::vehicle::set_fuel(entity, fuel);
+    }
 }
 
 auto set_up_natives() -> void {

@@ -27,3 +27,4 @@ oak_vehicle_set_direction_ptr *vehicle_set_direction;
 oak_vehicle_set_transparency_ptr *vehicle_set_transparency;
 oak_vehicle_set_collision_state_ptr *vehicle_set_collision_state;
 oak_vehicle_repair_ptr *vehicle_repair;
+oak_vehicle_set_fuel_ptr *vehicle_set_fuel;

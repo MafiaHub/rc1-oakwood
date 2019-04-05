@@ -477,6 +477,16 @@ float Vehicle::GetHeadingRotation()
     return angle;
 }
 
+void Vehicle::SetFuel(float fuel)
+{
+    __gm->mod->vtable.vehicle_set_fuel(this->entity, fuel);
+}
+
+float Vehicle::GetFuel()
+{
+    return GetVehicle()->fuel;
+}
+
 mafia_vehicle *Vehicle::GetVehicle()
 {
     return (mafia_vehicle *)entity->user_data;

@@ -85,3 +85,6 @@ typedef OAK_VEHICLE_SET_COLLISION_STATE(oak_vehicle_set_collision_state_ptr);
 #define OAK_VEHICLE_REPAIR(name) void name(librg_entity *entity)
 typedef OAK_VEHICLE_REPAIR(oak_vehicle_repair_ptr);
 
+#define OAK_VEHICLE_SET_FUEL(name) void name(librg_entity *entity, f32 fuel)
+typedef OAK_VEHICLE_SET_FUEL(oak_vehicle_set_fuel_ptr);
+

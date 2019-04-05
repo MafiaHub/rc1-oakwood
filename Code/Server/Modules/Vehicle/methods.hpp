@@ -109,3 +109,8 @@ void repair(librg_entity *entity) {
         librg_data_went(&data, entity->id);
     });
 }
+
+void set_fuel(librg_entity *entity, f32 fuel) {
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+    vehicle->fuel = fuel;
+}
