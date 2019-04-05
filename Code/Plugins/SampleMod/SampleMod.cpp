@@ -358,6 +358,25 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
+    gm->AddCommandHandler("/fuel", [=](Player *player, ArgumentList args) {
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("USAGE: /fuel [value]", player);
+            return true;
+        }
+
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) return true;
+
+        auto val = StringToReal(args[1]);
+
+        if (val == -1) return true;
+
+        vehicle->SetFuel(val);
+
+        return true;
+    });
+
     gm->AddCommandHandler("/cols", [=](Player *player, ArgumentList args) {
         auto vehicle = player->GetVehicle();
 
