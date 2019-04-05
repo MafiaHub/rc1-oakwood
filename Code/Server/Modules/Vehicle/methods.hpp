@@ -26,8 +26,32 @@ void destroy_vehicle(librg_entity *entity) {
     if (gm.on_vehicle_destroyed)
         gm.on_vehicle_destroyed(entity);
 
+    auto vehicle = (mafia_vehicle*)entity->user_data;
+
+    for(size_t i = 0; i < 4; i++)
+    {
+        auto pid = vehicle->seats[i];
+
+        if (pid == -1) continue;
+
+        auto player_ent = librg_entity_fetch(&network_context, pid);
+
+        if (player_ent && player_ent->user_data) {
+            auto player = (mafia_player*)player_ent->user_data;
+
+            player->vehicle_id = -1;
+
+            mod_message_send(&network_context, NETWORK_PLAYER_FROM_CAR, [&](librg_data *data) {
+                librg_data_went(data, player_ent->id);
+                librg_data_went(data, entity->id);
+                librg_data_wu32(data, i);
+            });
+        }
+    }
+
     librg_entity_destroy(&network_context, entity->id);
-    delete (mafia_vehicle *)entity->user_data;
+    delete vehicle;
+    
     entity->user_data = nullptr;
 }
 

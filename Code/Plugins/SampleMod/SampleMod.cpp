@@ -57,9 +57,9 @@ public:
         return false;
     }
 
+    Vehicle *spawnedVehicle;
 private:
     f64 spawnTime;
-    Vehicle *spawnedVehicle;
 };
 
 std::vector<SpawnedVehicle> spawnedVehicles;
@@ -333,6 +333,27 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (!vehicle) return true;
 
         vehicle->Repair();
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/delcar", [=](Player *player, ArgumentList args) {
+        auto vehicle = player->GetVehicle();
+
+        if (!vehicle) return true;
+
+        if (vehicle->GetPlayerSeatID(player) != 0) return true;
+
+        auto it = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+            return vs.spawnedVehicle == vehicle;
+        });
+
+        if (it != spawnedVehicles.end()) {
+            auto index = std::distance(spawnedVehicles.begin(), it);
+            spawnedVehicles.erase(spawnedVehicles.begin()+index);
+        }
+
+        vehicle->Destroy();
 
         return true;
     });
