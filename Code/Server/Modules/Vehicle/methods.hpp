@@ -21,7 +21,7 @@ librg_entity *spawn_vehicle(zpl_vec3 position, zpl_vec3 rotation, char *model, b
 }
 
 void destroy_vehicle(librg_entity *entity) {
-    if (entity == nullptr) return;
+    if (!entity || !entity->user_data) return;
 
     if (gm.on_vehicle_destroyed)
         gm.on_vehicle_destroyed(entity);

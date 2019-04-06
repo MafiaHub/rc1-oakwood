@@ -36,9 +36,10 @@ inline auto mode_generate_spawn() -> zpl_vec3 {
 // Represents vehicle spawned by commands
 class SpawnedVehicle {
 public:
-    SpawnedVehicle(Vehicle *car) {
+    SpawnedVehicle(Vehicle *car, Player *plr) {
         spawnTime = zpl_time_now();
         spawnedVehicle = car;
+        user = plr;
     }
 
     bool CheckForRemoval() {
@@ -58,6 +59,7 @@ public:
     }
 
     Vehicle *spawnedVehicle;
+    Player *user;
 private:
     f64 spawnTime;
 };
@@ -182,6 +184,15 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         if (modelID == -1) return true;
 
+        auto oldCar = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+            return vs.user == player;
+        });
+
+        if (oldCar != spawnedVehicles.end()) {
+            oldCar->spawnedVehicle->Destroy();
+            spawnedVehicles.erase(oldCar);
+        }
+
         auto position = player->GetPosition();
         auto dir = ComputeDirVector(player->GetRotation());
         dir *= 1.5f;
@@ -191,7 +202,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
-        spawnedVehicles.push_back(SpawnedVehicle(vehicle));
+        spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
         
         return true;
     });
@@ -211,13 +222,22 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         
         if (modelID == -1) return true;
 
+        auto oldCar = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+            return vs.user == player;
+        });
+
+        if (oldCar != spawnedVehicles.end()) {
+            oldCar->spawnedVehicle->Destroy();
+            spawnedVehicles.erase(oldCar);
+        }
+
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
         if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
         player->PutToVehicle(vehicle, 0);
 
-        spawnedVehicles.push_back(SpawnedVehicle(vehicle));
+        spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
 
         return true;
     });
