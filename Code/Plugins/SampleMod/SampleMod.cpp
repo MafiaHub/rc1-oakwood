@@ -266,6 +266,11 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     gm->AddCommandHandler("/tp", [=](Player *player, ArgumentList args) {
         auto vehicle = player->GetVehicle();
 
+        if (args.size() < 2) {
+            gm->SendMessageToPlayer("USAGE: /tp [id]", player);
+            return true;
+        }
+
         if (vehicle) {
             gm->SendMessageToPlayer("You are sitting in a car!", player);
             return true;
