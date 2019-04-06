@@ -6,11 +6,11 @@ struct weapon {
 };
 
 weapon colt = { "2c1911.i3d",{ 9, 50, 50, 0 } };
-weapon grenade = { "2grenade.i3d",{ 15, 1, 1, 0 } };
+weapon tommy = { "2tommy.i3d",{ 10, 1, 1, 0 } };
 weapon palka = { "2palka.i3d",{ 4, 1, 1, 0 } };
 
 weapon *weaponlist[] = {
-    &grenade,
+    &tommy,
     &colt,
     &palka
 };

@@ -188,6 +188,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         position += dir;
         auto rot = player->GetRotation() - 90.0f;
         auto vehicle = gm->SpawnVehicleByID(position, rot, modelID);
+        if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
         spawnedVehicles.push_back(SpawnedVehicle(vehicle));
@@ -211,6 +212,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (modelID == -1) return true;
 
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
+        if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
         player->PutToVehicle(vehicle, 0);
