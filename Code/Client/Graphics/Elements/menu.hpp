@@ -201,6 +201,14 @@ namespace menu {
                 strcpy(GlobalConfig.server_address, MafiaSDK::GetGMMenu()->GetText(Component::ConnectIP));
                 if (strlen(GlobalConfig.server_address)) {
                     
+                    std::string addr = GlobalConfig.server_address;
+
+                    if (zpl_char_first_occurence(GlobalConfig.server_address, ':')) {
+                        auto parts = split(addr, ":");
+                        strcpy(GlobalConfig.server_address, parts[0].c_str());
+                        GlobalConfig.port = StringToInteger(parts[1]);
+                    }
+
                     auto player = modules::player::get_local_player();
                     if (player) {
                         zpl_zero_item(player);
