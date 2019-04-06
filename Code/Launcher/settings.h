@@ -17,7 +17,6 @@ struct mafia_settings {
 extern mafia_settings settings;
 
 /* settings */
-#define OAKWOOD_CONSOLE 1
 constexpr const char *OAKWOOD_CONFIG_NAME = "config/launcher.json";
 constexpr const char *OAKWOOD_CONFIG_DATA = R"foo(
 {

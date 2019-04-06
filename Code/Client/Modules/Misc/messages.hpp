@@ -22,4 +22,10 @@ void add_messages() {
         librg_data_rptr(msg->data, msg_buf, msg_size < 256 ? msg_size : 256);
         MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char*>(msg_buf), msg_color);
     });
+
+    librg_network_add(&network_context, NETWORK_SEND_REJECTION, [](librg_message* msg) {
+        MessageBox(NULL, "The client's version is incompatible with the server!", "Version mismatch.", MB_OK);
+        
+        ExitProcess(ERROR_SUCCESS);
+    });
 }

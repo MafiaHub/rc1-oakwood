@@ -13,11 +13,8 @@ inline auto mod_init_game() {
     graphics::hook();
     input::hook();
     crashhandler::init();
-    //voip::init();
-
     config::init();
     mod_bind_events();
     mod_init_networking();
-    //alloc_console();
 }
 
