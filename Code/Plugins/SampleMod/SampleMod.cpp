@@ -349,8 +349,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         });
 
         if (it != spawnedVehicles.end()) {
-            auto index = std::distance(spawnedVehicles.begin(), it);
-            spawnedVehicles.erase(spawnedVehicles.begin()+index);
+            spawnedVehicles.erase(it);
         }
 
         vehicle->Destroy();
