@@ -93,6 +93,12 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     zpl_file_contents gamefile = zpl_file_read_contents(zpl_heap(), true, gamepath.c_str());
     zpl_printf("[info] loaded game binary (%lf MB)\n", gamefile.size / 1024.0f / 1024.0f);
 
+    u32 gamefile_hash = zpl_crc32(gamefile.data, gamefile.size);
+    if (gamefile_hash != 0xFE21781) {
+        launcher_abort("Cannot start Oakwood WRONG VERSION.\nPlease check your version of game !\nSupported vendors are: Steam, Discord, GOG ( Version 1.2 )");
+        return 0;
+    }
+
     auto base = GetModuleHandle(nullptr);
     ExecutableLoader loader((const u8 *)gamefile.data);
 
