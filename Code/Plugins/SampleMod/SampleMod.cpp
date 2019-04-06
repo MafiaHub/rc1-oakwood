@@ -120,13 +120,13 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     });
 
     gm->SetOnVehicleDestroyed([=](Vehicle *vehicle) {
-        auto it = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+        /* auto it = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
             return vs.spawnedVehicle == vehicle;
         });
 
         if (it != spawnedVehicles.end()) {
             spawnedVehicles.erase(it);
-        }
+        } */
     });
 
     gm->SetOnPlayerDied([=](Player *player) {
@@ -167,7 +167,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->SetOnServerTick([=]() {
         // Handle spawned cars
-        {
+        /* {
             spawnedVehicles.erase(
                 std::remove_if(
                     spawnedVehicles.begin(),
@@ -176,7 +176,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
                 ),
                 spawnedVehicles.end()
             );
-        }
+        } */
     });
 
     gm->AddCommandHandler("/car", [=](Player *player, ArgumentList args) {
@@ -193,7 +193,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto modelID = StringToInteger(args[1]);
 
         if (modelID == -1) return true;
-
+/* 
         auto oldCar = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
             return vs.user == player;
         });
@@ -202,7 +202,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             oldCar->spawnedVehicle->Destroy();
             spawnedVehicles.erase(oldCar);
         }
-
+ */
         auto position = player->GetPosition();
         auto dir = ComputeDirVector(player->GetRotation());
         dir *= 1.5f;
@@ -212,7 +212,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
-        spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
+        //spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
         
         return true;
     });
@@ -232,7 +232,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         
         if (modelID == -1) return true;
 
-        auto oldCar = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+/*         auto oldCar = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
             return vs.user == player;
         });
 
@@ -240,14 +240,14 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             oldCar->spawnedVehicle->Destroy();
             spawnedVehicles.erase(oldCar);
         }
-
+ */
         auto vehicle = gm->SpawnVehicleByID(player->GetPosition(), player->GetRotation(), modelID);
         if (!vehicle) return true;
         vehicle->ShowOnMap(true);
 
         player->PutToVehicle(vehicle, 0);
 
-        spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
+        //spawnedVehicles.push_back(SpawnedVehicle(vehicle, player));
 
         return true;
     });
