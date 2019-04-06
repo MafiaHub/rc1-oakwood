@@ -352,6 +352,11 @@ inline auto remove_temporary_actor(void* base) -> void {
     if (vehicle_ent) {
         auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
         if (vehicle) {
+            if (!(vehicle->clientside_flags & CLIENTSIDE_VEHICLE_STREAMER_REMOVED)) {
+                librg_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, data, {
+                    librg_data_wu32(&data, vehicle_ent->id);
+                });
+            }
             vehicle->car = nullptr;
         }
     }
