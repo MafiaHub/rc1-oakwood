@@ -197,6 +197,16 @@ void add_messages() {
             
             vehicle->car->RepairPosition(true);
             vehicle->car->SetColsOn(vehicle->collision_state);
+
+            auto vehicle_int = vehicle->car->GetInterface()->vehicle_interface;
+            vehicle->interp.pos.target = EXPAND_VEC(vehicle_int.position);
+            vehicle->interp.pos.finish_time = 0.0f;
+
+            vehicle->interp.rot_forward.target = EXPAND_VEC(vehicle_int.rot_forward);
+            vehicle->interp.rot_forward.finish_time = 0.0f;
+
+            vehicle->interp.rot_up.target = EXPAND_VEC(vehicle_int.rot_up);
+            vehicle->interp.rot_up.finish_time = 0.0f;
         }
     });
 }
