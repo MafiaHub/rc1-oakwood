@@ -119,6 +119,16 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         gm->BroadcastMessage("Player " + player->GetName() + " left the server."); 
     });
 
+    gm->SetOnVehicleDestroyed([=](Vehicle *vehicle) {
+        auto it = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
+            return vs.spawnedVehicle == vehicle;
+        });
+
+        if (it != spawnedVehicles.end()) {
+            spawnedVehicles.erase(it);
+        }
+    });
+
     gm->SetOnPlayerDied([=](Player *player) {
         player->Fadeout(true, 500, 0xFFFFFF);
         player->Fadeout(false, 500, 0xFFFFFF);

@@ -189,6 +189,11 @@ void GameMode::SetOnServerTick(std::function<void()> callback)
     onServerTick = callback;
 }
 
+void GameMode::SetOnVehicleDestroyed(std::function<void(Vehicle *)> callback)
+{
+    onVehicleDestroyed = callback;
+}
+
 void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*,std::vector<std::string>)> callback)
 {
     commands[command] = callback;

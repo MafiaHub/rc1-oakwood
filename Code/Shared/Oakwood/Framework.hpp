@@ -107,6 +107,7 @@ public:
     void SetOnPlayerHit(std::function<void(Player*,Player*,float)> callback);
     void SetOnPlayerChat(std::function<bool(Player*,std::string msg)> callback);
     void SetOnServerTick(std::function<void()> callback);
+    void SetOnVehicleDestroyed(std::function<void(Vehicle *)> callback);
 
     //
     // Global stuff
