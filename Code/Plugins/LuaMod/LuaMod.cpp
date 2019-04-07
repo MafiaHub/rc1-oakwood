@@ -5,7 +5,7 @@ LuaMod is an example of lua bindings for Oakwood
 */
 
 #define ZPL_IMPLEMENTATION
-#include <Oakwood/Oakwood.hpp>
+#include <Oakwood/Framework.hpp>
 #include <sol/sol.hpp>
 
 #define BIND_FUNCTION(parent, name)\
@@ -15,10 +15,10 @@ LuaMod is an example of lua bindings for Oakwood
 sol::state lua;
 
 OAK_MOD_MAIN{
-    mod->name = "freeride";
-    mod->author = "Oak Devs";
-    mod->version = "v1.0.0";
-
+    mod->name       = "freeride";
+    mod->author     = "Oak Devs";
+    mod->version    = "v1.0.0";
+    
     lua.open_libraries(sol::lib::base, sol::lib::coroutine, sol::lib::string, sol::lib::io);
 
     lua.new_usertype<zpl_vec3>("zpl_vec3",
@@ -37,5 +37,5 @@ OAK_MOD_MAIN{
     #include "LuaBindings.hpp"
     
     lua["gm"] = new GameMode(mod);
-    lua.script_file(GlobalConfig.localpath + "files/main.lua");
+    lua.script_file("files/main.lua");
 }

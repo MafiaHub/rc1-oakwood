@@ -64,9 +64,32 @@ function generateFromFile(file, on_finished) {
     
         if(!public_section) return '';
 
-        if(line.indexOf('(') > -1 && line.indexOf(')') > -1) {
+        let forbiden = [
+        	'if',
+        	'for',
+        	'while',
+        	'==',
+        	'return'
+        ];
+
+        let contains = (line)=> {
+        	for(let key in forbiden) {
+        		if(line.indexOf(forbiden[key]) > -1) {
+        			if(line.indexOf('{') > -1 && (line.indexOf('return') > -1 || line.indexOf('=') > -1)) 
+        				continue;
+
+        			return true;
+        		}
+        	}
+        	return false;
+        }
+
+        if(line.indexOf('(') > -1 && line.indexOf(')') > -1 && !contains(line)) {
             let name = extractFunctionName(line);
-            if(name != '') {
+            if(name != '' && name.indexOf(current_class_name) == -1) {
+            	if(name.indexOf(' ') > -1) {
+            		//name = name.split(' ')[1];
+            	}
                 current_class_functions.push(name);
             }
         }
@@ -95,6 +118,7 @@ function extractClassName(line) {
     let className = '';
     if(line.indexOf('class') > -1) {
         let afterClassName = line.split('class ')[1];
+       	if(afterClassName == undefined) return '';
 
         for(let i = 0; i < afterClassName.length; i++) {
             if(afterClassName[i] == ' ' || afterClassName[i] == '{' || afterClassName[i] == '\n')
@@ -126,6 +150,24 @@ function extractFunctionName(line) {
                 functionName += beforeFunctionBracket[i];
         }
 
+        if (functionName.indexOf('{') > -1) {
+        	functionName = functionName.substr(0, functionName.indexOf('{'));
+        }
+
+        if(functionName.indexOf('*') > -1) {
+        	functionName = functionName.replace('*', '');
+        }
+
+    	let index = functionName.lastIndexOf(' ');
+    	if(index != -1) {
+    		functionName = functionName.substr(index);
+    	}
+        	
+
+        if(functionName == undefined)
+        	functionName = '';
+
+
         return functionName;
     }
 }
@@ -139,10 +181,14 @@ function generateBindings() {
         let currentFunctionIdx = 0
         currentClass.functions.forEach((functionName)=> {
             
-            if(currentClass.functions.length - 1 == currentFunctionIdx) 
-                returnString += '\tBIND_FUNCTION(' + currentClass.name + ', ' + functionName + ')\n);\n\n';
-            else
-                returnString += '\tBIND_FUNCTION(' + currentClass.name + ', ' + functionName + '),\n';
+            if(functionName != '' && functionName != ' ') {
+
+	            if(currentClass.functions.length - 1 == currentFunctionIdx) 
+	                returnString += '\tBIND_FUNCTION(' + currentClass.name + ', ' + functionName + ')\n);\n\n';
+	            else
+	                returnString += '\tBIND_FUNCTION(' + currentClass.name + ', ' + functionName + '),\n';
+	            
+            }
             
             currentFunctionIdx++;
         });
