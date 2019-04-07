@@ -25,6 +25,7 @@ void on_librg_disconnect(librg_event* evnt) {
         player->ped = nullptr;
     }
 
+    MafiaSDK::GetMission()->MapLoad("freeride");
     librg_network_stop(evnt->ctx);
     mod_librg_connect();
 }

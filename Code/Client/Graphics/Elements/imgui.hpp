@@ -47,6 +47,8 @@ namespace imgui {
 #endif            
         }
 
+        modules::playerlist::render();
+
         ImGui::EndFrame();
         ImGui::Render();
         ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());

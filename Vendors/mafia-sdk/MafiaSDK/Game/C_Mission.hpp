@@ -99,6 +99,12 @@ namespace MafiaSDK
             }
         }
 
+        void MapLoad(const char* mapName)
+        {
+            strcpy((char*)0x00647BA0, mapName);
+            *(BYTE*)(0x00647B9C) = 1;
+        }
+
         void AddActor(C_Actor* actor, BOOL unk)
         {
             unsigned long funcAddress = C_Mission_Enum::FunctionAddresses::AddActor;
