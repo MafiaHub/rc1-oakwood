@@ -28,6 +28,7 @@ type Server struct {
 	PasswordProtected bool   `json:"pass"`
 	ServerHost        string `json:"host"`
 	ServerPort        string `json:"port"`
+	ServerVersion     string `json:"version"`
 	updatedAt         int64
 }
 
