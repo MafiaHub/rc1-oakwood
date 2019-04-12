@@ -80,6 +80,12 @@ namespace pausemenu {
                     exit(0);
                 }
 
+                ImGui::SameLine();
+
+                if (ImGui::Button("Save")) {
+                    mainmenu::generate_profile();
+                }
+
                 ImGui::EndTabBar();
             }
             

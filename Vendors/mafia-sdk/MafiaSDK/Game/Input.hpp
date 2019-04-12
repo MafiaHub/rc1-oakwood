@@ -39,6 +39,10 @@ namespace MafiaSDK
     };
 
     struct GameKey {
+        GameKey() {
+            zpl_zero_item(this);
+        }
+
         GameKey(DWORD dik, GameKey_Type type) {
             dik_key = (dik << 16) | (WORD)type;
         }

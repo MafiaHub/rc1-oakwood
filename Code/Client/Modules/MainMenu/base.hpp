@@ -145,16 +145,99 @@ namespace mainmenu {
     }
 
     /*
-    * Save all settings into json file 
+    * Save all settings into file 
     */
-    inline auto generate_profile() -> std::string {        
+    struct OakwoodProfileStruct {
+        u8 username[32];
+        u8 address[32];
+        u32 port;
+        MafiaSDK::GameKey key_bindings[60];
+
+        f32 aim_speed;
+        f32 aim_sensitivity_x;
+        f32 aim_sensitivity_y;
+        f32 steering_linearity;
+
+        u8 crosshair_type;
+        u8 speedometer_type;
+        u8 sideroll;
+        u8 mouse_control;
+        u8 enable_subtitles;
+
+        f32 sounds_slider;
+        f32 cars_slider;
+        f32 music_slider;
+        f32 speech_slider;
+    };
+
+    /*
+    * Generates oakwood profile containing all game & multiplayer settings
+    */
+    inline auto generate_profile() {        
+        OakwoodProfileStruct save_struct;
+        strcpy((char*)save_struct.username, GlobalConfig.username);
+        strcpy((char*)save_struct.address, GlobalConfig.server_address);
+        save_struct.port = GlobalConfig.port;
+        memcpy(save_struct.key_bindings, MafiaSDK::GetKeysBuffer(), sizeof(MafiaSDK::GameKey) * 60);    
+
+        save_struct.aim_sensitivity_x = *(float*)(AIM_SENSITIVITY_X);
+        save_struct.aim_sensitivity_y = *(float*)(AIM_SENSITIVITY_Y);
+        save_struct.aim_speed         = *(float*)(AIM_SPEED);
+
+        save_struct.steering_linearity  = *(float*)(STEERING_LINEARITY);
+        save_struct.crosshair_type      = *(BYTE*)(CROSSHAIR_TYPE);
+        save_struct.speedometer_type    = *(bool*)(SPEEDOMETER_TYPE);
+        save_struct.sideroll            = *(bool*)(SIDE_ROLL);
+        save_struct.mouse_control       =  *(bool*)(MOUSE_CONTROL);
+        save_struct.enable_subtitles    = *(bool*)(ENABLE_SUBTITLES);
+
+
+        save_struct.sounds_slider       = *(float*)(SOUNDS_SLIDER);
+        save_struct.cars_slider         = *(float*)(SOUND_GAME_ADDR);
+        save_struct.music_slider        = *(float*)(MUSIC_SLIDER);
+        save_struct.speech_slider       = *(float*)(SPEECH_SLIDER);
+
+        std::ofstream save_file("OakwoodProfile.data", std::ios::binary);
+        save_file.write((const char*)& save_struct, sizeof(OakwoodProfileStruct));
     }
 
     /*
-    * Load all settings from json file 
+    * Load all settings from file 
     */
     inline auto load_profile() -> void {
+        std::ifstream load_file("OakwoodProfile.data", std::ios::binary);
+        if (load_file.good()) {
+            OakwoodProfileStruct save_struct;
+            load_file.read((char*)&save_struct, sizeof(OakwoodProfileStruct));
+            
+            strcpy(GlobalConfig.username, (char*)save_struct.username);
+            strcpy(GlobalConfig.server_address, (char*)save_struct.address);
+            GlobalConfig.port = save_struct.port;
 
+            auto game_key_buffer = MafiaSDK::GetKeysBuffer();
+            memcpy(game_key_buffer, save_struct.key_bindings, sizeof(MafiaSDK::GameKey) * 60);
+            for (int i = 0; i < 60; i++) {
+                MafiaSDK::GetInput()->BindKey(*game_key_buffer, i);
+                game_key_buffer++;
+            }
+
+            *(float*)(AIM_SENSITIVITY_X) = save_struct.aim_sensitivity_x;
+            *(float*)(AIM_SENSITIVITY_Y) = save_struct.aim_sensitivity_y;
+            *(float*)(AIM_SPEED) = save_struct.aim_speed;
+
+            *(float*)(STEERING_LINEARITY)   = save_struct.steering_linearity;
+            *(BYTE*)(CROSSHAIR_TYPE)        = save_struct.crosshair_type;
+            *(bool*)(SPEEDOMETER_TYPE)  = save_struct.speedometer_type;
+            *(bool*)(SIDE_ROLL)         = save_struct.sideroll;
+            *(bool*)(MOUSE_CONTROL)     = save_struct.mouse_control;
+            *(bool*)(ENABLE_SUBTITLES)  = save_struct.enable_subtitles;
+
+
+            *(float*)(SOUNDS_SLIDER)    = save_struct.sounds_slider;
+            *(float*)(SOUND_GAME_ADDR)  = save_struct.cars_slider;
+            *(float*)(MUSIC_SLIDER)     = save_struct.music_slider;
+            *(float*)(SPEECH_SLIDER)    = save_struct.speech_slider;
+        }
     }
 
     /*
@@ -204,10 +287,11 @@ namespace mainmenu {
     }
 
     inline void init() {
-        is_active = true;
+        load_profile();
         fetch_master_server();
         generate_browser_list();
         input::block_input(true);
+        is_active = true;
     }
 
     /*
@@ -508,7 +592,7 @@ namespace mainmenu {
                     }
 
                     if (ImGui::BeginTabItem("Quick Connect")) {
-                        ImGui::InputText("", GlobalConfig.server_address, 32);
+                        ImGui::InputText("IP", (char*)GlobalConfig.server_address, 32);
                         ImGui::SameLine();
                         if (ImGui::Button("Connect")) {
                             ServerData server = { "Dummy", GlobalConfig.server_address, "", "", 27010 };
@@ -528,6 +612,12 @@ namespace mainmenu {
 
                     if (ImGui::Button("Quit")) {
                         exit(0);
+                    }
+
+                    ImGui::SameLine();
+
+                    if (ImGui::Button("Save")) {
+                        generate_profile();
                     }
 
                     ImGui::EndTabBar();
