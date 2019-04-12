@@ -32,6 +32,7 @@ namespace MafiaSDK
             SetCamerRotRepair = 0x005BA010,
             Init = 0x005A0810,
             SetHuman = 0x005A07E0,
+            UpdateMusicVolume = 0x005B6600
         };
     };
 
@@ -297,6 +298,17 @@ namespace MafiaSDK
             }
         }
 
+        void UpdateMusicVolume()
+        {
+            unsigned long funcAddress = C_Game_Enum::FunctionAddresses::UpdateMusicVolume;
+
+            __asm
+            {
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
         void AddTemporaryActor(C_Actor* actor)
         {
             unsigned long funcAddress = C_Game_Enum::FunctionAddresses::AddTemporaryActor;
@@ -409,6 +421,22 @@ namespace MafiaSDK
             }
 
             return returnAddress;
+        }
+
+        //TODO(DavoSK): This is engine call reverse it from engine class
+        void SetSoundsVolume(float level)
+        {
+            __asm
+            {
+                mov eax, dword ptr ds: [0x647EDC]
+                test eax, eax
+                je skip
+                mov ecx, dword ptr ds : [eax]
+                push level
+                push eax
+                call word ptr ds : [ecx + 0x14]
+                skip:
+            }
         }
 
         void SetStreamVolume(int streamId, float volume)

@@ -33,6 +33,7 @@ namespace MafiaSDK {
 #include "Game/ai_follow_manager.hpp"
 
 #include "Game/C_I3D_Cache.hpp"
+#include "Game/G_TextDatabase.hpp"
 #include "Game/C_Entity.hpp"
 #include "Game/C_Actor.hpp"
 #include "Game/C_Vehicle.hpp"
@@ -52,5 +53,6 @@ namespace MafiaSDK {
 #include "Game/C_DropInWeapon.hpp"
 #include "Game/C_Bridge.hpp"
 #include "Game/C_Door.hpp"
+#include "Game/Input.hpp"
 
 #endif

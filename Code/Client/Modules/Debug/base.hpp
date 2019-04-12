@@ -312,6 +312,54 @@ namespace debug {
         return state;
     }
 
+    int key_index = 0;
+    int key_value = 0;
+
+    const char* GetTextByID(int id) {
+        DWORD  G_TextDatabase__GetTextOrNULL = 0x0060FBA0;
+        __asm {
+            push id
+            mov ecx, 0x6D8714
+            call   G_TextDatabase__GetTextOrNULL
+        }
+    }
+
+    enum GameKey_Type {
+        KEYBOARD = 0x0001,
+        MOUSE = 0x0002,
+        JOY = 0x0003
+    };
+
+    struct GameKey {
+        GameKey(DWORD dik, GameKey_Type type) {
+            dik_key = (dik << 16) | (WORD)type;
+        }
+
+        DWORD unk1;
+        DWORD dik_key;
+        DWORD unk2;
+    };
+
+    void RebindGameKey(const GameKey& key, unsigned int index) {
+        
+        DWORD functionAddress = 0x4F02B0;
+        __asm {
+            push index
+            push key
+            mov ecx, 0x647C30
+            call functionAddress
+        }
+    }
+
+    const char* GetGameKeyName(GameKey* key) {
+        DWORD functionAddress = 0x004F1830;
+        __asm {
+            push key
+            mov ecx, 0x00647C30
+            call functionAddress
+        }
+    }
+
     inline void render() {
         if (librg_is_connected(&network_context)) {
             ImGui::Begin("Debug Menu", nullptr);
@@ -320,6 +368,31 @@ namespace debug {
 
             //ImGui::SetWindowSize(ImVec2(500, 600));
             
+            ImGui::InputInt("KeyIndex", &key_index);
+            ImGui::InputInt("KeyValue", &key_value);
+
+            int key_count = 0;
+            GameKey* game_key_buffer = (GameKey*)(0x6D481C);
+            do {
+                if (game_key_buffer) {
+                    DWORD dik_key = game_key_buffer->dik_key;
+                    ImGui::Text("%s == %X", GetGameKeyName(game_key_buffer), game_key_buffer->dik_key);
+                }
+                
+                key_count++;
+                game_key_buffer++;
+               
+            } while (key_count < 60);
+
+
+            if (ImGui::Button("UpdateKey")) {
+                GameKey newToBind(key_value, GameKey_Type::KEYBOARD);
+                RebindGameKey(newToBind, key_index);
+                 
+                GameKey* game_key_buffer = (GameKey*)(0x6D481C);
+                game_key_buffer[key_index] = newToBind;
+            }
+
             if (selected_entity)
                 render_selected_entity();
             

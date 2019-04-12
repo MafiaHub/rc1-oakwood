@@ -48,6 +48,7 @@ namespace imgui {
         }
 
         modules::playerlist::render();
+        modules::mainmenu::render();
 
         ImGui::EndFrame();
         ImGui::Render();

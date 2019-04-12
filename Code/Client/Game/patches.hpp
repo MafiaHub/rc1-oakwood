@@ -22,9 +22,17 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
     return DtaOpen(filename, params);
 }
 
+
+DWORD JumpBackMenu = 0x00594896;
+__declspec(naked) void HookMultipleMenus() {
+    __asm {
+        MOV EAX, 0x0A9
+        jmp JumpBackMenu
+    }
+}
+
 auto mod_init_patches() {
 
-    menu::init();
     HMODULE rw_data = GetModuleHandleA("rw_data.dll");
     DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
 
@@ -36,9 +44,13 @@ auto mod_init_patches() {
     MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
     MafiaSDK::C_Game_Patches::PatchDisableInventory();
     MafiaSDK::C_Game_Patches::PatchDisablePauseMenu();
+    MafiaSDK::C_Game_Patches::PatchJumpToGame("tutorial");
   
     // 0004E034A
     // Force update car physics
     BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";
     MemoryPatcher::PatchAddress(0x0004E034A, patchCarPhysics, sizeof(patchCarPhysics));
+
+    //NOTE(DavoSK): Remove multiple AB selection menu
+    MemoryPatcher::InstallJmpHook(0x00594885, (DWORD)& HookMultipleMenus);
 }
