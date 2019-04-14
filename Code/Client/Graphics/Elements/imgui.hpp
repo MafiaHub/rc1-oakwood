@@ -71,16 +71,15 @@ namespace imgui {
     }
 
     inline void init_style() {
-
         ImGuiStyle& style = ImGui::GetStyle();
         style.GrabRounding = 0.f;
         style.WindowRounding = 0.f;
         style.ScrollbarRounding = 0.f;
         style.FrameRounding = 0.f;
         style.TabRounding = 0.f;
+        style.TabBorderSize = 0.0f;
         style.WindowTitleAlign = ImVec2(0.5f, 0.5f);
-        
-        
+
         style.Colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 0.95f);
         style.Colors[ImGuiCol_TextDisabled] = ImVec4(0.50f, 0.50f, 0.50f, 1.00f);
         style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.12f, 0.12f, 1.00f);
