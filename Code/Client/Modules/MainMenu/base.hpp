@@ -209,6 +209,11 @@ namespace mainmenu {
             
             strcpy(GlobalConfig.username, (char*)save_struct.username);
             strcpy(GlobalConfig.server_address, (char*)save_struct.address);
+
+            if (!strlen(GlobalConfig.username)) {
+                strcpy(GlobalConfig.username, "ChangeName");
+            }
+
             GlobalConfig.port = save_struct.port;
 
             auto game_key_buffer = MafiaSDK::GetKeysBuffer();
