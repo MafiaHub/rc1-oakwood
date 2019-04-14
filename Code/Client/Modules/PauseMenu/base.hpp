@@ -9,11 +9,7 @@ namespace pausemenu {
                 input::block_input(false);
                 modules::chat::is_focused = false;
                 return false;
-            }
-            else {
-                input::block_input(true);
-            }
-
+            } else input::block_input(true);
             return true;
         }
         return false;
@@ -40,51 +36,41 @@ namespace pausemenu {
 
                 if (ImGui::BeginTabItem("Info")) {
                     if (librg_is_connected(&network_context)) {
-                        ImGui::Text(R"(Welcome to Mafia: Oakwood,
-                                        you are playing a '%s' version of this modification.  
-                                        Please report all your issues on our discord server.)", oak_build_channel[OAK_BUILD_CHANNEL]);
+                        ImGui::Text(R"(Welcome to Mafia: Oakwood, you are playing a '%s' version of this modification. 
+Please report all your issues on our discord server.)", oak_build_channel[OAK_BUILD_CHANNEL]);
                         ImGui::Text("Current build: %s (%x)", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
                         ImGui::Text("Current build date: %s %s", OAK_BUILD_DATE, OAK_BUILD_TIME);
                         ImGui::Text("Current server IP: %s", GlobalConfig.server_address);
                     } else {
                         ImGui::Text("You aren't connected to any server right now! :(");
                     }
+
+                    if (ImGui::Button("Exit to menu")) {
+                        if (librg_is_connected(&network_context)) {
+                            librg_network_stop(&network_context);
+
+                            auto player = modules::player::get_local_player();
+                            if (player)
+                                zpl_zero_item(player);
+
+                            zpl_zero_item(&local_player);
+                            librg_free(&network_context);
+
+                            mod_init_networking();
+                            menuActiveState = Menu_Chat;
+                            MafiaSDK::GetMission()->MapLoad("tutorial");
+                        }
+                    }  ImGui::SameLine();
+
+                    if (ImGui::Button("Quit")) {
+                        librg_network_stop(&network_context);
+                        exit(0);
+                    }
+
                     ImGui::EndTabItem();
                 }
 
                 mainmenu::render_game_settings();
-
-                ImGui::SameLine();
-
-                if (ImGui::Button("Exit to menu")) {
-                    if (librg_is_connected(&network_context)) {
-                        librg_network_stop(&network_context);
-
-                        auto player = modules::player::get_local_player();
-                        if (player)
-                            zpl_zero_item(player);
-
-                        zpl_zero_item(&local_player);
-                        librg_free(&network_context);
-
-                        mod_init_networking();
-                        menuActiveState = Menu_Chat;
-                        MafiaSDK::GetMission()->MapLoad("tutorial");
-                    }
-                }
-
-                ImGui::SameLine();
-
-                if (ImGui::Button("Quit")) {
-                    librg_network_stop(&network_context);
-                    exit(0);
-                }
-
-                ImGui::SameLine();
-
-                if (ImGui::Button("Save")) {
-                    mainmenu::generate_profile();
-                }
 
                 ImGui::EndTabBar();
             }

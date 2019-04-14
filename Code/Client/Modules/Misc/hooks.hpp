@@ -42,7 +42,7 @@ __declspec(naked) void Scene_CreateActor() {
 */
 float vd_min = 10.0f;
 float vd_max = 1000.0f;
-float vd_value = 1000.0f;
+float vd_value = 700.0f;
 
 void __declspec(naked)HandleFogSettings() {
 	_asm {

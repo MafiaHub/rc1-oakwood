@@ -15,7 +15,30 @@ namespace mainmenu {
         std::string current_players;
         int port;
     };
-    
+
+    struct OakwoodProfileStruct {
+        u8 username[32];
+        u8 address[32];
+        u32 port;
+        MafiaSDK::GameKey key_bindings[60];
+
+        f32 aim_speed;
+        f32 aim_sensitivity_x;
+        f32 aim_sensitivity_y;
+        f32 steering_linearity;
+
+        u8 crosshair_type;
+        u8 speedometer_type;
+        u8 sideroll;
+        u8 mouse_control;
+        u8 enable_subtitles;
+
+        f32 sounds_slider;
+        f32 cars_slider;
+        f32 music_slider;
+        f32 speech_slider;
+    };
+
     enum GameStaticAddresses {
         //float
         AIM_SENSITIVITY_X       = 0x006D4B00,
@@ -143,32 +166,6 @@ namespace mainmenu {
         http_release(request);
         return to_return;
     }
-
-    /*
-    * Save all settings into file 
-    */
-    struct OakwoodProfileStruct {
-        u8 username[32];
-        u8 address[32];
-        u32 port;
-        MafiaSDK::GameKey key_bindings[60];
-
-        f32 aim_speed;
-        f32 aim_sensitivity_x;
-        f32 aim_sensitivity_y;
-        f32 steering_linearity;
-
-        u8 crosshair_type;
-        u8 speedometer_type;
-        u8 sideroll;
-        u8 mouse_control;
-        u8 enable_subtitles;
-
-        f32 sounds_slider;
-        f32 cars_slider;
-        f32 music_slider;
-        f32 speech_slider;
-    };
 
     /*
     * Generates oakwood profile containing all game & multiplayer settings
@@ -511,11 +508,21 @@ namespace mainmenu {
     inline void render_game_settings() {
         if (ImGui::BeginTabItem("Input Settings")) {
             render_input_settings();
+            
+            if (ImGui::Button("Save")) {
+                generate_profile();
+            } ImGui::SameLine();
+
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Audio Settings")) {
             render_audio_settings();
+            
+            if (ImGui::Button("Save")) {
+                generate_profile();
+            } ImGui::SameLine();
+
             ImGui::EndTabItem();
         }
     }
@@ -534,10 +541,37 @@ namespace mainmenu {
         if (engine_dik_buffer) {
             for (int i = 0; i < 256; i++) {
                 if (engine_dik_buffer[i] != old_dik_buffer[i]) {
-                    input::block_input(true);
+                    //NOTE(DavoSK): Check if key is not binded somewhere else 
                     MafiaSDK::GameKey newToBind(i, MafiaSDK::GameKey_Type::KEYBOARD);
+                    auto keys = MafiaSDK::GetKeysBuffer();
+
+                    
+                    int index_to_replace = -1;
+                    if (is_picking_key < 33) {
+                        for (int j = 0; j < 33; j++) {
+                            if (keys[j].dik_key == newToBind.dik_key) {
+                                index_to_replace = j;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (int j = 33; j < 60; j++) {
+                            if (keys[j].dik_key == newToBind.dik_key) {
+                                index_to_replace = j;
+                                break;
+                            }
+                        }
+                    }
+
+                    input::block_input(true);
+                    if (index_to_replace != -1) {
+                        MafiaSDK::GameKey keyNothing(-1, MafiaSDK::GameKey_Type::KEYBOARD);
+                        MafiaSDK::GetInput()->BindKey(keyNothing, index_to_replace);
+                        keys[index_to_replace] = keyNothing;
+                    }
+
                     MafiaSDK::GetInput()->BindKey(newToBind, is_picking_key);
-                    MafiaSDK::GetKeysBuffer()[is_picking_key] = newToBind;
+                    keys[is_picking_key] = newToBind;
                     is_picking_key = -1;
                     break;
                 }
@@ -593,11 +627,13 @@ namespace mainmenu {
 
                     if (ImGui::BeginTabItem("Quick Connect")) {
                         ImGui::InputText("IP", (char*)GlobalConfig.server_address, 32);
-                        ImGui::SameLine();
+                        ImGui::InputInt("Port", &GlobalConfig.port);
+                       
                         if (ImGui::Button("Connect")) {
                             ServerData server = { "Dummy", GlobalConfig.server_address, "", "", 27010 };
                             exit_by_join(server);
-                        }
+                        }  ImGui::SameLine();
+
                         ImGui::EndTabItem();
                     }
 
@@ -607,20 +643,11 @@ namespace mainmenu {
                     }
 
                     render_game_settings();
-
-                    ImGui::SameLine();
-
+                    ImGui::EndTabBar();
+        
                     if (ImGui::Button("Quit")) {
                         exit(0);
                     }
-
-                    ImGui::SameLine();
-
-                    if (ImGui::Button("Save")) {
-                        generate_profile();
-                    }
-
-                    ImGui::EndTabBar();
                 }
 
                 ImGui::End();
