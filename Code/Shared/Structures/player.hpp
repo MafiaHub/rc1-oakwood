@@ -59,6 +59,13 @@ struct mafia_player {
             f64 start_time;
             f64 finish_time;
 		} pos, rot, pose;
+
+        struct {
+            float start;
+            float target;
+            f64 start_time;
+            f32 alpha;
+        } car_shooting; 
 	} interp;
 	
 	u64 clientside_flags;

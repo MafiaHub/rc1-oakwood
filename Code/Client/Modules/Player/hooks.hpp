@@ -291,6 +291,27 @@ __declspec(naked) void OnGameExitHook() {
 	}
 }
 
+bool is_ped_local(DWORD esi) {
+    return (DWORD)modules::player::get_local_ped() == esi;
+}
+
+DWORD shooting_aimcarback = 0x0057B5CF;
+__declspec(naked) void ShootingAimCar() {
+    __asm {
+        push esi
+        call is_ped_local
+        add esp, 0x4
+        cmp eax, 0 
+        je skip
+
+        fstp    dword ptr ds : [esi + 0x5F4]
+        skip:
+        fld     dword ptr ds :[esi + 0x5F0]
+        
+        jmp shooting_aimcarback
+    }
+}
+
 inline auto init() {
 	//Engine exit hook ( for quiting window )
     MemoryPatcher::InstallJmpHook(0x1008E8B0, (DWORD)&OnGameExitHook);
@@ -309,6 +330,9 @@ inline auto init() {
 
     //Disable dealocation second remove actor
     MemoryPatcher::InstallJmpHook(0x005A7F44, 0x005A7F4B);
+
+    //Shooting aim 
+    MemoryPatcher::InstallJmpHook(0x0057B5C3, (DWORD)ShootingAimCar);
 
     game_shoot_original = reinterpret_cast<C_game__NewShoot_t>(
         DetourFunction((PBYTE)0x005A84A0, (PBYTE)&C_game__NewShoot)
