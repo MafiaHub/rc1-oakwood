@@ -37,7 +37,6 @@ auto mod_init_patches() {
     DtaOpen = (DtaOpen_t)DetourFunction((PBYTE)GetProcAddress(rw_data, "_dtaOpen@8"), (PBYTE)dta_open_hook);
 
     MafiaSDK::C_Game_Patches::PatchDisableLogos();
-    MafiaSDK::C_Game_Patches::PatchDisablePleaseWait();
     MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
     MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
     MafiaSDK::C_Game_Patches::PatchRemovePlayer();

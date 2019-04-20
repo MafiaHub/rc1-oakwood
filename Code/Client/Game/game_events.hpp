@@ -25,8 +25,7 @@ auto mod_bind_events() {
   
     MafiaSDK::C_Game_Hooks::HookOnGameInit([&]() {
         
-        //TODO(DavoSK): Move it to sdk
-        //NOTE: wtf is this?
+        //TODO(DavoSK): Move it to sdk, force enable game map
         *(BOOL*)(0x006C406C) = true;
       
         auto mission_name = MafiaSDK::GetCurrentMissionName();
@@ -68,68 +67,63 @@ auto mod_bind_events() {
 #ifdef OAKWOOD_DEBUG
         modules::debug::game_update(delta_time);
 #endif
-
         librg_tick(&network_context);
 
-        librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx *ctx, librg_entity *entity) {
-            switch (entity->type) {
-            case TYPE_WEAPONDROP: {
-            } break;
+        if (librg_is_connected(&network_context)) {
+            librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | ENTITY_INTERPOLATED), [](librg_ctx * ctx, librg_entity * entity) {
+                switch (entity->type) {
+                case TYPE_WEAPONDROP: {
+                } break;
 
-            case TYPE_PLAYER: {
-                auto player = (mafia_player*)entity->user_data;
-                if (player && player->ped && player->streamer_entity_id != local_player.entity_id) {
-                    modules::player::game_tick(player, delta_time);
-                }
-            } break;
+                case TYPE_PLAYER: {
+                    auto player = (mafia_player*)entity->user_data;
+                    if (player && player->ped && player->streamer_entity_id != local_player.entity_id) {
+                        modules::player::game_tick(player, delta_time);
+                    }
+                } break;
 
-            case TYPE_VEHICLE: {
-                auto vehicle = (mafia_vehicle*)entity->user_data;
-                if (vehicle && vehicle->car) {
-                    modules::vehicle::game_tick(vehicle, delta_time);
+                case TYPE_VEHICLE: {
+                    auto vehicle = (mafia_vehicle*)entity->user_data;
+                    if (vehicle && vehicle->car) {
+                        modules::vehicle::game_tick(vehicle, delta_time);
+                    }
+                } break;
                 }
-            } break;
+                });
+
+            //NOTE(DavoSK): safe vehicle removing, dont delete them when someone is entering / leaving
+            for (auto car_to_remove : car_delte_queue) {
+                if (car_to_remove != nullptr) {
+                    bool do_remove = true;
+                    for (int i = 0; i < 4; i++) {
+                        auto car_actor_seat = (MafiaSDK::C_Human*)car_to_remove->GetOwner(i);
+                        if (car_actor_seat != nullptr) {
+                            if (car_actor_seat->GetInterface()->carLeavingOrEntering != nullptr) {
+                                do_remove = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (do_remove) {
+                        for (int i = 0; i < 4; i++) {
+                            auto car_actor_seat = (MafiaSDK::C_Human*)car_to_remove->GetOwner(i);
+                            if (car_actor_seat != nullptr) {
+                                car_actor_seat->Intern_FromCar();
+                                auto mafia_ent = modules::player::get_player_from_base((void*)car_actor_seat);
+                                if (mafia_ent && mafia_ent->user_data) {
+                                    auto player = (mafia_player*)mafia_ent->user_data;
+                                    player->vehicle_id = -1;
+                                }
+                            }
+                        }
+
+                        MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(car_to_remove);
+                    }
+                }
             }
-        });
-
-        //NOTE(DavoSK): safe vehicle removing, dont delete them when someone is entering / leaving
-        for (auto car_to_remove : car_delte_queue) {
-           if (car_to_remove != nullptr) {
-               bool do_remove = true;
-               for (int i = 0; i < 4; i++) {
-                   auto car_actor_seat = (MafiaSDK::C_Human*)car_to_remove->GetOwner(i);
-                   if (car_actor_seat != nullptr) {
-                       if (car_actor_seat->GetInterface()->carLeavingOrEntering != nullptr) {
-                           do_remove = false;
-                           break;
-                       }
-                   }
-               }
-
-               if (do_remove) {
-                   for (int i = 0; i < 4; i++) {
-                       auto car_actor_seat = (MafiaSDK::C_Human*)car_to_remove->GetOwner(i);
-                       if (car_actor_seat != nullptr) {
-                           car_actor_seat->Intern_FromCar();
-                           auto mafia_ent = modules::player::get_player_from_base((void*)car_actor_seat);
-                           if (mafia_ent && mafia_ent->user_data) {
-                               auto player = (mafia_player*)mafia_ent->user_data;
-                               player->vehicle_id = -1;
-                           }
-                       }
-                   }
-
-                   MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(car_to_remove);
-                   auto it = std::find(car_delte_queue.begin(), car_delte_queue.end(), car_to_remove);
-                   
-                   if(it != car_delte_queue.end())
-                       car_delte_queue.erase(it);
-               }
-           }
         }
-
         
-
         modules::mainmenu::tick();
         last_time = zpl_time_now();
     });

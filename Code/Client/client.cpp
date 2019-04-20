@@ -6,6 +6,9 @@
 #define ZPL_IMPLEMENTATION
 #include "librg/zpl.h"
 
+#define LIB_INTER_IMPLEMENTATION
+#include "librg/lib_inter.h"
+
 #include "version.hpp"
 #include "multiplayer.hpp"
 
@@ -13,7 +16,7 @@
 * Networking library
 */
 
-// #define LIBRG_DEBUG
+//#define LIBRG_DEBUG
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
 #include "librg/librg.h"

@@ -51,14 +51,15 @@ struct mafia_player {
     u32 ping;
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	struct {
-		struct {
+		/*struct {
             zpl_vec3 start;
             zpl_vec3 target;
             zpl_vec3 error;
             f32 last_alpha;
             f64 start_time;
             f64 finish_time;
-		} pos, rot, pose;
+		} pos, rot, pose;*/
+        lib_inter* pos, *rot, *pose;
 
         struct {
             float start;

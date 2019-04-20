@@ -66,15 +66,7 @@ struct mafia_vehicle {
     u64 clientside_flags;
 	/* interpolation table */
 	struct {
-		struct rot_data {
-			zpl_vec3 start;
-			zpl_vec3 target;
-			zpl_vec3 error;
-			f32  last_alpha;
-			f64  start_time;
-			f64  finish_time;
-		} pos, rot_forward, rot_up;
-
+        lib_inter* pos, *rot, *rot_up;
 		u32 force_localz_counter;
 	} interp;
 #endif

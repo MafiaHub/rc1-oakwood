@@ -141,11 +141,11 @@ namespace input {
         if (do_block) {
             InputState.devices[ZINPUT_MOUSE]->masterAquired = false;
             InputState.devices[ZINPUT_MOUSE]->Unacquire();
-            ShowCursor(TRUE);
+            while (ShowCursor(TRUE) < 0) {}
         } else {
             InputState.devices[ZINPUT_MOUSE]->masterAquired = true;
             InputState.devices[ZINPUT_MOUSE]->Acquire();
-            ShowCursor(FALSE);
+            while (ShowCursor(FALSE) >= 0) {}
         }
 
         InputState.input_blocked = do_block;
@@ -155,9 +155,6 @@ namespace input {
     * Hook both input windows winproc
     */
     inline auto hook_window() {
-
-        MafiaSDK::GetIGraph()->SetAppName("Mafia Oakwood");
-
         auto mod_win32_hwnd_parent = (HWND)MafiaSDK::GetIGraph()->GetMainHWND();
         mod_wndproc_original_keyboard = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd_parent, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_keyboard);
         SetWindowLongW(mod_win32_hwnd_parent, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd_parent, GWL_WNDPROC));

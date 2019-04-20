@@ -129,6 +129,7 @@ namespace graphics
         nameplates::init(device);
         input::hook_window();
         imgui::init(device);
+        loadingscreen::init(device);
     }
 
     inline auto device_lost() -> void {
@@ -144,17 +145,19 @@ namespace graphics
 
         nameplates::device_lost();
         imgui::device_lost();
+        loadingscreen::device_lost();
     }
 
     inline auto device_reset(IDirect3DDevice9* device) -> void {
-
+        
         global_device = device;
         init_main_sprite(device);
         nameplates::device_reset(device);
         imgui::device_reset(device);
+        loadingscreen::device_reset(device);
 
-        if (input::InputState.input_blocked)
-            input::block_input(false);
+        //NOTE(DavoSK): After refocusing restore input state
+        input::block_input(input::InputState.input_blocked);
     }
 
     inline auto end_scene(IDirect3DDevice9* device) -> void {
@@ -183,6 +186,7 @@ namespace graphics
 
             nameplates::render(device);
             imgui::render();
+            loadingscreen::render(device);
 
             if (state_block) {
                 state_block->Apply();

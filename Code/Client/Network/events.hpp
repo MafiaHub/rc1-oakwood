@@ -24,7 +24,8 @@ void on_librg_disconnect(librg_event* evnt) {
         modules::player::despawn(player->ped);
         player->ped = nullptr;
     }
-
+    
+    car_delte_queue.clear();
     MafiaSDK::GetMission()->MapLoad("freeride");
     librg_network_stop(evnt->ctx);
     mod_librg_connect();
