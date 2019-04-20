@@ -62,7 +62,7 @@ namespace nameplates {
     }
 
     inline void render(IDirect3DDevice9* device) {
-        if (device && nameplate_font) {
+       	if (device && nameplate_font) {
             iterate_players([=](mafia_player* player) {
                 if (player->ped && player->ped->GetInterface()->neckFrame) {
                     auto neck_frame = player->ped->GetInterface()->neckFrame;

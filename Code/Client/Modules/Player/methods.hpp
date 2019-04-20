@@ -360,6 +360,10 @@ inline auto remove_temporary_actor(void* base) -> void {
             vehicle->car = nullptr;
         }
     }
+
+    auto it = std::find(car_delte_queue.begin(), car_delte_queue.end(), base);
+    if (it != car_delte_queue.end())
+        car_delte_queue.erase(it);
 }
 
 inline auto car_destruct(void* base) -> void {

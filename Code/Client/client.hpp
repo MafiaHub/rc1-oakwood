@@ -1,9 +1,7 @@
 librg_ctx network_context = { 0 };
-
 f64 last_delta  = 0.0f;
 f64 last_update = 0.0f;
 bool hit_hook_skip = true;
-
 
 enum {
     Menu_Pause,
@@ -43,7 +41,7 @@ struct shoot_info {
     S_vector screen_coord;
     DWORD player_base;
 } local_shoot_data;
+
 std::unordered_map<void*, shoot_info> shoot_queue;
 std::vector<MafiaSDK::C_Car*> car_delte_queue;
-
 IDirect3DDevice9* global_device = nullptr;

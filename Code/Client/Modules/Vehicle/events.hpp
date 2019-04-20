@@ -9,60 +9,14 @@
 #define VEHICLE_INTERPOLATION_THRESHOLD 15
 
 void target_position_update(mafia_vehicle *car) {
-    if (car->interp.pos.finish_time == 0) {
-        return;
-    }
-
-    // Grab the current game position
-    auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-    zpl_vec3 current_position = EXPAND_VEC(vehicle_int->position);
-
-    // Get the factor of time spent from the interpolation start to the current time.
-    f64 current_time = zpl_time_now();
-    f32 alpha = zpl_unlerp(current_time, car->interp.pos.start_time, car->interp.pos.finish_time);
-
-    // Don't let it overcompensate the error too much
-    alpha = zpl_clamp(alpha, 0.0f, 1.5f);
-
-    // Get the current error portion to compensate
-    f32 currentAlpha = alpha - car->interp.pos.last_alpha;
-    car->interp.pos.last_alpha = alpha;
-
-    // Apply the error compensation
-    zpl_vec3 compensation;
-    zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), car->interp.pos.error, currentAlpha);
-
-    // If we finished compensating the error, finish it for the next pulse
-    if (alpha == 1.5f) {
-        car->interp.pos.finish_time = 0;
-    }
-
-    zpl_vec3 new_position;
-    zpl_vec3_add(&new_position, current_position, compensation);
-
-    //Check if the distance to interpolate is too far.
-    zpl_vec3 velocity = EXPAND_VEC(car->speed);
-    f32 threshold = zpl_vec3_mag(velocity) * 1.5f;
     
-    zpl_vec3 distance;
-    zpl_vec3_sub(&distance, current_position, car->interp.pos.target);
-
-    if (!(zpl_vec3_mag(distance) <= threshold)) {
-        new_position = car->interp.pos.target;
-        car->interp.pos.finish_time = 0;
-
-        vehicle_int->rot_forward = EXPAND_VEC(car->interp.rot_forward.target);
-        vehicle_int->rot_up = EXPAND_VEC(car->interp.rot_up.target);
-        vehicle_int->rot_speed = { 0.0f, 0.0f, 0.0f };
-
-        car->interp.rot_forward.finish_time = 0;
-        car->interp.rot_up.finish_time      = 0;
-    }
-
+    auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
+    
+    zpl_vec3 new_position = lib_inter_interpolate(car->interp.pos, EXPAND_VEC(vehicle_int->position));
     vehicle_int->position = EXPAND_VEC(new_position);
 }
 
-void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_time, bool valid_velocityz, f32 velocityz) {
+void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, bool valid_velocityz, f32 velocityz) {
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
     target_position_update(car);
@@ -91,21 +45,7 @@ void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_tim
     }
 
     zpl_vec3 local_pos = EXPAND_VEC(vehicle_int->position);
-
-    car->interp.pos.start = local_pos;
-    car->interp.pos.target = target_pos;
-
-    zpl_vec3 error_vec;
-    zpl_vec3_sub(&error_vec, target_pos, local_pos);
-    car->interp.pos.error = error_vec;
-
-    // Apply the error over 400ms (i.e. 1/4 per 100ms )
-    zpl_vec3_mul(&car->interp.pos.error, car->interp.pos.error, zpl_lerp(0.4f, 1.0f, zpl_clamp01(zpl_unlerp(interp_time, 0.1f, 0.4f))));
-
-    // Get the interpolation interval
-    car->interp.pos.start_time = zpl_time_now();
-    car->interp.pos.finish_time = car->interp.pos.start_time + interp_time;
-    car->interp.pos.last_alpha = 0.0f;
+    lib_inter_set_target(car->interp.pos, local_pos, target_pos);
 }
 
 // =======================================================================//
@@ -114,130 +54,34 @@ void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, f32 interp_tim
 // !
 // =======================================================================//
 
-zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
-
-    auto one_axis = [](float a, float b) { return a - b; };
-    return { one_axis(a.x, b.x), one_axis(a.y, b.y), one_axis(a.z, b.z) };
-}
-
 void target_rotation_update(mafia_vehicle *car) {
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-    
-    // Grab the current game rotation
-    zpl_vec3 rotation_forward   = EXPAND_VEC(vehicle_int->rot_forward);
-    zpl_vec3 rotation_up        = EXPAND_VEC(vehicle_int->rot_up);
+  
+    zpl_vec3 new_forward        = lib_inter_interpolate(car->interp.rot, EXPAND_VEC(vehicle_int->rot_forward));
+    vehicle_int->rot_forward    = EXPAND_VEC(new_forward);
 
-    //-------------- [FORWARD VEC INTERPOLATION] --------------
-    if (car->interp.rot_forward.finish_time > 0.0f) {
-
-        // Get the factor of time spent from the interpolation start to the current time.
-        f64 currentTime = zpl_time_now();
-        f32 alpha = zpl_unlerp(currentTime, car->interp.rot_forward.start_time, car->interp.rot_forward.finish_time);
-
-        // Don't let it to overcompensate the error
-        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
-
-        // Get the current error portion to compensate
-        f32 currentAlpha = alpha - car->interp.rot_forward.last_alpha;
-        car->interp.rot_forward.last_alpha = alpha;
-
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), car->interp.rot_forward.error, currentAlpha);
-
-        // If we finished compensating the error, finish it for the next pulse
-        if (alpha == 1.0f) {
-            car->interp.rot_forward.finish_time = 0;
-        }
-
-        zpl_vec3 compensated;
-        zpl_vec3_add(&compensated, rotation_forward, compensation);
-
-        vehicle_int->rot_forward = EXPAND_VEC(compensated);
-    }
-
-    //-------------- [UP VEC INTERPOLATION] --------------
-    if (car->interp.rot_up.finish_time > 0.0f) {
-        // Get the factor of time spent from the interpolation start to the current time.
-        f64 current_time = zpl_time_now();
-        f32 alpha = zpl_unlerp(current_time, car->interp.rot_up.start_time, car->interp.rot_up.finish_time);
-
-        // Don't let it to overcompensate the error
-        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
-
-        // Get the current error portion to compensate
-        f32 current_alpha_up = alpha - car->interp.rot_up.last_alpha;
-        car->interp.rot_up.last_alpha = alpha;
-
-        zpl_vec3 compensation_up;
-        zpl_vec3_lerp(&compensation_up, zpl_vec3f_zero(), car->interp.rot_up.error, current_alpha_up);
-
-        // If we finished compensating the error, finish it for the next pulse
-        if (alpha == 1.0f) {
-            car->interp.rot_up.finish_time = 0;
-        }
-
-        zpl_vec3 compensated_up;
-        zpl_vec3_add(&compensated_up, rotation_up, compensation_up);
-
-        vehicle_int->rot_up = EXPAND_VEC(compensated_up);
-    }
+    zpl_vec3 new_up             = lib_inter_interpolate(car->interp.rot_up, EXPAND_VEC(vehicle_int->rot_up));
+    vehicle_int->rot_up         = EXPAND_VEC(new_up);
 }
 
-
-void target_rotation_set(mafia_vehicle *car, 
-    zpl_vec3 target_rot_forward, 
-    zpl_vec3 target_rot_up, 
-    f32 interp_time) {
+void target_rotation_set(mafia_vehicle *car, zpl_vec3 target_rot_forward, zpl_vec3 target_rot_up) {
 
     target_rotation_update(car);
-
-    auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-
-    // Grab the current game rotation (in degrees)
-    zpl_vec3 rotation_forward   = EXPAND_VEC(vehicle_int->rot_forward);
-    zpl_vec3 rotation_up        = EXPAND_VEC(vehicle_int->rot_up);
-
-    // ------------------- FORWARD VEC ----------------------
-    car->interp.rot_forward.start = rotation_forward;
-    car->interp.rot_forward.target = target_rot_forward;
-
-    // Get the error
-    car->interp.rot_forward.error = compute_rotation_offset(target_rot_forward, rotation_forward);
-
-    auto error_mag = zpl_vec3_mag(car->interp.rot_forward.error);
-    if (error_mag > 0.1f) {
-        car->interp.rot_forward.start = target_rot_forward;
-    }
     
-    // Apply the error over 250ms (i.e. 2/5 per 100ms )
-    zpl_vec3_mul(&car->interp.rot_forward.error, car->interp.rot_forward.error, zpl_lerp(0.25f, 1.0f, zpl_clamp01(zpl_unlerp(interp_time, 0.1f, 0.4f))));
-
-    // Get the interpolation interval
-    car->interp.rot_forward.start_time = zpl_time_now();
-    car->interp.rot_forward.finish_time = car->interp.rot_forward.start_time + interp_time;
-    car->interp.rot_forward.last_alpha = 0.0f;
-
-    // ------------------- UP VEC ----------------------
-
-    car->interp.rot_up.start = rotation_up;
-    car->interp.rot_up.target = target_rot_up;
-
-    // Get the error
-    car->interp.rot_up.error = compute_rotation_offset(target_rot_up, rotation_up);
-
-    // Apply the error over 250ms (i.e. 2/5 per 100ms )
-    zpl_vec3_mul(&car->interp.rot_up.error, car->interp.rot_up.error, zpl_lerp(0.25f, 1.0f, zpl_clamp01(zpl_unlerp(interp_time, 0.1f, 0.4f))));
-
-    // Get the interpolation interval
-    car->interp.rot_up.start_time = zpl_time_now();
-    car->interp.rot_up.finish_time = car->interp.rot_up.start_time + interp_time;
-    car->interp.rot_up.last_alpha = 0.0f;
+    auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
+    lib_inter_set_target(car->interp.rot, EXPAND_VEC(vehicle_int->rot_forward), target_rot_forward);
+    lib_inter_set_target(car->interp.rot_up, EXPAND_VEC(vehicle_int->rot_up), target_rot_up);
 }
 
 inline auto entitycreate(librg_event *evnt) {
 
     auto vehicle = new mafia_vehicle();
+
+    vehicle->interp.rot     = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
+    vehicle->interp.rot_up  = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
+    vehicle->interp.pos     = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
+
     zpl_vec3 position;
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &vehicle->rot_up, sizeof(zpl_vec3));
@@ -293,16 +137,6 @@ inline auto game_tick(mafia_vehicle *vehicle, f64 delta) {
 
     target_position_update(vehicle);
     target_rotation_update(vehicle);
-
-    //NOTE(DavoSK): If vehicle is interpolated and we are inside of that vehicle 
-    //We do update camera ( nickname shaking fix )
-    for (int i = 0; i < 4; i++) {
-        if (vehicle->seats[i] == local_player.entity_id) {
-            MafiaSDK::GetMission()->GetGame()->GetCamera()->Tick(0);
-            break;
-        }
-    }
-   
 
     auto vehicle_int = &vehicle->car->GetInterface()->vehicle_interface;
     vehicle_int->engine_rpm = vehicle->engine_rpm;
@@ -382,8 +216,8 @@ inline auto entityupdate(librg_event *evnt) {
         vehicle->car->SetGear(vehicle->gear);
     }
 
-    target_rotation_set(vehicle, target_rot_forward, target_rot_up, GlobalConfig.interp_time_vehicle);
-    target_position_set(vehicle, target_pos, GlobalConfig.interp_time_vehicle, true, vehicle_int->speed.z);
+    target_rotation_set(vehicle, target_rot_forward, target_rot_up);
+    target_position_set(vehicle, target_pos, true, vehicle_int->speed.z);
 }
 
 inline auto entityremove(librg_event *evnt) {
@@ -392,6 +226,10 @@ inline auto entityremove(librg_event *evnt) {
         printf("Vehicle remove '%d'\n", evnt->entity->id);
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
+
+        lib_inter_destroy_interpolator(vehicle->interp.pos);
+        lib_inter_destroy_interpolator(vehicle->interp.rot);
+        lib_inter_destroy_interpolator(vehicle->interp.rot_up);
         despawn(vehicle);
 
         delete vehicle;
