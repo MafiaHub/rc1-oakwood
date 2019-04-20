@@ -106,7 +106,7 @@ namespace MafiaSDK
             }
         }
 
-        void RepairPosition(bool repairWindows)
+        void RepairPosition(BOOL repairWindows)
         {
             unsigned long functionAddress = C_Car_Enum::FunctionsAddresses::RepairPosition;
 
@@ -168,7 +168,6 @@ namespace MafiaSDK
 				call functionAddress
 			}
 		}
-
 
 		void Engine(float arg1, float arg2, float arg3)
 		{

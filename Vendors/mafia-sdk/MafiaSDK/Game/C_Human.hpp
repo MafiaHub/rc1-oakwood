@@ -294,7 +294,7 @@ namespace MafiaSDK
             }
         }
 
-        void Do_ChangeWeapon(int weaponId, BYTE unk1)
+        void Do_ChangeWeapon(int weaponId, BOOL unk1)
         {
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Do_ChangeWeapon;
             
