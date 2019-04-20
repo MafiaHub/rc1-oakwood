@@ -84,9 +84,9 @@ inline auto entitycreate(librg_event* evnt) -> void {
     player->vehicle_id			= librg_data_ri32(evnt->data);
     player->streamer_entity_id	= librg_data_ri32(evnt->data);
     
-    player->interp.pos          = lib_inter_create_iterpolator(GlobalConfig.interp_time_player);
-    player->interp.rot          = lib_inter_create_iterpolator(GlobalConfig.interp_time_player);
-    player->interp.pose         = lib_inter_create_iterpolator(GlobalConfig.interp_time_player);
+    player->interp.pos          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
+    player->interp.rot          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
+    player->interp.pose         = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
 
     if (player->vehicle_id != -1) {
         player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;

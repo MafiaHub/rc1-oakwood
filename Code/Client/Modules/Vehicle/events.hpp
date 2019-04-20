@@ -78,9 +78,11 @@ inline auto entitycreate(librg_event *evnt) {
 
     auto vehicle = new mafia_vehicle();
 
-    vehicle->interp.rot     = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
-    vehicle->interp.rot_up  = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
-    vehicle->interp.pos     = lib_inter_create_iterpolator(GlobalConfig.interp_time_vehicle);
+    vehicle->interp.rot     = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
+    vehicle->interp.rot_up  = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
+    vehicle->interp.pos     = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
+
+    vehicle->interp.rot->error_treshold = vehicle->interp.rot_up->error_treshold = vehicle->interp.pos->error_treshold = 0.1f;
 
     zpl_vec3 position;
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));

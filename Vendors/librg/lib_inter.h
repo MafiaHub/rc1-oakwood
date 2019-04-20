@@ -20,6 +20,8 @@ typedef struct lib_inter {
 	f64 finish_time;
 	f32 last_alpha;
 	f32 interp_time;
+	b32 apply_error;
+	f32 error_treshold; // defaults to 0.1f
 };
 
 #ifdef __cplusplus
@@ -47,10 +49,11 @@ b32                         lib_inter_finished(lib_inter*);
 
 #ifdef LIB_INTER_IMPLEMENTATION	
 
-lib_inter* lib_inter_create_iterpolator(f32 interp_time) {
+lib_inter* lib_inter_create_interpolator(f32 interp_time, b32 apply_error) {
     lib_inter* new_interpolator = (lib_inter*)zpl_malloc(sizeof(lib_inter));
     zpl_zero_item(new_interpolator);
     new_interpolator->interp_time = interp_time;
+    new_interpolator->apply_error = apply_error;
     return new_interpolator;
 }
 
@@ -94,14 +97,17 @@ void lib_inter_set_target(lib_inter* interp, zpl_vec3 current_val, zpl_vec3 targ
 
 	interp->error = sub_error;
 
-	f32 error_mag = zpl_vec3_mag(interp->error);
-	if (error_mag > 0.1f) {
-		interp->start = target_val;
+	if (interp->apply_error)
+	{
+		f32 error_mag = zpl_vec3_mag(interp->error);
+		if (error_mag > interp->error_treshold) {
+			interp->start = target_val;
+		}
+
+		// Apply the error over 250ms (i.e. 2/5 per 100ms )
+		zpl_vec3_mul(&interp->error, interp->error, zpl_lerp(0.25f, 1.0f, zpl_clamp01(zpl_unlerp(interp->interp_time, 0.1f, 0.4f))));
 	}
-
-	// Apply the error over 250ms (i.e. 2/5 per 100ms )
-	zpl_vec3_mul(&interp->error, interp->error, zpl_lerp(0.25f, 1.0f, zpl_clamp01(zpl_unlerp(interp->interp_time, 0.1f, 0.4f))));
-
+	
 	interp->start_time  = zpl_time_now();
 	interp->finish_time = interp->start_time + interp->interp_time;
 	interp->last_alpha  = 0.0f;
