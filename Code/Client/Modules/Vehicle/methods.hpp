@@ -113,7 +113,6 @@ auto despawn(mafia_vehicle* vehicle) -> void {
                         player->ped->Intern_FromCar();
                     }
                     
-
                     player->vehicle_id = -1;
                     vehicle->seats[i] = -1;
                 }

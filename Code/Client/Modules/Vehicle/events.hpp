@@ -82,7 +82,8 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->interp.rot_up  = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
     vehicle->interp.pos     = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
 
-    vehicle->interp.rot->error_treshold = vehicle->interp.rot_up->error_treshold = vehicle->interp.pos->error_treshold = 0.1f;
+    vehicle->interp.pos->error_treshold = 0.1f;
+    vehicle->interp.rot->error_treshold = vehicle->interp.rot_up->error_treshold = 0.07f;
 
     zpl_vec3 position;
     librg_data_rptr(evnt->data, &vehicle->rot_forward, sizeof(zpl_vec3));

@@ -8,11 +8,9 @@
 
 void target_position_update(mafia_player *player) {
 
-    if (player->interp.pos->finish_time > 0.0f) {
-        auto player_int = player->ped->GetInterface();
-        zpl_vec3 new_position = lib_inter_interpolate(player->interp.pos, EXPAND_VEC(player_int->entity.position));
-        player_int->entity.position = EXPAND_VEC(new_position);
-    }
+    auto player_int = player->ped->GetInterface();
+    zpl_vec3 new_position = lib_inter_interpolate(player->interp.pos, EXPAND_VEC(player_int->entity.position));
+    player_int->entity.position = EXPAND_VEC(new_position);
 }
 
 void target_position_set(mafia_player *player, zpl_vec3 target_pos) {
@@ -33,11 +31,9 @@ void target_position_set(mafia_player *player, zpl_vec3 target_pos) {
 void target_rotation_update(mafia_player *player) {
 
     auto player_int = player->ped->GetInterface();
-    if (player->interp.rot->finish_time > 0.0f) {
-        zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
-        zpl_vec3 new_rotation = lib_inter_interpolate(player->interp.rot, rotation);
-        player_int->entity.rotation = EXPAND_VEC(new_rotation);
-    }
+    zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
+    zpl_vec3 new_rotation = lib_inter_interpolate(player->interp.rot, rotation);
+    player_int->entity.rotation = EXPAND_VEC(new_rotation);
 }
 
 void target_rotation_set(mafia_player *player, zpl_vec3 target_rot) {
@@ -58,17 +54,15 @@ void target_rotation_set(mafia_player *player, zpl_vec3 target_rot) {
 void target_pose_update(mafia_player* player) {
     
     //NOTE(DavoSK): Move current pose into MafiaSDK
-    if (player->interp.pose->finish_time > 0.0f) {
-        zpl_vec3 current_player_pose = *(zpl_vec3*)((DWORD)player->ped + 0xA7C);
-        zpl_vec3 new_pose = lib_inter_interpolate(player->interp.pose, current_player_pose);
+    zpl_vec3 current_player_pose = *(zpl_vec3*)((DWORD)player->ped + 0xA7C);
+    zpl_vec3 new_pose = lib_inter_interpolate(player->interp.pose, current_player_pose);
 
-        S_vector mafia_pose = EXPAND_VEC(new_pose);
+    S_vector mafia_pose = EXPAND_VEC(new_pose);
 
-        if (player->is_aiming)
-            player->ped->PoseSetPoseAimed(mafia_pose);
-        else
-            player->ped->PoseSetPoseNormal(mafia_pose);
-    }
+    if (player->is_aiming)
+        player->ped->PoseSetPoseAimed(mafia_pose);
+    else
+        player->ped->PoseSetPoseNormal(mafia_pose); 
 }
 
 void target_pose_set(mafia_player* player, zpl_vec3 target_pose) {
@@ -208,7 +202,6 @@ inline auto entityupdate(librg_event* evnt) -> void {
         player_int->isDucking	= player->is_crouching;
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
-        //*(float*)((DWORD)player_int + 0x5F4) = player->aim;
     }
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
@@ -254,6 +247,7 @@ inline auto entityremove(librg_event* evnt) -> void {
                         player->vehicle_id = -1;
 
                         if (player->ped) {
+                            player->ped->EraseDynColls();
                             player->ped->Intern_FromCar();
                         }
 

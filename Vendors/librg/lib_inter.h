@@ -40,7 +40,7 @@ void						lib_inter_destroy_interpolator(lib_inter*);
 zpl_vec3					lib_inter_interpolate(lib_inter*, zpl_vec3 current);
 void					    lib_inter_set_target(lib_inter*, zpl_vec3 current, zpl_vec3 target);
 void                        lib_inter_reset(lib_inter*, zpl_vec3 current);
-b32                         lib_inter_finished(lib_inter*);
+
 /////////////////////////////////////////////////////
 //
 // IMPLEMENTATION
@@ -94,11 +94,9 @@ void lib_inter_set_target(lib_inter* interp, zpl_vec3 current_val, zpl_vec3 targ
 
 	zpl_vec3 sub_error;
 	zpl_vec3_sub(&sub_error, target_val, current_val);
-
 	interp->error = sub_error;
 
-	if (interp->apply_error)
-	{
+	if (interp->apply_error) {
 		f32 error_mag = zpl_vec3_mag(interp->error);
 		if (error_mag > interp->error_treshold) {
 			interp->start = target_val;
@@ -120,9 +118,6 @@ void lib_inter_reset(lib_inter* interp, zpl_vec3 current) {
     interp->finish_time = 0.0f;
 }
 
-b32 lib_inter_finished(lib_inter* interp) {
-    return !(interp->finish_time > 0.0f);
-}
 #endif
 
 #endif
