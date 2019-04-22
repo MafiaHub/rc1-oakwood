@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
-	"strings"
 
 	"github.com/asdine/storm"
 	jsoniter "github.com/json-iterator/go"
@@ -86,7 +86,7 @@ func sendReportLink(data storedReport) {
 }
 
 func showReport(w http.ResponseWriter, r *http.Request) {
-	id := string([]byte(strings.TrimPrefix(r.URL.Path, "/report/"))[:1])
+	id := path.Base(r.URL.Path)
 	log.Printf("Fetching report %s ...\n", id)
 
 	var rep storedReport
