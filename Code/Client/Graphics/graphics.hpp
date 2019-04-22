@@ -103,6 +103,30 @@ namespace graphics
         main_sprite->End();
     }
 
+    inline void draw_text_ex(ID3DXFont* font, const char* text, float x, float y, float z, float scale, unsigned long color, bool shadow) {
+        if (text == nullptr || main_sprite == nullptr || font == nullptr) return;
+
+        D3DXVECTOR3 scaling(scale, scale, scale);
+        D3DXVECTOR3 transform(x, y, z);
+        D3DXMATRIX matrix;
+        D3DXMatrixTransformation(&matrix, NULL, NULL, &scaling, NULL, NULL, &transform);
+
+        main_sprite->Begin(D3DXSPRITE_ALPHABLEND | D3DXSPRITE_SORT_TEXTURE);
+        main_sprite->SetTransform(&matrix);
+
+        if (shadow) {
+            RECT shadow_rect;
+            SetRect(&shadow_rect, x * (1.0f / scale) + 1, y * (1.0f / scale) + 1, 0, 0);
+            font->DrawTextA(main_sprite, text, -1, &shadow_rect, DT_NOCLIP, D3DCOLOR_ARGB(255, 0, 0, 0));
+        }
+
+        RECT rect;
+        SetRect(&rect, x * (1.0f / scale), y * (1.0f / scale), 0, 0);
+        font->DrawTextA(main_sprite, text, -1, &rect, DT_NOCLIP, color);
+
+        main_sprite->End();
+    }
+
     inline D3DSURFACE_DESC get_backbuffer_desc(IDirect3DDevice9* device) {
         D3DSURFACE_DESC back_buffer_desc;
         if (device) {

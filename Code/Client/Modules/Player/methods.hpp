@@ -150,23 +150,6 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
     return nullptr;
 }
 
-auto inventory_send() -> void {
-    player_inventory inv = {0};
-
-    auto local_ped = get_local_ped();
-    if (!local_ped) {
-        mod_log("[INV SEND] Local player doesn't exist!");
-        return;
-    }
-
-    memcpy(&inv, &((MafiaSDK::C_Human *)local_ped)->GetInterface()->inventory, sizeof(player_inventory));
-
-    librg_send(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, data, {
-        librg_data_wptr(&data, &inv, sizeof(player_inventory));
-    });
-}
-
-
 /* 
 * todo add reason killer and so one ...
 */
@@ -240,8 +223,6 @@ inline auto weapondrop(inventory_item* item, char* model) -> void {
         librg_data_wptr(&data, item, sizeof(inventory_item));
         librg_data_wptr(&data, wep_model, sizeof(char) * 32);
     });
-
-    inventory_send();
 }
 
 inline auto weaponchange(u32 index) -> void {
@@ -249,8 +230,6 @@ inline auto weaponchange(u32 index) -> void {
     librg_send(&network_context, NETWORK_PLAYER_WEAPON_CHANGE, data, {
         librg_data_wu32(&data, index);
     });
-
-    inventory_send();
 }
 
 inline auto fromcar() -> void {
@@ -259,15 +238,11 @@ inline auto fromcar() -> void {
 
 //TODO send inventory on each message related with weapons !
 inline auto reload() -> void {
-    librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});
-
-    inventory_send();	
+    librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});	
 }
 
 inline auto holster() -> void {
     librg_send(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, data, {});
-
-    inventory_send();
 }
 
 inline auto weaponpickup(librg_entity* item_entity) -> void {
@@ -282,7 +257,6 @@ inline auto weaponpickup(librg_entity* item_entity) -> void {
         auto mafia_drop = (mafia_weapon_drop*)item_entity->user_data;
         local_ped->G_Inventory_SelectByID(mafia_drop->weapon.weaponId);
         local_ped->Do_ChangeWeapon(0, 0);
-        inventory_send();
     }
 }
 
@@ -291,8 +265,6 @@ inline auto throwgrenade(const S_vector & pos) -> void {
     librg_send(&network_context, NETWORK_PLAYER_THROW_GRENADE, data, {
         librg_data_wptr(&data, &vec_copy, sizeof(S_vector));
     });
-
-    inventory_send();
 }
 
 inline auto useactor(DWORD actor, int action, int seat_id, int unk3) -> void {

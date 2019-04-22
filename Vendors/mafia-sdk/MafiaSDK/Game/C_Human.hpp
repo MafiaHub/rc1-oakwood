@@ -88,7 +88,8 @@ namespace MafiaSDK
             Go_BackLeft = 0x0057DA50,
             Go_BackRight = 0x0057DC10,
             PoseSetPoseAimed = 0x00579EA0,
-            PoseSetPoseNormal = 0x00579630
+            PoseSetPoseNormal = 0x00579630,
+            EraseDynColls = 0x00575ED0
         };
 
         //Thanks for DjBozkosz Documentation
@@ -200,6 +201,17 @@ namespace MafiaSDK
             {
                 push seatID
                 push car
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void EraseDynColls()
+        {
+            unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::EraseDynColls;
+
+            __asm
+            {
                 mov ecx, this
                 call funcAddress
             }

@@ -7,7 +7,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
+    /*librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
 
         if (sender_ent->user_data && sender_ent->type == TYPE_PLAYER) {
@@ -15,7 +15,7 @@ void add_messages() {
             librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
             inventory_send(sender_ent);
         }
-    });
+    });*/
 
     librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
@@ -279,6 +279,10 @@ void add_messages() {
         auto entity = librg_entity_find(&network_context, msg->peer);
         if (!entity) return;
         
+        //set serverside current weapon index for player
+        auto player = (mafia_player*)entity->user_data;
+        player->current_weapon_id = 0;
+
         //process inventory here :) TODO !
         mod_message_send_except(&network_context, NETWORK_PLAYER_WEAPON_HOLSTER, msg->peer, [&](librg_data *data) {
             librg_data_went(data, entity->id);
@@ -295,7 +299,6 @@ void add_messages() {
         librg_data_rptr(msg->data, model, sizeof(char) * 32);
         
         spawn_weapon_drop(entity->position, model, item);
-        
         inventory_remove(entity, item.weaponId, true, true);
     });
 
