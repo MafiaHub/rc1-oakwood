@@ -8,7 +8,8 @@ do { \
 } while (0)
 
 inline auto config_get(const char *filename, const char *default_cfg) -> zpl_json_object* {
-
+    zpl_path_mkdir("config", 0666);
+    
     if (!zpl_file_exists(filename)) {
         mod_debug("No JSON config found! Generating...");
         zpl_file default_file = { 0 };
