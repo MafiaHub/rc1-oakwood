@@ -63,7 +63,7 @@ namespace MafiaSDK
         inline void PatchDisablePleaseWait()
         {
             // Disable - Please Wait text
-            MemoryPatcher::InstallNopPatch(0x60D391, 15);
+            //MemoryPatcher::InstallNopPatch(0x60D391, 15);
         }
 
         inline void PatchJumpToGame(const char* mission_name)
@@ -72,7 +72,10 @@ namespace MafiaSDK
             std::string klz = std::string("missions\\") + std::string(mission_name) + std::string("\\tree.klz");
             strcpy((char*)0x637A78, klz.c_str());
             strcpy((char*)0x637A94, mission_name);
-            MemoryPatcher::PatchAddress(0x5EA2E0, 0xC3); 
+
+            //MemoryPatcher::PatchAddress(0x5EA2E0, 0xC3); 
+            //NOTE(DavoSK): Dont disable all menus only profile
+            MemoryPatcher::InstallJmpHook(0x005EBB24, 0x005EBB2D);
             MemoryPatcher::PatchAddress(0x5BF3D8, 4231955727); // skip to 0x5BF01C 
             MemoryPatcher::PatchAddress(0x5BEE7A, 105961); // E9 9D0100000
         }
@@ -434,7 +437,7 @@ namespace MafiaSDK
                 mov ecx, dword ptr ds : [eax]
                 push level
                 push eax
-                call word ptr ds : [ecx + 0x14]
+                call dword ptr ds : [ecx + 0x14]
                 skip:
             }
         }

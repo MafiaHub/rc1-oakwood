@@ -15,7 +15,6 @@ inline auto get_local_player() -> mafia_player*;
 inline auto get_local_ped() -> MafiaSDK::C_Player*;
 inline auto get_player_from_base(void* base) -> librg_entity*;
 inline auto get_vehicle_from_base(void* base) -> librg_entity*;
-auto inventory_send() -> void;
 
 /* 
 * todo add reason killer and so one ...

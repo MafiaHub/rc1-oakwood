@@ -8,63 +8,18 @@
 
 void target_position_update(mafia_player *player) {
 
-    if (player->interp.pos.finish_time > 0.0) {
-        // Grab the current game position
-        auto player_int = player->ped->GetInterface();
-        zpl_vec3 current_position = EXPAND_VEC(player_int->entity.position);
-   
-        // Get the factor of time spent from the interpolation start to the current time.
-        f64 current_time = zpl_time_now();
-        f32 alpha = zpl_unlerp(current_time, player->interp.pos.start_time, player->interp.pos.finish_time);
-
-        // Don't let it overcompensate the error too much
-        alpha = zpl_clamp(alpha, 0.0f, 1.0);
-
-        // Get the current error portion to compensate
-        f32 currentAlpha = alpha - player->interp.pos.last_alpha;
-        player->interp.pos.last_alpha = alpha;
-
-        // Apply the error compensation
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), player->interp.pos.error, currentAlpha);
-
-        // If we finished compensating the error, finish it for the next pulse
-        if (alpha == 1.0f) {
-            player->interp.pos.finish_time = 0;
-        }
-
-        zpl_vec3 new_position;
-        zpl_vec3_add(&new_position, current_position, compensation);
-
-        constexpr float distance_treshold = 2.0f;
-        zpl_vec3 distance;
-        zpl_vec3_sub(&distance, current_position, player->interp.pos.target);
-
-        if (zpl_vec3_mag(distance) > distance_treshold && zpl_vec3_mag(player->interp.pos.target) > 0.01f) {
-            new_position = player->interp.pos.target;
-            player->interp.pos.finish_time = 0;
-        }
-
-        player_int->entity.position = EXPAND_VEC(new_position);
-    }
+    auto player_int = player->ped->GetInterface();
+    zpl_vec3 new_position = lib_inter_interpolate(player->interp.pos, EXPAND_VEC(player_int->entity.position));
+    player_int->entity.position = EXPAND_VEC(new_position);
 }
 
-void target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 interpTime) {
+void target_position_set(mafia_player *player, zpl_vec3 target_pos) {
 
     auto player_int = player->ped->GetInterface();
     target_position_update(player);
 
     zpl_vec3 local_pos = EXPAND_VEC(player_int->entity.position);
-    player->interp.pos.start = local_pos;
-    player->interp.pos.target = target_pos;
-
-    zpl_vec3 error_vec;
-    zpl_vec3_sub(&error_vec, target_pos, local_pos);
-    player->interp.pos.error = error_vec;
-
-    player->interp.pos.start_time = zpl_time_now();
-    player->interp.pos.finish_time = player->interp.pos.start_time + interpTime;
-    player->interp.pos.last_alpha = 0.0f;
+    lib_inter_set_target(player->interp.pos, local_pos, target_pos);
 }
 
 // =======================================================================//
@@ -76,57 +31,45 @@ void target_position_set(mafia_player *player, zpl_vec3 target_pos, f32 interpTi
 void target_rotation_update(mafia_player *player) {
 
     auto player_int = player->ped->GetInterface();
-
-    // Grab the current game rotation
     zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
- 
-    if (player->interp.rot.finish_time > 0.0f) {
-
-        // Get the factor of time spent from the interpolation start to the current time.
-        f64 currentTime = zpl_time_now();
-        f32 alpha = zpl_unlerp(currentTime, player->interp.rot.start_time, player->interp.rot.finish_time);
-
-        // Don't let it to overcompensate the error
-        alpha = zpl_clamp(alpha, 0.0f, 1.0f);
-
-        // Get the current error portion to compensate
-        f32 current_alpha = alpha - player->interp.rot.last_alpha;
-        player->interp.rot.last_alpha = alpha;
-
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, zpl_vec3f_zero(), player->interp.rot.error, current_alpha);
-
-        // If we finished compensating the error, finish it for the next pulse
-        if (alpha == 1.0f) {
-            player->interp.rot.finish_time = 0;
-        }
-
-        zpl_vec3 compensated;
-        zpl_vec3_add(&compensated, rotation, compensation);
-        player_int->entity.rotation = EXPAND_VEC(compensated);
-    }
+    zpl_vec3 new_rotation = lib_inter_interpolate(player->interp.rot, rotation);
+    player_int->entity.rotation = EXPAND_VEC(new_rotation);
 }
 
-zpl_vec3 compute_rotation_offset(zpl_vec3 a, zpl_vec3 b) {
-
-    auto one_axis = [](float a, float b) { return a - b; };
-    return {one_axis(a.x, b.x), one_axis(a.y, b.y), one_axis(a.z, b.z)};
-}
-
-void target_rotation_set(mafia_player *player, zpl_vec3 target_rot, f32 interp_time) {
+void target_rotation_set(mafia_player *player, zpl_vec3 target_rot) {
 
     target_rotation_update(player);
     auto player_int = player->ped->GetInterface();
 
-    // Grab the current game rotation
     zpl_vec3 rotation = EXPAND_VEC(player_int->entity.rotation);
-    player->interp.rot.start = rotation;
-    player->interp.rot.error = compute_rotation_offset(target_rot, rotation);
+    lib_inter_set_target(player->interp.rot, rotation, target_rot);
+}
 
-    // Get the interpolation interval
-    player->interp.rot.start_time = zpl_time_now();
-    player->interp.rot.finish_time = player->interp.rot.start_time + interp_time;
-    player->interp.rot.last_alpha = 0.0f;
+// =======================================================================//
+// !
+// ! Pose Interpolation
+// !
+// =======================================================================//
+
+void target_pose_update(mafia_player* player) {
+    
+    //NOTE(DavoSK): Move current pose into MafiaSDK
+    zpl_vec3 current_player_pose = *(zpl_vec3*)((DWORD)player->ped + 0xA7C);
+    zpl_vec3 new_pose = lib_inter_interpolate(player->interp.pose, current_player_pose);
+
+    S_vector mafia_pose = EXPAND_VEC(new_pose);
+
+    if (player->is_aiming)
+        player->ped->PoseSetPoseAimed(mafia_pose);
+    else
+        player->ped->PoseSetPoseNormal(mafia_pose); 
+}
+
+void target_pose_set(mafia_player* player, zpl_vec3 target_pose) {
+
+    //NOTE(DavoSK): Move current pose into MafiaSDK
+    zpl_vec3 current_player_pose = *(zpl_vec3*)((DWORD)player->ped + 0xA7C);
+    lib_inter_set_target(player->interp.pose, current_player_pose, target_pose);
 }
 
 inline auto entitycreate(librg_event* evnt) -> void {
@@ -135,6 +78,10 @@ inline auto entitycreate(librg_event* evnt) -> void {
     player->vehicle_id			= librg_data_ri32(evnt->data);
     player->streamer_entity_id	= librg_data_ri32(evnt->data);
     
+    player->interp.pos          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
+    player->interp.rot          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
+    player->interp.pose         = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
+
     if (player->vehicle_id != -1) {
         player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
     }
@@ -181,7 +128,6 @@ inline auto entitycreate(librg_event* evnt) -> void {
     }
 
     evnt->entity->user_data = player;
-    
 }
 
 inline auto game_tick(mafia_player* ped, f64 delta) -> void {
@@ -202,19 +148,7 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
 
     target_position_update(ped);
     target_rotation_update(ped);
-
-    //Pose interpolation
-    {
-        zpl_vec3 compensation;
-        zpl_vec3_lerp(&compensation, ped->interp.pose.start, ped->interp.pose.target, 0.4f);
-
-        S_vector mafia_pose = EXPAND_VEC(compensation);
-
-        if (ped->is_aiming)
-            ped->ped->PoseSetPoseAimed(mafia_pose);
-        else
-            ped->ped->PoseSetPoseNormal(mafia_pose);
-    }
+    target_pose_update(ped);
 
     //Car shooting interpolation
     if (ped->interp.car_shooting.alpha <= 1.0f) {
@@ -254,23 +188,20 @@ inline auto entityupdate(librg_event* evnt) -> void {
     player->aim                 = aim;
     player->ping                = ping;
 
-    player->interp.pose.start = player->interp.pose.target;
-    player->interp.pose.target = recv_pose;
-    
     player->interp.car_shooting.start = *(float*)((DWORD)player_int + 0x5F4);
     player->interp.car_shooting.target = aim;
     player->interp.car_shooting.alpha = 0.0f;
     player->interp.car_shooting.start_time = zpl_time_now();
 
-    target_position_set(player, evnt->entity->position, GlobalConfig.interp_time_player);
-    target_rotation_set(player, recv_rotation, GlobalConfig.interp_time_player);
+    target_position_set(player, evnt->entity->position);
+    target_rotation_set(player, recv_rotation);
+    target_pose_set(player, recv_pose);
 
     if (!player_int->carLeavingOrEntering) {
         player_int->animState	= player->animation_state;
         player_int->isDucking	= player->is_crouching;
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
-        //*(float*)((DWORD)player_int + 0x5F4) = player->aim;
     }
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
@@ -300,6 +231,10 @@ inline auto entityremove(librg_event* evnt) -> void {
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
 
+        lib_inter_destroy_interpolator(player->interp.pos);
+        lib_inter_destroy_interpolator(player->interp.rot);
+        lib_inter_destroy_interpolator(player->interp.pose);
+
         if (player->vehicle_id != -1) {
             auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
             if (vehicle_ent && vehicle_ent->user_data) {
@@ -312,6 +247,7 @@ inline auto entityremove(librg_event* evnt) -> void {
                         player->vehicle_id = -1;
 
                         if (player->ped) {
+                            player->ped->EraseDynColls();
                             player->ped->Intern_FromCar();
                         }
 

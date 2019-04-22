@@ -199,14 +199,15 @@ void add_messages() {
             vehicle->car->SetColsOn(vehicle->collision_state);
 
             auto vehicle_int = vehicle->car->GetInterface()->vehicle_interface;
-            vehicle->interp.pos.target = EXPAND_VEC(vehicle_int.position);
-            vehicle->interp.pos.finish_time = 0.0f;
+            
+            zpl_vec3 new_pos = EXPAND_VEC(vehicle_int.position);
+            lib_inter_reset(vehicle->interp.pos, new_pos);
 
-            vehicle->interp.rot_forward.target = EXPAND_VEC(vehicle_int.rot_forward);
-            vehicle->interp.rot_forward.finish_time = 0.0f;
+            zpl_vec3 new_rot = EXPAND_VEC(vehicle_int.rot_forward);
+            lib_inter_reset(vehicle->interp.rot, new_rot);
 
-            vehicle->interp.rot_up.target = EXPAND_VEC(vehicle_int.rot_up);
-            vehicle->interp.rot_up.finish_time = 0.0f;
+            zpl_vec3 new_rot_up = EXPAND_VEC(vehicle_int.rot_up);
+            lib_inter_reset(vehicle->interp.rot_up, new_rot_up);
         }
     });
 }

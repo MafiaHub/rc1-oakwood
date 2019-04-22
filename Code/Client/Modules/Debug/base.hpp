@@ -42,6 +42,13 @@ namespace debug {
             ImGui::Text("Pose: %f %f %f", player->pose.x, player->pose.y, player->pose.z);
             ImGui::Text("Rot: %f %f %f", player->rotation.x, player->rotation.y, player->rotation.z);
 
+
+            if (ImGui::SliderFloat("player_interp_time", &GlobalConfig.interp_time_player, 0.001, 5.0f)) {
+                player->interp.pos->interp_time = GlobalConfig.interp_time_player;
+                player->interp.rot->interp_time = GlobalConfig.interp_time_player;
+                player->interp.pose->interp_time = GlobalConfig.interp_time_player;
+            }
+
             ImGui::NewLine();
             ImGui::Text("Inventory:");
                 ImGui::Indent();
@@ -84,7 +91,12 @@ namespace debug {
             ImGui::TextColored(ImVec4(1, 1, 0, 1), "mafia_vehicle* interpolation");
             ImGui::Indent();
 
-            ImGui::Text("Pos");
+            if (ImGui::SliderFloat("vehicle_interp_time", &GlobalConfig.interp_time_vehicle, 0.001, 5.0f)) {
+                vehicle->interp.pos->interp_time = GlobalConfig.interp_time_vehicle;
+                vehicle->interp.rot->interp_time = GlobalConfig.interp_time_vehicle;
+                vehicle->interp.rot_up->interp_time = GlobalConfig.interp_time_vehicle;
+            }
+            /*ImGui::Text("Pos");
             ImGui::Text("Error: %f %f %f", vehicle->interp.pos.error.x, vehicle->interp.pos.error.y, vehicle->interp.pos.error.z);
             ImGui::Text("Start: %f %f %f", vehicle->interp.pos.start.x, vehicle->interp.pos.start.y, vehicle->interp.pos.start.z);
             ImGui::Text("Target: %f %f %f", vehicle->interp.pos.target.x, vehicle->interp.pos.target.y, vehicle->interp.pos.target.z);
@@ -108,7 +120,7 @@ namespace debug {
             ImGui::Text("Target: %f %f %f", vehicle->interp.rot_up.target.x, vehicle->interp.rot_up.target.y, vehicle->interp.rot_up.target.z);
             ImGui::Text("Start time: %d", vehicle->interp.rot_up.start_time);
             ImGui::Text("Finish time: %d", vehicle->interp.rot_up.finish_time);
-            ImGui::Text("Last alpha: %d", vehicle->interp.rot_up.last_alpha);
+            ImGui::Text("Last alpha: %d", vehicle->interp.rot_up.last_alpha);*/
 
             ImGui::Unindent();
         }   break;
@@ -269,11 +281,11 @@ namespace debug {
                 }
 
                 S_matrix frame_matrix = selected_frame->GetMatrix();
-                MafiaSDK::I3D_bsphere debug_sphere  = { 0.0f, 0.0f, 0.0f, 0.0f };
-                S_vector debug_sphere_color         = { 1.0f, 0.0, 0.0f };
+                MafiaSDK::I3D_bsphere debug_sphere = { 0.0f, 0.0f, 0.0f, 0.0f };
+                S_vector debug_sphere_color = { 1.0f, 0.0, 0.0f };
                 
-                debug_sphere.radius     = frame_matrix.GetUScale();
-                debug_sphere.offsetY    = debug_sphere.radius;
+                debug_sphere.radius = frame_matrix.GetUScale();
+                debug_sphere.offsetY = debug_sphere.radius;
                 MafiaSDK::I3DGetDriver()->DrawSphere(frame_matrix, debug_sphere, debug_sphere_color, 0);
             }
         }
@@ -312,54 +324,7 @@ namespace debug {
         return state;
     }
 
-    int key_index = 0;
-    int key_value = 0;
-
-    const char* GetTextByID(int id) {
-        DWORD  G_TextDatabase__GetTextOrNULL = 0x0060FBA0;
-        __asm {
-            push id
-            mov ecx, 0x6D8714
-            call   G_TextDatabase__GetTextOrNULL
-        }
-    }
-
-    enum GameKey_Type {
-        KEYBOARD = 0x0001,
-        MOUSE = 0x0002,
-        JOY = 0x0003
-    };
-
-    struct GameKey {
-        GameKey(DWORD dik, GameKey_Type type) {
-            dik_key = (dik << 16) | (WORD)type;
-        }
-
-        DWORD unk1;
-        DWORD dik_key;
-        DWORD unk2;
-    };
-
-    void RebindGameKey(const GameKey& key, unsigned int index) {
-        
-        DWORD functionAddress = 0x4F02B0;
-        __asm {
-            push index
-            push key
-            mov ecx, 0x647C30
-            call functionAddress
-        }
-    }
-
-    const char* GetGameKeyName(GameKey* key) {
-        DWORD functionAddress = 0x004F1830;
-        __asm {
-            push key
-            mov ecx, 0x00647C30
-            call functionAddress
-        }
-    }
-
+  
     inline void render() {
         if (librg_is_connected(&network_context)) {
             ImGui::Begin("Debug Menu", nullptr);
@@ -368,31 +333,6 @@ namespace debug {
 
             //ImGui::SetWindowSize(ImVec2(500, 600));
             
-            ImGui::InputInt("KeyIndex", &key_index);
-            ImGui::InputInt("KeyValue", &key_value);
-
-            int key_count = 0;
-            GameKey* game_key_buffer = (GameKey*)(0x6D481C);
-            do {
-                if (game_key_buffer) {
-                    DWORD dik_key = game_key_buffer->dik_key;
-                    ImGui::Text("%s == %X", GetGameKeyName(game_key_buffer), game_key_buffer->dik_key);
-                }
-                
-                key_count++;
-                game_key_buffer++;
-               
-            } while (key_count < 60);
-
-
-            if (ImGui::Button("UpdateKey")) {
-                GameKey newToBind(key_value, GameKey_Type::KEYBOARD);
-                RebindGameKey(newToBind, key_index);
-                 
-                GameKey* game_key_buffer = (GameKey*)(0x6D481C);
-                game_key_buffer[key_index] = newToBind;
-            }
-
             if (selected_entity)
                 render_selected_entity();
             
@@ -466,7 +406,7 @@ namespace debug {
         zpl_vec3 ray_origin     = EXPAND_VEC(debug_cam_pos);
         zpl_vec3 ray_dir        = EXPAND_VEC(rayObjDirection);
 
-        constexpr float to_add  = 0.15;
+        constexpr float to_add  = 0.15f;
         float distance          = 0.0f;
         float min_distance      = 10.0f;
         float distance_geted    = 10.0f;
@@ -505,7 +445,7 @@ namespace debug {
                 delta_x = current_pos.x - width / 2.0f;
                 delta_y = current_pos.y - height / 2.0f;
 
-                POINT mpos = {width / 2.0f, height / 2.0f};
+                POINT mpos = {(long)(width / 2.0f), (long)(height / 2.0f)};
                 ClientToScreen((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), &mpos);
                 SetCursorPos(mpos.x, mpos.y);    
                 input::InputState.mouse_move_delta = { 0, 0 };
