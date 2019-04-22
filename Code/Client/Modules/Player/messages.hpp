@@ -274,18 +274,6 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
-        auto entity_id = librg_data_rent(msg->data);
-        auto entity = librg_entity_fetch(&network_context, entity_id);
-
-        if (entity) {
-            auto player = (mafia_player *)entity->user_data;
-            if (player) {
-                librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
-            }
-        }
-    });
-
     librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* msg) {
         auto entity_id = librg_data_rent(msg->data);
         auto entity = librg_entity_fetch(&network_context, entity_id);

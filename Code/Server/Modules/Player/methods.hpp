@@ -154,17 +154,6 @@ inline auto inventory_remove(
     });
 }
 
-auto inventory_send(librg_entity *player_ent) {
-    auto player = (mafia_player *)player_ent->user_data;
-
-    if (player) {
-        librg_send_except(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, player_ent->client_peer, data, {
-            librg_data_went(&data, player_ent->id);
-            librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
-        });
-    }
-}
-
 void die(librg_entity *entity, b32 forced = false) {
     auto player = (mafia_player*)entity->user_data;
     player->health = 0.0f;
