@@ -9,7 +9,6 @@
 
 #include "settings.h"
 
-#define OAKWOOD_CONSOLE 1
 /* platform specific launcher api */
 const char *launcher_localpath();
 int launcher_abort(const char *msg);
