@@ -37,7 +37,8 @@ namespace MafiaSDK
 		enum MissionID
 		{
 			FREERIDE = 29,
-			FREERIDE_NOC = 30
+			FREERIDE_NOC = 30,
+            TUTORIAL = 17,
 		};
 
         enum ObjectTypes
@@ -199,6 +200,11 @@ namespace MafiaSDK
 
     inline C_Mission_Enum::MissionID GetCurrentMissionID() {
         return (C_Mission_Enum::MissionID)*(int*)(0x6BD8A8);
+    }
+
+    inline char* GetCurrentMissionName() {
+        DWORD addr = (DWORD)GetModuleHandle(NULL) + 0x00247E60;
+        return *(char**)(addr);
     }
 }
 

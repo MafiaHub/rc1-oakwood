@@ -105,7 +105,7 @@ auto despawn(mafia_vehicle* vehicle) -> void {
     if(vehicle && vehicle->car) {
         for (int i = 0; i < 4; i++) {
             
-            if (vehicle->seats[i] != -1) {
+            if (vehicle->seats[i] != -1 && vehicle->car->GetOwner(i) != NULL) {
                 auto player_ent = librg_entity_fetch(&network_context, vehicle->seats[i]);
                 if (player_ent && player_ent->user_data) { 
                     auto player = (mafia_player*)player_ent->user_data;
@@ -120,6 +120,8 @@ auto despawn(mafia_vehicle* vehicle) -> void {
             }
         }
 
-        MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(vehicle->car);
+        if (std::find(car_delte_queue.begin(), car_delte_queue.end(), vehicle->car) == car_delte_queue.end()) {
+            car_delte_queue.push_back(vehicle->car);
+        }
     }
 }

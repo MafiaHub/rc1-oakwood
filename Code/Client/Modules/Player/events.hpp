@@ -203,7 +203,7 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
     target_position_update(ped);
     target_rotation_update(ped);
 
-    // Pose interpolation
+    //Pose interpolation
     {
         zpl_vec3 compensation;
         zpl_vec3_lerp(&compensation, ped->interp.pose.start, ped->interp.pose.target, 0.4f);
@@ -214,6 +214,14 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
             ped->ped->PoseSetPoseAimed(mafia_pose);
         else
             ped->ped->PoseSetPoseNormal(mafia_pose);
+    }
+
+    //Car shooting interpolation
+    if (ped->interp.car_shooting.alpha <= 1.0f) {
+        ped->interp.car_shooting.alpha += delta;
+
+        float interpolated_aim = zpl_lerp(ped->interp.car_shooting.start, ped->interp.car_shooting.target, ped->interp.car_shooting.alpha);
+        *(float*)((DWORD)player_int + 0x5F4) = interpolated_aim;
     }
 }
 
@@ -248,6 +256,11 @@ inline auto entityupdate(librg_event* evnt) -> void {
 
     player->interp.pose.start = player->interp.pose.target;
     player->interp.pose.target = recv_pose;
+    
+    player->interp.car_shooting.start = *(float*)((DWORD)player_int + 0x5F4);
+    player->interp.car_shooting.target = aim;
+    player->interp.car_shooting.alpha = 0.0f;
+    player->interp.car_shooting.start_time = zpl_time_now();
 
     target_position_set(player, evnt->entity->position, GlobalConfig.interp_time_player);
     target_rotation_set(player, recv_rotation, GlobalConfig.interp_time_player);
@@ -257,7 +270,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
         player_int->isDucking	= player->is_crouching;
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
-        *(float*)((DWORD)player_int + 0x5F4) = player->aim;
+        //*(float*)((DWORD)player_int + 0x5F4) = player->aim;
     }
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {

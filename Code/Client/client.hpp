@@ -44,5 +44,6 @@ struct shoot_info {
     DWORD player_base;
 } local_shoot_data;
 std::unordered_map<void*, shoot_info> shoot_queue;
+std::vector<MafiaSDK::C_Car*> car_delte_queue;
 
 IDirect3DDevice9* global_device = nullptr;

@@ -40,9 +40,9 @@ __declspec(naked) void Scene_CreateActor() {
 /*
 * Draw distance hook
 */
-float vd_min = 20.0f;
-float vd_max = 450.0f;
-float vd_value = GlobalConfig.view_distance > 0.0f ? GlobalConfig.view_distance : vd_max;
+float vd_min = 10.0f;
+float vd_max = 1000.0f;
+float vd_value = 700.0f;
 
 void __declspec(naked)HandleFogSettings() {
 	_asm {
@@ -63,13 +63,17 @@ void __declspec(naked)HandleFogSettings() {
 	}
 }
 
+inline void update_fog() {
+    auto vd_value1 = vd_value - 50.0f;
+    auto vd_value2 = vd_value - 20.0f;
+    MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)& vd_value1, 4);
+    MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)& vd_value2, 4);
+}
+
 inline auto init() {
 	// Scene
     MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&Scene_CreateActor);
-    auto vd_value1 = vd_value - 50.0f;
-    auto vd_value2 = vd_value - 20.0f;
-    MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)&vd_value1, 4);
-    MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)&vd_value2, 4);
+    update_fog();
     MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)HandleFogSettings);
     MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
 }

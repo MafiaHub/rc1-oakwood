@@ -12,7 +12,7 @@ inline auto mod_librg_connect() -> void {
     librg_network_start(&network_context, addr);
 }
 
-inline auto mod_init_networking() {
+inline void mod_init_networking() {
     network_context.mode = LIBRG_MODE_CLIENT;
     network_context.max_entities = OAK_MAX_ENTITIES;
     network_context.tick_delay = OAK_TICK_DELAY;
