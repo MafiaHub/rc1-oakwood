@@ -59,7 +59,7 @@ namespace loadingscreen {
             graphics::main_sprite->End();
 
             constexpr float loading_bar_height = 15.0f;
-            graphics::draw_box(device, 0.0f, screen_y - loading_bar_height, screen_x * current_loading_progress, loading_bar_height, 0xFFFF0000);
+            graphics::draw_box(device, 0.0f, screen_y - loading_bar_height, 0.0f, screen_x * current_loading_progress, loading_bar_height, 0xFFFF0000);
         }
     }
 

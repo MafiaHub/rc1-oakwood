@@ -59,24 +59,75 @@ namespace graphics
         DWORD color;
     };
 
-    inline void draw_box(IDirect3DDevice9* device, float x, float y, float width, float height, DWORD color) {
+    inline void draw_box(IDirect3DDevice9* device, float x, float y, float z, float width, float height, DWORD color) {
         if (device) {
             const Vertex2D rect[] = {
-                { x,			y,			0.0f, 1.0f,	color },
-                { x + width,	y,			0.0f, 1.0f,	color },
-                { x,			y + height, 0.0f, 1.0f,	color },
-                { x + width,	y + height, 0.0f, 1.0f,	color },
+                { x,			y,			z, 1.0f,	color },
+                { x + width,	y,			z, 1.0f,	color },
+                { x,			y + height, z, 1.0f,	color },
+                { x + width,	y + height, z, 1.0f,	color },
             };
 
             device->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
             device->SetPixelShader(NULL);
             device->SetVertexShader(NULL);
-            device->SetRenderState(D3DRS_ZENABLE, FALSE);
+            device->SetRenderState(D3DRS_ZENABLE, TRUE);
             device->SetTexture(0, NULL);
             device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &rect, sizeof(Vertex2D));
         }
     }
 
+    inline void draw_texture(IDirect3DDevice9* device, IDirect3DTexture9* texture, float x, float y, float z, int w, int h, unsigned short alpha) {
+
+        struct texturedVertex {
+            float x, y, z;
+            float rhw;
+            DWORD color;
+            float tu, tv;
+        };
+        
+        DWORD color = (alpha << 24);
+        texturedVertex g_square_vertices[] = {
+            { (float)x, (float)y, z, 1.0f, color, 0.0f, 0.0f },
+            { (float)(x + w), (float)y, z, 1.0f, color, 1.0f, 0.0f },
+            { (float)x, (float)(y + h), z, 1.0f, color, 0.0f, 1.0f },
+            { (float)(x + w), (float)(y + h), z, 1.0f, color, 1.0f, 1.0f }
+        };
+
+        device->SetRenderState(D3DRS_ZENABLE, TRUE);
+        device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+        device->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+        device->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+        device->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+        device->SetRenderState(D3DRS_ALPHAREF, 0x08);
+        device->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+        device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+        device->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+        device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+        device->SetRenderState(D3DRS_CLIPPING, TRUE);
+        device->SetRenderState(D3DRS_CLIPPLANEENABLE, FALSE);
+        device->SetRenderState(D3DRS_VERTEXBLEND, FALSE);
+        device->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
+        device->SetRenderState(D3DRS_FOGENABLE, FALSE);
+
+        device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+        device->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+        device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+        device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+        device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+        device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+        device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+        device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+        device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+        device->SetRenderState(D3DRS_WRAP0, 0);
+
+        device->SetTexture(0, texture);
+        device->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE);
+        device->SetPixelShader(NULL);
+        device->SetVertexShader(NULL);
+        device->SetRenderState(D3DRS_ZENABLE, TRUE);
+        device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &g_square_vertices, sizeof(texturedVertex));
+    }
     /*
     *  Just draw some text boi
     */

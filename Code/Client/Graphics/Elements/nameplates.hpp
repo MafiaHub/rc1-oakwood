@@ -50,6 +50,13 @@ namespace nameplates {
             nameplate_font->Release();
             nameplate_font = nullptr;
         }
+
+        iterate_players([](mafia_player * player) {
+            if (player->nickname_texture != nullptr) {
+                player->nickname_texture->Release();
+                player->nickname_texture = nullptr;
+            }
+        });
     }
 
     /* 
@@ -78,20 +85,58 @@ namespace nameplates {
                     auto current_i3d_camera = get_current_i3dcamera();
                     if (current_i3d_camera == nullptr) return;
 
-                   
                     S_vector camera_pos = current_i3d_camera->GetInterface()->position;
+                   
                     auto screen = graphics::world_to_screen({ player_pos.x, player_pos.y + 0.45f, player_pos.z });
 
                     if (screen.z < 1.0f) {
+
+                        //NOTE(DavoSK): For now we draw nicknames as texture
+                        //So we do render to texture so we dont have to render every frame
+                        //All transformation are later aplied on textured vertex
+                        if (player->nickname_texture == nullptr) {
+                            if (FAILED(D3DXCreateTexture(device, 256, 256, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &player->nickname_texture))) {
+                                MessageBox(NULL, "Unable to create player nickname texture !", "Exiting....", MB_OK);
+                                exit(1);
+                            }
+
+                            auto texture = player->nickname_texture;
+                            IDirect3DSurface9* pSurf, *pOldTarget, *oldStencil;
+                
+                            if (!SUCCEEDED(texture->GetSurfaceLevel(0, &pSurf)))
+                                return;
+
+                            if (!SUCCEEDED(device->GetRenderTarget(0, &pOldTarget)))
+                                return;
+                            
+                            if (!SUCCEEDED(device->GetDepthStencilSurface(&oldStencil)))
+                                return;
+                                
+                            if (FAILED(device->SetRenderTarget(0, pSurf))) {
+                                MessageBox(NULL, "Unable to set render target to nickname texture !", "Exiting....", MB_OK);
+                                exit(1);
+                            }
+                            
+                            auto size = graphics::get_text_size(nameplate_font, player->name);                    
+                            device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
+                            graphics::draw_text(nameplate_font, player->name, 128 - (size.cx / 2), 128 - (size.cy / 2), 1.0f, 0xFFFFFFFF, true);
+
+                            device->SetRenderTarget(0, pOldTarget);
+                            pSurf->Release();
+                            pOldTarget->Release();
+                            oldStencil->Release();
+                        }
+
                         zpl_vec3 vec = {};
                         zpl_vec3_sub(&vec, EXPAND_VEC(player_pos), EXPAND_VEC(camera_pos));
                         auto dist = zpl_vec3_mag(vec);
                         auto dist_sq = zpl_sqrt(dist);
                         auto distance_scale = (1.0f / dist_sq);
-                        auto size = graphics::get_text_size(nameplate_font, player->name);
-                        size.cx = size.cx * distance_scale;
-
-                        graphics::draw_text(nameplate_font, player->name, screen.x - (size.cx / 2), screen.y, distance_scale, 0xFFFFFFFF, true);
+                      
+                        if (player->nickname_texture) {
+                            screen.y -= (player->ped->GetInterface()->playersCar != nullptr ? 50 : 0) * distance_scale;
+                            graphics::draw_texture(device, player->nickname_texture, screen.x - (256 * distance_scale) / 2, screen.y - ((256 * distance_scale) / 2), screen.z, 256 * distance_scale, 256 * distance_scale, 255);
+                        }
 
                         constexpr auto health_width = 135.0f;
                         constexpr auto health_height = 15.0f;
@@ -120,8 +165,8 @@ namespace nameplates {
 
                         auto width = (player_health * scaled_width) / 200.0f;
                         auto healthbar_x = screen.x - (scaled_width / 2);
-                        graphics::draw_box(device, healthbar_x - 2.0f, screen.y - 2.0f, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
-                        graphics::draw_box(device, healthbar_x, screen.y, width, scaled_height, final_color);
+                        graphics::draw_box(device, healthbar_x - 2.0f, screen.y - 2.0f, screen.z, scaled_width + 2.0f, scaled_height + 2.0f, final_bg_color);
+                        graphics::draw_box(device, healthbar_x, screen.y, screen.z, width, scaled_height, final_color);
                     }
                 }
             });

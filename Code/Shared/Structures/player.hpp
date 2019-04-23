@@ -12,6 +12,15 @@ enum {
 };
 
 struct mafia_player {
+    ~mafia_player() {
+#ifdef MAFIA_SDK_IMPLEMENTATION
+        if (nickname_texture != nullptr) {
+            nickname_texture->Release();
+            nickname_texture = nullptr;
+        }
+#endif
+    }
+
 	mafia_player() : 
 	streamer_entity_id(-1),
 	vehicle_id(-1),
