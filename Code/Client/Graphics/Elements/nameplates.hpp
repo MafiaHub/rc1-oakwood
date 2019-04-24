@@ -103,20 +103,15 @@ namespace nameplates {
                             auto texture = player->nickname_texture;
                             IDirect3DSurface9* pSurf, *pOldTarget, *oldStencil;
                 
-                            if (!SUCCEEDED(texture->GetSurfaceLevel(0, &pSurf)))
-                                return;
+                            if (FAILED(texture->GetSurfaceLevel(0, &pSurf)) ||
+                                FAILED(device->GetRenderTarget(0, &pOldTarget)) ||
+                                FAILED(device->GetDepthStencilSurface(&oldStencil)) ||
+                                FAILED(device->SetRenderTarget(0, pSurf))) {
 
-                            if (!SUCCEEDED(device->GetRenderTarget(0, &pOldTarget)))
-                                return;
-                            
-                            if (!SUCCEEDED(device->GetDepthStencilSurface(&oldStencil)))
-                                return;
-                                
-                            if (FAILED(device->SetRenderTarget(0, pSurf))) {
                                 MessageBox(NULL, "Unable to set render target to nickname texture !", "Exiting....", MB_OK);
                                 exit(1);
                             }
-                            
+
                             auto size = graphics::get_text_size(nameplate_font, player->name);                    
                             device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
                             graphics::draw_text(nameplate_font, player->name, 128 - (size.cx / 2), 128 - (size.cy / 2), 1.0f, 0xFFFFFFFF, true);

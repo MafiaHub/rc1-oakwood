@@ -77,7 +77,16 @@ namespace graphics
         }
     }
 
+    /*
+    * Draw 2D textured quad as sprite with z buffer enabled
+    *
+    */
     inline void draw_texture(IDirect3DDevice9* device, IDirect3DTexture9* texture, float x, float y, float z, int w, int h, unsigned short alpha) {
+
+
+        LPDIRECT3DSTATEBLOCK9 pStateBlock = NULL;
+        device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
+        pStateBlock->Capture();
 
         struct texturedVertex {
             float x, y, z;
@@ -110,23 +119,37 @@ namespace graphics
         device->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE);
         device->SetRenderState(D3DRS_FOGENABLE, FALSE);
 
+        //--- 
         device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
         device->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
         device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+        //------
         device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
         device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+
+        //------ important for rendering as sprite---
+        device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+        device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+        device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+
         device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
         device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
         device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
         device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-        device->SetRenderState(D3DRS_WRAP0, 0);
 
-        device->SetTexture(0, texture);
+        device->SetRenderState(D3DRS_WRAP0, 0);
+       
         device->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE);
+        device->SetTexture(0, texture);
         device->SetPixelShader(NULL);
         device->SetVertexShader(NULL);
-        device->SetRenderState(D3DRS_ZENABLE, TRUE);
         device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, &g_square_vertices, sizeof(texturedVertex));
+
+        if (pStateBlock) {
+            pStateBlock->Apply();
+            pStateBlock->Release();
+            pStateBlock = nullptr;
+        }
     }
     /*
     *  Just draw some text boi
@@ -240,7 +263,7 @@ namespace graphics
         if (device && global_device) {
             device->CreateStateBlock(D3DSBT_ALL, &state_block);
 
-            IDirect3DDevice9_SetVertexShader(device, NULL);
+           /* IDirect3DDevice9_SetVertexShader(device, NULL);
             IDirect3DDevice9_SetFVF(device, D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
             IDirect3DDevice9_SetRenderState(device, D3DRS_ZENABLE, D3DZB_FALSE);
             IDirect3DDevice9_SetRenderState(device, D3DRS_CULLMODE, D3DCULL_NONE);
@@ -257,7 +280,7 @@ namespace graphics
 
             IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
             IDirect3DDevice9_SetTextureStageState(device, 1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-            IDirect3DDevice9_SetPixelShader(device, NULL);
+            IDirect3DDevice9_SetPixelShader(device, NULL);*/
 
             nameplates::render(device);
             imgui::render();
