@@ -99,6 +99,7 @@ GameMode::GameMode(oak_api *mod) {
     };
 
     mod->on_server_tick = [=]() {
+
         if (onServerTick)
             onServerTick();
     };

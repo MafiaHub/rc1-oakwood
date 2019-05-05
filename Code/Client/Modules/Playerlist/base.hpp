@@ -1,5 +1,11 @@
 namespace playerlist {
+
     constexpr int VKEY_P = 0x50;
+
+    struct {
+        u32 player_count;
+        player_scoreboard_info* players_info;
+    } current_scoreboard;
 
     void render() {
         if (!input::is_key_down(VKEY_P) || modules::chat::is_focused || 
@@ -21,21 +27,28 @@ namespace playerlist {
         ImGui::Text("Ping"); ImGui::NextColumn();
         ImGui::Separator();
 
-        for (u32 i = 0; i < network_context.max_entities; i++) {
-            librg_entity* entity = librg_entity_fetch(&network_context, i);
-            if (!entity) continue;
-
-            if (entity->type == TYPE_PLAYER && entity->user_data) {
-                auto player = reinterpret_cast<mafia_player*>(entity->user_data);
-                ImGui::Text("%d", i); ImGui::NextColumn();
-                ImGui::Text("%s", player->name); ImGui::NextColumn();
-                ImGui::Text("%d", player->ping); ImGui::NextColumn();
-            }
+        for (u32 i = 0; i < current_scoreboard.player_count; i++) {
+            auto scoreboard_info = current_scoreboard.players_info[i];
+            ImGui::Text("%d", scoreboard_info.server_id); ImGui::NextColumn();
+            ImGui::Text("%s", scoreboard_info.nickname); ImGui::NextColumn();
+            ImGui::Text("%d", scoreboard_info.ping); ImGui::NextColumn();
         }
 
         ImGui::Columns(1);
         ImGui::Separator();
         ImGui::End();
-        
+    }
+
+    void add_messages() {
+        librg_network_add(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, [](librg_message * msg) {
+            current_scoreboard.player_count = librg_data_ru32(msg->data);
+
+            if (current_scoreboard.players_info != nullptr)
+                free(current_scoreboard.players_info);
+
+            auto read_size = sizeof(player_scoreboard_info) * current_scoreboard.player_count;
+            current_scoreboard.players_info = (player_scoreboard_info*)malloc(read_size);
+            librg_data_rptr(msg->data, current_scoreboard.players_info, read_size);
+        });
     }
 };

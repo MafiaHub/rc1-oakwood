@@ -1,6 +1,7 @@
 #pragma once
 
-#define VEHICLE_SELECTION_TIME 2.0f
+constexpr float VEHICLE_SELECTION_TIME = 2.0f;
+constexpr float SCOREBOARD_UPDATE_TIME = 2.0f;
 
 namespace misc {
     zpl_global f64 last_console_update  = 0.0f;
@@ -56,6 +57,37 @@ namespace misc {
                     }
                 }
             });
+        }
+    }
+
+    void scoreboard_update() {
+        zpl_local_persist f64 last_scoreboard_update = 0.0f;
+
+        if (zpl_time_now() - last_scoreboard_update > SCOREBOARD_UPDATE_TIME) {
+            last_scoreboard_update = zpl_time_now();
+
+            std::vector<player_scoreboard_info> scoreboard;
+            for (int i = 0; i < network_context.max_entities; i++) {
+                auto entity = librg_entity_fetch(&network_context, i);
+                if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
+                    auto player = (mafia_player*)entity->user_data;
+                    player_scoreboard_info player_info;
+                    strcpy_s(player_info.nickname, player->name);
+                    player_info.ping = entity->client_peer->roundTripTime;
+                    player_info.server_id = entity->id;
+                    scoreboard.push_back(player_info);
+                }
+            }
+
+            for (int i = 0; i < network_context.max_entities; i++) {
+                auto entity = librg_entity_fetch(&network_context, i);
+                if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
+                    librg_send_to(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, entity->client_peer, data, {
+                        librg_data_wu32(&data, scoreboard.size());
+                        librg_data_wptr(&data, scoreboard.data(), scoreboard.size() * sizeof(player_scoreboard_info));
+                    });
+                }
+            }
         }
     }
 }

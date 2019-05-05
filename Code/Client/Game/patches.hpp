@@ -7,21 +7,8 @@ typedef DWORD(_stdcall *DtaOpen_t) (const char* filename, DWORD params);
 DtaOpen_t DtaOpen = nullptr;
 
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD {
-    // printf("requesting: %s\n", filename);
-
-    if (filename) {
-        if (strstr(filename, "mainmenu.mnu")) {
-            return DtaOpen((GlobalConfig.localpath + "files/main.mnu").c_str(), params);
-        }
-
-        if (strstr(filename, "online.tga")) {
-            return DtaOpen((GlobalConfig.localpath + "files/online.tga").c_str(), params);
-        }
-    }
-    
     return DtaOpen(filename, params);
 }
-
 
 DWORD JumpBackMenu = 0x00594896;
 __declspec(naked) void HookMultipleMenus() {

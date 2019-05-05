@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
         network::update();
         misc::vehicles_streamer_update(); 
         misc::console_update_stats();
+        misc::scoreboard_update();
         masterlist::update();
         zpl_sleep_ms(1);
     }

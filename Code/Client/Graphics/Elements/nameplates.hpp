@@ -107,13 +107,12 @@ namespace nameplates {
                                 FAILED(device->GetRenderTarget(0, &pOldTarget)) ||
                                 FAILED(device->GetDepthStencilSurface(&oldStencil)) ||
                                 FAILED(device->SetRenderTarget(0, pSurf))) {
-
                                 MessageBox(NULL, "Unable to set render target to nickname texture !", "Exiting....", MB_OK);
                                 exit(1);
                             }
 
                             auto size = graphics::get_text_size(nameplate_font, player->name);                    
-                            device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
+                            device->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DCOLOR_ARGB(0, 0, 0, 0), 1.0f, 0);
                             graphics::draw_text(nameplate_font, player->name, 128 - (size.cx / 2), 128 - (size.cy / 2), 1.0f, 0xFFFFFFFF, true);
 
                             device->SetRenderTarget(0, pOldTarget);

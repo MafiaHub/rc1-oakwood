@@ -79,11 +79,8 @@ namespace graphics
 
     /*
     * Draw 2D textured quad as sprite with z buffer enabled
-    *
     */
     inline void draw_texture(IDirect3DDevice9* device, IDirect3DTexture9* texture, float x, float y, float z, int w, int h, unsigned short alpha) {
-
-
         LPDIRECT3DSTATEBLOCK9 pStateBlock = NULL;
         device->CreateStateBlock(D3DSBT_ALL, &pStateBlock);
         pStateBlock->Capture();
@@ -128,17 +125,10 @@ namespace graphics
         device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 
         //------ important for rendering as sprite---
-        device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-        device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-        device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
-
-        device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
-        device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
-        device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-        device->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
-
-        device->SetRenderState(D3DRS_WRAP0, 0);
-       
+        device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_ANISOTROPIC);
+        device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_ANISOTROPIC);
+        device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_ANISOTROPIC);
+   
         device->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_DIFFUSE);
         device->SetTexture(0, texture);
         device->SetPixelShader(NULL);
