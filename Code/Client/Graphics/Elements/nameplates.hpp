@@ -128,7 +128,7 @@ namespace nameplates {
                         auto distance_scale = (1.0f / dist_sq);
                       
                         if (player->nickname_texture) {
-                            screen.y -= (player->ped->GetInterface()->playersCar != nullptr ? 50 : 0) * distance_scale;
+                            screen.y -= (player->ped->GetInterface()->playersCar != nullptr ? 100 : 0) * distance_scale;
                             graphics::draw_texture(device, player->nickname_texture, screen.x - (256 * distance_scale) / 2, screen.y - ((256 * distance_scale) / 2), screen.z, 256 * distance_scale, 256 * distance_scale, 255);
                         }
 

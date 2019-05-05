@@ -67,20 +67,20 @@ namespace misc {
             last_scoreboard_update = zpl_time_now();
 
             std::vector<player_scoreboard_info> scoreboard;
-            for (int i = 0; i < network_context.max_entities; i++) {
-                auto entity = librg_entity_fetch(&network_context, i);
+            for (int i = 0; i < connected_players.size(); i++) {
+                auto entity = connected_players.at(i);
                 if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
                     auto player = (mafia_player*)entity->user_data;
                     player_scoreboard_info player_info;
                     strcpy_s(player_info.nickname, player->name);
                     player_info.ping = entity->client_peer->roundTripTime;
-                    player_info.server_id = entity->id;
+                    player_info.server_id = scoreboard.size();
                     scoreboard.push_back(player_info);
                 }
             }
 
-            for (int i = 0; i < network_context.max_entities; i++) {
-                auto entity = librg_entity_fetch(&network_context, i);
+            for (int i = 0; i < connected_players.size(); i++) {
+                auto entity = connected_players.at(i);
                 if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
                     librg_send_to(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, entity->client_peer, data, {
                         librg_data_wu32(&data, scoreboard.size());

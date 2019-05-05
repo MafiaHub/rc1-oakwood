@@ -31,6 +31,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
         gm.on_player_connected(evnt, evnt->entity, ped);
 
     mod_log(zpl_bprintf("Player '%s' has been connected!", ped->name));
+    connected_players.push_back(evnt->entity);
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
@@ -38,8 +39,9 @@ auto on_librg_connection_disconnect(librg_event* evnt) -> void {
     if (evnt->entity && evnt->entity->type == TYPE_PLAYER)
     {
         auto player = (mafia_player *)evnt->entity->user_data;
-
         ZPL_ASSERT_NOT_NULL(player);
+
+        connected_players.erase(std::remove(connected_players.begin(), connected_players.end(), evnt->entity));
 
         if (gm.on_player_disconnected)
             gm.on_player_disconnected(evnt, evnt->entity);
