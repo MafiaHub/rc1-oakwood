@@ -158,7 +158,7 @@ namespace chat {
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
-                ImGui::TextColored(message.first, message.second.c_str());
+                ImGui::TextColored(message.first, "%s", message.second.c_str());
             }
         }
 
