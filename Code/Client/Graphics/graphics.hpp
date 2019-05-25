@@ -213,7 +213,6 @@ namespace graphics
 
         global_device = device;
         init_main_sprite(device);
-
         nameplates::init(device);
         input::hook_window();
         imgui::init(device);
