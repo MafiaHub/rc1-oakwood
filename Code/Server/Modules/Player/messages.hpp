@@ -2,9 +2,14 @@ void add_messages() {
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
 
+        librg_send_except(&network_context, NETWORK_PLAYER_DIE, msg->peer, data, {
+            librg_data_went(&data, sender_ent->id);
+        });
+
         if (sender_ent->user_data) {
             die(sender_ent);
         }
+
     });
 
     /*librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {

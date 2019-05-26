@@ -94,8 +94,21 @@ void add_messages() {
         if (sender_ent && sender_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
 
-            if (sender->ped)
-                sender->ped->Intern_ForceDeath();
+            /*if (sender->ped)
+                sender->ped->Intern_ForceDeath();*/
+
+            //NOTE(DavoSK) if remote player was inside car we set seat of car to -1
+            if (sender->vehicle_id > -1) {
+                auto vehicle_ent = librg_entity_fetch(&network_context, sender->vehicle_id);
+                if (vehicle_ent && vehicle_ent->user_data) {
+                    auto mafia_veh = (mafia_vehicle*)(vehicle_ent->user_data);
+                    for (int i = 0; i < 4; i++) {
+                        if (mafia_veh->seats[i] == sender->vehicle_id) {
+                            mafia_veh->seats[i] = -1;
+                        }
+                    }
+                }
+            }
         }
     });
 

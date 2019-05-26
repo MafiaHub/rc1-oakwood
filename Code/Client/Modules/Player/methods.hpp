@@ -164,6 +164,18 @@ inline auto died() -> void {
     auto player = get_local_player();
     if (player) {
 
+        if (player->vehicle_id > -1) {
+            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+            if (vehicle_ent && vehicle_ent->user_data) {
+                auto mafia_veh = (mafia_vehicle*)(vehicle_ent->user_data);
+                for (int i = 0; i < 4; i++) {
+                    if (mafia_veh->seats[i] == player->vehicle_id) {
+                        mafia_veh->seats[i] = -1;
+                    }
+                }
+            }
+        }
+
         if (player->ped) {
             auto veh = player->ped->GetInterface()->playersCar;
             if (veh) {
