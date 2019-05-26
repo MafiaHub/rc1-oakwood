@@ -20,13 +20,19 @@ namespace gamemap
     };
 
     inline bool is_marker_inbounds(zpl_vec2 position, float blip_size) {
-
+        return true;
         //NOTE(DavoSK): Position is also gap from each size
         float screen_x = (float)MafiaSDK::GetIGraph()->Scrn_sx();
         float screen_y = (float)MafiaSDK::GetIGraph()->Scrn_sy();
 
+        float map_scale_fix = 1.0f;
+
+        if (zpl_abs(screen_x / screen_y - 16.0 / 9.0) < 0.001) {
+            map_scale_fix = 1.3333f;
+        }
+
         //NOTE(DavoSK): Gap size from 0 0 to map start position
-        float pos_x = convert_map_pos_x * (1600.0f / screen_x) * 1.333f;
+        float pos_x = convert_map_pos_x * (1600.0f / screen_x) * map_scale_fix;
         float pos_y = convert_map_pos_y * (900.0f / screen_y);
 
         return (position.x + blip_size >= pos_x && position.y + blip_size >= pos_y) &&
@@ -34,13 +40,19 @@ namespace gamemap
     }
 
     inline zpl_vec2 translate_object_to_map(zpl_vec3 position) {
+        float map_scale_fix = 1.0f;
+
+        if (zpl_abs(MafiaSDK::GetIGraph()->Scrn_sx() / (float)MafiaSDK::GetIGraph()->Scrn_sy() - 16.0 / 9.0) < 0.001) {
+            map_scale_fix = 1.3333f;
+        }
+
         auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
         if (local_player) {
             auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
             if (player_frame) {
                 auto player_pos = player_frame->GetInterface()->position;
         
-                float x_coef = convert_width_coef * (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx()) * 1.333f;
+                float x_coef = convert_width_coef * (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx()) * map_scale_fix;
                 float y_coef = convert_height_coef * (900.0f / (float)MafiaSDK::GetIGraph()->Scrn_sy());
 
                 zpl_vec2 center_offset = { 
