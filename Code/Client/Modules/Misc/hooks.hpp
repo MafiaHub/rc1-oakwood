@@ -37,43 +37,7 @@ __declspec(naked) void Scene_CreateActor() {
 	}
 }
 
-/*
-* Draw distance hook
-*/
-float vd_min = 10.0f;
-float vd_max = 1000.0f;
-float vd_value = 700.0f;
-
-void __declspec(naked)HandleFogSettings() {
-	_asm {
-		ADD[ESP], 0x2;
-		FLD DWORD PTR DS : [ESP + 0x0B8];	
-		FLD DWORD PTR DS : vd_min;			
-		FCOMiP ST, ST(1);						
-		JAE finaly;								
-		FLD DWORD PTR DS : vd_max;				
-		FCOMiP ST, ST(1);						
-		JBE finaly;								
-		FFREE ST;				
-		FLD DWORD PTR DS : vd_value;							
-	finaly:
-		FSTP DWORD PTR DS : [ESP + 0x0B8];
-		MOV ECX, DWORD PTR SS : [ESP + 0x0B8];
-		RETN;
-	}
-}
-
-inline void update_fog() {
-    auto vd_value1 = vd_value - 50.0f;
-    auto vd_value2 = vd_value - 20.0f;
-    MemoryPatcher::PatchAddress(0x00402201 + 0x4, (BYTE*)& vd_value1, 4);
-    MemoryPatcher::PatchAddress(0x00402209 + 0x4, (BYTE*)& vd_value2, 4);
-}
-
 inline auto init() {
 	// Scene
     MemoryPatcher::InstallJmpHook(0x00544AFF, (DWORD)&Scene_CreateActor);
-    update_fog();
-    MemoryPatcher::InstallCallHook(0x0054192E, (DWORD)HandleFogSettings);
-    MemoryPatcher::InstallNopPatch(0x0054192E + 0x5, 0x2);
 }

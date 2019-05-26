@@ -61,6 +61,7 @@ workspace "Oakwood"
 
         include "Launcher"
         include "Client"
+        include "WidescreenFix"
     end
     
     group "Plugins"

@@ -13,6 +13,7 @@ namespace modules {
 
     #include "Modules/Chat/base.hpp"
     #include "Modules/Debug/base.hpp"
+    #include "Modules/GameMap/base.hpp"
     #include "Modules/Playerlist/base.hpp"
     #include "Modules/MainMenu/base.hpp"
     #include "Modules/PauseMenu/base.hpp"

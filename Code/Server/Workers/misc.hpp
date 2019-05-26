@@ -2,6 +2,7 @@
 
 constexpr float VEHICLE_SELECTION_TIME = 2.0f;
 constexpr float SCOREBOARD_UPDATE_TIME = 2.0f;
+constexpr float GAMEMAP_UPDATE_TIME = 0.5f;
 
 namespace misc {
     zpl_global f64 last_console_update  = 0.0f;
@@ -79,15 +80,46 @@ namespace misc {
                 }
             }
 
-            for (int i = 0; i < connected_players.size(); i++) {
-                auto entity = connected_players.at(i);
-                if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
-                    librg_send_to(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, entity->client_peer, data, {
-                        librg_data_wu32(&data, scoreboard.size());
-                        librg_data_wptr(&data, scoreboard.data(), scoreboard.size() * sizeof(player_scoreboard_info));
-                    });
+            librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, data, {
+                librg_data_wu32(&data, scoreboard.size());
+                librg_data_wptr(&data, scoreboard.data(), scoreboard.size() * sizeof(player_scoreboard_info));
+            });   
+        }
+    }
+
+    void gamemap_update() {
+        zpl_local_persist f64 last_gamemap_update = 0.0f;
+
+        if (zpl_time_now() - last_gamemap_update > GAMEMAP_UPDATE_TIME) {
+            last_gamemap_update = zpl_time_now();
+
+            std::vector<gamemap_info> gamemap;
+            for (int i = 0; i < network_context.max_entities; i++) {
+                auto entity = librg_entity_fetch(&network_context, i);
+                if (entity && entity->user_data) {
+
+                    bool visible = false;
+                    if (entity->type == TYPE_PLAYER) {
+                        visible = ((mafia_player*)entity->user_data)->is_visible_on_map;
+                    }
+                    else if (entity->type == TYPE_VEHICLE) {
+                        visible = ((mafia_vehicle*)entity->user_data)->is_visible_on_map;
+                    }
+               
+                    if (visible) {
+                        gamemap.push_back({
+                            entity->id,
+                            (u8)entity->type,
+                            entity->position
+                        });
+                    }
                 }
             }
+
+            librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_GAMEMAP, data, {
+                librg_data_wu32(&data, gamemap.size());
+                librg_data_wptr(&data, gamemap.data(), gamemap.size() * sizeof(gamemap_info));
+            });
         }
     }
 }

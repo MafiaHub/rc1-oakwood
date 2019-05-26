@@ -139,6 +139,9 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     // store entry
     auto entry_point = static_cast<void(*)()>(loader.GetEP());
 
+    // load our plugins
+    LoadLibraryA("WidescreenFix.dll");
+
     // invoke original entry point
     entry_point();
     return 0;
