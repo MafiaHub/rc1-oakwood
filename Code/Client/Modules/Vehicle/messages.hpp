@@ -63,6 +63,18 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_VEHICLE_GAME_DESTROY, [](librg_message * msg) {
+
+        u32 vehicle_id = librg_data_ru32(msg->data);
+        auto cached_car = car_cache[vehicle_id];
+        if (cached_car) {
+            if (std::find(car_delte_queue.begin(), car_delte_queue.end(), cached_car) == car_delte_queue.end()) {
+                car_delte_queue.push_back(cached_car);
+                car_cache[vehicle_id] = nullptr;
+            }
+        }
+    });
+
     librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* msg) {
 
         u32 vehicle_id = librg_data_ru32(msg->data);

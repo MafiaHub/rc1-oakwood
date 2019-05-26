@@ -50,6 +50,10 @@ void destroy_vehicle(librg_entity *entity) {
     }
 
     librg_entity_destroy(&network_context, entity->id);
+    mod_message_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, [&](librg_data * data) {
+        librg_data_went(data, entity->id);
+    });
+   
     delete vehicle;
     
     entity->user_data = nullptr;

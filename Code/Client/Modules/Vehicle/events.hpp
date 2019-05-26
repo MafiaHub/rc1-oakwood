@@ -91,7 +91,7 @@ void target_rotation_set(mafia_vehicle *car, zpl_vec3 target_rot_forward, zpl_ve
 }
 
 inline auto entitycreate(librg_event *evnt) {
-
+   
     auto vehicle = new mafia_vehicle();
 
     vehicle->interp.rot     = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
@@ -111,8 +111,6 @@ inline auto entitycreate(librg_event *evnt) {
     librg_data_rptr(evnt->data, vehicle->seats, sizeof(i32) * 4);
     librg_data_rptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_rptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
-
-    printf("Vehicle create '%d'\n", evnt->entity->id);
 
     u32 deltas_count = librg_data_ru32(evnt->data);
 
@@ -144,7 +142,16 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->transparency = librg_data_rf32(evnt->data);
     vehicle->collision_state = librg_data_ru8(evnt->data);
 
-    vehicle->car = spawn(position, vehicle);
+    auto cached_car = car_cache[evnt->entity->id];
+
+    if (cached_car != nullptr) {
+        vehicle->car = cached_car;
+        cached_car->SetTransparency(vehicle->transparency);
+    }
+    else {
+        vehicle->car = spawn(position, vehicle);
+        car_cache[evnt->entity->id] = vehicle->car;
+    }
 
     evnt->entity->user_data = (void *)vehicle;
     evnt->entity->flags |= ENTITY_INTERPOLATED;
@@ -242,13 +249,14 @@ inline auto entityupdate(librg_event *evnt) {
 inline auto entityremove(librg_event *evnt) {
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
     if (vehicle && vehicle->car) {
-        printf("Vehicle remove '%d'\n", evnt->entity->id);
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
         vehicle->clientside_flags |= CLIENTSIDE_VEHICLE_STREAMER_REMOVED;
 
         lib_inter_destroy_interpolator(vehicle->interp.pos);
         lib_inter_destroy_interpolator(vehicle->interp.rot);
         lib_inter_destroy_interpolator(vehicle->interp.rot_up);
+        
+        vehicle->car->SetTransparency(0.0f);
         despawn(vehicle);
 
         delete vehicle;

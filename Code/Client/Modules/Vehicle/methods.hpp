@@ -1,7 +1,7 @@
 #pragma once
 
 auto spawn(zpl_vec3 position, 
-                   mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car* {
+           mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car* {
 
     S_vector default_scale = { 1.0f, 1.0f, 1.0f };
     S_vector default_pos = EXPAND_VEC(position);
@@ -103,8 +103,7 @@ auto despawn(mafia_vehicle* vehicle) -> void {
     printf("[debug] despawn -> Intern_FromCar\n");
 
     if(vehicle && vehicle->car) {
-        for (int i = 0; i < 4; i++) {
-            
+        for (int i = 0; i < 4; i++) {   
             if (vehicle->seats[i] != -1 && vehicle->car->GetOwner(i) != NULL) {
                 auto player_ent = librg_entity_fetch(&network_context, vehicle->seats[i]);
                 if (player_ent && player_ent->user_data) { 
@@ -117,10 +116,6 @@ auto despawn(mafia_vehicle* vehicle) -> void {
                     vehicle->seats[i] = -1;
                 }
             }
-        }
-
-        if (std::find(car_delte_queue.begin(), car_delte_queue.end(), vehicle->car) == car_delte_queue.end()) {
-            car_delte_queue.push_back(vehicle->car);
         }
     }
 }
