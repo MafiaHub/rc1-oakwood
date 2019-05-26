@@ -18,6 +18,10 @@ __declspec(naked) void HookMultipleMenus() {
     }
 }
 
+__declspec(naked) void RETN4() {
+    __asm retn 0x4
+}
+
 auto mod_init_patches() {
 
     HMODULE rw_data = GetModuleHandleA("rw_data.dll");
@@ -32,6 +36,8 @@ auto mod_init_patches() {
     MafiaSDK::C_Game_Patches::PatchDisablePauseMenu();
     MafiaSDK::C_Game_Patches::PatchJumpToGame("tutorial");
   
+    MemoryPatcher::InstallJmpHook(0x005EA7E0, (DWORD)&RETN4);
+
     // 0004E034A
     // Force update car physics
     BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";

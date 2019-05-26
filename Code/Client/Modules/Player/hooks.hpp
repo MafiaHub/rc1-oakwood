@@ -196,6 +196,17 @@ __declspec(naked) void PlayerOnSink() {
 	}
 }
 
+__declspec(naked) void PlayerSinkTwo() {
+    __asm {
+        pushad
+            call Player__OnSink
+        popad
+
+        mov eax, 0x0057BAB1
+        jmp eax
+    }
+}
+
 __declspec(naked) void PlayerFall() {
 	__asm {
 		pushad
@@ -327,6 +338,7 @@ inline auto init() {
     MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&PoseSetPoseNormal); 
     MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&ThrowGrenade);
     MemoryPatcher::InstallJmpHook(0x005A543B, (DWORD)&PlayerOnSink);
+    MemoryPatcher::InstallJmpHook(0x0057BAA5, (DWORD)&PlayerSinkTwo);
 
     //Disable dealocation second remove actor
     MemoryPatcher::InstallJmpHook(0x005A7F44, 0x005A7F4B);
