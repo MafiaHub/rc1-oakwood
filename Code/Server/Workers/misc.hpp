@@ -73,7 +73,7 @@ namespace misc {
                 if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
                     auto player = (mafia_player*)entity->user_data;
                     player_scoreboard_info player_info;
-                    strcpy_s(player_info.nickname, player->name);
+                    strcpy(player_info.nickname, player->name);
                     player_info.ping = entity->client_peer->roundTripTime;
                     player_info.server_id = scoreboard.size();
                     scoreboard.push_back(player_info);
