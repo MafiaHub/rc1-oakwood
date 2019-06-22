@@ -30,7 +30,6 @@ int wmain()
 int main()
 #endif
 {
-#define OAKWOOD_CONSOLE 1
 #if defined(ZPL_SYSTEM_WINDOWS) && defined(OAKWOOD_CONSOLE)
     { /* console handler */
         AllocConsole();
