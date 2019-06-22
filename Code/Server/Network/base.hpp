@@ -19,7 +19,6 @@ namespace network {
         network_context.tick_delay			= OAK_TICK_DELAY;
         network_context.world_size			= { 32000.0f, 32000.0f, 32000.0f };
         
-        librg_option_set(LIBRG_MAX_ENTITIES_PER_BRANCH, UINT32_MAX);
         librg_init(&network_context);
         librg_option_set(LIBRG_DEFAULT_CLIENT_TYPE, TYPE_PLAYER);
         librg_event_add(&network_context, LIBRG_CONNECTION_REQUEST, on_librg_connection_request);
