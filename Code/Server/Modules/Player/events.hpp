@@ -1,10 +1,7 @@
 inline auto clientstreamer_update(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
-    
-    if (player == nullptr) {
-        return;
-    }
-    
+    if (player == nullptr) return;
+        
     librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
     player->health = librg_data_rf32(evnt->data);
@@ -78,6 +75,9 @@ inline auto connection_disconnect(librg_event* evnt) -> void {
 
                         if (i == 0) {
                             mod_vehicle_assign_nearest_player(&network_context, vehicle_ent, evnt->entity->id);
+                            librg_send_all(&network_context, NETWORK_VEHICLE_ON_DRIVER_DISCONNECT, data, {
+                                librg_data_went(&data, vehicle_ent->id);
+                            });
                         }
                     }
                 }

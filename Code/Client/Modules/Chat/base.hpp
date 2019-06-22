@@ -123,6 +123,9 @@ namespace chat {
                     } else if (hist_next && chat_history_index > 0)
                         chat_history_index--;
 
+                    if (chat_history_index < 0)
+                        chat_history_index = 0;
+
                     input_text_replace(data, chat_history[chat_history_index].c_str());
                 }
             }

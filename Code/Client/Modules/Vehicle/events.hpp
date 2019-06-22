@@ -142,16 +142,8 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->transparency = librg_data_rf32(evnt->data);
     vehicle->collision_state = librg_data_ru8(evnt->data);
 
-    auto cached_car = car_cache[evnt->entity->id];
-
-    if (cached_car != nullptr) {
-        vehicle->car = cached_car;
-        cached_car->SetTransparency(vehicle->transparency);
-    }
-    else {
-        vehicle->car = spawn(position, vehicle);
-        car_cache[evnt->entity->id] = vehicle->car;
-    }
+    vehicle->car = spawn(position, vehicle, car_cache[evnt->entity->id]);
+    car_cache[evnt->entity->id] = vehicle->car;
 
     evnt->entity->user_data = (void *)vehicle;
     evnt->entity->flags |= ENTITY_INTERPOLATED;
@@ -256,7 +248,7 @@ inline auto entityremove(librg_event *evnt) {
         lib_inter_destroy_interpolator(vehicle->interp.rot);
         lib_inter_destroy_interpolator(vehicle->interp.rot_up);
         
-        vehicle->car->SetTransparency(0.0f);
+        vehicle->car->SetTransparency(0.5f);
         despawn(vehicle);
 
         delete vehicle;

@@ -2,14 +2,9 @@ void add_messages() {
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message* msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
 
-        librg_send_except(&network_context, NETWORK_PLAYER_DIE, msg->peer, data, {
-            librg_data_went(&data, sender_ent->id);
-        });
-
         if (sender_ent->user_data) {
             die(sender_ent);
         }
-
     });
 
     /*librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
@@ -137,12 +132,18 @@ void add_messages() {
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto action = librg_data_ri32(msg->data);
         auto seat_id = librg_data_ri32(msg->data);
+        i32 seat_original = seat_id;
         auto unk3 = librg_data_ri32(msg->data);
 
         if (sender_ent->user_data && vehicle_ent) {
 
             auto vehicle = (mafia_vehicle *)vehicle_ent->user_data;
             auto sender = (mafia_player*)sender_ent->user_data;
+
+            // NOTE(DavoSK) When entering car as driver from passanger seat
+            // change the seat_id accordingly
+            if (unk3 == 1 && seat_id == 1)
+                seat_id = 0;
 
             // NOTE(DavoSK): SeatID can be NULL if player is force exiting
             // We need to get id from server :) 
@@ -167,7 +168,7 @@ void add_messages() {
                 librg_data_went(data, sender_ent->id);
                 librg_data_went(data, vehicle_ent->id);
                 librg_data_wi32(data, action);
-                librg_data_wi32(data, seat_id);
+                librg_data_wi32(data, seat_original);
                 librg_data_wi32(data, unk3);
             });
 

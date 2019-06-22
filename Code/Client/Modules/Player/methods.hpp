@@ -332,7 +332,7 @@ inline auto remove_temporary_actor(void* base) -> void {
         }
     }
 
-    auto vehicle_ent = get_vehicle_from_base(base);
+    /*auto vehicle_ent = get_vehicle_from_base(base);
     if (vehicle_ent) {
         auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
         if (vehicle) {
@@ -343,7 +343,7 @@ inline auto remove_temporary_actor(void* base) -> void {
             }
             vehicle->car = nullptr;
         }
-    }
+    }*/
 
     auto it = std::find(car_delte_queue.begin(), car_delte_queue.end(), base);
     if (it != car_delte_queue.end())

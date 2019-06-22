@@ -18,6 +18,7 @@ namespace debug {
         
         ImGui::TextColored(ImVec4(1, 1, 0, 1), "librg_entity*");
         ImGui::Indent();
+        ImGui::Text("Entity ID: %d", selected_entity->id);
         ImGui::Text("Position: %f %f %f", selected_entity->position.x, selected_entity->position.y, selected_entity->position.z);
         ImGui::Text("Is Streamed: %X", !(selected_entity->flags & ENTITY_INTERPOLATED));
 

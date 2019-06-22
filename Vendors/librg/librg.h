@@ -1308,26 +1308,10 @@ extern "C" {
         // reset array to 0
         zpl_array_count(blob->last_query) = 0;
 
-        /*zpl_aabb3 search_bounds;
+        zpl_aabb3 search_bounds;
         search_bounds.centre    = blob->position;
         search_bounds.half_size = zpl_vec3f(blob->stream_range, blob->stream_range, blob->stream_range);
-        librg__world_entity_query(ctx, entity, &ctx->world, search_bounds, &blob->last_query);*/
-        
-        for (u32 i = 0; i < ctx->max_entities; i++) {
-            librg_entity* current_entity = librg_entity_fetch(ctx, i);
-            if (current_entity == NULL) continue;
-
-            zpl_vec3 distance;
-            zpl_vec3_sub(&distance, current_entity->position, blob->position);
-            
-            if (zpl_vec3_mag(distance) < blob->stream_range) {
-                if (!librg_entity_visibility_get(ctx, current_entity->id)) continue;
-                if (!librg_entity_visibility_get_for(ctx, current_entity->id, blob->id)) continue;
-
-                zpl_array_append(blob->last_query, current_entity->id);
-            }
-        }
-
+        librg__world_entity_query(ctx, entity, &ctx->world, search_bounds, &blob->last_query);
         *out_entities = blob->last_query;
 
         return zpl_array_count(blob->last_query);

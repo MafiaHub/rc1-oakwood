@@ -1,33 +1,33 @@
 #pragma once
 
-auto spawn(zpl_vec3 position, 
-           mafia_vehicle* spawn_struct) -> MafiaSDK::C_Car* {
+auto spawn(zpl_vec3 position,
+    mafia_vehicle* spawn_struct, MafiaSDK::C_Car* cached)-> MafiaSDK::C_Car* {
 
-    S_vector default_scale = { 1.0f, 1.0f, 1.0f };
-    S_vector default_pos = EXPAND_VEC(position);
+    MafiaSDK::C_Car* new_car = cached;
 
-    auto vehicle_model = (MafiaSDK::I3D_Model*)MafiaSDK::I3DGetDriver()->CreateFrame(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
-    while(MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL)) {
-        printf("Error: Unable to create vehicle model <%s> !\n", spawn_struct->model);
+    if (new_car == nullptr) {
+        S_vector default_scale = { 1.0f, 1.0f, 1.0f };
+        S_vector default_pos = EXPAND_VEC(position);
+
+        auto vehicle_model = (MafiaSDK::I3D_Model*)MafiaSDK::I3DGetDriver()->CreateFrame(MafiaSDK::I3D_Driver_Enum::FrameType::MODEL);
+        while (MafiaSDK::GetModelCache()->Open(vehicle_model, spawn_struct->model, NULL, NULL, NULL, NULL)) {
+            printf("Error: Unable to create vehicle model <%s> !\n", spawn_struct->model);
+        }
+
+        vehicle_model->SetName("mafia_vehicle");
+        vehicle_model->SetScale(default_scale);
+        vehicle_model->SetWorldPos(default_pos);
+
+        new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
+        new_car->Init(vehicle_model);
+        new_car->SetActive(1);
+        MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
     }
 
-    vehicle_model->SetName("mafia_vehicle");
-    vehicle_model->SetScale(default_scale);
-    vehicle_model->SetWorldPos(default_pos);    
-
-    MafiaSDK::C_Car *new_car = reinterpret_cast<MafiaSDK::C_Car*>(MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::Car));
-    new_car->Init(vehicle_model);
-    new_car->SetActive(1);
-    MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_car);
-
-    auto veh_inter = &new_car->GetInterface()->vehicle_interface;
-    
+    auto veh_inter = &new_car->GetInterface()->vehicle_interface;    
     if (veh_inter->engine_on) {
         new_car->SetEngineOn(spawn_struct->engine_on, spawn_struct->engine_on);
     }
-
-    new_car->SetTransparency(spawn_struct->transparency);
-    new_car->SetColsOn(spawn_struct->collision_state);
 
     veh_inter->health           = spawn_struct->health;
     veh_inter->position			= EXPAND_VEC(position);
@@ -93,6 +93,15 @@ auto spawn(zpl_vec3 position,
         }
     }*/
 
+    new_car->SetColsOn(spawn_struct->collision_state);
+
+    //NOTE(DavoSK): If vehicle is cached and position was changed and physics is off, force update it 
+    if (cached != nullptr) {
+        new_car->Engine(0.083f, 0.083f, 0.083f);
+    }
+
+    new_car->SetTransparency(spawn_struct->transparency);
+   
     if (spawn_struct->is_car_in_radar)
         MafiaSDK::GetIndicators()->RadarAddCar(new_car, 0xFFFFFFFF);
 

@@ -20,23 +20,22 @@ namespace gamemap
     };
 
     inline bool is_marker_inbounds(zpl_vec2 position, float blip_size) {
-        return true;
+ 
         //NOTE(DavoSK): Position is also gap from each size
         float screen_x = (float)MafiaSDK::GetIGraph()->Scrn_sx();
         float screen_y = (float)MafiaSDK::GetIGraph()->Scrn_sy();
 
         float map_scale_fix = 1.0f;
-
         if (zpl_abs(screen_x / screen_y - 16.0 / 9.0) < 0.001) {
             map_scale_fix = 1.3333f;
         }
 
         //NOTE(DavoSK): Gap size from 0 0 to map start position
-        float pos_x = convert_map_pos_x * (1600.0f / screen_x) * map_scale_fix;
-        float pos_y = convert_map_pos_y * (900.0f / screen_y);
+        float gap_size_left = convert_map_pos_x * (1600.0f / screen_x) * map_scale_fix;
+        float gap_size_top = convert_map_pos_y * (900.0f / screen_y);
 
-        return (position.x + blip_size >= pos_x && position.y + blip_size >= pos_y) &&
-               (position.x + blip_size <= (screen_x - pos_x) && position.y + blip_size <= (screen_y - pos_y));
+        return (position.x + blip_size >= gap_size_left && position.y + blip_size <= (screen_y - gap_size_top)) &&
+               (position.x + blip_size <= (screen_x - gap_size_left) && position.y > gap_size_top);
     }
 
     inline zpl_vec2 translate_object_to_map(zpl_vec3 position) {
