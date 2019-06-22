@@ -635,7 +635,7 @@ namespace mainmenu {
                         ImGui::InputInt("Port", &GlobalConfig.port);
                        
                         if (ImGui::Button("Connect")) {
-                            ServerData server = { "Dummy", GlobalConfig.server_address, "", "", 27010 };
+                            ServerData server = { "Dummy", GlobalConfig.server_address, "", "", GlobalConfig.port };
                             exit_by_join(server);
                         }  ImGui::SameLine();
 

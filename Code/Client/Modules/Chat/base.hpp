@@ -150,13 +150,16 @@ namespace chat {
 
         ImGui::Begin("Mafia: Oakwood - Chat",
             nullptr,
+            ImGuiWindowFlags_NoSavedSettings |
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
             ImGuiWindowFlags_NoScrollbar);
 
+        auto screenHeight = MafiaSDK::GetIGraph()->Scrn_sy();
+
         ImGui::SetWindowSize(ImVec2(400, 300));
-        ImGui::SetWindowPos(ImVec2(20, 20));
+        ImGui::SetWindowPos(ImVec2(20, screenHeight - (300+200)));
         ImGui::BeginChild("scrolling");
 
         if (!chat_messages.empty()) {

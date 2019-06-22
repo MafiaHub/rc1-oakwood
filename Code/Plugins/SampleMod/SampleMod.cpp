@@ -97,6 +97,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     std::ifstream inputFile("static/savedcars.txt");
     while (!inputFile.eof()) {
         std::getline(inputFile, currentLine);
+        if (currentLine.length() == 0) continue;
         zpl_vec3 pos;
         int model_id;
         float dir;
