@@ -159,12 +159,12 @@ namespace chat {
         auto screenHeight = MafiaSDK::GetIGraph()->Scrn_sy();
 
         ImGui::SetWindowSize(ImVec2(400, 300));
-        ImGui::SetWindowPos(ImVec2(20, screenHeight - (300+200)));
+        ImGui::SetWindowPos(ImVec2(20, 20 /*screenHeight - (300+200)*/));
         ImGui::BeginChild("scrolling");
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
-                ImGui::TextColored(message.first, "%s", message.second.c_str());
+                ImGui::TextWrapped("%s", message.second.c_str());
             }
         }
 
