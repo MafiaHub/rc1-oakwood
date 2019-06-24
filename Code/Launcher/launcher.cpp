@@ -30,7 +30,7 @@ int wmain()
 int main()
 #endif
 {
-#if defined(ZPL_SYSTEM_WINDOWS) && defined(OAKWOOD_CONSOLE)
+#if defined(ZPL_SYSTEM_WINDOWS) && OAKWOOD_CONSOLE == 1
     { /* console handler */
         AllocConsole();
         AttachConsole(GetCurrentProcessId());
