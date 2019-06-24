@@ -299,7 +299,13 @@ namespace mainmenu {
     /*
     * Exit main menu by joining an specific server
     */
-    inline void exit_by_join(ServerData server) {
+    inline void join_server(ServerData server) {
+
+        if (::strcmp(GlobalConfig.username, "ChangeMe") == 0)
+        {
+            MessageBox(NULL, "You need to set your nickname first! See Player tab.", "Change your nickname", MB_OK);
+            return;
+        }
 
         //NOTE(DavoSK): Set global config server address & port
         strcpy(GlobalConfig.server_address, server.server_ip.c_str());
@@ -307,6 +313,7 @@ namespace mainmenu {
 
         input::block_input(false);
         is_active = false;
+        generate_profile(); // save current settings
 
         MafiaSDK::GetMission()->MapLoad("freeride");
     }
@@ -513,23 +520,17 @@ namespace mainmenu {
     inline void render_game_settings() {
         if (ImGui::BeginTabItem("Input Settings")) {
             render_input_settings();
-            
-            if (ImGui::Button("Save")) {
-                generate_profile();
-            } ImGui::SameLine();
-
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Audio Settings")) {
             render_audio_settings();
-            
-            if (ImGui::Button("Save")) {
-                generate_profile();
-            } ImGui::SameLine();
-
             ImGui::EndTabItem();
         }
+
+        if (ImGui::Button("Save")) {
+            generate_profile();
+        } ImGui::SameLine();
     }
 
     inline void draw_picking_state() {
@@ -550,7 +551,21 @@ namespace mainmenu {
                     MafiaSDK::GameKey newToBind(i, MafiaSDK::GameKey_Type::KEYBOARD);
                     auto keys = MafiaSDK::GetKeysBuffer();
 
-                    
+                    if (i == DIK_BACKSPACE) {
+                        MafiaSDK::GameKey keyNothing(-1, MafiaSDK::GameKey_Type::KEYBOARD);
+                        MafiaSDK::GetInput()->BindKey(keyNothing, is_picking_key);
+                        keys[is_picking_key] = keyNothing;
+                        is_picking_key = -1;
+                        input::block_input(true);
+                        break;
+                    }
+
+                    if (i == DIK_ESCAPE) {
+                        is_picking_key = -1;
+                        input::block_input(true);
+                        break;
+                    }
+
                     int index_to_replace = -1;
                     if (is_picking_key < 33) {
                         for (int j = 0; j < 33; j++) {
@@ -611,7 +626,7 @@ namespace mainmenu {
 
                         for (auto server : servers) {
                             if (ImGui::Button(server.server_name.c_str())) {
-                                exit_by_join(server);
+                                join_server(server);
                             } ImGui::NextColumn();
 
                             ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
@@ -636,7 +651,7 @@ namespace mainmenu {
                        
                         if (ImGui::Button("Connect")) {
                             ServerData server = { "Dummy", GlobalConfig.server_address, "", "", GlobalConfig.port };
-                            exit_by_join(server);
+                            join_server(server);
                         }  ImGui::SameLine();
 
                         ImGui::EndTabItem();
