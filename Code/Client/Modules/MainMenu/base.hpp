@@ -542,7 +542,9 @@ namespace mainmenu {
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoScrollbar);
 
-        ImGui::SetWindowSize(ImVec2(433, 10));
+        ImGui::Text("Use ESC to cancel the operation.\nUse BACKSPACE to clear the key.");
+
+        ImGui::SetWindowSize(ImVec2(433, 70));
         BYTE* engine_dik_buffer = MafiaSDK::GetEngineDikBuffer();
         if (engine_dik_buffer) {
             for (int i = 0; i < 256; i++) {
