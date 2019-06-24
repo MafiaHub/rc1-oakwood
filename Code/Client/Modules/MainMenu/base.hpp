@@ -301,7 +301,8 @@ namespace mainmenu {
     */
     inline void join_server(ServerData server) {
 
-        if (::strcmp(GlobalConfig.username, "ChangeMe") == 0)
+        if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
+            ::strlen(GlobalConfig.username) == 0)
         {
             MessageBox(NULL, "You need to set your nickname first! See Player tab.", "Change your nickname", MB_OK);
             return;
