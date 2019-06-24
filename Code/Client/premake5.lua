@@ -18,6 +18,9 @@ project "Client"
         "**.manifest"
     }
 
+    filter "configurations:Production"
+        defines { "OAK_BUILD_CHANNEL=3" }
+
     flags "NoManifest"
     libdirs {
         "../../Bin/%{cfg.buildcfg}/bin"
@@ -34,8 +37,7 @@ project "Client"
 
 	postbuildcommands {
         -- copy additional files and stuff
-        "{COPY} " .. "../Files/ ../Bin/Debug",
-        "{COPY} " .. "../Files/ ../Bin/Release",
+        "{COPY} " .. "../Files/ ../Bin/%{cfg.buildcfg}",
 	}
 
     linkoptions {

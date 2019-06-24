@@ -1,6 +1,6 @@
 premake.path = premake.path .. ";Build"
 workspace "Oakwood"
-    configurations { "Debug", "Release" }
+    configurations { "Debug", "Release", "Production" }
 
     pic "On"
     symbols "On"
@@ -20,7 +20,7 @@ workspace "Oakwood"
         optimize "Off"
         runtime "Debug"
 
-    filter "configurations:Release"
+    filter "configurations:Release,Production"
         -- staticruntime "On"
         optimize "Off" -- Optimization is disabled due to client issues
 		runtime "Release"

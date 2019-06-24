@@ -2,7 +2,7 @@
 
 set op=%CD%
 set pr=%~dp0\..
-set build=Debug
+set build=Production
 if not [%1] == [] then set build=%1
 cd %~dp0
 

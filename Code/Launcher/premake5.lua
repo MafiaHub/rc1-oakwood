@@ -26,3 +26,7 @@ project "Launcher"
         "launcher.cpp",
         "loader/*.*",
     }
+
+    filter "configurations:Production"
+        defines { "OAKWOOD_CONSOLE=0" }
+    
