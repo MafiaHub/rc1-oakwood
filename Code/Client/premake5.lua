@@ -18,9 +18,6 @@ project "Client"
         "**.manifest"
     }
 
-    filter "configurations:Production"
-        defines { "OAK_BUILD_CHANNEL=3" }
-
     flags "NoManifest"
     libdirs {
         "../../Bin/%{cfg.buildcfg}/bin"
@@ -43,3 +40,6 @@ project "Client"
     linkoptions {
         "/SAFESEH:NO"
     }
+
+    filter "configurations:Production"
+        defines { "OAK_BUILD_CHANNEL=3" }
