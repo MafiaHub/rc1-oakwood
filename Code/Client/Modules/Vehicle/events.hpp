@@ -18,7 +18,7 @@ void target_position_update(mafia_vehicle *car) {
     zpl_vec3 velocity = EXPAND_VEC(car->speed);
     f32 threshold = zpl_vec3_mag(velocity) * 1.5f;
 
-    zpl_vec3 distance;
+    /*zpl_vec3 distance;
     zpl_vec3_sub(&distance, current_position, car->interp.pos->target);
 
     if (!(zpl_vec3_mag(distance) <= threshold)) {
@@ -27,7 +27,7 @@ void target_position_update(mafia_vehicle *car) {
         lib_inter_reset(car->interp.rot, EXPAND_VEC(car->interp.rot->target));
         lib_inter_reset(car->interp.rot_up, EXPAND_VEC(car->interp.rot_up->target));
         vehicle_int->rot_speed = { 0.0f, 0.0f, 0.0f };
-    }
+    }*/
 
     vehicle_int->position = EXPAND_VEC(new_position);
 }
