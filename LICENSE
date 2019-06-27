@@ -8,7 +8,7 @@ software for Microsoft Windows (r).
 
 MAFIA: OAKWOOD CLIENT AND SERVER SOFTWARE LICENSE AGREEMENT
 
-version 1.1 : 3. 4. 2019
+version 1.2 : 27. 6. 2019
 
 You must agree to all of the terms below to use this software. Violation of these
 terms invalidates this license and the copyright holder grants no rights to use
@@ -39,15 +39,30 @@ contained within the package.
 at any time under any conditions seen appropriate by the author(s).
 
 (i) Ideas expressed in this software by way of coding or configuration are
-property of MafiaUnity Team.
+property of MafiaHub Group.
 
 
 ------------------------------------------------------------------------------------
-(c) 2019 MafiaUnity Team.
+(c) 2019 MafiaHub Group.
 
-The MafiaUnity team is not affiliated with 2K Czech, 2K Games or 
+The MafiaHub Group is not affiliated with 2K Czech, 2K Games or 
 Take-Two Interactive Software Inc.
 
 Mafia: The City of Lost Heaven is registered trademark of
 Take-Two Interactive Software Inc.
+
+Oakwood.exe uses parts of code that are licensed by CitizenFX and Nomad Group. Parts provided by 
+CitizenFX are licensed under LGPLv2. Parts provided by Nomad Group are licensed under Apache 2.0.
+The original form is available at: https://github.com/mafia2online/m2o-reborn/tree/develop/code/client/host
+
+d3d9 wrapper uses code from https://github.com/crosire/d3d8to9, provided by crosire. This code is licensed
+under the BSD-2-Clause.
+
+HTTP client uses code from https://github.com/mattiasgustavsson/libs/blob/master/http.h, provided by Mattias Gustavsson. This code is in public domain.
+
+Server HTTP service uses code from https://github.com/cesanta/mongoose, provided by Cesanta. Our code is not modified, the license is GPLv2.
+
+Our project makes use of a networking library called librg, available at: https://github.com/librg/librg, provided by Vladyslav Hrytsenko. This code is licensed under Apache 2.0.
+
+Our project is powered by a toolkit called zpl, available at: https://github.com/zpl-c/zpl, provided by Dominik Madarász. This code is licensed under Apache 2.0.
 ------------------------------------------------------------------------------------

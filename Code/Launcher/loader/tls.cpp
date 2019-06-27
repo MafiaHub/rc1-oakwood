@@ -1,3 +1,10 @@
+/*
+* This file is part of the M2Plus - Nomad Group
+*
+* See LICENSE in the root of the source tree for information
+* regarding licensing.
+*/
+
 #include <windows.h>
 
 // Tls pool for the game
