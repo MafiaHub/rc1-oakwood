@@ -54,5 +54,5 @@ workspace "Oakwood Plugins"
 
     group "Plugins"
 
-    include "LuaMod"
-    include "SampleMod"
+    -- include "LuaMod"
+    include "Freeride"

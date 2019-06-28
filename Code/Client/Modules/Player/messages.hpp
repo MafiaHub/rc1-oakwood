@@ -164,6 +164,16 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_PLAYER_NAMEPLATE_VISIBILITY, [](librg_message* msg) {
+        u32 player_id = librg_data_rent(msg->data);
+        auto player_ent = librg_entity_fetch(&network_context, player_id);
+
+        if (player_ent && player_ent->user_data) {
+            auto player = (mafia_player*)player_ent->user_data;
+            player->has_visible_nameplate = librg_data_ru8(msg->data);
+        }
+    });
+
     librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
         shoot_info shoot_data;
         librg_entity_id id = librg_data_rent(msg->data);

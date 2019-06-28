@@ -304,3 +304,13 @@ void set_map_vis(librg_entity *entity, b32 state) {
         librg_data_wu8(&data, (u8)state);
     });
 }
+
+void set_nameplate_vis(librg_entity* entity, b32 state) {
+    auto player = (mafia_player*)entity->user_data;
+    player->has_visible_nameplate = state;
+
+    librg_send(&network_context, NETWORK_PLAYER_NAMEPLATE_VISIBILITY, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wu8(&data, (u8)state);
+    });
+}

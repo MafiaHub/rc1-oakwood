@@ -24,6 +24,7 @@ struct mafia_player {
 	mafia_player() : 
 	streamer_entity_id(-1),
 	vehicle_id(-1),
+    has_visible_nameplate(1),
 	current_weapon_id(0) {
 		zpl_zero_item(this);
 		streamer_entity_id = -1;
@@ -51,6 +52,7 @@ struct mafia_player {
 	u8 is_aiming;
 	u8 is_crouching;
 	u8 is_visible_on_map;
+    u8 has_visible_nameplate;
 	char model[32];
 	char name[32];
 	u32 aiming_time;

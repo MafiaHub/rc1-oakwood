@@ -66,7 +66,7 @@ workspace "Oakwood"
     
     group "Plugins"
     
-    include "Plugins/SampleMod"
+    include "Plugins/Freeride"
     -- include "Plugins/LuaMod"
 
     group "Server"

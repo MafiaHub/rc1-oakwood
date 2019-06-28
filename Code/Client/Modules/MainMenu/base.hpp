@@ -109,6 +109,8 @@ namespace mainmenu {
     bool is_active                  = false;
     int is_picking_key              = -1;
     BYTE old_dik_buffer[256];
+    std::string qc_address;
+    int qc_port;
 
     inline void tick() {
         auto game = MafiaSDK::GetMission()->GetGame();
@@ -171,14 +173,12 @@ namespace mainmenu {
     /*
     * Generates oakwood profile containing all game & multiplayer settings
     */
-    inline auto generate_profile(bool saveServer=false) {        
+    inline auto generate_profile() {        
         OakwoodProfileStruct save_struct;
         strcpy((char*)save_struct.username, GlobalConfig.username);
 
-        if (saveServer) {
-            strcpy((char*)save_struct.address, GlobalConfig.server_address);
-            save_struct.port = GlobalConfig.port;
-        }
+        strcpy((char*)save_struct.address, qc_address.c_str());
+        save_struct.port = qc_port;
 
         memcpy(save_struct.key_bindings, MafiaSDK::GetKeysBuffer(), sizeof(MafiaSDK::GameKey) * 60);    
 
@@ -214,12 +214,14 @@ namespace mainmenu {
             
             strcpy(GlobalConfig.username, (char*)save_struct.username);
             strcpy(GlobalConfig.server_address, (char*)save_struct.address);
+            qc_address = std::string(GlobalConfig.server_address);
 
             if (!strlen(GlobalConfig.username)) {
                 strcpy(GlobalConfig.username, "ChangeName");
             }
 
             GlobalConfig.port = save_struct.port;
+            qc_port = save_struct.port;
 
             auto game_key_buffer = MafiaSDK::GetKeysBuffer();
             memcpy(game_key_buffer, save_struct.key_bindings, sizeof(MafiaSDK::GameKey) * 60);
@@ -287,7 +289,8 @@ namespace mainmenu {
                     zpl_json_find(server_node, "port", false, &server_property);
                     new_server_data.port = (int)std::atoi(server_property->string);
 
-                    new_server_data.mapname = "freeride";
+                    zpl_json_find(server_node, "mapname", false, &server_property);
+                    new_server_data.mapname = std::string(server_property->string);
 
                     servers.push_back(new_server_data);
                 }
@@ -306,7 +309,7 @@ namespace mainmenu {
     /*
     * Exit main menu by joining an specific server
     */
-    inline void join_server(ServerData server, bool saveServer=false) {
+    inline void join_server(ServerData server) {
 
         if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
             ::strlen(GlobalConfig.username) == 0)
@@ -321,7 +324,7 @@ namespace mainmenu {
 
         input::block_input(false);
         is_active = false;
-        generate_profile(saveServer); // save current settings
+        generate_profile(); // save current settings
 
         MafiaSDK::GetMission()->MapLoad(server.mapname.c_str());
     }
@@ -656,12 +659,12 @@ namespace mainmenu {
                     }
 
                     if (ImGui::BeginTabItem("Quick Connect")) {
-                        ImGui::InputText("IP", (char*)GlobalConfig.server_address, 32);
-                        ImGui::InputInt("Port", &GlobalConfig.port);
+                        ImGui::InputText("IP", (char*)qc_address.c_str(), 32);
+                        ImGui::InputInt("Port", &qc_port);
                        
                         if (ImGui::Button("Connect")) {
-                            ServerData server = { "Dummy", GlobalConfig.server_address, "", "", "freeride", GlobalConfig.port };
-                            join_server(server, true);
+                            ServerData server = { "Dummy", qc_address.c_str(), "", "", "freeride", qc_port };
+                            join_server(server);
                         }  ImGui::SameLine();
 
                         ImGui::EndTabItem();

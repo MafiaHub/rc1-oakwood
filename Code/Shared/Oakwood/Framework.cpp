@@ -368,6 +368,17 @@ bool Player::GetMapVisibility()
     return playerData->is_visible_on_map;
 }
 
+void Player::ShowNameplate(bool visibility)
+{
+    __gm->mod->vtable.player_show_nameplate(GetEntity(), visibility);
+}
+
+bool Player::GetNameplateVisibility()
+{
+    auto playerData = GetPedestrian();
+    return playerData->has_visible_nameplate;
+}
+
 
 //
 // Vehicle

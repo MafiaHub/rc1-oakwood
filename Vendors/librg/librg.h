@@ -108,6 +108,7 @@
 
 // disable asserts for release build
 #if !defined(LIBRG_DEBUG) || defined(LIBRG_NO_ASSERT)
+#undef ZPL_ASSERT_MSG
 #define ZPL_ASSERT_MSG(cond, msg, ...)
 #endif
 

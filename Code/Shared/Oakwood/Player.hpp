@@ -26,6 +26,9 @@ public:
     void ShowOnMap(bool visibility);
     bool GetMapVisibility();
 
+    void ShowNameplate(bool visibility);
+    bool GetNameplateVisibility();
+
     std::string GetName();
 
     void SetPosition(zpl_vec3 position);

@@ -4,11 +4,11 @@
 
 namespace config {
     #ifdef _WIN32 
-        #define default_gamemode "SampleMod.dll"
+        #define default_gamemode "Freeride.dll"
     #elif __linux__
-        #define default_gamemode "libSampleMod.so"
+        #define default_gamemode "libFreeride.so"
     #elif __APPLE__
-        #define default_gamemode "SampleMod.dylib"
+        #define default_gamemode "Freeride.dylib"
     #endif
 
     static const char* file_name = "config/server.json";

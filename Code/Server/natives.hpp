@@ -136,6 +136,12 @@ extern "C" {
         modules::player::set_map_vis(entity, state);
     }
 
+    OAKGEN_NATIVE();
+    void oak_player_show_nameplate(librg_entity* entity, b32 state) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
+        modules::player::set_nameplate_vis(entity, state);
+    }
+
     //
     // Weapon drop
     //

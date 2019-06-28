@@ -98,6 +98,30 @@ namespace gamemap
                 mapinfo.last_pos = frame_pos;
             }
 
+            if (mapinfo.entity_type == TYPE_PLAYER && mapinfo.entity_id == local_player.entity_id)
+                continue;
+
+            if (mapinfo.entity_type == TYPE_VEHICLE) {
+                auto vehicle_ent = librg_entity_fetch(&network_context, mapinfo.entity_id);
+
+                if (vehicle_ent && vehicle_ent->user_data) {
+                    auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+                    b32 is_local_player_in_car = false;
+
+                    for (size_t i = 0; i < 4; i++)
+                    {
+                        if (vehicle->seats[i] == local_player.entity_id) {
+                            is_local_player_in_car = true;
+                            break;
+                        }
+                    }
+
+                    if (is_local_player_in_car)
+                        continue;
+                }
+            }
+
             if (mapinfo.entity_type == TYPE_PLAYER) {
                 auto blip_pos = translate_object_to_map(frame_pos);
 

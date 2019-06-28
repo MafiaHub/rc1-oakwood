@@ -57,7 +57,7 @@ public:
     }
 
     inline T *GetObjectByID(int idx) {
-        if (idx < 0 || idx >= objects.size()) {
+        if (idx < 0 || idx >= (int)objects.size()) {
             return nullptr;
         }
 

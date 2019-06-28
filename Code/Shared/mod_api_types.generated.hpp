@@ -52,6 +52,9 @@ typedef OAK_PLAYER_DIE(oak_player_die_ptr);
 #define OAK_PLAYER_SHOW_ON_MAP(name) void name(librg_entity *entity, b32 state)
 typedef OAK_PLAYER_SHOW_ON_MAP(oak_player_show_on_map_ptr);
 
+#define OAK_PLAYER_SHOW_NAMEPLATE(name) void name(librg_entity* entity, b32 state)
+typedef OAK_PLAYER_SHOW_NAMEPLATE(oak_player_show_nameplate_ptr);
+
 #define OAK_DROP_SPAWN(name) librg_entity* name(zpl_vec3 position, char *model, inventory_item item)
 typedef OAK_DROP_SPAWN(oak_drop_spawn_ptr);
 
