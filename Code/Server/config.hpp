@@ -18,6 +18,7 @@ namespace config {
         "password = \"\"\n"\
         "visible = true\n"\
         "port = 27010\n"\
+        "mapname = \"freeride\""\
         "gamemode = \"" default_gamemode "\"\n";
 
 
@@ -30,6 +31,7 @@ namespace config {
         json_apply(json, GlobalConfig.host, host, string, "");
         json_apply(json, GlobalConfig.name, name, string, "default oakwood server");
         json_apply(json, GlobalConfig.max_players, max_players, integer, 16);
+        json_apply(json, GlobalConfig.mapname, mapname, string, "freeride");
         json_apply(json, GlobalConfig.gamemode, gamemode, string, default_gamemode);
         json_apply(json, GlobalConfig.port, port, integer, 27010);
         json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);

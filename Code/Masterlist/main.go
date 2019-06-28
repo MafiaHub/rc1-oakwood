@@ -29,6 +29,7 @@ type Server struct {
 	ServerHost        string `json:"host"`
 	ServerPort        string `json:"port"`
 	ServerVersion     string `json:"version"`
+	MapName           string `json:"mapname"`
 	updatedAt         int64
 }
 

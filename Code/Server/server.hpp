@@ -6,6 +6,7 @@ struct _GlobalConfig {
     i64 port;
     i64 players;
     i64 max_players;
+    std::string mapname;
     std::string gamemode;
     b32 visible;
 } GlobalConfig;

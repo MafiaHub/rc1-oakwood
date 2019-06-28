@@ -4,7 +4,7 @@
 #define MASTERLIST_PUSH_TIME 30.0f
 #define MASTERLIST_PUSH_TIMEOUT 5.0f
 #define MASTERLIST_POLL_TIME 1.0f
-#define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%x\"\n}"
+#define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%x\",\n\"mapname\": \"%s\"\n}"
 
 namespace masterlist {
     http_t* form_request() {
@@ -17,7 +17,8 @@ namespace masterlist {
             (int)GlobalConfig.max_players,
             "false",
             (int)GlobalConfig.port,
-            OAK_BUILD_VERSION
+            OAK_BUILD_VERSION,
+            GlobalConfig.mapname.c_str()
         );
 
         return http_post(MASTERLIST_HOST, buf, zpl_strlen(buf), nullptr);

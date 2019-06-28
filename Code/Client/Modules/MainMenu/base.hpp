@@ -13,6 +13,7 @@ namespace mainmenu {
         std::string server_ip;
         std::string max_players;
         std::string current_players;
+        std::string mapname;
         int port;
     };
 
@@ -99,7 +100,7 @@ namespace mainmenu {
         TEXT_SOUNDS = 251,
         TEXT_MUSIC = 252,
         TEXT_CARS = 253,
-        TEXT_SPEACH = 254
+        TEXT_SPEECH = 254
     };
 
     std::vector<ServerData> servers;
@@ -170,11 +171,15 @@ namespace mainmenu {
     /*
     * Generates oakwood profile containing all game & multiplayer settings
     */
-    inline auto generate_profile() {        
+    inline auto generate_profile(bool saveServer=false) {        
         OakwoodProfileStruct save_struct;
         strcpy((char*)save_struct.username, GlobalConfig.username);
-        strcpy((char*)save_struct.address, GlobalConfig.server_address);
-        save_struct.port = GlobalConfig.port;
+
+        if (saveServer) {
+            strcpy((char*)save_struct.address, GlobalConfig.server_address);
+            save_struct.port = GlobalConfig.port;
+        }
+
         memcpy(save_struct.key_bindings, MafiaSDK::GetKeysBuffer(), sizeof(MafiaSDK::GameKey) * 60);    
 
         save_struct.aim_sensitivity_x = *(float*)(AIM_SENSITIVITY_X);
@@ -282,6 +287,8 @@ namespace mainmenu {
                     zpl_json_find(server_node, "port", false, &server_property);
                     new_server_data.port = (int)std::atoi(server_property->string);
 
+                    new_server_data.mapname = "freeride";
+
                     servers.push_back(new_server_data);
                 }
             }
@@ -299,7 +306,7 @@ namespace mainmenu {
     /*
     * Exit main menu by joining an specific server
     */
-    inline void join_server(ServerData server) {
+    inline void join_server(ServerData server, bool saveServer=false) {
 
         if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
             ::strlen(GlobalConfig.username) == 0)
@@ -314,9 +321,9 @@ namespace mainmenu {
 
         input::block_input(false);
         is_active = false;
-        generate_profile(); // save current settings
+        generate_profile(saveServer); // save current settings
 
-        MafiaSDK::GetMission()->MapLoad("freeride");
+        MafiaSDK::GetMission()->MapLoad(server.mapname.c_str());
     }
 
     /*
@@ -504,7 +511,7 @@ namespace mainmenu {
         }
         
         ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)SOUND_GAME_ADDR, 0.0f, 1.0f);
-        ImGui::SliderFloat(GET_TEXT(TEXT_SPEACH), (float*)SPEECH_SLIDER, 0.0f, 1.0f);
+        ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)SPEECH_SLIDER, 0.0f, 1.0f);
 
         if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
             //Sounds, car, music, speech = 1.0f;
@@ -653,8 +660,8 @@ namespace mainmenu {
                         ImGui::InputInt("Port", &GlobalConfig.port);
                        
                         if (ImGui::Button("Connect")) {
-                            ServerData server = { "Dummy", GlobalConfig.server_address, "", "", GlobalConfig.port };
-                            join_server(server);
+                            ServerData server = { "Dummy", GlobalConfig.server_address, "", "", "freeride", GlobalConfig.port };
+                            join_server(server, true);
                         }  ImGui::SameLine();
 
                         ImGui::EndTabItem();
