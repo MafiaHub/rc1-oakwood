@@ -7,6 +7,15 @@
 
 GameMode *__gm = nullptr;
 
+zpl_timer_pool Timer::p = nullptr;
+
+void __timer_cb(void* data) {
+    Timer* t = (Timer*)data;
+
+    if (t->cb)
+        t->cb();
+}
+
 GameMode::GameMode(oak_api *mod) {
     this->mod = mod;
     __gm = this;
@@ -99,6 +108,9 @@ GameMode::GameMode(oak_api *mod) {
     };
 
     mod->on_server_tick = [=]() {
+
+        if (Timer::p)
+            zpl_timer_update(Timer::p);
 
         if (onServerTick)
             onServerTick();

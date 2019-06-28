@@ -67,6 +67,7 @@ workspace "Oakwood"
     group "Plugins"
     
     include "Plugins/Freeride"
+    include "Plugins/EscapeTheCops"
     -- include "Plugins/LuaMod"
 
     group "Server"

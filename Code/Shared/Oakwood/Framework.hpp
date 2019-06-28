@@ -81,6 +81,48 @@ private:
     std::vector<T*> objects;
 };
 
+extern void __timer_cb(void* data);
+
+class Timer {
+public:
+    Timer() {
+        if (p == nullptr) {
+            zpl_timer_init(p, zpl_heap());
+        }
+
+        this->t = zpl_timer_add(p);
+    }
+    void Init(f64 duration, i32 count, std::function<void()> cb) {
+        zpl_timer_set(this->t, duration, count, __timer_cb);
+        this->cb = cb;
+    }
+
+    void Start(f64 delayed_start=-1) {
+        this->t->user_data = (void*)this;
+
+        if (delayed_start == -1) {
+            delayed_start = GetDuration();
+        }
+
+        zpl_timer_start(this->t, delayed_start);
+    }
+
+    void Stop() {
+        if (t && t->enabled)
+            zpl_timer_stop(this->t);
+    }
+
+    f64 GetDuration() { return t->duration; }
+    i32 GetCount() { return t->initial_calls; }
+    i32 GetRemainingCount() { return t->remaining_calls; }
+    b32 IsRunning() { return t->enabled; }
+
+    std::function<void()> cb;
+    static zpl_timer_pool p;
+private:
+    zpl_timer* t;
+};
+
 class GameMode {
 public:
     GameMode(oak_api *mod);

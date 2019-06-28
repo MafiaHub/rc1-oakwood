@@ -56,3 +56,5 @@ workspace "Oakwood Plugins"
 
     -- include "LuaMod"
     include "Freeride"
+    inlcude "EscapeTheCops"
+    

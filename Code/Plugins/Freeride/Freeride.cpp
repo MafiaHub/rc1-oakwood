@@ -85,8 +85,8 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     // Set up mod information
 
-    mod->name = "freeride";
-    mod->author = "Oak Devs";
+    mod->name = "Freeride";
+    mod->author = "MafiaHub Group";
     mod->version = "v1.0.0";
 
     // Initialize the GameMode
