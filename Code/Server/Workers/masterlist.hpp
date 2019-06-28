@@ -4,13 +4,13 @@
 #define MASTERLIST_PUSH_TIME 30.0f
 #define MASTERLIST_PUSH_TIMEOUT 5.0f
 #define MASTERLIST_POLL_TIME 1.0f
-#define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%x\",\n\"mapname\": \"%s\"\n}"
+#define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%llx\",\n\"mapname\": \"%s\"\n}"
 
 namespace masterlist {
     http_t* form_request() {
-        zpl_local_persist char buf[512] = { 0 };
+        char buf[512] = { 0 };
 
-        snprintf(buf, 512, MASTERLIST_FORMAT,
+        sprintf(buf, MASTERLIST_FORMAT,
             GlobalConfig.host.c_str(),
             GlobalConfig.name.c_str(),
             (int)GlobalConfig.players,
