@@ -43,8 +43,4 @@ project "Client"
 
     filter "configurations:Production,ProdWin7"
         defines { "OAK_BUILD_CHANNEL=3" }
-
-    filter "configurations:ProdWin7"
-        libdirs {
-            "D:/dxsdk/Lib/x86"
-        }
+        
