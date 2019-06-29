@@ -101,7 +101,7 @@ bool __fastcall C_Vehicle_Deform(void* _this,
 	unsigned int unk3,
 	S_vector* unk4) {
 
-	if (!_this) return false;
+	/*if (!_this) return false;
 
 	//NOTE(DavoSK): Get car from C_Vehicle, be carefull if is something else RIP, CRASH, CRY
 	MafiaSDK::C_Car* current_car = reinterpret_cast<MafiaSDK::C_Car*>((char*)_this - 0x70);
@@ -182,7 +182,9 @@ bool __fastcall C_Vehicle_Deform(void* _this,
 		});
 	}
 
-	return result;
+	return result;*/
+
+    return false;
 }
 
 inline auto init() {
@@ -193,12 +195,12 @@ inline auto init() {
 
     car_prepare_dropout_original = reinterpret_cast<C_car_Prepare_DropOut_t>(
         DetourFunction((PBYTE)0x00426EC0, (PBYTE)&C_car_Prepare_DropOut)
-    );
+    );*/
 	
     //Deform
     c_vehicle_deform_original = reinterpret_cast<C_Vehicle_Deform_t>(
         DetourFunction((PBYTE)0x004D5610, (PBYTE)&C_Vehicle_Deform)
-    );*/
+    );
 
     c_car_carexplosion_original = reinterpret_cast<C_car_CarExplosion_t>(
         DetourFunction((PBYTE)0x00421D60, (PBYTE)&C_car_CarExplosion)

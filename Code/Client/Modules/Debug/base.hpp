@@ -325,7 +325,6 @@ namespace debug {
         return state;
     }
 
-  
     inline void render() {
         if (librg_is_connected(&network_context)) {
             ImGui::Begin("Debug Menu", nullptr);
