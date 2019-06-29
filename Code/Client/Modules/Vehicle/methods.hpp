@@ -25,7 +25,7 @@ auto spawn(zpl_vec3 position,
     }
 
     auto veh_inter = &new_car->GetInterface()->vehicle_interface;    
-    if (veh_inter->engine_on) {
+    if (veh_inter->engine_on == 1) {
         new_car->SetEngineOn(spawn_struct->engine_on, spawn_struct->engine_on);
     }
 
