@@ -176,6 +176,17 @@ void add_messages() {
         }
     });
 
+   librg_network_add(&network_context, NETWORK_VEHICLE_SET_FUEL, [](librg_message* msg) {
+       u32 vehicle_id = librg_data_rent(msg->data);
+       auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+       if (vehicle_ent && vehicle_ent->user_data) {
+           auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+           vehicle->fuel = librg_data_rf32(msg->data);
+           vehicle->car->GetInterface()->vehicle_interface.fuel = vehicle->fuel;
+       }
+   });
+
     librg_network_add(&network_context, NETWORK_VEHICLE_SET_POS, [](librg_message* msg) {
         auto entity_id = librg_data_rent(msg->data);
         auto entity = librg_entity_fetch(&network_context, entity_id);

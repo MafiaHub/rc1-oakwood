@@ -141,4 +141,9 @@ void repair(librg_entity *entity) {
 void set_fuel(librg_entity *entity, f32 fuel) {
     auto vehicle = (mafia_vehicle*)entity->user_data;
     vehicle->fuel = fuel;
+
+    librg_send(&network_context, NETWORK_VEHICLE_SET_FUEL, data, {
+        librg_data_went(&data, entity->id);
+        librg_data_wf32(&data, fuel);
+    });
 }
