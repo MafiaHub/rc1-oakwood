@@ -7,7 +7,8 @@ std::vector<ObjTypes> forbidden_objects = {
 	ObjTypes::Dog,
 	ObjTypes::Enemy,
 	ObjTypes::Pumpar,
-	ObjTypes::Trolley
+	ObjTypes::Trolley,
+    ObjTypes::Player
 };
 
 MafiaSDK::C_Actor* Scene_CreateActor_Filter(MafiaSDK::C_Mission_Enum::ObjectTypes type, DWORD frame) {
