@@ -28,8 +28,28 @@ struct VehicleSpawn {
     int modelID;
 };
 
+struct SpawnLocation {
+    std::string name;
+    zpl_vec3 pos;
+};
+
+SpawnLocation spawnLocs[] = {
+    { "tommy", {8.62861251831f, 22.8868865967f, -602.147888184f}},
+    { "oakhill", {738.030334473f, 106.889381409f, -228.563537598f}},
+    { "hoboken", {537.296386719f, -5.01502513885f, 77.8488616943f}},
+    { "downtown", {-188.796401978f, 18.6846675873f, -668.6328125f}},
+    { "hospital", {-760.439697266f, 12.6204996109f, 753.350646973f}},
+    { "central", {-1091.47839355f, -7.27131414413f, 5.55286931992f}},
+    { "china", {-1709.24157715f, 16.0029373169f, 582.041442871f}},
+    { "salieri", {-1774.59301758f, -4.88487052917f, -2.40491962433f}},
+    { "work", {-2550.85546875f, -3.96487784386f, -554.806213379f}},
+    { "pete", {61.4763f, 4.72524f, 107.708f}},
+    { "racing", {-3534.42993164f, 7.05113887787f, -651.973388672f}}
+};
+
 inline auto mode_generate_spawn() -> zpl_vec3 {
-    return { -1984.884277f, -5.032383f, 23.144674f };
+    u32 idx = rand() % zpl_count_of(spawnLocs);
+    return spawnLocs[idx].pos;
 }
 
 #define VEHICLE_INACTIVE_REMOVAL_TIME 5.0f * 60.0f
@@ -346,13 +366,30 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
-    gm->AddCommandHandler("/pete", [=](Player *player, ArgumentList args) {
+    gm->AddCommandHandler("/telelist", [=](Player *player, ArgumentList args) {
+        for (auto loc : spawnLocs) {
+            gm->SendMessageToPlayer(loc.name, player);
+        }
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/tele", [=](Player* player, ArgumentList args) {
         if (player->GetVehicle()) {
             gm->SendMessageToPlayer("you need to be on foot!", player);
             return true;
         }
 
-        player->SetPosition({61.4763f, 4.72524f, 107.708f});
+        auto locName = gm->ImplodeArgumentList(args);
+
+        for (auto loc : spawnLocs) {
+            if (loc.name == locName) {
+                player->SetPosition(loc.pos);
+                return true;
+            }
+        }
+
+        gm->SendMessageToPlayer("Location doesn't exist! Use /telelist to see all available locations", player);
 
         return true;
     });
