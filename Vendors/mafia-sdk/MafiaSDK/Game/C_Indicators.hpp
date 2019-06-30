@@ -45,7 +45,9 @@ namespace MafiaSDK
             ParaheliaSetFov = 0x00604890,
             RadarSetPlayerCar = 0x005FA500,
             RadarAddCar =  0x005FA510,
-            RadarRemoveCar = 0x005FA720
+            RadarRemoveCar = 0x005FA720,
+            RaceFlashText = 0x005FAFC0,
+            RaceSetStartFlag = 0x005FADF0
 		};
 	};
 
@@ -344,6 +346,31 @@ namespace MafiaSDK
 				call funcAddress
 			}
 		}
+
+        void RaceSetStartFlag(BYTE flag)
+        {
+            unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::RaceSetStartFlag;
+
+            __asm
+            {
+                push flag
+                mov ecx, this
+                call funcAddress
+            }
+        }
+
+        void RaceFlashText(const char* text, float time)
+        {
+            unsigned long funcAddress = C_Indicators_Enum::FunctionsAddresses::RaceFlashText;
+
+            __asm
+            {
+                push time
+                push text
+                mov ecx, this
+                call funcAddress
+            }
+        }
 
 		float TextSize(const char* text, float scale, int unk1, int unk2)
 		{

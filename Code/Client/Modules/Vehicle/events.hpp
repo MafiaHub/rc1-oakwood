@@ -18,7 +18,7 @@ void target_position_update(mafia_vehicle *car) {
     zpl_vec3 velocity = EXPAND_VEC(car->speed);
     f32 threshold = zpl_vec3_mag(velocity) * 1.5f;
 
-    /*zpl_vec3 distance;
+    zpl_vec3 distance;
     zpl_vec3_sub(&distance, current_position, car->interp.pos->target);
 
     if (!(zpl_vec3_mag(distance) <= threshold)) {
@@ -27,7 +27,7 @@ void target_position_update(mafia_vehicle *car) {
         lib_inter_reset(car->interp.rot, EXPAND_VEC(car->interp.rot->target));
         lib_inter_reset(car->interp.rot_up, EXPAND_VEC(car->interp.rot_up->target));
         vehicle_int->rot_speed = { 0.0f, 0.0f, 0.0f };
-    }*/
+    }
 
     vehicle_int->position = EXPAND_VEC(new_position);
 }
@@ -112,6 +112,7 @@ inline auto entitycreate(librg_event *evnt) {
     librg_data_rptr(evnt->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_rptr(evnt->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
+    vehicle->interp.pos->target = position;
     u32 deltas_count = librg_data_ru32(evnt->data);
 
     if (!vehicle->deform_deltas.empty()) vehicle->deform_deltas.clear();
