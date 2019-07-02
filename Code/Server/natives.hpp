@@ -94,6 +94,27 @@ extern "C" {
     }
 
     OAKGEN_NATIVE();
+    void oak_player_set_camera_target(librg_entity* entity, librg_entity* target) {
+        if (!entity || !entity->user_data || !(target->type == TYPE_PLAYER || target->type == TYPE_VEHICLE)) return;
+
+        modules::player::set_camera_target(entity, target);
+    }
+
+    OAKGEN_NATIVE()
+    void oak_player_send_announcement(librg_entity* entity, const char* text, f32 duration) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
+
+        modules::player::send_announcement(entity, text, duration);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_player_send_race_start_flags(librg_entity* entity, u32 flags) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
+
+        modules::player::send_race_start_flags(entity, flags);
+    }
+
+    OAKGEN_NATIVE();
     void oak_player_unlock_camera(librg_entity *entity) {
         NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
 

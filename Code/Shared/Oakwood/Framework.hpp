@@ -146,6 +146,7 @@ public:
     void SetOnPlayerConnected(std::function<void(Player*)> callback);
     void SetOnPlayerDisconnected(std::function<void(Player*)> callback);
     void SetOnPlayerDied(std::function<void(Player*)> callback);
+    void SetOnPlayerKeyPressed(std::function<void(Player*, int key, bool pressed)> callback);
     void SetOnPlayerHit(std::function<void(Player*,Player*,float)> callback);
     void SetOnPlayerChat(std::function<bool(Player*,std::string msg)> callback);
     void SetOnServerTick(std::function<void()> callback);
@@ -180,6 +181,7 @@ private:
     std::function<void(Player*)> onPlayerConnected;
     std::function<void(Player*)> onPlayerDisconnected;
     std::function<void(Player*)> onPlayerDied;
+    std::function<void(Player*, int key, bool pressed)> onPlayerKeyPressed;
     std::function<void(Player*,Player*,float)> onPlayerHit;
     std::function<bool(Player*,std::string msg)> onPlayerChat;
     std::function<void(Vehicle*)> onVehicleDestroyed;

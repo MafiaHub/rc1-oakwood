@@ -387,6 +387,40 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, [](librg_message* msg) {
+ 
+        auto target_entity = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+        
+        if (MafiaSDK::GetMission()->GetGame()) {
+            auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
+            if (camera != nullptr && target_entity != nullptr && target_entity->user_data) {  
+                if (target_entity->type == TYPE_PLAYER) {
+                    auto player = (mafia_player*)target_entity->user_data;
+                    camera->SetPlayer(player->ped);
+                }
+                else if (target_entity->type == TYPE_VEHICLE) {
+                    auto vehicle = (mafia_vehicle*)target_entity->user_data;
+                    camera->SetCar(vehicle->car);
+                }
+            }
+        }
+    });
+
+    librg_network_add(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, [](librg_message* msg) {
+        zpl_local_persist char msg_buf[256] = { 0 };
+        zpl_memset(msg_buf, 0, 256);
+        u32 msg_size = librg_data_ru32(msg->data);
+        f32 msg_duration = librg_data_rf32(msg->data);
+
+        librg_data_rptr(msg->data, msg_buf, msg_size < 256 ? msg_size : 256);
+        MafiaSDK::GetIndicators()->RaceFlashText(reinterpret_cast<const char*>(msg_buf), msg_duration);
+    });
+
+    librg_network_add(&network_context, NETWORK_PLAYER_SEND_RACE_START_FLAGS, [](librg_message* msg) {
+        u32 flags = librg_data_ru32(msg->data);
+        MafiaSDK::GetIndicators()->RaceSetStartFlag((BYTE)flags);
+    });
+
     librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_message* msg) {
         if (MafiaSDK::GetMission()->GetGame()) {
             auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();

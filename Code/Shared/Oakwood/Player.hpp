@@ -42,7 +42,11 @@ public:
     u32 GetCurrentWeapon();
 
     void Fadeout(bool fadeout, u32 duration, u32 color);
+    void SendAnnouncement(std::string message, f32 duration);
+    void SendRaceStartFlags(f32 flags);
+
     void SetCamera(zpl_vec3 pos, zpl_vec3 rot);
+    void SetCameraTarget(GameObject* object);
     void UnlockCamera();
 
     void PlayAnimation(std::string animation);

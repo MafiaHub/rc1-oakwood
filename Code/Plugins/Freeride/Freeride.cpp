@@ -148,6 +148,10 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         gm->BroadcastMessage("Player " + player->GetName() + " left the server."); 
     });
 
+    gm->SetOnPlayerKeyPressed([=](Player* player, int key, bool pressed) {
+        printf("Player %s pressed '%c'\n", player->GetName().c_str(), key);
+    });
+
     gm->SetOnVehicleDestroyed([=](Vehicle *vehicle) {
         /* auto it = std::find_if(spawnedVehicles.begin(), spawnedVehicles.end(), [&](const SpawnedVehicle& vs) {
             return vs.spawnedVehicle == vehicle;

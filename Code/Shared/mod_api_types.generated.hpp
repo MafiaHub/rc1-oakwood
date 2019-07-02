@@ -34,6 +34,15 @@ typedef OAK_PLAYER_SET_ROTATION(oak_player_set_rotation_ptr);
 #define OAK_PLAYER_SET_CAMERA(name) void name(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot)
 typedef OAK_PLAYER_SET_CAMERA(oak_player_set_camera_ptr);
 
+#define OAK_PLAYER_SET_CAMERA_TARGET(name) void name(librg_entity* entity, librg_entity* target)
+typedef OAK_PLAYER_SET_CAMERA_TARGET(oak_player_set_camera_target_ptr);
+
+#define OAK_PLAYER_SEND_ANNOUNCEMENT(name) void name(librg_entity* entity, const char* text, f32 duration)
+typedef OAK_PLAYER_SEND_ANNOUNCEMENT(oak_player_send_announcement_ptr);
+
+#define OAK_PLAYER_SEND_RACE_START_FLAGS(name) void name(librg_entity* entity, u32 flags)
+typedef OAK_PLAYER_SEND_RACE_START_FLAGS(oak_player_send_race_start_flags_ptr);
+
 #define OAK_PLAYER_UNLOCK_CAMERA(name) void name(librg_entity *entity)
 typedef OAK_PLAYER_UNLOCK_CAMERA(oak_player_unlock_camera_ptr);
 

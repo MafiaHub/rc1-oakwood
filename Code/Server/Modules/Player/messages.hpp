@@ -324,4 +324,14 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_PLAYER_KEY_PRESS, [](librg_message* msg) {
+
+        auto player_entity = librg_entity_find(&network_context, msg->peer);
+        auto is_pressed = librg_data_ru8(msg->data);
+        auto key = librg_data_ru32(msg->data);
+
+        if (player_entity && gm.on_player_key_pressed != nullptr) {
+            gm.on_player_key_pressed(player_entity, key, is_pressed);
+        }
+    });
 }

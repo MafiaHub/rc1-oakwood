@@ -226,8 +226,30 @@ void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
     });
 }
 
+void set_camera_target(librg_entity* entity, librg_entity* target) {
+    librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, entity->client_peer, data, {
+        librg_data_went(&data, target->id);
+    });
+}
+
 void unlock_camera(librg_entity *entity) {
     librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+}
+
+void send_announcement(librg_entity* entity, const char* text, f32 duration) {
+    auto len = strlen(text);
+    librg_send_to(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, entity->client_peer, data, {
+        librg_data_wu32(&data, len);
+        librg_data_wf32(&data, duration);
+        librg_data_wptr(&data, (void*)text, len);
+    });
+}
+
+void send_race_start_flags(librg_entity* entity, u32 flags) {
+    
+    librg_send_to(&network_context, NETWORK_PLAYER_SEND_RACE_START_FLAGS, entity->client_peer, data, {
+       librg_data_wu32(&data, flags);
+    });
 }
 
 void set_pos(librg_entity *entity, zpl_vec3 position) {

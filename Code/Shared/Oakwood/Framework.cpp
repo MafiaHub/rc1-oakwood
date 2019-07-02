@@ -62,6 +62,18 @@ GameMode::GameMode(oak_api *mod) {
             onPlayerDied(player);
     };
 
+    mod->on_player_key_pressed = [=](librg_entity * entity, u32 key, u8 pressed) {
+        auto player = players.GetObjectByEntity(entity);
+
+        if (!player) {
+            printf("[OAKWOOD] Unregistered entity pressed a key !");
+            return;
+        }
+
+        if (onPlayerKeyPressed)
+            onPlayerKeyPressed(player, key, pressed);
+    };
+
     mod->on_player_hit = [=](librg_entity *attacker_ent, librg_entity *victim_ent, float damage) {
         auto attacker = players.GetObjectByEntity(attacker_ent);
         auto victim = players.GetObjectByEntity(victim_ent);
@@ -185,6 +197,11 @@ void GameMode::SetOnPlayerDisconnected(std::function<void(Player*)> callback)
 void GameMode::SetOnPlayerDied(std::function<void(Player*)> callback)
 {
     onPlayerDied = callback;
+}
+
+void GameMode::SetOnPlayerKeyPressed(std::function<void(Player*, int key, bool pressed)> callback)
+{
+    onPlayerKeyPressed = callback;
 }
 
 void GameMode::SetOnPlayerHit(std::function<void(Player*,Player*,float)> callback)
@@ -314,9 +331,24 @@ void Player::Fadeout(bool fadeout, u32 duration, u32 color)
     __gm->mod->vtable.player_fadeout(entity, fadeout, duration, color);
 }
 
+void Player::SendAnnouncement(std::string message, f32 duration)
+{
+    __gm->mod->vtable.player_send_announcement(entity, message.c_str(), duration);
+}
+
+void Player::SendRaceStartFlags(f32 flags)
+{
+    __gm->mod->vtable.player_send_race_start_flags(entity, flags);
+}
+
 void Player::SetCamera(zpl_vec3 pos, zpl_vec3 rot)
 {
     __gm->mod->vtable.player_set_camera(entity, pos, rot);
+}
+
+void Player::SetCameraTarget(GameObject* object)
+{
+    __gm->mod->vtable.player_set_camera_target(entity, object->GetEntity());
 }
 
 void Player::UnlockCamera()

@@ -5,6 +5,10 @@ extern IMGUI_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPA
 #define GET_X_LPARAM(lp)                        ((int)(short)LOWORD(lp))
 #define GET_Y_LPARAM(lp)                        ((int)(short)HIWORD(lp))
 
+namespace modules::player {
+    inline void on_key_pressed(bool down, unsigned long key);
+}
+
 namespace input {
     enum {
         ZINPUT_MOUSE,
@@ -75,11 +79,15 @@ namespace input {
     LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     
         // Process gui input only when our window is focues
-        if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
+        if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) {
             curent_key_states[wParam] = true;
+            modules::player::on_key_pressed(true, wParam);
+        }
              
-        if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
+        if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP) {
             curent_key_states[wParam] = false;
+            modules::player::on_key_pressed(false, wParam);
+        }
 
         if (uMsg == WM_MOUSEMOVE || uMsg == WM_MOUSELAST) {
             auto current_x = GET_X_LPARAM(lParam);

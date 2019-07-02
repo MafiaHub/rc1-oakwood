@@ -150,6 +150,16 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
     return nullptr;
 }
 
+inline void on_key_pressed(bool down, unsigned long key) {
+    
+    if (clientActiveState != ClientState_Connected) return;
+
+    librg_send(&network_context, NETWORK_PLAYER_KEY_PRESS, data, {
+        librg_data_wu8(&data, down);
+        librg_data_wu32(&data, key);
+    });
+}
+
 /* 
 * todo add reason killer and so one ...
 */

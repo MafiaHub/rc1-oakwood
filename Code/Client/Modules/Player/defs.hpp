@@ -15,6 +15,7 @@ inline auto get_local_player() -> mafia_player*;
 inline auto get_local_ped() -> MafiaSDK::C_Player*;
 inline auto get_player_from_base(void* base) -> librg_entity*;
 inline auto get_vehicle_from_base(void* base) -> librg_entity*;
+inline auto on_key_pressed(bool down, unsigned long key) -> void;
 
 /* 
 * todo add reason killer and so one ...
