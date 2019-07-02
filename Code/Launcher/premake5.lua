@@ -5,6 +5,11 @@ project "Launcher"
     flags { "NoIncrementalLink" }
     editandcontinue "Off"
 
+    filter "configurations:Debug"
+        defines { "OAKWOOD_CONSOLE=1" }
+
+    filter {}
+
     targetname "Oakwood"
     characterset "Unicode"
     linkoptions "/IGNORE:4254 /ENTRY:wmainCRTStartup /OPT:NOLBR /SAFESEH:NO /DYNAMICBASE:NO /LARGEADDRESSAWARE /LAST:.zdata"
@@ -26,7 +31,3 @@ project "Launcher"
         "launcher.cpp",
         "loader/*.*",
     }
-
-    filter "configurations:Debug,Release"
-        defines { "OAKWOOD_CONSOLE=1" }
-    

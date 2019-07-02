@@ -3,8 +3,8 @@ project "Client"
     kind "SharedLib"
 
     targetname "OakwoodClient"
-
     vpaths { ["*"] = "*" }
+
     files {
         "premake5.lua",
         "**.h",
@@ -41,6 +41,6 @@ project "Client"
         "/SAFESEH:NO"
     }
 
-    filter "configurations:Production,ProdWin7"
+    filter "configurations:Production"
+        toolset "v141_xp" -- TODO: update to the future releases
         defines { "OAK_BUILD_CHANNEL=3" }
-        

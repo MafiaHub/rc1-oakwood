@@ -1,9 +1,10 @@
 premake.path = premake.path .. ";Build"
 workspace "Oakwood"
-    configurations { "Debug", "Release", "Production", "ProdWin7" }
+    configurations { "Debug", "Release", "Production" }
 
     pic "On"
     symbols "On"
+    staticruntime "On"
 
     startproject "Launcher"
     characterset "MBCS"
@@ -20,20 +21,20 @@ workspace "Oakwood"
         optimize "Off"
         runtime "Debug"
 
-    filter "configurations:Release,Production,ProdWin7"
-        -- staticruntime "On"
+    filter "configurations:Release or Production"
         optimize "Off" -- Optimization is disabled due to client issues
 		runtime "Release"
 
     -- disabling as less warnings as possible
     filter "action:vs*"
-    
 
     if os.istarget('windows') then
         buildoptions "/std:c++latest"
     else
         buildoptions "-std=c++17"
     end
+
+    filter {}
 
     defines {
         "NOMINMAX",
@@ -63,9 +64,9 @@ workspace "Oakwood"
         include "Client"
         include "WidescreenFix"
     end
-    
+
     group "Plugins"
-    
+
     include "Plugins/Freeride"
     include "Plugins/EscapeTheCops"
     -- include "Plugins/LuaMod"

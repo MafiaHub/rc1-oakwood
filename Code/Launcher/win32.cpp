@@ -39,7 +39,7 @@ LPSTR WINAPI GetCommandLineA_Hook() {
                 oakwood_start(g_localpath.c_str(), g_gamepath.c_str());
             }
         } else {
-            launcher_abort("Cannot find oakwood-client.dll!\n\nMake sure you've installed everything properly.");
+            launcher_abort("We couldn't initialize the multiplayer client!\n\nMake sure you've installed everything properly.");
         }
 
         init = true;
