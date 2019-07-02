@@ -7,9 +7,7 @@
 #define MASTERLIST_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%llx\",\n\"mapname\": \"%s\"\n}"
 
 namespace masterlist {
-    http_t* form_request() {
-        char buf[512] = { 0 };
-
+    char *form_payload(char* buf) {
         sprintf(buf, MASTERLIST_FORMAT,
             GlobalConfig.host.c_str(),
             GlobalConfig.name.c_str(),
@@ -20,6 +18,13 @@ namespace masterlist {
             OAK_BUILD_VERSION,
             GlobalConfig.mapname.c_str()
         );
+        return buf;
+    }
+
+    http_t* form_request() {
+        zpl_global char buf[512] = { 0 };
+
+        form_payload(buf);
 
         return http_post(MASTERLIST_HOST, buf, zpl_strlen(buf), nullptr);
     }

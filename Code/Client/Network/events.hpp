@@ -27,9 +27,9 @@ void on_librg_disconnect(librg_event* evnt) {
     
     car_delte_queue.clear();
     car_cache.clear();
-    MafiaSDK::GetMission()->MapLoad("freeride");
     librg_network_stop(evnt->ctx);
-    mod_librg_connect();
+    MafiaSDK::GetIndicators()->ConsoleAddText(zpl_bprintf("Trying to connect to %s:%d...", ServerInfo::lastServer.server_ip.c_str(), ServerInfo::lastServer.port), 0xFFFFFFFF);
+    ServerInfo::join_last_server(clientActiveState == ClientState_Connected);
 }
 
 void on_librg_entity_create(librg_event* evnt) {

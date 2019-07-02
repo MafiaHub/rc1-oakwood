@@ -3,7 +3,7 @@ namespace pausemenu {
 
     inline bool check_input() {
         bool state = !!esc_key;
-        if (state && librg_is_connected(&network_context)) {
+        if (state) {
             if (menuActiveState == Menu_Pause) {
                 menuActiveState = Menu_Chat;
                 input::block_input(false);
@@ -35,7 +35,7 @@ namespace pausemenu {
             if (ImGui::BeginTabBar("escmenu")) {
 
                 if (ImGui::BeginTabItem("Info")) {
-                    if (librg_is_connected(&network_context)) {
+                    if (clientActiveState == ClientState_Connected) {
                         ImGui::Text(R"(Welcome to Mafia: Oakwood, you are playing a '%s' version of this modification. 
 Please report all your issues on our discord server.)", oak_build_channel[OAK_BUILD_CHANNEL]);
                         ImGui::Text("Current build: %s (%x)", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
@@ -46,7 +46,7 @@ Please report all your issues on our discord server.)", oak_build_channel[OAK_BU
                     }
 
                     if (ImGui::Button("Exit to menu")) {
-                        if (librg_is_connected(&network_context)) {
+                        if (clientActiveState == ClientState_Connected) {
                             librg_network_stop(&network_context);
 
                             auto player = modules::player::get_local_player();
@@ -60,6 +60,7 @@ Please report all your issues on our discord server.)", oak_build_channel[OAK_BU
                             mod_init_networking();
                             menuActiveState = Menu_Chat;
                             MafiaSDK::GetMission()->MapLoad("tutorial");
+                            switchClientState(ClientState_Browser);
                         }
                     }  ImGui::SameLine();
 

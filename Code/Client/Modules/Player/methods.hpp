@@ -294,7 +294,7 @@ inline auto useactor(DWORD actor, int action, int seat_id, int unk3) -> void {
 
 inline void use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state) {
     
-    if(!door || !librg_is_connected(&network_context)) return;
+    if(!door || clientActiveState != ClientState_Connected) return;
     
     auto door_int = door->GetInterface();
     if (door_int && door_int->entity.frame) {

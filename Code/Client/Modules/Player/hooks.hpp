@@ -287,7 +287,7 @@ __declspec(naked) void PlayerCursorHook() {
 //Proper exit handling
 //----------------------------------------------
 void OnGameExit() {
-    if (librg_is_connected(&network_context)) {
+    if (clientActiveState != ClientState_Connected) {
         librg_network_stop(&network_context);
     }
     exit(0);

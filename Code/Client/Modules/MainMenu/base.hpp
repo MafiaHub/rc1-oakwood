@@ -3,62 +3,8 @@ namespace mainmenu {
     S_vector camera_pos = {36.53f, 4.62f, 264.965f};
     S_vector camera_dir = {0.896f, -0.0488f, 0.443f};
 
-    #define MASTER_PULL_TIMEOUT 3.0f
-    #define MASTER_RETRIES_MAX 3
     #define GET_TEXT(id) \
         MafiaSDK::GetTextDatabase()->GetText((unsigned int)id)
-
-    struct ServerData {
-        std::string server_name;
-        std::string server_ip;
-        std::string max_players;
-        std::string current_players;
-        std::string mapname;
-        int port;
-    };
-
-    struct OakwoodProfileStruct {
-        u8 username[32];
-        u8 address[32];
-        u32 port;
-        MafiaSDK::GameKey key_bindings[60];
-
-        f32 aim_speed;
-        f32 aim_sensitivity_x;
-        f32 aim_sensitivity_y;
-        f32 steering_linearity;
-
-        u8 crosshair_type;
-        u8 speedometer_type;
-        u8 sideroll;
-        u8 mouse_control;
-        u8 enable_subtitles;
-
-        f32 sounds_slider;
-        f32 cars_slider;
-        f32 music_slider;
-        f32 speech_slider;
-    };
-
-    enum GameStaticAddresses {
-        //float
-        AIM_SENSITIVITY_X       = 0x006D4B00,
-        AIM_SENSITIVITY_Y       = 0x006D4B04,
-        AIM_SPEED               = 0x006D4B08,
-        STEERING_LINEARITY      = 0x006D4AEC,
-
-        SOUNDS_SLIDER           = 0x006D4B0C,
-        SOUND_GAME_ADDR         = 0x00634B00,
-        MUSIC_SLIDER            = 0x006D4B10,
-        SPEECH_SLIDER           = 0x006D4B18,
-
-        //byte
-        CROSSHAIR_TYPE          = 0x006D4B40,
-        SPEEDOMETER_TYPE        = 0x006D4B44,
-        SIDE_ROLL               = 0x006D4B45,
-        MOUSE_CONTROL           = 0x006D4B46,
-        ENABLE_SUBTITLES        = 0x006D4B47,
-    };
 
     enum TextDBEnum {
         //Controlls menu texts
@@ -103,151 +49,13 @@ namespace mainmenu {
         TEXT_SPEECH = 254
     };
 
-    std::vector<ServerData> servers;
+    std::vector<ServerInfo::ServerData> servers;
     std::vector<u32> car_names      = { 330, 331, 332, 333, 334, 335, 337, 338, 339, 340, 341, 342, 336, 310, 344 };
     std::vector<u32> player_names   = { 301, 302, 303, 304, 305, 307, 308, 309, 311, 312, 317, 318, 319, 320, 321, 322, 323, 324, 325, 343 };
-    bool is_active                  = false;
     int is_picking_key              = -1;
     BYTE old_dik_buffer[256];
     std::string qc_address;
     int qc_port;
-
-    inline void tick() {
-        auto game = MafiaSDK::GetMission()->GetGame();
-        if (game && is_active) {
-            auto cam = game->GetCamera();
-            if (cam) {
-                cam->LockAt(camera_pos, camera_dir);
-            }
-        }
-    }
-
-    /*
-    * HTTP fetch of master server data 
-    */
-    inline auto fetch_master_server() -> std::string {
-        zpl_local_persist f32 fetch_time = 0.0f;
-        zpl_local_persist u8 retries_count = 0;
-        http_t* request = http_get("http://oakmaster.madaraszd.net/fetch", NULL);
-        if (!request) {
-            mod_log("[ServerBrowser] Invalid request.\n");
-            MessageBoxW(0, L"Please, contact the developers! It could also be a connectivity issue between the server and you, make sure your connection is stable.", L"Invalid request!", MB_OK);
-            return "{}";
-        }
-
-        fetch_time = zpl_time_now();
-        http_status_t status = HTTP_STATUS_PENDING;
-        int prev_size = -1;
-        while (status == HTTP_STATUS_PENDING) {
-            status = http_process(request);
-            if (prev_size != (int)request->response_size) {
-                prev_size = (int)request->response_size;
-            }
-            if (zpl_time_now() - fetch_time > MASTER_PULL_TIMEOUT) {
-                if (retries_count >= MASTER_RETRIES_MAX) {
-                    printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
-                    MessageBoxW(0, L"Please, contact the developers! It could also be a connectivity issue between the server and you, make sure your connection is stable.", L"Master server is down!", MB_OK);
-                    http_release(request);
-                    return "{}";
-                }
-                retries_count++;
-                return fetch_master_server();
-            }
-        }
-
-        if (status == HTTP_STATUS_FAILED) {
-            printf("[ServerBrowser] HTTP request failed (%d): %s.\n", request->status_code, request->reason_phrase);
-            MessageBoxW(0, L"Master server is down!", L"Please, contact the developers!", MB_OK);
-            http_release(request);
-            return "{}";
-        }
-
-        fetch_time      = 0.0f;
-        retries_count   = 0;
-
-        auto to_return = std::string(static_cast<const char*>(request->response_data));
-        http_release(request);
-        return to_return;
-    }
-
-    /*
-    * Generates oakwood profile containing all game & multiplayer settings
-    */
-    inline auto generate_profile() {        
-        OakwoodProfileStruct save_struct;
-        strcpy((char*)save_struct.username, GlobalConfig.username);
-
-        strcpy((char*)save_struct.address, qc_address.c_str());
-        save_struct.port = qc_port;
-
-        memcpy(save_struct.key_bindings, MafiaSDK::GetKeysBuffer(), sizeof(MafiaSDK::GameKey) * 60);    
-
-        save_struct.aim_sensitivity_x = *(float*)(AIM_SENSITIVITY_X);
-        save_struct.aim_sensitivity_y = *(float*)(AIM_SENSITIVITY_Y);
-        save_struct.aim_speed         = *(float*)(AIM_SPEED);
-
-        save_struct.steering_linearity  = *(float*)(STEERING_LINEARITY);
-        save_struct.crosshair_type      = *(BYTE*)(CROSSHAIR_TYPE);
-        save_struct.speedometer_type    = *(bool*)(SPEEDOMETER_TYPE);
-        save_struct.sideroll            = *(bool*)(SIDE_ROLL);
-        save_struct.mouse_control       =  *(bool*)(MOUSE_CONTROL);
-        save_struct.enable_subtitles    = *(bool*)(ENABLE_SUBTITLES);
-
-
-        save_struct.sounds_slider       = *(float*)(SOUNDS_SLIDER);
-        save_struct.cars_slider         = *(float*)(SOUND_GAME_ADDR);
-        save_struct.music_slider        = *(float*)(MUSIC_SLIDER);
-        save_struct.speech_slider       = *(float*)(SPEECH_SLIDER);
-
-        std::ofstream save_file("OakwoodProfile.data", std::ios::binary);
-        save_file.write((const char*)& save_struct, sizeof(OakwoodProfileStruct));
-    }
-
-    /*
-    * Load all settings from file 
-    */
-    inline auto load_profile() -> void {
-        std::ifstream load_file("OakwoodProfile.data", std::ios::binary);
-        if (load_file.good()) {
-            OakwoodProfileStruct save_struct;
-            load_file.read((char*)&save_struct, sizeof(OakwoodProfileStruct));
-            
-            strcpy(GlobalConfig.username, (char*)save_struct.username);
-            strcpy(GlobalConfig.server_address, (char*)save_struct.address);
-            qc_address = std::string(GlobalConfig.server_address);
-
-            if (!strlen(GlobalConfig.username)) {
-                strcpy(GlobalConfig.username, "ChangeName");
-            }
-
-            GlobalConfig.port = save_struct.port;
-            qc_port = save_struct.port;
-
-            auto game_key_buffer = MafiaSDK::GetKeysBuffer();
-            memcpy(game_key_buffer, save_struct.key_bindings, sizeof(MafiaSDK::GameKey) * 60);
-            for (int i = 0; i < 60; i++) {
-                MafiaSDK::GetInput()->BindKey(*game_key_buffer, i);
-                game_key_buffer++;
-            }
-
-            *(float*)(AIM_SENSITIVITY_X) = save_struct.aim_sensitivity_x;
-            *(float*)(AIM_SENSITIVITY_Y) = save_struct.aim_sensitivity_y;
-            *(float*)(AIM_SPEED) = save_struct.aim_speed;
-
-            *(float*)(STEERING_LINEARITY)   = save_struct.steering_linearity;
-            *(BYTE*)(CROSSHAIR_TYPE)        = save_struct.crosshair_type;
-            *(bool*)(SPEEDOMETER_TYPE)  = save_struct.speedometer_type;
-            *(bool*)(SIDE_ROLL)         = save_struct.sideroll;
-            *(bool*)(MOUSE_CONTROL)     = save_struct.mouse_control;
-            *(bool*)(ENABLE_SUBTITLES)  = save_struct.enable_subtitles;
-
-
-            *(float*)(SOUNDS_SLIDER)    = save_struct.sounds_slider;
-            *(float*)(SOUND_GAME_ADDR)  = save_struct.cars_slider;
-            *(float*)(MUSIC_SLIDER)     = save_struct.music_slider;
-            *(float*)(SPEECH_SLIDER)    = save_struct.speech_slider;
-        }
-    }
 
     /*
     * Parse json response from master server 
@@ -255,7 +63,7 @@ namespace mainmenu {
     inline auto generate_browser_list() -> void {
 
         servers.clear();
-        auto fetched_list = fetch_master_server();
+        auto fetched_list = ServerInfo::fetch_master_server();
         if (!fetched_list.empty()) {
             u8 failed = 0;
             zpl_string json_config_data = zpl_string_make(zpl_heap(), fetched_list.c_str());
@@ -271,26 +79,7 @@ namespace mainmenu {
 
                 for (i32 i = 0; i < zpl_array_count(server_property->nodes); ++i) {
                     zpl_json_object* server_node = (server_property->nodes + i);
-                    zpl_json_object * server_property;
-                    ServerData new_server_data;
-
-                    zpl_json_find(server_node, "name", false, &server_property);
-                    new_server_data.server_name = std::string(server_property->string);
-
-                    zpl_json_find(server_node, "host", false, &server_property);
-                    new_server_data.server_ip = std::string(server_property->string);
-
-                    zpl_json_find(server_node, "maxPlayers", false, &server_property);
-                    new_server_data.max_players = std::to_string(server_property->integer);
-
-                    zpl_json_find(server_node, "players", false, &server_property);
-                    new_server_data.current_players = std::to_string(server_property->integer);
-
-                    zpl_json_find(server_node, "port", false, &server_property);
-                    new_server_data.port = (int)std::atoi(server_property->string);
-
-                    zpl_json_find(server_node, "mapname", false, &server_property);
-                    new_server_data.mapname = std::string(server_property->string);
+                    ServerInfo::ServerData new_server_data = ServerInfo::populate_server_data(server_node);
 
                     servers.push_back(new_server_data);
                 }
@@ -299,34 +88,12 @@ namespace mainmenu {
     }
 
     inline void init() {
-        load_profile();
-        fetch_master_server();
+        auto profile = Profile::load_profile();
+        qc_address = std::string((char *)profile.address);
+        qc_port = profile.port;
+        
         generate_browser_list();
         input::block_input(true);
-        is_active = true;
-    }
-
-    /*
-    * Exit main menu by joining an specific server
-    */
-    inline void join_server(ServerData server) {
-
-        if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
-            ::strlen(GlobalConfig.username) == 0)
-        {
-            MessageBox(NULL, "You need to set your nickname first! See Player tab.", "Change your nickname", MB_OK);
-            return;
-        }
-
-        //NOTE(DavoSK): Set global config server address & port
-        strcpy(GlobalConfig.server_address, server.server_ip.c_str());
-        GlobalConfig.port = server.port;
-
-        input::block_input(false);
-        is_active = false;
-        generate_profile(); // save current settings
-
-        MafiaSDK::GetMission()->MapLoad(server.mapname.c_str());
     }
 
     /*
@@ -540,7 +307,7 @@ namespace mainmenu {
         }
 
         if (ImGui::Button("Save")) {
-            generate_profile();
+            Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
         } ImGui::SameLine();
     }
 
@@ -614,79 +381,87 @@ namespace mainmenu {
     }
 
     inline void render() {
-        if (is_active) {
-            if (is_picking_key == -1) {
-                ImGui::SetNextWindowPosCenter();
-                ImGui::Begin("Mafia Oakwood",
-                    nullptr,
-                    ImGuiWindowFlags_NoMove |
-                    ImGuiWindowFlags_NoCollapse);
+        if (is_picking_key == -1) {
+            ImGui::SetNextWindowPosCenter();
+            ImGui::Begin("Mafia Oakwood",
+                nullptr,
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoCollapse);
 
-                constexpr int padding = 100;
-                auto width = MafiaSDK::GetIGraph()->Scrn_sx();
-                auto height = MafiaSDK::GetIGraph()->Scrn_sy();
-                ImGui::SetWindowSize(ImVec2(width - padding, height - padding));
-                ImGui::SetWindowPos(ImVec2(padding / 2, padding / 2));
+            constexpr int padding = 100;
+            auto width = MafiaSDK::GetIGraph()->Scrn_sx();
+            auto height = MafiaSDK::GetIGraph()->Scrn_sy();
+            ImGui::SetWindowSize(ImVec2(width - padding, height - padding));
+            ImGui::SetWindowPos(ImVec2(padding / 2, padding / 2));
 
-                if (ImGui::BeginTabBar("blah")) {
-                    if (ImGui::BeginTabItem("Server Browser")) {
-                        ImGui::Columns(4, "mycolumns");
-                        ImGui::Text("Name"); ImGui::NextColumn();
-                        ImGui::Text("Host"); ImGui::NextColumn();
-                        ImGui::Text("Players"); ImGui::NextColumn();
-                        ImGui::Text("Port"); ImGui::NextColumn();
-                        ImGui::Separator();
+            if (ImGui::BeginTabBar("blah")) {
+                if (ImGui::BeginTabItem("Server Browser")) {
+                    ImGui::Columns(4, "mycolumns");
+                    ImGui::Text("Name"); ImGui::NextColumn();
+                    ImGui::Text("Host"); ImGui::NextColumn();
+                    ImGui::Text("Players"); ImGui::NextColumn();
+                    ImGui::Text("Port"); ImGui::NextColumn();
+                    ImGui::Separator();
 
-                        for (auto server : servers) {
-                            if (ImGui::Button(server.server_name.c_str())) {
-                                join_server(server);
-                            } ImGui::NextColumn();
+                    for (auto server : servers) {
+                        if (ImGui::Button(server.server_name.c_str())) {
+                            if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
+                                ::strlen(GlobalConfig.username) == 0)
+                            {
+                                MessageBox(NULL, "You need to set your nickname first! See Player tab.", "Change your nickname", MB_OK);
+                                return;
+                            }
 
-                            ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
-                            ImGui::Text("%s/%s", server.current_players.c_str(), server.max_players.c_str()); ImGui::NextColumn();
-                            ImGui::Text("%d", server.port); ImGui::NextColumn();
-                        }
+                            Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+                            ServerInfo::join_server(server);
+                        } ImGui::NextColumn();
 
-                        ImGui::Columns(1);
-                        ImGui::Separator();
-
-                        if (ImGui::Button("Refresh")) {
-                            fetch_master_server();
-                            generate_browser_list();
-                        }
-
-                        ImGui::EndTabItem();
+                        ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
+                        ImGui::Text("%s/%s", server.current_players.c_str(), server.max_players.c_str()); ImGui::NextColumn();
+                        ImGui::Text("%d", server.port); ImGui::NextColumn();
                     }
 
-                    if (ImGui::BeginTabItem("Quick Connect")) {
-                        ImGui::InputText("IP", (char*)qc_address.c_str(), 32);
-                        ImGui::InputInt("Port", &qc_port);
-                       
-                        if (ImGui::Button("Connect")) {
-                            ServerData server = { "Dummy", qc_address.c_str(), "", "", "freeride", qc_port };
-                            join_server(server);
-                        }  ImGui::SameLine();
+                    ImGui::Columns(1);
+                    ImGui::Separator();
 
-                        ImGui::EndTabItem();
+                    if (ImGui::Button("Refresh")) {
+                        generate_browser_list();
                     }
 
-                    if (ImGui::BeginTabItem("Player Settings")) {
-                        ImGui::InputText("Nickname", (char*)GlobalConfig.username, 32);
-                        ImGui::EndTabItem();
-                    }
-
-                    render_game_settings();
-                    ImGui::EndTabBar();
-        
-                    if (ImGui::Button("Quit")) {
-                        exit(0);
-                    }
+                    ImGui::EndTabItem();
                 }
 
-                ImGui::End();
-            } else {
-                draw_picking_state();
+                if (ImGui::BeginTabItem("Quick Connect")) {
+                    ImGui::InputText("IP", (char*)qc_address.c_str(), 32);
+                    ImGui::InputInt("Port", &qc_port);
+                       
+                    if (ImGui::Button("Connect")) {
+                        ServerInfo::ServerData server = ServerInfo::fetch_server_data(qc_address, qc_port);
+                        server.server_ip = qc_address;
+                        server.port = qc_port;
+                        Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+                        ServerInfo::join_server(server);
+                    }  ImGui::SameLine();
+
+                    ImGui::EndTabItem();
+                }
+
+                if (ImGui::BeginTabItem("Player Settings")) {
+                    ImGui::InputText("Nickname", (char*)GlobalConfig.username, 32);
+                    ImGui::EndTabItem();
+                }
+
+                render_game_settings();
+                ImGui::EndTabBar();
+        
+                if (ImGui::Button("Quit")) {
+                    exit(0);
+                }
             }
+
+            ImGui::End();
+        } else {
+            draw_picking_state();
         }
     }
 }

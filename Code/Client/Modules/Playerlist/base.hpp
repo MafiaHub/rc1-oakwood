@@ -8,8 +8,7 @@ namespace playerlist {
     } current_scoreboard;
 
     void render() {
-        if (!input::is_key_down(VKEY_P) || modules::chat::is_focused || 
-            !librg_is_connected(&network_context)) 
+        if (!input::is_key_down(VKEY_P) || modules::chat::is_focused) 
             return;
 
         ImGui::SetNextWindowPosCenter();

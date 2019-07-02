@@ -5,11 +5,23 @@ bool hit_hook_skip = true;
 
 enum {
     Menu_Pause,
+    Menu_Connecting,
+    Menu_MainMenu,
     Menu_Chat,
     Menu_DebugMode,
 };
 
 int menuActiveState = Menu_Chat;
+
+enum ClientStates {
+    ClientState_Browser,
+    ClientState_Connecting,
+    ClientState_Connected,
+};
+
+int clientActiveState = ClientState_Browser;
+
+void switchClientState(int state);
 
 struct _GlobalConfig {
     char server_address[32];

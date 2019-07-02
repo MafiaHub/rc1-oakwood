@@ -112,12 +112,15 @@
 
 #include "utils.hpp"
 #include "config.hpp"
+#include "profile.hpp"
+#include "serverInfo.hpp"
 #include "Input/input.hpp"
 #include "modules.hpp"
 #include "Network/base.hpp"
 #include "Graphics/base.hpp"
 #include "Graphics/elements.hpp"
 #include "Game/base.hpp"
+#include "stateManager.hpp"
 
 ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {
     GlobalConfig.localpath = localpath;

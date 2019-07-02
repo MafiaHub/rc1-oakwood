@@ -139,13 +139,12 @@ namespace chat {
     }
 
     inline void render() {
-        if (key_chat_open && librg_is_connected(&network_context) && !is_focused) {
+        if (key_chat_open && !is_focused) {
             is_focused = true;
             input::block_input(is_focused);
         }
 
-        if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB) || 
-            !librg_is_connected(&network_context)) 
+        if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB)) 
             return;
 
         ImGui::Begin("Mafia: Oakwood - Chat",

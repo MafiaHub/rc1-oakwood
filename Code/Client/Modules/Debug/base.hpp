@@ -326,7 +326,7 @@ namespace debug {
     }
 
     inline void render() {
-        if (librg_is_connected(&network_context)) {
+        if (clientActiveState == ClientState_Connected) {
             ImGui::Begin("Debug Menu", nullptr);
             ImGui::Text("Cam Pos: %f %f %f", EXPLODE_VEC(debug_cam_pos));
             ImGui::Text("Cam Dir: %f %f %f", EXPLODE_VEC(debug_cam_dir));

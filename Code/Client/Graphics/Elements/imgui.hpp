@@ -26,14 +26,15 @@ namespace imgui {
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.13f, 0.12f, 0.12f, 0.50f);
         }
 
-        CHECK_MENU_INPUT(chat, Menu_Chat);
-        CHECK_MENU_INPUT(pausemenu, Menu_Pause);
+        if (clientActiveState == ClientState_Connected) {
+            CHECK_MENU_INPUT(chat, Menu_Chat);
+            CHECK_MENU_INPUT(pausemenu, Menu_Pause);
 
 #ifdef OAKWOOD_DEBUG
-        CHECK_MENU_INPUT(debug, Menu_DebugMode);
+            CHECK_MENU_INPUT(debug, Menu_DebugMode);
 #endif
 
-        switch (menuActiveState) {
+            switch (menuActiveState) {
             case Menu_Chat: {
                 modules::chat::render();
             } break;
@@ -47,10 +48,14 @@ namespace imgui {
                 modules::debug::render();
             } break;
 #endif            
+            }
+
+            modules::playerlist::render();
         }
 
-        modules::playerlist::render();
-        modules::mainmenu::render();
+        if (clientActiveState == ClientState_Browser) {
+            modules::mainmenu::render();
+        }
 
         ImGui::EndFrame();
         ImGui::Render();
