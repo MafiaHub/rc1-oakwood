@@ -10,6 +10,7 @@ workspace "Oakwood"
     characterset "MBCS"
 
     location "../Build/"
+    debugdir "../Bin/%{cfg.buildcfg}/"
     targetdir "../Bin/%{cfg.buildcfg}/"
 
     -- general configuration definition
