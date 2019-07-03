@@ -133,8 +133,7 @@ public:
     //
 
     void BroadcastMessage(std::string text, u32 color = 0xFFFFFF);
-    void SendMessageToPlayer(std::string text, Player *receiver, u32 color = 0xFFFFFF);
-    void ChatPrint(std::string text);
+    void BroadcastChatMessage(std::string text);
     void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
     Vehicle* SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model, b32 show_in_radar = true);
     Vehicle* SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID);

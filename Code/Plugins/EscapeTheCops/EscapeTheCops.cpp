@@ -166,11 +166,11 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
         if (msg[0] == '/') {
-            gm->SendMessageToPlayer("Unknown command: " + msg, player);
+            player->SendChatMessage("Unknown command: " + msg);
             return true;
         }
 
-        gm->ChatPrint("<" + player->GetName() + "> " + msg);
+        gm->BroadcastChatMessage("<" + player->GetName() + "> " + msg);
 
         return true;
     });

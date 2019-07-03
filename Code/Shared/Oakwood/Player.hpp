@@ -43,10 +43,12 @@ public:
 
     void Fadeout(bool fadeout, u32 duration, u32 color);
     void SendAnnouncement(std::string message, f32 duration);
+    void SendChatMessage(std::string text, u32 color = 0xFFFFFF);
     void SendRaceStartFlags(f32 flags);
 
     void SetCamera(zpl_vec3 pos, zpl_vec3 rot);
     void SetCameraTarget(GameObject* object);
+    void ResetCamera();
     void UnlockCamera();
 
     void PlayAnimation(std::string animation);

@@ -95,8 +95,6 @@ extern "C" {
 
     OAKGEN_NATIVE();
     void oak_player_set_camera_target(librg_entity* entity, librg_entity* target) {
-        if (!entity || !entity->user_data || !(target->type == TYPE_PLAYER || target->type == TYPE_VEHICLE)) return;
-
         modules::player::set_camera_target(entity, target);
     }
 

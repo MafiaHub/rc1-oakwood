@@ -227,8 +227,14 @@ void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
 }
 
 void set_camera_target(librg_entity* entity, librg_entity* target) {
+    i32 id = -1;
+
+    if (target) {
+        id = target->id;
+    }
+
     librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, entity->client_peer, data, {
-        librg_data_went(&data, target->id);
+        librg_data_went(&data, id);
     });
 }
 

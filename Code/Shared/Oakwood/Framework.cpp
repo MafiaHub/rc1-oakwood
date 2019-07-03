@@ -143,18 +143,7 @@ void GameMode::BroadcastMessage(std::string text, u32 color)
     mod->vtable.broadcast_msg_color(text.c_str(), color);
 }
 
-void GameMode::SendMessageToPlayer(std::string text, Player *receiver, u32 color)
-{
-    if (!receiver)
-        return;
-
-    if (!receiver->entity)
-        return;
-
-    mod->vtable.send_msg(text.c_str(), receiver->entity);
-}
-
-void GameMode::ChatPrint(std::string text)
+void GameMode::BroadcastChatMessage(std::string text)
 {
     mod->vtable.chat_print(text.c_str());
 }
@@ -336,6 +325,11 @@ void Player::SendAnnouncement(std::string message, f32 duration)
     __gm->mod->vtable.player_send_announcement(entity, message.c_str(), duration);
 }
 
+void Player::SendChatMessage(std::string text, u32 color)
+{
+    __gm->mod->vtable.send_msg(text.c_str(), GetEntity());
+}
+
 void Player::SendRaceStartFlags(f32 flags)
 {
     __gm->mod->vtable.player_send_race_start_flags(entity, flags);
@@ -349,6 +343,11 @@ void Player::SetCamera(zpl_vec3 pos, zpl_vec3 rot)
 void Player::SetCameraTarget(GameObject* object)
 {
     __gm->mod->vtable.player_set_camera_target(entity, object->GetEntity());
+}
+
+void Player::ResetCamera()
+{
+    __gm->mod->vtable.player_set_camera_target(entity, NULL);
 }
 
 void Player::UnlockCamera()
