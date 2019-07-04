@@ -121,6 +121,16 @@ GameMode::GameMode(oak_api *mod) {
         return is_handled;
     };
 
+    mod->on_server_command = [=](std::string msg) {
+        auto args = SplitStringByWhitespace(msg);
+
+        auto cmd = serverCommands.find(args[0]);
+
+        if (cmd != serverCommands.end()) {
+            cmd->second(args);
+        }
+    };
+
     mod->on_server_tick = [=]() {
 
         if (Timer::p)
@@ -242,6 +252,11 @@ void GameMode::SetOnVehicleDestroyed(std::function<void(Vehicle *)> callback)
 void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*,std::vector<std::string>)> callback)
 {
     commands[command] = callback;
+}
+
+void GameMode::AddServerCommandHandler(std::string command, std::function<void(ArgumentList)> callback)
+{
+    serverCommands[command] = callback;
 }
 
 std::string GameMode::ImplodeArgumentList(ArgumentList args)

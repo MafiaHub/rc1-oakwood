@@ -167,6 +167,7 @@ public:
     //
 
     void AddCommandHandler(std::string command, std::function<bool(Player*,ArgumentList)> callback);
+    void AddServerCommandHandler(std::string command, std::function<void(ArgumentList)> callback);
     
     //
     // Helpers
@@ -191,4 +192,5 @@ private:
     std::function<void(Vehicle*)> onVehicleDestroyed;
     std::function<void()> onServerTick;
     std::unordered_map<std::string, std::function<bool(Player*,ArgumentList)>> commands;
+    std::unordered_map<std::string, std::function<void(ArgumentList)>> serverCommands;
 };

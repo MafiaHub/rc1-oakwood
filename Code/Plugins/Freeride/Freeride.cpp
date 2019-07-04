@@ -640,6 +640,33 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         gm->AddWhitelist(hwid, name);
 
         return true;
+    }); 
+    
+    gm->AddServerCommandHandler("/addwh", [=](ArgumentList args) {
+        if (args.size() < 3) {
+            printf("USAGE: /addwh [hwid] [name]\n");
+            return true;
+        }
+
+        auto hwid = StringToLong(args[1]);
+        auto name = args[2];
+
+        gm->AddWhitelist(hwid, name);
+    });
+
+    gm->AddServerCommandHandler("/ban", [=](ArgumentList args) {
+        if (args.size() < 2) {
+            printf("USAGE: /ban [id]\n");
+            return true;
+        }
+
+        auto id = StringToInteger(args[1]);
+        
+        auto player = gm->players.GetObjectByID(id);
+
+        if (player) {
+            player->Ban();
+        }
     });
 
     gm->AddCommandHandler("/unban", [=](Player* player, ArgumentList args) {

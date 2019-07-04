@@ -78,7 +78,8 @@ static int StringToInteger(std::string text) {
 
 static u64 StringToLong(std::string text) {
     try {
-        return std::stoll(text);
+        char* end;
+        return ::strtoull(text.c_str(), &end, 10);
     }
     catch (...) {
         return -1;
