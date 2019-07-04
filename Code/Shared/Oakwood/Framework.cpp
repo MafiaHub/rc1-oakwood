@@ -102,6 +102,8 @@ GameMode::GameMode(oak_api *mod) {
             printf("[OAKWOOD] Unregistered entity sends message!");
             return false;
         }
+
+        ::printf("[GM] Player '%s' wrote: '%s'\n", player->GetName().c_str(), msg.c_str());
         
         auto args = SplitStringByWhitespace(msg);
 
@@ -173,6 +175,30 @@ Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
     return SpawnVehicle(pos, angle, modelName);
 }
 
+void GameMode::Unban(u64 hwid)
+{
+    printf("GUID: %llu has been unbanned!\n", hwid);
+    mod->vtable.remove_ban(hwid);
+}
+
+void GameMode::AddWhitelist(u64 hwid, std::string name)
+{
+    printf("Added player '%s' with GUID: %llu!\n", name.c_str(), hwid);
+    mod->vtable.add_wh(hwid, name.c_str());
+}
+
+void GameMode::RemoveWhitelist(u64 hwid)
+{
+    printf("GUID: %llu has been removed from whitelist!\n", hwid);
+    mod->vtable.remove_wh(hwid);
+}
+
+void GameMode::ToggleWhitelist(b32 state)
+{
+    printf("Whitelist mode has been %s!\n", state ? "enabled" : "disabled");
+    mod->vtable.toggle_wh(state);
+}
+
 void GameMode::SetOnPlayerConnected(std::function<void(Player*)> callback)
 {
     onPlayerConnected = callback;
@@ -234,6 +260,24 @@ Player::Player(librg_entity *entity) : GameObject()
 
 Player::~Player()
 {
+}
+
+u64 Player::GetHWID()
+{
+    return GetPedestrian()->hwid;
+}
+
+void Player::Ban()
+{
+    printf("Banned player '%s' with GUID: %llu!\n", GetName().c_str(), GetHWID());
+    __gm->mod->vtable.add_ban(GetHWID(), GetName().c_str());
+    Kick();
+}
+
+void Player::Kick()
+{
+    printf("Kicked player '%s' with GUID: %llu!\n", GetName().c_str(), GetHWID());
+    __gm->mod->vtable.player_kick(entity);
 }
 
 void Player::Spawn(zpl_vec3 pos)
@@ -330,7 +374,7 @@ void Player::SendChatMessage(std::string text, u32 color)
     __gm->mod->vtable.send_msg(text.c_str(), GetEntity());
 }
 
-void Player::SendRaceStartFlags(f32 flags)
+void Player::SendRaceStartFlags(u32 flags)
 {
     __gm->mod->vtable.player_send_race_start_flags(entity, flags);
 }

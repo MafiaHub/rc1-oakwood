@@ -29,10 +29,42 @@ extern "C" {
         modules::misc::send_msg(text, receiver);
     }
 
+    OAKGEN_NATIVE();
+    void oak_add_ban(u64 hwid, const char* name) {
+        add_ban(std::make_pair(hwid, name));
+    }
+
+    OAKGEN_NATIVE();
+    void oak_remove_ban(u64 hwid) {
+        remove_ban(hwid);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_add_wh(u64 hwid, const char* name) {
+        add_wh(std::make_pair(hwid, name));
+    }
+
+    OAKGEN_NATIVE();
+    void oak_remove_wh(u64 hwid) {
+        remove_wh(hwid);
+    }
+
+    OAKGEN_NATIVE();
+    void oak_toggle_wh(b32 state) {
+        toggle_wh(state);
+    }
 
     //
     // Player
     //
+
+    OAKGEN_NATIVE();
+    void oak_player_kick(librg_entity* entity) {
+        NATIVE_CHECK_ENTITY_TYPE(entity, TYPE_PLAYER) {};
+
+        // TODO: Add reason of kick
+        librg_network_kick(&network_context, entity->client_peer);
+    }
 
     OAKGEN_NATIVE();
     void oak_player_fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color) {

@@ -19,6 +19,7 @@ namespace config {
         "visible = true\n"\
         "port = 27010\n"\
         "mapname = \"freeride\""\
+        "whitelist = false"\
         "gamemode = \"" default_gamemode "\"\n";
 
 
@@ -35,9 +36,42 @@ namespace config {
         json_apply(json, GlobalConfig.gamemode, gamemode, string, default_gamemode);
         json_apply(json, GlobalConfig.port, port, integer, 27010);
         json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
+        json_apply(json, GlobalConfig.whitelistOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
 
         if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
             GlobalConfig.visible = false;
+
+        if (GlobalConfig.whitelistOnly == ZPL_JSON_CONST_FALSE)
+            GlobalConfig.whitelistOnly = false;
+
+        if (GlobalConfig.whitelistOnly) {
+            std::string currentLine;
+            std::ifstream inputFile("config/whitelist.txt");
+            while (!inputFile.fail() && !inputFile.eof()) {
+                std::getline(inputFile, currentLine);
+                if (currentLine.length() == 0) continue;
+                u64 hwid;
+                char name[32] = { 0 };
+                ::sscanf(currentLine.c_str(), "%llu %s", &hwid, name);
+                GlobalConfig.whitelisted.push_back(std::make_pair(hwid, std::string(name)));
+            }
+            inputFile.close();
+        }
+
+        // handle bans
+        {
+            std::string currentLine;
+            std::ifstream inputFile("config/banlist.txt");
+            while (!inputFile.fail() && !inputFile.eof()) {
+                std::getline(inputFile, currentLine);
+                if (currentLine.length() == 0) continue;
+                u64 hwid;
+                char name[32] = { 0 };
+                ::sscanf(currentLine.c_str(), "%llu %s", &hwid, name);
+                GlobalConfig.banned.push_back(std::make_pair(hwid, std::string(name)));
+            }
+            inputFile.close();
+        }
 
         zpl_printf("================================\n");
         zpl_printf("Name: %s\n", GlobalConfig.name.c_str());

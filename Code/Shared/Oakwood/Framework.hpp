@@ -137,6 +137,11 @@ public:
     void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
     Vehicle* SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model, b32 show_in_radar = true);
     Vehicle* SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID);
+    
+    void Unban(u64 hwid);
+    void AddWhitelist(u64 hwid, std::string name);
+    void RemoveWhitelist(u64 hwid);
+    void ToggleWhitelist(b32 state);
 
     //
     // Event handling

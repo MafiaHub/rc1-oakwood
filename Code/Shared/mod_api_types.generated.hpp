@@ -10,6 +10,24 @@ typedef OAK_CHAT_PRINT(oak_chat_print_ptr);
 #define OAK_SEND_MSG(name) void name(const char* text, librg_entity *receiver)
 typedef OAK_SEND_MSG(oak_send_msg_ptr);
 
+#define OAK_ADD_BAN(name) void name(u64 hwid, const char* name)
+typedef OAK_ADD_BAN(oak_add_ban_ptr);
+
+#define OAK_REMOVE_BAN(name) void name(u64 hwid)
+typedef OAK_REMOVE_BAN(oak_remove_ban_ptr);
+
+#define OAK_ADD_WH(name) void name(u64 hwid, const char* name)
+typedef OAK_ADD_WH(oak_add_wh_ptr);
+
+#define OAK_REMOVE_WH(name) void name(u64 hwid)
+typedef OAK_REMOVE_WH(oak_remove_wh_ptr);
+
+#define OAK_TOGGLE_WH(name) void name(b32 state)
+typedef OAK_TOGGLE_WH(oak_toggle_wh_ptr);
+
+#define OAK_PLAYER_KICK(name) void name(librg_entity* entity)
+typedef OAK_PLAYER_KICK(oak_player_kick_ptr);
+
 #define OAK_PLAYER_FADEOUT(name) void name(librg_entity *entity, bool fadeout, u32 duration, u32 color)
 typedef OAK_PLAYER_FADEOUT(oak_player_fadeout_ptr);
 

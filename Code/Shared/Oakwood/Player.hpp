@@ -17,6 +17,10 @@ public:
     // Natives
     //
 
+    u64 GetHWID();
+    void Ban();
+    void Kick();
+
     void Spawn(zpl_vec3 pos);
 
     void SetModel(std::string name);
@@ -44,7 +48,7 @@ public:
     void Fadeout(bool fadeout, u32 duration, u32 color);
     void SendAnnouncement(std::string message, f32 duration);
     void SendChatMessage(std::string text, u32 color = 0xFFFFFF);
-    void SendRaceStartFlags(f32 flags);
+    void SendRaceStartFlags(u32 flags);
 
     void SetCamera(zpl_vec3 pos, zpl_vec3 rot);
     void SetCameraTarget(GameObject* object);

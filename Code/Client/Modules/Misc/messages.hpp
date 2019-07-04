@@ -24,8 +24,27 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_SEND_REJECTION, [](librg_message* msg) {
-        MessageBox(NULL, "The client's version is incompatible with the server!", "Version mismatch.", MB_OK);
-        
-        ExitProcess(ERROR_SUCCESS);
+        u32 reasonID = librg_data_ru32(msg->data);
+
+        switch (reasonID) {
+        case REJECTION_VERSION:
+            MessageBox(NULL, "The client's version is incompatible with the server!", "Version mismatch.", MB_OK);
+            break;
+
+        case REJECTION_WH:
+            MessageBox(NULL, "You are not whitelisted on this server!", "Whitelisted only.", MB_OK);
+            break;
+
+        case REJECTION_BANNED:
+            MessageBox(NULL, "You are banned on this server!", "You are banned.", MB_OK);
+            break;
+        }
+
+        car_delte_queue.clear();
+        car_cache.clear();
+        librg_network_stop(msg->ctx);
+        MafiaSDK::GetMission()->MapLoad("tutorial");
+
+        switchClientState(ClientState_Browser);
     });
 }

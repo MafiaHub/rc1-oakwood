@@ -76,6 +76,17 @@ static int StringToInteger(std::string text) {
     return -1;
 }
 
+static u64 StringToLong(std::string text) {
+    try {
+        return std::stoll(text);
+    }
+    catch (...) {
+        return -1;
+    }
+
+    return -1;
+}
+
 static float StringToReal(std::string text)
 {
     try

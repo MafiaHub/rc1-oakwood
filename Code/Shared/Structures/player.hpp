@@ -24,6 +24,7 @@ struct mafia_player {
 	mafia_player() : 
 	streamer_entity_id(-1),
 	vehicle_id(-1),
+    hwid(0),
     has_visible_nameplate(1),
 	current_weapon_id(0) {
 		zpl_zero_item(this);
@@ -62,6 +63,7 @@ struct mafia_player {
 	u32 current_weapon_id;
 	i32 vehicle_id;
     u32 ping;
+    u64 hwid;
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	struct {
 		/*struct {
