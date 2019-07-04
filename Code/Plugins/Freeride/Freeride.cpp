@@ -377,7 +377,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         auto sndPlayer = gm->players.GetObjectByID(playerId);
 
-        if (!sndPlayer) {
+        if (!sndPlayer || sndPlayer == player) {
             player->SendChatMessage("Invalid ID!");
             return true;
         }

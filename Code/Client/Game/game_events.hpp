@@ -152,9 +152,14 @@ auto mod_bind_events() {
         // Spectator camera
         if (local_player.spec_id != -1) {
             librg_entity* ent = librg_entity_fetch(&network_context, local_player.spec_id);
-            cam_set_target(ent);
-        }
+            
+            if (ent || local_player.spec_id != local_player.last_spec_id)
+                cam_set_target(ent);
 
+            if (!ent) {
+                local_player.last_spec_id = local_player.spec_id;
+            }
+        }
 
         last_time = zpl_time_now();
     });

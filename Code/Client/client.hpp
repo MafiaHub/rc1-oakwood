@@ -39,7 +39,7 @@ struct _GlobalConfig {
 
 struct data {
     data() :
-        dead(false), spec_id(-1) {
+        dead(false), spec_id(-1), last_spec_id(-1) {
     }
 
     u32 entity_id;
@@ -47,7 +47,8 @@ struct data {
     bool dead;
 
     // Spectator
-    u32 spec_id;
+    i32 spec_id;
+    i32 last_spec_id;
 } local_player;
 
 struct shoot_info {

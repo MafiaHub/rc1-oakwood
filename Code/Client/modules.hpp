@@ -1,4 +1,5 @@
 inline void mod_init_networking();
+extern void cam_set_target(librg_entity* target);
 
 namespace gamemap {
     inline void draw_player_cursor(void* vertex_buffer);

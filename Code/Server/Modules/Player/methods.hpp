@@ -235,8 +235,7 @@ void set_camera_target(librg_entity* entity, librg_entity* target) {
 
     if (target) {
         id = target->id;
-        auto data = (mafia_player*)target->user_data;
-
+        
         //TODO: librg -- we need to make sure target is always seen for entity. Otherwise we can't spectate on longer ranges.
         //librg_entity_add_exempt(entity, target);
     }

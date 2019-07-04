@@ -389,6 +389,7 @@ void add_messages() {
 
     librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, [](librg_message* msg) {
         local_player.spec_id = librg_data_rent(msg->data);
+        cam_set_target(librg_entity_fetch(&network_context, local_player.spec_id));
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, [](librg_message* msg) {
