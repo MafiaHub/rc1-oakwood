@@ -167,8 +167,8 @@ void shutdown_server() {
 }
 
 void execute_command(std::string msg) {
+    printf("Executing server command: %s\n", msg.c_str());
+
     if (gm.on_server_command)
         gm.on_server_command(msg);
-
-    printf("Executing server command: %s\n", msg.c_str());
 }
