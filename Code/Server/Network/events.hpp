@@ -20,6 +20,8 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
 
     auto hwid = librg_data_ru64(evnt->data);
 
+    librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
+
     // TODO: Apart from local ban database, fetch global bans as well
     {
         b32 isBanned = false;
@@ -32,7 +34,7 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
         }
 
         if (isBanned) {
-            printf("Connection for '%s' has been rejected!\nPlayer is banned! GUID: %llu\n", hostname, hwid);
+            printf("Connection for %s'%s' has been rejected!\nPlayer is banned! GUID: %llu\n", request_player_data.name, hostname, hwid);
             librg_event_reject(evnt);
 
             librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
@@ -53,7 +55,7 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
         }
 
         if (!isExempted) {
-            printf("Connection for '%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", hostname, hwid);
+            printf("Connection for %s'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", request_player_data.name, hostname, hwid);
             librg_event_reject(evnt);
 
             librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
@@ -63,7 +65,6 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
         }
     }
 
-    librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
     request_player_data.hwid = hwid;
 }
 
