@@ -5,7 +5,7 @@ void store_bans() {
     std::ofstream out("config/banlist.txt");
     for (auto id : GlobalConfig.banned) {
         char line[128] = { 0 };
-        ::sprintf(line, "%llu %s", id.first, id.second.c_str());
+        ::sprintf(line, "%llu %s\n", id.first, id.second.c_str());
         out.write(line, strlen(line));
     }
     out.close();
@@ -15,7 +15,7 @@ void store_wh() {
     std::ofstream out("config/whitelist.txt");
     for (auto id : GlobalConfig.whitelisted) {
         char line[128] = { 0 };
-        ::sprintf(line, "%llu %s", id.first, id.second.c_str());
+        ::sprintf(line, "%llu %s\n", id.first, id.second.c_str());
         out.write(line, strlen(line));
     }
     out.close();
