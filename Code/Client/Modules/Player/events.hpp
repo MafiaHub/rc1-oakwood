@@ -97,6 +97,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
         player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
     }
 
+    librg_data_rptr(evnt->data, &player->position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &player->pose, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, player->model, sizeof(char) * 32);
@@ -111,7 +112,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
     player->has_visible_nameplate = librg_data_ru8(evnt->data);
 
     auto new_ped = spawn(
-        evnt->entity->position,
+        player->position,
         player->rotation,
         player->inventory,
         player->model,
@@ -174,7 +175,8 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
 inline auto entityupdate(librg_event* evnt) -> void {
     
     //NOTE(DavoSK): We need to read data before we can skip event ! 
-    zpl_vec3 recv_pose, recv_rotation;
+    zpl_vec3 recv_pose, recv_rotation, recv_position;
+    librg_data_rptr(evnt->data, &recv_position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
     auto health         = librg_data_rf32(evnt->data);
@@ -205,7 +207,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
     player->interp.car_shooting.alpha = 0.0f;
     player->interp.car_shooting.start_time = zpl_time_now();
 
-    target_position_set(player, evnt->entity->position);
+    target_position_set(player, recv_position);
     target_rotation_set(player, recv_rotation);
     target_pose_set(player, recv_pose);
 
@@ -291,8 +293,15 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     }
 
     auto frame_position = player_int->humanObject.entity.frame->GetInterface()->position;
+    auto cam_position = frame_position; // NOTE: fallback position if camera is lost somehow
+    auto cam = MafiaSDK::GetCurrentCamera();
 
-    evnt->entity->position	= EXPAND_VEC(frame_position);
+    if (cam) {
+        cam_position = cam->GetInterface()->position;
+    }
+
+    evnt->entity->position  = EXPAND_VEC(cam_position);
+    player->position    	= EXPAND_VEC(frame_position);
     player->rotation		= EXPAND_VEC(player_int->humanObject.entity.rotation);
     player->pose			= local_player.pose;
     player->health          = player_int->humanObject.health;
@@ -302,6 +311,7 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     player->aiming_time		= *(DWORD*)((DWORD)player_int + 0xAD4);
     player->aim             = *(float*)((DWORD)player_int + 0x5F4);
 
+    librg_data_wptr(evnt->data, &player->position, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &player->rotation, sizeof(zpl_vec3));
     librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3));
     librg_data_wf32(evnt->data, player->health);

@@ -1,5 +1,5 @@
 #define OAK_MAX_ENTITIES 65536
-#define OAK_TICK_DELAY 128
+#define OAK_TICK_DELAY 32
 
 enum {
     ENTITY_INTERPOLATED = 1 << 10,

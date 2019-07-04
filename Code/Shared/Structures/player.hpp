@@ -30,6 +30,7 @@ struct mafia_player {
 		streamer_entity_id = -1;
 		vehicle_id = -1;
 		pose = { 1.0f, 1.0f, 1.0f };
+        position = { 0.0f };
 		rotation = { 0.0f, 0.0f, -1.0f };
 		strcpy(model, "Tommy.i3d");
 
@@ -44,6 +45,7 @@ struct mafia_player {
 #endif
 	}
 	i32 streamer_entity_id;
+    zpl_vec3 position;
 	zpl_vec3 rotation;
 	zpl_vec3 pose;
 	f32 health;

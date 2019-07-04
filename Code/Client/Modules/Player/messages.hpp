@@ -333,7 +333,7 @@ void add_messages() {
                 if (player->ped) {
                     auto player_int = player->ped->GetInterface();
 
-                    if (player->ped == modules::player::get_local_ped())
+                    if (player->ped == get_local_ped())
                         MafiaSDK::GetIndicators()->PlayerSetWingmanLives((int)(health / 2.0f));
 
                     player_int->health = health;
@@ -388,31 +388,7 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, [](librg_message* msg) {
- 
-        auto target_entity = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
-
-        if (MafiaSDK::GetMission()->GetGame()) {
-            auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
-            if (camera != nullptr) {  
-                if (!target_entity) {
-                    auto lped = get_local_player()->ped;
-                    auto veh = lped->GetInterface()->playersCar;
-
-                    if (veh)
-                        camera->SetCar(veh);
-                    else 
-                        camera->SetPlayer(lped);
-                }
-                else if (target_entity->user_data && target_entity->type == TYPE_PLAYER) {
-                    auto player = (mafia_player*)target_entity->user_data;
-                    camera->SetPlayer(player->ped);
-                }
-                else if (target_entity->user_data && target_entity->type == TYPE_VEHICLE) {
-                    auto vehicle = (mafia_vehicle*)target_entity->user_data;
-                    camera->SetCar(vehicle->car);
-                }
-            }
-        }
+        local_player.spec_id = librg_data_rent(msg->data);
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, [](librg_message* msg) {

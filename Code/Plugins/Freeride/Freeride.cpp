@@ -382,12 +382,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             return true;
         }
 
-        auto veh = sndPlayer->GetVehicle();
-
-        if (veh)
-            player->SetCameraTarget(veh);
-        else
-            player->SetCameraTarget(sndPlayer);
+        player->SetCameraTarget(sndPlayer);
         
         return true;
     });

@@ -274,7 +274,7 @@ void Player::SetPosition(zpl_vec3 position)
 
 zpl_vec3 Player::GetPosition()
 {
-    return entity->position;
+    return GetPedestrian()->position;
 }
 
 void Player::SetRotation(float angle)
