@@ -14,13 +14,18 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <atomic>
 
 #define SCREEN_BUFFER_SIZE 256
+
+extern void execute_command(std::string);
 
 namespace console {
     struct _console_data {
         char info_tag[80];
         int loader_state;
+        std::thread input_handler;
+        std::atomic<bool> input_block;
     #ifdef _WIN32
         CHAR_INFO screen_buffer[SCREEN_BUFFER_SIZE];
     #else
@@ -31,7 +36,22 @@ namespace console {
     inline void init();
     inline void draw(const char* format, ...);
     inline void printf(const char* format, ...);
-    inline char loader();
+
+    void init_input_handler() {
+        console_data.input_handler = std::thread([&]() {
+            while (true) {
+                std::string line;
+                std::getline(std::cin, line);
+
+                while (console_data.input_block) {}
+                execute_command(line);
+            }
+        });
+    }
+
+    void kill_input_handler() {
+        console_data.input_handler.detach();
+    }
 
     #ifdef _WIN32 
     inline void init_w32() {

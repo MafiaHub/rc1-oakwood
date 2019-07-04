@@ -31,3 +31,4 @@ extern void remove_ban(u64 id);
 extern void add_wh(IDBind id);
 extern void remove_wh(u64 id);
 extern void toggle_wh(b32 state);
+extern void execute_command(std::string msg);
