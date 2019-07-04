@@ -86,7 +86,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 
     evnt->entity->position = ped->position;
 
-    mod_log(zpl_bprintf("Player '%s' has been connected!", ped->name));
+    mod_log(zpl_bprintf("Player '%s'(%llu) has been connected!", ped->name, ped->hwid));
     connected_players.push_back(evnt->entity);
 }
 
