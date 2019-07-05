@@ -51,9 +51,9 @@ Take-Two Interactive Software Inc.
 Mafia: The City of Lost Heaven is registered trademark of
 Take-Two Interactive Software Inc.
 
-Oakwood.exe uses parts of code that are licensed by CitizenFX and Nomad Group. Parts provided by 
-CitizenFX are licensed under LGPLv2. Parts provided by Nomad Group are licensed under Apache 2.0.
-The original form is available at: https://github.com/mafia2online/m2o-reborn/tree/develop/code/client/host
+Oakwood.exe uses parts of code that are licensed by CitizenFX. Parts provided by 
+CitizenFX are licensed under LGPLv2.
+The original form is available at: https://github.com/citizenfx/fivem/tree/master/code/client/launcher
 
 d3d9 wrapper uses code from https://github.com/crosire/d3d8to9, provided by crosire. This code is licensed
 under the BSD-2-Clause.
