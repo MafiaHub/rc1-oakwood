@@ -55,7 +55,7 @@ auto on_librg_connection_request(librg_event* evnt) -> void {
         }
 
         if (!isExempted) {
-            printf("Connection for %s'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", request_player_data.name, hostname, hwid);
+            printf("Connection for %s o'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", request_player_data.name, hostname, hwid);
             librg_event_reject(evnt);
 
             librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {

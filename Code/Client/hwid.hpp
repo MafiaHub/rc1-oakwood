@@ -163,7 +163,7 @@ namespace hwid {
     u64 getID() {
         auto rawID = getRawID();
 
-        auto id = zpl_murmur64(rawID.c_str(), zpl_strlen((char *)rawID.c_str()));
+        auto id = zpl_fnv64(rawID.c_str(), zpl_strlen((char *)rawID.c_str()));
 
         return id;
     }
