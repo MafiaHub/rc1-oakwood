@@ -121,6 +121,10 @@ namespace misc {
                 }
             }
 
+            if (gamemap.size() < 1) {
+                return;
+            }
+
             librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_GAMEMAP, data, {
                 librg_data_wu32(&data, gamemap.size());
                 librg_data_wptr(&data, gamemap.data(), gamemap.size() * sizeof(gamemap_info));
