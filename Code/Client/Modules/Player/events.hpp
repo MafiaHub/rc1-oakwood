@@ -186,7 +186,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
     u32 ping            = librg_data_ru32(evnt->data);
 
     auto player = (mafia_player *)evnt->entity->user_data;
-    if (!player || !player->ped) {
+    if (!player || !player->ped || player->ped == MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) {
         librg_event_reject(evnt);
         return;
     }
