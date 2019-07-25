@@ -16,9 +16,11 @@
 * Networking library
 */
 
-//#define LIBRG_DEBUG
+#define LIBRG_DEBUG
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
+#define LIBRG_DISABLE_FEATURE_ENTITY_VISIBILITY
+#define LIBRG_DISABLE_FEATURE_OCTREE_CULLER
 #include "librg/librg.h"
 
 /*
