@@ -159,9 +159,11 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
     if (player_int->isInAnimWithCar)
         player_int->isInAnimWithCar = 0;
 
+#ifndef OAKWOOD_DISABLE_INTERPOLATION
     target_position_update(ped);
     target_rotation_update(ped);
     target_pose_update(ped);
+#endif
 
     //Car shooting interpolation
     if (ped->interp.car_shooting.alpha <= 1.0f) {
@@ -207,10 +209,14 @@ inline auto entityupdate(librg_event* evnt) -> void {
     player->interp.car_shooting.alpha = 0.0f;
     player->interp.car_shooting.start_time = zpl_time_now();
 
+#ifdef OAKWOOD_DISABLE_INTERPOLATION
+    player_int->entity.position = EXPAND_VEC(recv_position);
+    player_int->entity.rotation = EXPAND_VEC(recv_rotation);
+#else
     target_position_set(player, recv_position);
     target_rotation_set(player, recv_rotation);
     target_pose_set(player, recv_pose);
-
+#endif
     if (!player_int->carLeavingOrEntering) {
         player_int->animState	= player->animation_state;
         player_int->isDucking	= player->is_crouching;
