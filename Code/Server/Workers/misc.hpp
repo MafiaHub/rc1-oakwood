@@ -80,10 +80,15 @@ namespace misc {
                 }
             }
 
+            /* prevent writing data of 0 * sizeof() */
+            if (scoreboard.size() < 1) {
+                return;
+            }
+
             librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, data, {
                 librg_data_wu32(&data, scoreboard.size());
                 librg_data_wptr(&data, scoreboard.data(), scoreboard.size() * sizeof(player_scoreboard_info));
-            });   
+            });
         }
     }
 
