@@ -48,19 +48,6 @@ Please report all your issues on our discord server.)", oak_build_channel[OAK_BU
                     if (ImGui::Button("Exit to menu")) {
                         if (clientActiveState == ClientState_Connected) {
                             librg_network_stop(&network_context);
-
-                            auto player = modules::player::get_local_player();
-                            if (player)
-                                zpl_zero_item(player);
-
-                            zpl_zero_item(&local_player);
-                            librg_free(&network_context);
-
-                            car_delte_queue.clear();
-                            mod_init_networking();
-                            menuActiveState = Menu_Chat;
-                            MafiaSDK::GetMission()->MapLoad("tutorial");
-                            switchClientState(ClientState_Browser);
                         }
                     }  ImGui::SameLine();
 

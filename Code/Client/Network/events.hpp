@@ -16,18 +16,41 @@ void on_librg_connect(librg_event* evnt) {
     evnt->entity->user_data = (void*)new_player;
 }
 
-void on_librg_disconnect(librg_event* evnt) {
-
+void handle_disconnection() {
     //chat::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
     auto player = modules::player::get_local_player();
-    if(player && player->ped) {
+    if (player && player->ped) {
         modules::player::despawn(player->ped);
         player->ped = nullptr;
+        zpl_zero_item(player);
     }
-    
+
+    zpl_zero_item(&local_player);
+    //librg_free(&network_context);
+
     car_delte_queue.clear();
     car_cache.clear();
-    librg_network_stop(evnt->ctx);
+    //mod_init_networking();
+}
+
+void on_librg_disconnect(librg_event* evnt) {
+    int status = (int)evnt->user_data;
+
+    /* handle timeout (hacky; librg sux) */
+    if (status == 1) {
+        return;
+    }
+
+    handle_disconnection();
+
+    menuActiveState = Menu_Chat;
+    MafiaSDK::GetMission()->MapLoad("tutorial");
+    switchClientState(ClientState_Browser);
+}
+
+void on_librg_timeout(librg_event *evnt) {
+    handle_disconnection();
+
     MafiaSDK::GetIndicators()->ConsoleAddText(zpl_bprintf("Trying to connect to %s:%d...", ServerInfo::lastServer.server_ip.c_str(), ServerInfo::lastServer.port), 0xFFFFFFFF);
     ServerInfo::join_last_server(clientActiveState == ClientState_Connected);
 }
@@ -102,6 +125,7 @@ void on_librg_clientstreamer_remove(librg_event* evnt) {
 auto mod_add_network_events() {
     librg_event_add(&network_context, LIBRG_CONNECTION_ACCEPT, on_librg_connect);
     librg_event_add(&network_context, LIBRG_CONNECTION_DISCONNECT, on_librg_disconnect);
+    librg_event_add(&network_context, LIBRG_CONNECTION_TIMEOUT, on_librg_timeout);
     librg_event_add(&network_context, LIBRG_ENTITY_CREATE, on_librg_entity_create);
     librg_event_add(&network_context, LIBRG_ENTITY_UPDATE, on_librg_entity_update);
     librg_event_add(&network_context, LIBRG_ENTITY_REMOVE, on_librg_entity_remove);
