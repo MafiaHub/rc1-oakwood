@@ -1,7 +1,5 @@
 #pragma once
 
-extern auto get_local_player() -> mafia_player*;
-
 auto spawn(zpl_vec3 position, 
                   zpl_vec3 rotation,
                   player_inventory inventory,

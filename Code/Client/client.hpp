@@ -39,12 +39,16 @@ struct _GlobalConfig {
 
 struct data {
     data() :
-        dead(false) {
+        dead(false), spec_id(-1), last_spec_id(-1) {
     }
 
     u32 entity_id;
     zpl_vec3 pose;
     bool dead;
+
+    // Spectator
+    i32 spec_id;
+    i32 last_spec_id;
 } local_player;
 
 struct shoot_info {

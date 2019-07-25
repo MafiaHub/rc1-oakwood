@@ -126,6 +126,15 @@ namespace MafiaSDK
     {
         return (HWND)GetIGraph()->GetMainHWND() == GetActiveWindow();
     }
+
+    // TODO: Move it to I3D_Camera
+    static MafiaSDK::I3D_Frame* GetCurrentCamera() {
+        __asm {
+            mov eax, dword ptr ds : [63788Ch]
+            mov ecx, dword ptr ds : [eax + 10h]
+            mov eax, dword ptr ds : [ecx + 17Ch]
+        }
+    }
 }
 
 #endif

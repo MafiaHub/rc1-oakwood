@@ -123,34 +123,6 @@ void ExecutableLoader::LoadSections(IMAGE_NT_HEADERS* ntHeader)
     }
 }
 
-#if defined(_M_AMD64)
-void ExecutableLoader::LoadExceptionTable(IMAGE_NT_HEADERS* ntHeader)
-{
-    IMAGE_DATA_DIRECTORY* exceptionDirectory = &ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXCEPTION];
-
-    RUNTIME_FUNCTION* functionList = GetTargetRVA<RUNTIME_FUNCTION>(exceptionDirectory->VirtualAddress);
-    DWORD entryCount = exceptionDirectory->Size / sizeof(RUNTIME_FUNCTION);
-
-    // has no use - inverted function tables get used instead from Ldr; we have no influence on those
-    if (!RtlAddFunctionTable(functionList, entryCount, (DWORD64)GetModuleHandle(nullptr)))
-    {
-        // FatalError("Setting exception handlers failed.");
-    }
-
-#if 0
-    // use CoreRT API instead
-    if (HMODULE coreRT = GetModuleHandle(L"CoreRT.dll"))
-    {
-        auto sehMapper = (void(*)(void*, void*, PRUNTIME_FUNCTION, DWORD))GetProcAddress(coreRT, "CoreRT_SetupSEHHandler");
-
-        sehMapper(m_module, ((char*)m_module) + ntHeader->OptionalHeader.SizeOfImage, functionList, entryCount);
-    }
-#endif
-}
-#endif
-
-static void InitTlsFromExecutable();
-
 void ExecutableLoader::LoadIntoModule(HMODULE module)
 {
     m_module = module;
@@ -165,10 +137,6 @@ void ExecutableLoader::LoadIntoModule(HMODULE module)
     IMAGE_DOS_HEADER* sourceHeader = (IMAGE_DOS_HEADER*)module;
     IMAGE_NT_HEADERS* sourceNtHeader = GetTargetRVA<IMAGE_NT_HEADERS>(sourceHeader->e_lfanew);
 
-#if defined(PAYNE)
-    IMAGE_TLS_DIRECTORY origTls = *GetTargetRVA<IMAGE_TLS_DIRECTORY>(sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].VirtualAddress);
-#endif
-
     IMAGE_NT_HEADERS* ntHeader = (IMAGE_NT_HEADERS*)(m_origBinary + header->e_lfanew);
 
     m_entryPoint = GetTargetRVA<void>(ntHeader->OptionalHeader.AddressOfEntryPoint);
@@ -176,19 +144,9 @@ void ExecutableLoader::LoadIntoModule(HMODULE module)
     LoadSections(ntHeader);
     LoadImports(ntHeader);
 
-#if defined(_M_AMD64)
-    LoadExceptionTable(ntHeader);
-#endif
-
     // copy over TLS index (source in this case indicates the TLS data to copy from, which is the launcher app itself)
     if (ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].Size)
     {
-#if defined(GTA_NY)
-        const IMAGE_TLS_DIRECTORY* targetTls = GetRVA<IMAGE_TLS_DIRECTORY>(ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].VirtualAddress);
-        const IMAGE_TLS_DIRECTORY* sourceTls = GetTargetRVA<IMAGE_TLS_DIRECTORY>(sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].VirtualAddress);
-
-        *(DWORD*)(targetTls->AddressOfIndex) = *(DWORD*)(sourceTls->AddressOfIndex);
-#else
         const IMAGE_TLS_DIRECTORY* targetTls = GetTargetRVA<IMAGE_TLS_DIRECTORY>(
             sourceNtHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].VirtualAddress);
         const IMAGE_TLS_DIRECTORY* sourceTls = GetTargetRVA<IMAGE_TLS_DIRECTORY>(
@@ -197,11 +155,7 @@ void ExecutableLoader::LoadIntoModule(HMODULE module)
         *(DWORD*)(sourceTls->AddressOfIndex) = 0;
 
         // note: 32-bit!
-#if defined(_M_IX86)
         LPVOID tlsBase = *(LPVOID*)__readfsdword(0x2C);
-#elif defined(_M_AMD64)
-        LPVOID tlsBase = *(LPVOID*)__readgsqword(0x58);
-#endif
 
         DWORD oldProtect;
         VirtualProtect(reinterpret_cast<LPVOID>(targetTls->StartAddressOfRawData),
@@ -214,7 +168,6 @@ void ExecutableLoader::LoadIntoModule(HMODULE module)
         /*#else
         const IMAGE_TLS_DIRECTORY* targetTls = GetTargetRVA<IMAGE_TLS_DIRECTORY>(ntHeader->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_TLS].VirtualAddress);
         m_tlsInitializer(targetTls);*/
-#endif
     }
 
 #if 1

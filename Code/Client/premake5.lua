@@ -29,6 +29,8 @@ project "Client"
 		"detours",
 		"lua",
 		"dxguid",
+        "wbemuuid",
+        "advapi32",
 		"dinput8"
 	}
 

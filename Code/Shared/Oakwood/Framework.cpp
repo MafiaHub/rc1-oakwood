@@ -102,6 +102,8 @@ GameMode::GameMode(oak_api *mod) {
             printf("[OAKWOOD] Unregistered entity sends message!");
             return false;
         }
+
+        ::printf("[GM] Player '%s' wrote: '%s'\n", player->GetName().c_str(), msg.c_str());
         
         auto args = SplitStringByWhitespace(msg);
 
@@ -117,6 +119,16 @@ GameMode::GameMode(oak_api *mod) {
         }
         
         return is_handled;
+    };
+
+    mod->on_server_command = [=](std::string msg) {
+        auto args = SplitStringByWhitespace(msg);
+
+        auto cmd = serverCommands.find(args[0]);
+
+        if (cmd != serverCommands.end()) {
+            cmd->second(args);
+        }
     };
 
     mod->on_server_tick = [=]() {
@@ -143,18 +155,7 @@ void GameMode::BroadcastMessage(std::string text, u32 color)
     mod->vtable.broadcast_msg_color(text.c_str(), color);
 }
 
-void GameMode::SendMessageToPlayer(std::string text, Player *receiver, u32 color)
-{
-    if (!receiver)
-        return;
-
-    if (!receiver->entity)
-        return;
-
-    mod->vtable.send_msg(text.c_str(), receiver->entity);
-}
-
-void GameMode::ChatPrint(std::string text)
+void GameMode::BroadcastChatMessage(std::string text)
 {
     mod->vtable.chat_print(text.c_str());
 }
@@ -182,6 +183,30 @@ Vehicle *GameMode::SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID)
     auto modelName = VehicleCatalogue.at(modelID).second.c_str();
 
     return SpawnVehicle(pos, angle, modelName);
+}
+
+void GameMode::Unban(u64 hwid)
+{
+    printf("GUID: %llu has been unbanned!\n", hwid);
+    mod->vtable.remove_ban(hwid);
+}
+
+void GameMode::AddWhitelist(u64 hwid, std::string name)
+{
+    printf("Added player '%s' with GUID: %llu!\n", name.c_str(), hwid);
+    mod->vtable.add_wh(hwid, name.c_str());
+}
+
+void GameMode::RemoveWhitelist(u64 hwid)
+{
+    printf("GUID: %llu has been removed from whitelist!\n", hwid);
+    mod->vtable.remove_wh(hwid);
+}
+
+void GameMode::ToggleWhitelist(b32 state)
+{
+    printf("Whitelist mode has been %s!\n", state ? "enabled" : "disabled");
+    mod->vtable.toggle_wh(state);
 }
 
 void GameMode::SetOnPlayerConnected(std::function<void(Player*)> callback)
@@ -229,6 +254,11 @@ void GameMode::AddCommandHandler(std::string command, std::function<bool(Player*
     commands[command] = callback;
 }
 
+void GameMode::AddServerCommandHandler(std::string command, std::function<void(ArgumentList)> callback)
+{
+    serverCommands[command] = callback;
+}
+
 std::string GameMode::ImplodeArgumentList(ArgumentList args)
 {
     return implode(args, 1);
@@ -245,6 +275,24 @@ Player::Player(librg_entity *entity) : GameObject()
 
 Player::~Player()
 {
+}
+
+u64 Player::GetHWID()
+{
+    return GetPedestrian()->hwid;
+}
+
+void Player::Ban()
+{
+    printf("Banned player '%s' with GUID: %llu!\n", GetName().c_str(), GetHWID());
+    __gm->mod->vtable.add_ban(GetHWID(), GetName().c_str());
+    Kick();
+}
+
+void Player::Kick()
+{
+    printf("Kicked player '%s' with GUID: %llu!\n", GetName().c_str(), GetHWID());
+    __gm->mod->vtable.player_kick(entity);
 }
 
 void Player::Spawn(zpl_vec3 pos)
@@ -285,7 +333,7 @@ void Player::SetPosition(zpl_vec3 position)
 
 zpl_vec3 Player::GetPosition()
 {
-    return entity->position;
+    return GetPedestrian()->position;
 }
 
 void Player::SetRotation(float angle)
@@ -336,7 +384,12 @@ void Player::SendAnnouncement(std::string message, f32 duration)
     __gm->mod->vtable.player_send_announcement(entity, message.c_str(), duration);
 }
 
-void Player::SendRaceStartFlags(f32 flags)
+void Player::SendChatMessage(std::string text, u32 color)
+{
+    __gm->mod->vtable.send_msg(text.c_str(), GetEntity());
+}
+
+void Player::SendRaceStartFlags(u32 flags)
 {
     __gm->mod->vtable.player_send_race_start_flags(entity, flags);
 }
@@ -349,6 +402,11 @@ void Player::SetCamera(zpl_vec3 pos, zpl_vec3 rot)
 void Player::SetCameraTarget(GameObject* object)
 {
     __gm->mod->vtable.player_set_camera_target(entity, object->GetEntity());
+}
+
+void Player::ResetCamera()
+{
+    __gm->mod->vtable.player_set_camera_target(entity, NULL);
 }
 
 void Player::UnlockCamera()

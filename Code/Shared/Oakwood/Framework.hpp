@@ -133,11 +133,15 @@ public:
     //
 
     void BroadcastMessage(std::string text, u32 color = 0xFFFFFF);
-    void SendMessageToPlayer(std::string text, Player *receiver, u32 color = 0xFFFFFF);
-    void ChatPrint(std::string text);
+    void BroadcastChatMessage(std::string text);
     void SpawnWeaponDrop(zpl_vec3 position, std::string model, inventory_item item);
     Vehicle* SpawnVehicle(zpl_vec3 pos, float angle, const std::string& model, b32 show_in_radar = true);
     Vehicle* SpawnVehicleByID(zpl_vec3 pos, float angle, int modelID);
+    
+    void Unban(u64 hwid);
+    void AddWhitelist(u64 hwid, std::string name);
+    void RemoveWhitelist(u64 hwid);
+    void ToggleWhitelist(b32 state);
 
     //
     // Event handling
@@ -163,6 +167,7 @@ public:
     //
 
     void AddCommandHandler(std::string command, std::function<bool(Player*,ArgumentList)> callback);
+    void AddServerCommandHandler(std::string command, std::function<void(ArgumentList)> callback);
     
     //
     // Helpers
@@ -187,4 +192,5 @@ private:
     std::function<void(Vehicle*)> onVehicleDestroyed;
     std::function<void()> onServerTick;
     std::unordered_map<std::string, std::function<bool(Player*,ArgumentList)>> commands;
+    std::unordered_map<std::string, std::function<void(ArgumentList)>> serverCommands;
 };

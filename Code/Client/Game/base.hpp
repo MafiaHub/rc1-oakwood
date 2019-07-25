@@ -1,5 +1,6 @@
 #pragma once
 
+#include "methods.hpp"
 #include "patches.hpp"
 #include "game_events.hpp"
 #include "CrashHandler/crashhandler.hpp"

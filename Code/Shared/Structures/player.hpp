@@ -24,12 +24,14 @@ struct mafia_player {
 	mafia_player() : 
 	streamer_entity_id(-1),
 	vehicle_id(-1),
+    hwid(0),
     has_visible_nameplate(1),
 	current_weapon_id(0) {
 		zpl_zero_item(this);
 		streamer_entity_id = -1;
 		vehicle_id = -1;
 		pose = { 1.0f, 1.0f, 1.0f };
+        position = { 0.0f };
 		rotation = { 0.0f, 0.0f, -1.0f };
 		strcpy(model, "Tommy.i3d");
 
@@ -44,6 +46,7 @@ struct mafia_player {
 #endif
 	}
 	i32 streamer_entity_id;
+    zpl_vec3 position;
 	zpl_vec3 rotation;
 	zpl_vec3 pose;
 	f32 health;
@@ -60,6 +63,7 @@ struct mafia_player {
 	u32 current_weapon_id;
 	i32 vehicle_id;
     u32 ping;
+    u64 hwid;
 #ifdef MAFIA_SDK_IMPLEMENTATION
 	struct {
 		/*struct {

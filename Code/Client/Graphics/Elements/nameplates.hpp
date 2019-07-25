@@ -7,14 +7,6 @@ namespace nameplates {
    
     ID3DXFont* nameplate_font = nullptr;
 
-    inline auto get_current_i3dcamera() -> MafiaSDK::I3D_Frame* {
-        __asm {
-            mov eax, dword ptr ds : [63788Ch]
-            mov ecx, dword ptr ds : [eax + 10h]
-            mov eax, dword ptr ds : [ecx + 17Ch]
-        }
-    }
-
     inline auto mod_vec3_to_color(zpl_vec3 rhs) {
         DWORD color = 0x0FF000000;
         color |= ((DWORD)rhs.r << 16);
@@ -82,7 +74,7 @@ namespace nameplates {
                     auto player_pos = neck_frame->GetInterface()->position;
                     auto player_health = player->health;
 
-                    auto current_i3d_camera = get_current_i3dcamera();
+                    auto current_i3d_camera = MafiaSDK::GetCurrentCamera();
                     if (current_i3d_camera == nullptr) return;
 
                     S_vector camera_pos = current_i3d_camera->GetInterface()->position;

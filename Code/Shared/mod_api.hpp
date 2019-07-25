@@ -63,6 +63,7 @@ struct oak_api {
     std::function<void(librg_entity* attacker, librg_entity* victim, float damage)> on_player_hit;
     std::function<void(librg_entity* vehicle)> on_vehicle_destroyed;
     std::function<void()> on_server_tick;
+    std::function<void(std::string msg)> on_server_command;
 
     inline ~oak_api() {
         zpl_zero_item(this);

@@ -72,7 +72,7 @@ namespace mainmenu {
 
             if (!failed) {
                 zpl_json_object* server_property;
-                zpl_json_find(&json_master_data, "server", false, &server_property);
+                zpl_json_find(&json_master_data, "servers", false, &server_property);
 
                 if (!server_property)
                     return;

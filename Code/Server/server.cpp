@@ -83,6 +83,7 @@
 * Core
 */
 
+#include "peer_control.hpp"
 #include "utils.hpp"
 #include "config.hpp"
 #include "opts.hpp"
@@ -133,13 +134,17 @@ int main(int argc, char **argv) {
     webserver::init();
     gamemode::init();
 
+    console::init_input_handler();
+
     while (true) {
+        console::console_data.input_block.store(true);
         network::update();
         misc::vehicles_streamer_update(); 
         misc::console_update_stats();
         misc::scoreboard_update();
         misc::gamemap_update();
         masterlist::update();
+        console::console_data.input_block.store(false);
         zpl_sleep_ms(1);
     }
 
@@ -151,6 +156,7 @@ void shutdown_server() {
     gamemode::free_dll();
     webserver::stop();
     network::shutdown();
+    console::kill_input_handler();
 
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     unregister_console_events();
@@ -158,4 +164,11 @@ void shutdown_server() {
     
     opts::free();
     zpl_exit(0);
+}
+
+void execute_command(std::string msg) {
+    printf("Executing server command: %s\n", msg.c_str());
+
+    if (gm.on_server_command)
+        gm.on_server_command(msg);
 }

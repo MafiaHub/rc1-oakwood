@@ -226,14 +226,23 @@ void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot) {
     });
 }
 
-void set_camera_target(librg_entity* entity, librg_entity* target) {
-    librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, entity->client_peer, data, {
-        librg_data_went(&data, target->id);
-    });
+void unlock_camera(librg_entity* entity) {
+    librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
 }
 
-void unlock_camera(librg_entity *entity) {
-    librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+void set_camera_target(librg_entity* entity, librg_entity* target) {
+    i32 id = -1;
+
+    if (target) {
+        id = target->id;
+        
+        //TODO: librg -- we need to make sure target is always seen for entity. Otherwise we can't spectate on longer ranges.
+        //librg_entity_add_exempt(entity, target);
+    }
+
+    librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, entity->client_peer, data, {
+        librg_data_went(&data, id);
+    });
 }
 
 void send_announcement(librg_entity* entity, const char* text, f32 duration) {

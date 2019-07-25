@@ -129,6 +129,11 @@ auto mod_add_network_events() {
         strcpy(nickname, GlobalConfig.username);
         librg_data_wu64(evnt->data, OAK_BUILD_MAGIC);
         librg_data_wu64(evnt->data, OAK_BUILD_VERSION);
+        librg_data_wu64(evnt->data, hwid::getID());
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
+
+#ifdef OAKWOOD_DEBUG
+        zpl_printf("GUID: %llu\n", hwid::getID());
+#endif
     });
 }

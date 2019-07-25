@@ -3,15 +3,69 @@
 auto on_librg_connection_request(librg_event* evnt) -> void {
     auto build_magic = librg_data_ru64(evnt->data);
     auto build_ver = librg_data_ru64(evnt->data);
+    auto peer_ip = evnt->peer->address;
+
+    char hostname[128] = { 0 };
+    enet_address_get_host_ip(&peer_ip, hostname, 128);
 
     if (build_magic != OAK_BUILD_MAGIC || build_ver != OAK_BUILD_VERSION) {
-        mod_log(zpl_bprintf("Connection has been rejected!\nOur magic: %X\tTheir magic: %X\nOur version: %X\tTheir version: %X\n", OAK_BUILD_MAGIC, build_magic, OAK_BUILD_VERSION, build_ver));
+        mod_log(zpl_bprintf("Connection for '%s' has been rejected!\nOur magic: %X\tTheir magic: %X\nOur version: %X\tTheir version: %X\n", hostname, OAK_BUILD_MAGIC, build_magic, OAK_BUILD_VERSION, build_ver));
         librg_event_reject(evnt);
 
-        librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {});
+        librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
+            librg_data_wu32(&data, REJECTION_VERSION);
+        });
+        return;
     }
 
+    auto hwid = librg_data_ru64(evnt->data);
+
     librg_data_rptr(evnt->data, request_player_data.name, sizeof(char) * 32);
+
+    // TODO: Apart from local ban database, fetch global bans as well
+    {
+        b32 isBanned = false;
+
+        for (auto id : GlobalConfig.banned) {
+            if (id.first == hwid) {
+                isBanned = true;
+                break;
+            }
+        }
+
+        if (isBanned) {
+            printf("Connection for %s'%s' has been rejected!\nPlayer is banned! GUID: %llu\n", request_player_data.name, hostname, hwid);
+            librg_event_reject(evnt);
+
+            librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
+                librg_data_wu32(&data, REJECTION_BANNED);
+            });
+            return;
+        }
+    }
+
+    if (GlobalConfig.whitelistOnly) {
+        b32 isExempted = false;
+
+        for (auto id : GlobalConfig.whitelisted) {
+            if (id.first == hwid) {
+                isExempted = true;
+                break;
+            }
+        }
+
+        if (!isExempted) {
+            printf("Connection for %s o'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", request_player_data.name, hostname, hwid);
+            librg_event_reject(evnt);
+
+            librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
+                librg_data_wu32(&data, REJECTION_WH);
+            });
+            return;
+        }
+    }
+
+    request_player_data.hwid = hwid;
 }
 
 auto on_librg_connection_accept(librg_event* evnt) -> void {
@@ -20,6 +74,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 
     auto ped = new mafia_player;
     strcpy(ped->name, request_player_data.name);
+    ped->hwid = request_player_data.hwid;
 
     evnt->entity->user_data = ped;
 
@@ -30,7 +85,9 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
     if (gm.on_player_connected)
         gm.on_player_connected(evnt, evnt->entity, ped);
 
-    mod_log(zpl_bprintf("Player '%s' has been connected!", ped->name));
+    evnt->entity->position = ped->position;
+
+    mod_log(zpl_bprintf("Player '%s'(%llu) has been connected!", ped->name, ped->hwid));
     connected_players.push_back(evnt->entity);
 }
 

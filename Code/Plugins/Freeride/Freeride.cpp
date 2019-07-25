@@ -100,6 +100,30 @@ void setRandomModel(Player* player) {
     player->SetModelByID(random_model);
 }
 
+std::vector<u64> admins;
+
+void loadAdmins() {
+    std::string currentLine;
+    std::ifstream inputFile("config/admins.txt");
+    while (!inputFile.fail() && !inputFile.eof()) {
+        std::getline(inputFile, currentLine);
+        if (currentLine.length() == 0) continue;
+        u64 hwid;
+        char name[128] = { 0 };
+        ::sscanf(currentLine.c_str(), "%llu %s", &hwid, name);
+        printf("Registering admin: '%s'(%llu)\n", name, hwid);
+        admins.push_back(hwid);
+    }
+    inputFile.close();
+}
+
+bool isPlayerAdmin(Player* plr) {
+    for (auto id : admins) {
+        if (id == plr->GetHWID()) return true;
+    }
+
+    return false;
+}
 
 OAK_MOD_MAIN /* (oak_api *mod) */ {
 
@@ -112,6 +136,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     // Initialize the GameMode
 
     gm = new GameMode(mod);
+    loadAdmins();
 
     // Spawn default vehicles
     for (auto vehicle_spawn : vehicle_spawns) {
@@ -122,7 +147,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     // Load extra cars from file
     std::string currentLine;
     std::ifstream inputFile("static/savedcars.txt");
-    while (!inputFile.eof()) {
+    while (!inputFile.fail() && !inputFile.eof()) {
         std::getline(inputFile, currentLine);
         if (currentLine.length() == 0) continue;
         zpl_vec3 pos;
@@ -132,6 +157,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto vehicle = gm->SpawnVehicleByID(pos, dir, model_id);
         vehicle->ShowOnMap(true);
     }
+    inputFile.close();
 
     // Register several events
     gm->SetOnPlayerConnected([=](Player *player) {
@@ -149,7 +175,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
     });
 
     gm->SetOnPlayerKeyPressed([=](Player* player, int key, bool pressed) {
-        printf("Player %s pressed '%c'\n", player->GetName().c_str(), key);
+        
     });
 
     gm->SetOnVehicleDestroyed([=](Vehicle *vehicle) {
@@ -190,11 +216,11 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->SetOnPlayerChat([=](Player *player, std::string msg) {
         if (msg[0] == '/') {
-            gm->SendMessageToPlayer("Unknown command: " + msg, player);
+            player->SendChatMessage("Unknown command: " + msg);
             return true;
         }
 
-        gm->ChatPrint("<" + player->GetName() + "> " + msg);
+        gm->BroadcastChatMessage("<" + player->GetName() + "> " + msg);
 
         return true;
     });
@@ -215,12 +241,12 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/car", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("Usage: /car [modelID]", player);
+            player->SendChatMessage("Usage: /car [modelID]");
             return true;
         }
 
         if (player->GetVehicle() != nullptr) {
-            gm->SendMessageToPlayer("You can't spawn another car from inside of vehicle!", player);
+            player->SendChatMessage("You can't spawn another car from inside of vehicle!");
             return true;
         }
 
@@ -253,12 +279,12 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/putcar", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("Usage: /putcar [modelID]", player);
+            player->SendChatMessage("Usage: /putcar [modelID]");
             return true;
         }
 
         if (player->GetVehicle() != nullptr) {
-            gm->SendMessageToPlayer("You can't spawn another car from inside of vehicle!", player);
+            player->SendChatMessage("You can't spawn another car from inside of vehicle!");
             return true;
         }
 
@@ -288,12 +314,12 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/skin", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("Usage: /skin [modelID]", player);
+            player->SendChatMessage("Usage: /skin [modelID]");
             return true;
         }
 
         if (player->GetVehicle() != nullptr) {
-            gm->SendMessageToPlayer("You can't change skin inside of vehicle!", player);
+            player->SendChatMessage("You can't change skin inside of vehicle!");
             return true;
         }
 
@@ -315,10 +341,10 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto vehicle = player->GetVehicle();
 
         if (!vehicle) {
-            gm->SendMessageToPlayer("You are not sitting in a car!", player);
+            player->SendChatMessage("You are not sitting in a car!");
             return true;
         } else if (vehicle->GetPlayerSeatID(player) != 0) {
-            gm->SendMessageToPlayer("You are not a driver!", player);
+            player->SendChatMessage("You are not a driver!");
             return true;
         }
 
@@ -331,12 +357,12 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         auto vehicle = player->GetVehicle();
 
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("USAGE: /tp [id]", player);
+            player->SendChatMessage("USAGE: /tp [id]");
             return true;
         }
 
         if (vehicle) {
-            gm->SendMessageToPlayer("You are sitting in a car!", player);
+            player->SendChatMessage("You are sitting in a car!");
             return true;
         }
 
@@ -345,14 +371,14 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         if (playerId == -1) return true;
 
         if (playerId < 0 || playerId >= (int)gm->players.GetNumberOfObjects()) {
-            gm->SendMessageToPlayer("Invalid ID!", player);
+            player->SendChatMessage("Invalid ID!");
             return true;
         }
 
         auto sndPlayer = gm->players.GetObjectByID(playerId);
 
         if (!sndPlayer) {
-            gm->SendMessageToPlayer("Invalid ID!", player);
+            player->SendChatMessage("Invalid ID!");
             return true;
         }
 
@@ -360,11 +386,43 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
         return true;
     });
 
+    gm->AddCommandHandler("/spectate", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /spectate [id]");
+            return true;
+        }
+
+        auto playerId = StringToInteger(args[1]);
+
+        if (playerId == -1) return true;
+
+        if (playerId < 0 || playerId >= (int)gm->players.GetNumberOfObjects()) {
+            player->SendChatMessage("Invalid ID!");
+            return true;
+        }
+
+        auto sndPlayer = gm->players.GetObjectByID(playerId);
+
+        if (!sndPlayer || sndPlayer == player) {
+            player->SendChatMessage("Invalid ID!");
+            return true;
+        }
+
+        player->SetCameraTarget(sndPlayer);
+        
+        return true;
+    });
+
+    gm->AddCommandHandler("/stop", [=](Player* player, ArgumentList args) {
+        player->ResetCamera();
+        return true;
+    });
+
     gm->AddCommandHandler("/list", [=](Player *player, ArgumentList args) { 
-        gm->SendMessageToPlayer("Online players:", player);
+        player->SendChatMessage("Online players:");
 
         for (int32_t i = 0; i < (int)gm->players.GetNumberOfObjects(); i++) {
-            gm->SendMessageToPlayer(std::to_string(i)+". "+gm->players.GetObjectByID(i)->GetName(), player);
+            player->SendChatMessage(std::to_string(i)+". "+gm->players.GetObjectByID(i)->GetName());
         }
 
         return true;
@@ -372,7 +430,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/telelist", [=](Player *player, ArgumentList args) {
         for (auto loc : spawnLocs) {
-            gm->SendMessageToPlayer(loc.name, player);
+            player->SendChatMessage(loc.name);
         }
 
         return true;
@@ -380,7 +438,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/tele", [=](Player* player, ArgumentList args) {
         if (player->GetVehicle()) {
-            gm->SendMessageToPlayer("you need to be on foot!", player);
+            player->SendChatMessage("you need to be on foot!");
             return true;
         }
 
@@ -393,7 +451,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
             }
         }
 
-        gm->SendMessageToPlayer("Location doesn't exist! Use /telelist to see all available locations", player);
+        player->SendChatMessage("Location doesn't exist! Use /telelist to see all available locations");
 
         return true;
     });
@@ -405,7 +463,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/anim", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("USAGE: /anim [name]", player);
+            player->SendChatMessage("USAGE: /anim [name]");
             return true;
         }
 
@@ -453,7 +511,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/transparency", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("USAGE: /transparency [value 0.0 - 1.0]", player);
+            player->SendChatMessage("USAGE: /transparency [value 0.0 - 1.0]");
             return true;
         }
 
@@ -474,7 +532,7 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
     gm->AddCommandHandler("/fuel", [=](Player *player, ArgumentList args) {
         if (args.size() < 2) {
-            gm->SendMessageToPlayer("USAGE: /fuel [value]", player);
+            player->SendChatMessage("USAGE: /fuel [value]");
             return true;
         }
 
@@ -509,6 +567,162 @@ OAK_MOD_MAIN /* (oak_api *mod) */ {
 
         return true;
     });
+
+    // Admin tools
+
+    gm->AddCommandHandler("/ban", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /ban [id]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto playerId = StringToInteger(args[1]);
+
+        if (playerId == -1) return true;
+
+        auto sndPlayer = gm->players.GetObjectByID(playerId);
+
+        if (!sndPlayer) {
+            player->SendChatMessage("Invalid ID!");
+            return true;
+        }
+
+        sndPlayer->Ban();
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/kick", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /kick [id]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto playerId = StringToInteger(args[1]);
+
+        if (playerId == -1) return true;
+        auto sndPlayer = gm->players.GetObjectByID(playerId);
+
+        if (!sndPlayer) {
+            player->SendChatMessage("Invalid ID!");
+            return true;
+        }
+
+        sndPlayer->Kick();
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/addwh", [=](Player* player, ArgumentList args) {
+        if (args.size() < 3) {
+            player->SendChatMessage("USAGE: /addwh [hwid] [name]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto hwid = StringToLong(args[1]);
+        auto name = args[2];
+
+        gm->AddWhitelist(hwid, name);
+
+        return true;
+    }); 
+    
+    gm->AddServerCommandHandler("/addwh", [=](ArgumentList args) {
+        if (args.size() < 3) {
+            printf("USAGE: /addwh [hwid] [name]\n");
+            return true;
+        }
+
+        auto hwid = StringToLong(args[1]);
+        auto name = args[2];
+
+        gm->AddWhitelist(hwid, name);
+    });
+
+    gm->AddServerCommandHandler("/ban", [=](ArgumentList args) {
+        if (args.size() < 2) {
+            printf("USAGE: /ban [id]\n");
+            return true;
+        }
+
+        auto id = StringToInteger(args[1]);
+        
+        auto player = gm->players.GetObjectByID(id);
+
+        if (player) {
+            player->Ban();
+        }
+    });
+
+    gm->AddCommandHandler("/unban", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /unban [hwid]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto hwid = StringToLong(args[1]);
+
+        gm->Unban(hwid);
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/rmwh", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /rmwh [hwid]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto hwid = StringToLong(args[1]);
+
+        gm->RemoveWhitelist(hwid);
+
+        return true;
+    });
+
+    gm->AddCommandHandler("/togglewh", [=](Player* player, ArgumentList args) {
+        if (args.size() < 2) {
+            player->SendChatMessage("USAGE: /unban [state]");
+            return true;
+        }
+
+        if (!isPlayerAdmin(player)) {
+            player->SendChatMessage("Not an admin!");
+            return true;
+        }
+
+        auto state = StringToInteger(args[1]);
+
+        gm->ToggleWhitelist(state);
+
+        return true;
+    });
+
 }
 
 OAK_MOD_SHUTDOWN {

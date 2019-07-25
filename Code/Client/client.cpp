@@ -112,6 +112,7 @@
 * Core
 */
 
+#include "hwid.hpp"
 #include "utils.hpp"
 #include "config.hpp"
 #include "profile.hpp"

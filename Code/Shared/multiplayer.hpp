@@ -11,3 +11,9 @@ enum {
     TYPE_WEAPONDROP,
     TYPE_DOOR
 };
+
+enum {
+    REJECTION_VERSION,
+    REJECTION_WH,
+    REJECTION_BANNED,
+};
