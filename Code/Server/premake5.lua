@@ -23,8 +23,6 @@ project "Server"
         "../../Vendors/librg",
         "../../Vendors"
     }
-	configuration "Debug"
-		debugdir "Bin/Debug"
 
     configuration "linux or macosx"
         links {
