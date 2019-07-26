@@ -1,6 +1,7 @@
 #pragma once
 
-enum {
+enum
+{
     OAK_BUILD_INDEV = 1,
     OAK_BUILD_TESTING,
     OAK_BUILD_RELEASE,
@@ -13,7 +14,8 @@ static const char *oak_build_channel[4] = {
     "Release",
 };
 
-inline auto get_version_hash(int ver) {
+inline auto get_version_hash(int ver)
+{
     static zpl_u64 hash = 0;
 
     if (hash == 0)
@@ -24,7 +26,7 @@ inline auto get_version_hash(int ver) {
 
 #define OAK_BUILD_MAGIC (u64)0xDEADC0DEDEADBEEF
 #ifndef OAK_BUILD_VERSION_BASE
-#define OAK_BUILD_VERSION_BASE 15
+#define OAK_BUILD_VERSION_BASE 16
 #endif
 #define OAK_BUILD_VERSION get_version_hash(OAK_BUILD_VERSION_BASE)
 #define OAK_BUILD_VERSION_STR "RC1"

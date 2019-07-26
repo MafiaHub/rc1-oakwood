@@ -1,4 +1,4 @@
-#pragma comment(linker, "/merge:.text=.zdata")
+#pragma comment(linker, "/merge:.text=.oakwood")
 
 // game
 #pragma bss_seg(".mafia1")

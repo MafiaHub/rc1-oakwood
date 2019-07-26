@@ -12,7 +12,7 @@ project "Launcher"
 
     targetname "Oakwood"
     characterset "Unicode"
-    linkoptions "/IGNORE:4254 /ENTRY:wmainCRTStartup /OPT:NOLBR /SAFESEH:NO /DYNAMICBASE:NO /LARGEADDRESSAWARE /LAST:.zdata"
+    linkoptions "/IGNORE:4254 /ENTRY:wmainCRTStartup /OPT:NOLBR /SAFESEH:NO /DYNAMICBASE:NO /LARGEADDRESSAWARE /LAST:.oakwood"
 
     icon "icon.ico"
     vpaths { ["*"] = "*" }
