@@ -1,25 +1,28 @@
 #pragma once
 inline auto mod_librg_connect() -> void;
 
-void on_librg_connect(librg_event* evnt) {
-    
+void on_librg_connect(librg_event *evnt)
+{
+
     enet_peer_timeout(evnt->peer, 10, 5000, 10000);
 
     MafiaSDK::GetIndicators()->FadeInOutScreen(false, 1000, 0x000000);
     MafiaSDK::GetMission()->GetGame()->GetCamera()->Unlock();
 
     local_player.entity_id = evnt->entity->id;
-    
+
     auto new_player = new mafia_player();
     strcpy(new_player->name, GlobalConfig.username);
     evnt->entity->type = TYPE_PLAYER;
-    evnt->entity->user_data = (void*)new_player;
+    evnt->entity->user_data = (void *)new_player;
 }
 
-void handle_disconnection() {
+void handle_disconnection()
+{
     //chat::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
     auto player = modules::player::get_local_player();
-    if (player && player->ped) {
+    if (player && player->ped)
+    {
         modules::player::despawn(player->ped);
         player->ped = nullptr;
         zpl_zero_item(player);
@@ -33,11 +36,18 @@ void handle_disconnection() {
     //mod_init_networking();
 }
 
-void on_librg_disconnect(librg_event* evnt) {
+void on_librg_disconnect(librg_event *evnt)
+{
+    if (clientActiveState == ClientState_Infobox)
+    {
+        return;
+    }
+
     int status = (int)evnt->user_data;
 
     /* handle timeout (hacky; librg sux) */
-    if (status == 1) {
+    if (status == 1)
+    {
         return;
     }
 
@@ -48,81 +58,124 @@ void on_librg_disconnect(librg_event* evnt) {
     switchClientState(ClientState_Browser);
 }
 
-void on_librg_timeout(librg_event *evnt) {
+void on_librg_timeout(librg_event *evnt)
+{
+    if (clientActiveState == ClientState_Infobox)
+    {
+        return;
+    }
+
     handle_disconnection();
 
     MafiaSDK::GetIndicators()->ConsoleAddText(zpl_bprintf("Trying to connect to %s:%d...", ServerInfo::lastServer.server_ip.c_str(), ServerInfo::lastServer.port), 0xFFFFFFFF);
     ServerInfo::join_last_server(clientActiveState == ClientState_Connected);
 }
 
-void on_librg_entity_create(librg_event* evnt) {
-    switch (evnt->entity->type) {
-        case TYPE_PLAYER: {
-            modules::player::entitycreate(evnt);
-        } break;
-        case TYPE_WEAPONDROP: {
-            //entitycreate(evnt);
-        } break;
-        case TYPE_VEHICLE: {
-            modules::vehicle::entitycreate(evnt);
-        } break;
-        case TYPE_DOOR: {
-            modules::door::entitycreate(evnt);
-        } break;
+void on_librg_entity_create(librg_event *evnt)
+{
+    switch (evnt->entity->type)
+    {
+    case TYPE_PLAYER:
+    {
+        modules::player::entitycreate(evnt);
+    }
+    break;
+    case TYPE_WEAPONDROP:
+    {
+        //entitycreate(evnt);
+    }
+    break;
+    case TYPE_VEHICLE:
+    {
+        modules::vehicle::entitycreate(evnt);
+    }
+    break;
+    case TYPE_DOOR:
+    {
+        modules::door::entitycreate(evnt);
+    }
+    break;
     }
 }
 
-void on_librg_entity_update(librg_event* evnt) {
-    switch (evnt->entity->type) {
-        case TYPE_PLAYER: {
-            modules::player::entityupdate(evnt);
-        } break;
-        case TYPE_VEHICLE: {
-            modules::vehicle::entityupdate(evnt);
-        } break;
+void on_librg_entity_update(librg_event *evnt)
+{
+    switch (evnt->entity->type)
+    {
+    case TYPE_PLAYER:
+    {
+        modules::player::entityupdate(evnt);
+    }
+    break;
+    case TYPE_VEHICLE:
+    {
+        modules::vehicle::entityupdate(evnt);
+    }
+    break;
     }
 }
 
-void on_librg_entity_remove(librg_event* evnt) {
-    switch (evnt->entity->type) {
-        case TYPE_PLAYER: {
-            modules::player::entityremove(evnt);
-        } break;
-        case TYPE_WEAPONDROP: {
-            //drop_entityremove(evnt);
-        } break;
-        case TYPE_VEHICLE: {
-            modules::vehicle::entityremove(evnt);
-        } break;
-        case TYPE_DOOR: {
-            modules::door::entityremove(evnt);
-        } break;
+void on_librg_entity_remove(librg_event *evnt)
+{
+    switch (evnt->entity->type)
+    {
+    case TYPE_PLAYER:
+    {
+        modules::player::entityremove(evnt);
+    }
+    break;
+    case TYPE_WEAPONDROP:
+    {
+        //drop_entityremove(evnt);
+    }
+    break;
+    case TYPE_VEHICLE:
+    {
+        modules::vehicle::entityremove(evnt);
+    }
+    break;
+    case TYPE_DOOR:
+    {
+        modules::door::entityremove(evnt);
+    }
+    break;
     }
 }
 
-void on_librg_clientstreamer_update(librg_event* evnt) {
-    switch (evnt->entity->type) {
-        case TYPE_PLAYER: {
-            modules::player::clientstreamer_update(evnt);
-        } break;
-        case TYPE_VEHICLE: {
-            modules::vehicle::clientstreamer_update(evnt);
-        } break;
-        case TYPE_DOOR: {
-            modules::door::clientstreamer_update(evnt);
-        } break;
+void on_librg_clientstreamer_update(librg_event *evnt)
+{
+    switch (evnt->entity->type)
+    {
+    case TYPE_PLAYER:
+    {
+        modules::player::clientstreamer_update(evnt);
+    }
+    break;
+    case TYPE_VEHICLE:
+    {
+        modules::vehicle::clientstreamer_update(evnt);
+    }
+    break;
+    case TYPE_DOOR:
+    {
+        modules::door::clientstreamer_update(evnt);
+    }
+    break;
     }
 }
 
-void on_librg_clientstreamer_add(librg_event* evnt) {
+void on_librg_clientstreamer_add(librg_event *evnt)
+{
     evnt->entity->flags &= ~ENTITY_INTERPOLATED;
 }
 
-void on_librg_clientstreamer_remove(librg_event* evnt) {
+void on_librg_clientstreamer_remove(librg_event *evnt)
+{
     evnt->entity->flags |= ENTITY_INTERPOLATED;
 }
 
-auto mod_add_network_events() {
+auto mod_add_network_events()
+{
     librg_event_add(&network_context, LIBRG_CONNECTION_ACCEPT, on_librg_connect);
     librg_event_add(&network_context, LIBRG_CONNECTION_DISCONNECT, on_librg_disconnect);
     librg_event_add(&network_context, LIBRG_CONNECTION_TIMEOUT, on_librg_timeout);

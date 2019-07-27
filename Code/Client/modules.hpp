@@ -17,6 +17,7 @@ namespace modules {
     #include "Modules/GameMap/base.hpp"
     #include "Modules/Playerlist/base.hpp"
     #include "Modules/MainMenu/base.hpp"
+    #include "Modules/Infobox/base.hpp"
     #include "Modules/PauseMenu/base.hpp"
     #include "Modules/Door/base.hpp"
     #include "Modules/Player/base.hpp"

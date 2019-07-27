@@ -53,8 +53,11 @@ namespace imgui {
             modules::playerlist::render();
         }
 
-        if (clientActiveState == ClientState_Browser) {
+        /**/ if (clientActiveState == ClientState_Browser) {
             modules::mainmenu::render();
+        }
+        else if (clientActiveState == ClientState_Infobox) {
+            modules::infobox::render();
         }
 
         ImGui::EndFrame();
