@@ -19,7 +19,7 @@
 //#define LIBRG_DEBUG
 #define LIBRG_IMPLEMENTATION
 #define LIBRG_NO_DEPRECATIONS
-#define LIBRG_DISABLE_FEATURE_ENTITY_VISIBILITY
+#define LIBRG_FEATURE_ENTITY_VISIBILITY
 #define LIBRG_DISABLE_FEATURE_OCTREE_CULLER
 #include "librg/librg.h"
 
@@ -70,7 +70,7 @@
 */
 
 #define HTTP_IMPLEMENTATION
-#include "http/http.h" 
+#include "http/http.h"
 
 /*
 * Detours
@@ -125,7 +125,8 @@
 #include "Game/base.hpp"
 #include "stateManager.hpp"
 
-ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath) {
+ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath)
+{
     GlobalConfig.localpath = localpath;
     GlobalConfig.gamepath = gamepath;
 

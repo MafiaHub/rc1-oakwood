@@ -18,6 +18,7 @@
 
 //#define LIBRG_DEBUG
 #define LIBRG_IMPLEMENTATION
+#define LIBRG_FEATURE_ENTITY_VISIBILITY
 #define LIBRG_NO_DEPRECATIONS
 #include "librg/librg.h"
 
@@ -114,14 +115,15 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
                                                                                                      
 )foo";
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     console::init();
     console::printf("================================\n");
     console::printf(banner_text);
     console::printf("Build version: %s (%x)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
     console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
     console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
-    console::printf("================================\n"); 
+    console::printf("================================\n");
     opts::init(argc, argv);
 
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
@@ -136,10 +138,11 @@ int main(int argc, char **argv) {
 
     console::init_input_handler();
 
-    while (true) {
+    while (true)
+    {
         console::console_data.input_block.store(true);
         network::update();
-        misc::vehicles_streamer_update(); 
+        misc::vehicles_streamer_update();
         misc::console_update_stats();
         misc::scoreboard_update();
         misc::gamemap_update();
@@ -151,7 +154,8 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void shutdown_server() {
+void shutdown_server()
+{
     mod_log("Server is shutting down...");
     gamemode::free_dll();
     webserver::stop();
@@ -161,12 +165,13 @@ void shutdown_server() {
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
     unregister_console_events();
 #endif
-    
+
     opts::free();
     zpl_exit(0);
 }
 
-void execute_command(std::string msg) {
+void execute_command(std::string msg)
+{
     printf("Executing server command: %s\n", msg.c_str());
 
     if (gm.on_server_command)
