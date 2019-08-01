@@ -146,27 +146,27 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     ServerInfo::ServerData new_server_data;
     new_server_data.valid = true;
 
-    zpl_json_find(server_node, "name", false, &server_property);
+    server_property = zpl_json_find(server_node, "name", false);
     new_server_data.server_name = std::string(server_property->string);
 
-    zpl_json_find(server_node, "host", false, &server_property);
+    server_property = zpl_json_find(server_node, "host", false);
     new_server_data.server_ip = std::string(server_property->string);
 
-    zpl_json_find(server_node, "maxPlayers", false, &server_property);
+    server_property = zpl_json_find(server_node, "maxPlayers", false);
     new_server_data.max_players = std::to_string(server_property->integer);
 
-    zpl_json_find(server_node, "players", false, &server_property);
+    server_property = zpl_json_find(server_node, "players", false);
     new_server_data.current_players = std::to_string(server_property->integer);
 
-    zpl_json_find(server_node, "port", false, &server_property);
+    server_property = zpl_json_find(server_node, "port", false);
     new_server_data.port = (int)std::atoi(server_property->string);
 
-    zpl_json_find(server_node, "version", false, &server_property);
+    server_property = zpl_json_find(server_node, "version", false);
     u64 ver = 0;
     sscanf(server_property->string, "%llx", &ver);
     new_server_data.version = ver;
 
-    zpl_json_find(server_node, "mapname", false, &server_property);
+    server_property = zpl_json_find(server_node, "mapname", false);
     new_server_data.mapname = std::string(server_property->string);
 
     return new_server_data;

@@ -92,9 +92,7 @@ auto on_librg_connection_accept(librg_event* evnt) -> void {
 }
 
 auto on_librg_connection_disconnect(librg_event* evnt) -> void {
-
-    if (evnt->entity && evnt->entity->type == TYPE_PLAYER)
-    {
+    if (evnt->entity && evnt->entity->type == TYPE_PLAYER) {
         auto player = (mafia_player *)evnt->entity->user_data;
         ZPL_ASSERT_NOT_NULL(player);
 

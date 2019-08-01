@@ -2,15 +2,14 @@
 
 #define json_apply(OBJ, VAR, NAME, STR, DEF)\
 do { \
-    zpl_json_object *NAME;\
-    zpl_json_find(OBJ, #NAME, false, &NAME);\
+    zpl_json_object *NAME = zpl_json_find(OBJ, #NAME, false); \
     VAR = (NAME) ? NAME->STR : DEF; \
 } while (0)
 
 inline auto config_get(const char *filename, const char *default_cfg) -> zpl_json_object* {
     zpl_path_mkdir("config", 0666);
     
-    if (!zpl_file_exists(filename)) {
+    if (!zpl_fs_exists(filename)) {
         mod_debug("No JSON config found! Generating...");
         zpl_file default_file = { 0 };
         zpl_file_create(&default_file, filename);

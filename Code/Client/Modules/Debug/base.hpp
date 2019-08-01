@@ -450,7 +450,6 @@ namespace debug {
                 SetCursorPos(mpos.x, mpos.y);    
                 input::InputState.mouse_move_delta = { 0, 0 };
             } else {            
-                
                 delta_x = 0;
                 delta_y = 0;
             }

@@ -72,7 +72,7 @@ namespace mainmenu {
 
             if (!failed) {
                 zpl_json_object* server_property;
-                zpl_json_find(&json_master_data, "servers", false, &server_property);
+                server_property = zpl_json_find(&json_master_data, "servers", false);
 
                 if (!server_property)
                     return;
@@ -88,9 +88,9 @@ namespace mainmenu {
     }
 
     inline void init() {
-        auto profile = Profile::load_profile();
-        qc_address = std::string((char *)profile.address);
-        qc_port = profile.port;
+        Profile::load_profile();
+        qc_address = std::string((char *)GlobalConfig.server_address);
+        qc_port = GlobalConfig.port;
         
         generate_browser_list();
         input::block_input(true);
@@ -213,14 +213,14 @@ namespace mainmenu {
 
             if (ImGui::BeginTabItem(GET_TEXT(TEXT_OTHERS))) {
                 if (ImGui::TreeNode(GET_TEXT(TEXT_AIMING))) {
-                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_X), (float*)AIM_SENSITIVITY_X, 0.0f, 1.0f);
-                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_Y), (float*)AIM_SENSITIVITY_Y, 0.0f, 1.0f);
-                    ImGui::SliderFloat(GET_TEXT(TEXT_AIM_SPEED), (float*)AIM_SPEED, 0.0f, 1.0f);
+                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_X), (float*)ADDR_AIM_SENSITIVITY_X, 0.0f, 1.0f);
+                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_Y), (float*)ADDR_AIM_SENSITIVITY_Y, 0.0f, 1.0f);
+                    ImGui::SliderFloat(GET_TEXT(TEXT_AIM_SPEED), (float*)ADDR_AIM_SPEED, 0.0f, 1.0f);
                     ImGui::TreePop();
                 }
 
                 if (ImGui::TreeNode(GET_TEXT(TEXT_STEERING))) {
-                    ImGui::SliderFloat(GET_TEXT(TEXT_STEERING_LINEARITY), (float*)STEERING_LINEARITY, 0.0f, 1.0f);
+                    ImGui::SliderFloat(GET_TEXT(TEXT_STEERING_LINEARITY), (float*)ADDR_STEERING_LINEARITY, 0.0f, 1.0f);
                     ImGui::TreePop();
                 }
 
@@ -229,9 +229,9 @@ namespace mainmenu {
                     const char* items[] = { GET_TEXT(TEXT_CROSSHAIR),  GET_TEXT(TEXT_CENTER_POINT), GET_TEXT(TEXT_CROSSHAIR_CENTER_POINT) };
                     if (ImGui::BeginCombo(GET_TEXT(233), current_item)) {
                         for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
-                            bool is_selected = (n == *(BYTE*)(CROSSHAIR_TYPE));
+                            bool is_selected = (n == *(BYTE*)(ADDR_CROSSHAIR_TYPE));
                             if (ImGui::Selectable(items[n], is_selected)) {
-                                *(BYTE*)(CROSSHAIR_TYPE) = (BYTE)n;
+                                *(BYTE*)(ADDR_CROSSHAIR_TYPE) = (BYTE)n;
                                 current_item = items[n];
                                 if (is_selected)
                                     ImGui::SetItemDefaultFocus();
@@ -240,10 +240,10 @@ namespace mainmenu {
                         ImGui::EndCombo();
                     }
 
-                    ImGui::Checkbox(GET_TEXT(TEXT_SPEEDOMETER),     (bool*)SPEEDOMETER_TYPE);
-                    ImGui::Checkbox(GET_TEXT(TEXT_SIDE_ROLL),       (bool*)SIDE_ROLL);
-                    ImGui::Checkbox(GET_TEXT(TEXT_MOUSE_CONTROL),   (bool*)MOUSE_CONTROL);
-                    ImGui::Checkbox(GET_TEXT(TEXT_SUBTITLES),       (bool*)ENABLE_SUBTITLES);
+                    ImGui::Checkbox(GET_TEXT(TEXT_SPEEDOMETER),     (bool*)ADDR_SPEEDOMETER_TYPE);
+                    ImGui::Checkbox(GET_TEXT(TEXT_SIDE_ROLL),       (bool*)ADDR_SIDE_ROLL);
+                    ImGui::Checkbox(GET_TEXT(TEXT_MOUSE_CONTROL),   (bool*)ADDR_MOUSE_CONTROL);
+                    ImGui::Checkbox(GET_TEXT(TEXT_SUBTITLES),       (bool*)ADDR_ENABLE_SUBTITLES);
 
                     ImGui::TreePop();
                 }
@@ -251,15 +251,15 @@ namespace mainmenu {
                 ImGui::EndTabItem();
 
                 if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
-                    *(float*)(AIM_SENSITIVITY_X)        = 0.5f;
-                    *(float*)(AIM_SENSITIVITY_Y)        = 0.5f;
-                    *(float*)(AIM_SPEED)                = 0.5f;
-                    *(float*)(STEERING_LINEARITY)       = 0.2f;
-                    *(BYTE*)(CROSSHAIR_TYPE)            = 0;
-                    *(bool*)(SPEEDOMETER_TYPE)          = true;
-                    *(bool*)(SIDE_ROLL)                 = true;
-                    *(bool*)(MOUSE_CONTROL)             = false;
-                    *(bool*)(ENABLE_SUBTITLES)          = false;
+                    *(float*)(ADDR_AIM_SENSITIVITY_X)        = 0.5f;
+                    *(float*)(ADDR_AIM_SENSITIVITY_Y)        = 0.5f;
+                    *(float*)(ADDR_AIM_SPEED)                = 0.5f;
+                    *(float*)(ADDR_STEERING_LINEARITY)       = 0.2f;
+                    *(BYTE*)(ADDR_CROSSHAIR_TYPE)            = 0;
+                    *(bool*)(ADDR_SPEEDOMETER_TYPE)          = true;
+                    *(bool*)(ADDR_SIDE_ROLL)                 = true;
+                    *(bool*)(ADDR_MOUSE_CONTROL)             = false;
+                    *(bool*)(ADDR_ENABLE_SUBTITLES)          = false;
                 }
             }
  
@@ -270,26 +270,26 @@ namespace mainmenu {
     inline void render_audio_settings() {
         
         ImGui::Text(GET_TEXT(TEXT_AUDIO));
-        if (ImGui::SliderFloat(GET_TEXT(TEXT_SOUNDS), (float*)SOUNDS_SLIDER, 0.0f, 1.0f)) {
-            float new_sound_volume      = *(float*)SOUNDS_SLIDER;
-            *(float*)(SOUND_GAME_ADDR)  = new_sound_volume;
+        if (ImGui::SliderFloat(GET_TEXT(TEXT_SOUNDS), (float*)ADDR_SOUNDS_SLIDER, 0.0f, 1.0f)) {
+            float new_sound_volume      = *(float*)ADDR_SOUNDS_SLIDER;
+            *(float*)(ADDR_SOUND_GAME_ADDR)  = new_sound_volume;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_volume);
         }
 
-        if (ImGui::SliderFloat(GET_TEXT(TEXT_MUSIC), (float*)MUSIC_SLIDER, 0.0f, 1.0f)) {
+        if (ImGui::SliderFloat(GET_TEXT(TEXT_MUSIC), (float*)ADDR_MUSIC_SLIDER, 0.0f, 1.0f)) {
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }
         
-        ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)SOUND_GAME_ADDR, 0.0f, 1.0f);
-        ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)SPEECH_SLIDER, 0.0f, 1.0f);
+        ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)ADDR_SOUND_GAME_ADDR, 0.0f, 1.0f);
+        ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)ADDR_SPEECH_SLIDER, 0.0f, 1.0f);
 
         if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
             //Sounds, car, music, speech = 1.0f;
             float new_sound_val = 1.0f;
-            *(float*)(SOUNDS_SLIDER)    = new_sound_val;
-            *(float*)(SOUND_GAME_ADDR)  = new_sound_val;
-            *(float*)(SPEECH_SLIDER)    = new_sound_val;
-            *(float*)(MUSIC_SLIDER)     = new_sound_val;
+            *(float*)(ADDR_SOUNDS_SLIDER)    = new_sound_val;
+            *(float*)(ADDR_SOUND_GAME_ADDR)  = new_sound_val;
+            *(float*)(ADDR_SPEECH_SLIDER)    = new_sound_val;
+            *(float*)(ADDR_MUSIC_SLIDER)     = new_sound_val;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_val);
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }
