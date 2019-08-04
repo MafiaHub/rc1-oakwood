@@ -8,7 +8,7 @@ namespace mainmenu {
 
     enum TextDBEnum {
         //Controlls menu texts
-        TEXT_PLAYER = 206, 
+        TEXT_PLAYER = 206,
         TEXT_CAR = 207,
         TEXT_OTHERS = 208,
         TEXT_CONTROLS = 215,
@@ -34,7 +34,7 @@ namespace mainmenu {
         TEXT_VIDEO = 230,
         TEXT_LEVEL_OF_DETAIL = 231,
         TEXT_DRAW_DISTANCE = 232,
-        TEXT_LEVEL_OF_BLOOD = 238, 
+        TEXT_LEVEL_OF_BLOOD = 238,
         TEXT_IN_GAME_EFFECTS = 260,
         TEXT_IN_GAME_SOUNDS = 270,
         TEXT_SHADOWS = 280,
@@ -54,11 +54,11 @@ namespace mainmenu {
     std::vector<u32> player_names   = { 301, 302, 303, 304, 305, 307, 308, 309, 311, 312, 317, 318, 319, 320, 321, 322, 323, 324, 325, 343 };
     int is_picking_key              = -1;
     BYTE old_dik_buffer[256];
-    std::string qc_address;
+    char qc_address[32] = "127.0.0.1";
     int qc_port;
 
     /*
-    * Parse json response from master server 
+    * Parse json response from master server
     */
     inline auto generate_browser_list() -> void {
 
@@ -89,9 +89,9 @@ namespace mainmenu {
 
     inline void init() {
         Profile::load_profile();
-        qc_address = std::string((char *)GlobalConfig.server_address);
+        strcpy(qc_address, (char *)GlobalConfig.server_address);
         qc_port = GlobalConfig.port;
-        
+
         generate_browser_list();
         input::block_input(true);
     }
@@ -262,13 +262,13 @@ namespace mainmenu {
                     *(bool*)(ADDR_ENABLE_SUBTITLES)          = false;
                 }
             }
- 
+
             ImGui::EndTabBar();
         }
     }
 
     inline void render_audio_settings() {
-        
+
         ImGui::Text(GET_TEXT(TEXT_AUDIO));
         if (ImGui::SliderFloat(GET_TEXT(TEXT_SOUNDS), (float*)ADDR_SOUNDS_SLIDER, 0.0f, 1.0f)) {
             float new_sound_volume      = *(float*)ADDR_SOUNDS_SLIDER;
@@ -279,7 +279,7 @@ namespace mainmenu {
         if (ImGui::SliderFloat(GET_TEXT(TEXT_MUSIC), (float*)ADDR_MUSIC_SLIDER, 0.0f, 1.0f)) {
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }
-        
+
         ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)ADDR_SOUND_GAME_ADDR, 0.0f, 1.0f);
         ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)ADDR_SPEECH_SLIDER, 0.0f, 1.0f);
 
@@ -327,7 +327,7 @@ namespace mainmenu {
         if (engine_dik_buffer) {
             for (int i = 0; i < 256; i++) {
                 if (engine_dik_buffer[i] != old_dik_buffer[i]) {
-                    //NOTE(DavoSK): Check if key is not binded somewhere else 
+                    //NOTE(DavoSK): Check if key is not binded somewhere else
                     MafiaSDK::GameKey newToBind(i, MafiaSDK::GameKey_Type::KEYBOARD);
                     auto keys = MafiaSDK::GetKeysBuffer();
 
@@ -432,12 +432,12 @@ namespace mainmenu {
                 }
 
                 if (ImGui::BeginTabItem("Quick Connect")) {
-                    ImGui::InputText("IP", (char*)qc_address.c_str(), 32);
+                    ImGui::InputText("IP", (char*)qc_address, 32);
                     ImGui::InputInt("Port", &qc_port);
-                       
+
                     if (ImGui::Button("Connect")) {
                         ServerInfo::ServerData server = ServerInfo::fetch_server_data(qc_address, qc_port);
-                        server.server_ip = qc_address;
+                        server.server_ip = std::string(qc_address);
                         server.port = qc_port;
                         Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
                         ServerInfo::join_server(server);
@@ -453,7 +453,7 @@ namespace mainmenu {
 
                 render_game_settings();
                 ImGui::EndTabBar();
-        
+
                 if (ImGui::Button("Quit")) {
                     exit(0);
                 }

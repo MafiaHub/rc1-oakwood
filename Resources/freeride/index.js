@@ -69,10 +69,16 @@ oak.cmd('car', async (pid, model) => {
 
     oak.chat_send(pid, `[info] spawning vehicle model ${vehicles[m][0]}`)
 
-    const pos = await oak.player_position_get(pid)
+    let pos = await oak.player_position_get(pid)
+    let dir = await oak.player_direction_get(pid)
+    let heading = await oak.player_heading_get(pid)
+
+    pos = pos.map((p, i) => p + dir[i] * 1.5)
+
     const veh = await oak.vehicle_spawn(vehicles[m][1])
 
     oak.vehicle_position_set(veh, pos)
+    oak.vehicle_heading_set(veh, heading - 90.0)
 })
 
 oak.cmd('help', async (pid) => {

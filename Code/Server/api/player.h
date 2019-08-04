@@ -251,13 +251,21 @@ oak_vec3 oak_player_position_get(oak_player id) {
 }
 
 oak_vec3 oak_player_direction_get(oak_player id) {
-    ZPL_ASSERT_MSG(0, "oak_player_heading_get: not implemented");
-    return {-1,-1,-1};
+    oak_vec3 temp = { -1,-1,-1 };
+
+    if (!oak_player_invalid(id))
+        zpl_memcopy(&temp, &oak_entity_player_get(id)->rotation, sizeof(oak_vec3));
+
+    return temp;
 }
 
 float oak_player_heading_get(oak_player id) {
-    ZPL_ASSERT_MSG(0, "oak_player_heading_get: not implemented");
-    return -1.0f;
+    float temp = -1.0f;
+
+    if (!oak_player_invalid(id))
+        temp = DirToRotation180(oak_entity_player_get(id)->rotation);
+
+    return temp;
 }
 
 // =======================================================================//

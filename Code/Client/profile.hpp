@@ -31,7 +31,7 @@ namespace Profile {
      * Load all settings from file
     */
     inline auto load_profile() -> void {
-       
+
         std::string profile_path = GlobalConfig.localpath + "config/profile.json";
         const char* filename = profile_path.c_str();
         if (!zpl_fs_exists(filename)) {
@@ -50,27 +50,27 @@ namespace Profile {
         zpl_json_parse(&json_master_data, zpl_string_length(json_config_data), json_config_data, zpl_heap(), true, &failed);
 
         if (!failed) {
-            zpl_json_object* geted_property;
-            
+            zpl_json_object* node_property;
+
             //gobal settings & network
-            geted_property = zpl_json_find(&json_master_data, "username", false);
-            if (geted_property) {
-                strcpy(GlobalConfig.username, (char*)geted_property->string);
+            node_property = zpl_json_find(&json_master_data, "username", false);
+            if (node_property) {
+                strcpy(GlobalConfig.username, (char*)node_property->string);
 
                 if (!strlen(GlobalConfig.username))
                     strcpy(GlobalConfig.username, "ChangeName");
             }
 
-            geted_property = zpl_json_find(&json_master_data, "server_address", false);
-            if (geted_property) {
-                strcpy(GlobalConfig.server_address, (char*)geted_property->string);
+            node_property = zpl_json_find(&json_master_data, "address", false);
+            if (node_property) {
+                strcpy(GlobalConfig.server_address, (char*)node_property->string);
 
                 if(!strlen(GlobalConfig.server_address))
                     strcpy(GlobalConfig.server_address, "127.0.0.1");
             }
 
             json_apply(&json_master_data, GlobalConfig.port, port, integer, 27010);
- 
+
             //game settings
             json_apply(&json_master_data, *(f32*)(ADDR_AIM_SENSITIVITY_X), aim_sensitivity_x, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_AIM_SENSITIVITY_Y), aim_sensitivity_y, real, 0.0f);
@@ -83,26 +83,26 @@ namespace Profile {
             json_apply(&json_master_data, *(u8*)(ADDR_SIDE_ROLL), sideroll, constant, 0);
             json_apply(&json_master_data, *(u8*)(ADDR_MOUSE_CONTROL), mouse_control, constant, 0);
             json_apply(&json_master_data, *(u8*)(ADDR_ENABLE_SUBTITLES), enable_subtitles, constant, 0);
-         
+
             json_apply(&json_master_data, *(f32*)(ADDR_SOUNDS_SLIDER), sounds_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_SOUND_GAME_ADDR), cars_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_MUSIC_SLIDER), music_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_SPEECH_SLIDER), speech_slider, real, 0.0f);
-     
-            geted_property = zpl_json_find(&json_master_data, "keys", false);
-            if (!geted_property)
+
+            node_property = zpl_json_find(&json_master_data, "keys", false);
+            if (!node_property)
                 return;
 
             auto game_key_buffer = MafiaSDK::GetKeysBuffer();
-            for (i32 i = 0; i < zpl_array_count(geted_property->nodes); ++i) {
-                zpl_json_object* server_node = (geted_property->nodes + i);
+            for (i32 i = 0; i < zpl_array_count(node_property->nodes); ++i) {
+                zpl_json_object* server_node = (node_property->nodes + i);
                 if (server_node) {
                     zpl_json_object* key_property;
 
                     WORD dik_key;
                     key_property = zpl_json_find(server_node, "dik", false);
                     dik_key = key_property->integer;
-                    
+
                     WORD type;
                     key_property = zpl_json_find(server_node, "type", false);
                     type = key_property->integer;
@@ -119,7 +119,7 @@ namespace Profile {
     * Generates oakwood profile containing all game & multiplayer settings
     */
     inline auto generate_profile(ExtraFields extra) {
-      
+
         zpl_json_object new_json_file = { 0 };
         zpl_json_init_node(&new_json_file, zpl_heap(), NULL, ZPL_JSON_TYPE_OBJECT);
 
@@ -199,7 +199,7 @@ namespace Profile {
         }
 
         std::string profile_path = GlobalConfig.localpath + "config/profile.json";
-        
+
         zpl_file file = { 0 };
         zpl_file_error error = zpl_file_create(&file, profile_path.c_str());
         if(error == ZPL_FILE_ERROR_NONE) {
@@ -209,7 +209,7 @@ namespace Profile {
             for (char* allocated_key : allocated_key_names)
                 zpl_mfree(allocated_key);
         }
-       
+
         zpl_json_free(&new_json_file);
     }
 
