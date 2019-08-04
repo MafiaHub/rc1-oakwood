@@ -20,7 +20,7 @@ namespace gamemap
     };
 
     inline bool is_marker_inbounds(zpl_vec2 position, float blip_size) {
- 
+
         //NOTE(DavoSK): Position is also gap from each size
         float screen_x = (float)MafiaSDK::GetIGraph()->Scrn_sx();
         float screen_y = (float)MafiaSDK::GetIGraph()->Scrn_sy();
@@ -50,18 +50,18 @@ namespace gamemap
             auto player_frame = local_player->GetInterface()->humanObject.entity.frame;
             if (player_frame) {
                 auto player_pos = player_frame->GetInterface()->position;
-        
+
                 float x_coef = convert_width_coef * (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx()) * map_scale_fix;
                 float y_coef = convert_height_coef * (900.0f / (float)MafiaSDK::GetIGraph()->Scrn_sy());
 
-                zpl_vec2 center_offset = { 
+                zpl_vec2 center_offset = {
                     (player_pos.x - position.x) / x_coef,
                     (player_pos.z - position.z) / y_coef
                 };
 
-                return { 
-                    -center_offset.x + center_player_minimap.x, 
-                    center_offset.y + center_player_minimap.y 
+                return {
+                    -center_offset.x + center_player_minimap.x,
+                    center_offset.y + center_player_minimap.y
                 };
             }
         }
@@ -70,7 +70,7 @@ namespace gamemap
 
     f64 last_opened_map = 0.0f;
     inline void draw_player_cursor(void* vertex_buffer) {
-        
+
         float blip_size = original_blip_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
         float blip_size_car = original_blip_car_size / (1600.0f / (float)MafiaSDK::GetIGraph()->Scrn_sx());
 
@@ -92,7 +92,7 @@ namespace gamemap
             zpl_vec3 frame_pos;
             zpl_vec3_lerp(&frame_pos, mapinfo.last_pos, mapinfo.position, GAMEMAP_SYNC_FACTOR);
             mapinfo.last_pos = frame_pos;
-          
+
             if (force_update) {
                 frame_pos = mapinfo.position;
                 mapinfo.last_pos = frame_pos;
@@ -151,7 +151,7 @@ namespace gamemap
 
             if (mapinfo.entity_type == TYPE_VEHICLE) {
                 auto blip_pos = translate_object_to_map(frame_pos);
-                        
+
                 if (is_marker_inbounds(blip_pos, blip_size_car)) {
                     //NOTE(DavoSK): Draw border
                     constexpr int border = 2;
@@ -182,15 +182,15 @@ namespace gamemap
     }
 
     inline void add_messages() {
-        librg_network_add(&network_context, NETWORK_PLAYER_UPDATE_GAMEMAP, [](librg_message * msg) {
-            
+        librg_network_add(&network_context, NETWORK_ACTION_UPDATE_GAMEMAP, [](librg_message * msg) {
+
             u32 info_count = librg_data_ru32(msg->data);
             std::vector<gamemap_info> new_snapshot;
 
             for (u32 i = 0; i < info_count; i++) {
                 gamemap_info info;
                 bool found = false;
-                librg_data_rptr(msg->data, &info, sizeof(gamemap_info));      
+                librg_data_rptr(msg->data, &info, sizeof(gamemap_info));
 
                 for (auto old_info : current_gamemap) {
                     if (old_info.entity_id == info.entity_id) {
@@ -199,7 +199,7 @@ namespace gamemap
                         break;
                     }
                 }
-         
+
                 if (!found) {
                     info.last_pos = info.position;
                 }

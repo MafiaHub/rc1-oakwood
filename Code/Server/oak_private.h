@@ -123,8 +123,8 @@ int oak_scoreboard_update();
 
 void oak_access_bans_store();
 void oak_access_wh_store();
-void oak_access_wh_load();
 void oak_access_bans_load();
+void oak_access_wh_load();
 void oak_access_bans_add(IDBind hwid);
 void oak_access_bans_remove(u64 hwid);
 void oak_access_wh_add(IDBind hwid);

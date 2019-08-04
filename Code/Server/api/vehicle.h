@@ -61,7 +61,7 @@ int oak_vehicle_despawn(oak_vehicle id) {
 
             player->vehicle_id = -1;
 
-            mod_message_send(&network_context, NETWORK_PLAYER_FROM_CAR, [&](librg_data *data) {
+            mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
                 librg_data_went(data, player_ent->id);
                 librg_data_went(data, vehicle->librg_id);
                 librg_data_wu32(data, i);

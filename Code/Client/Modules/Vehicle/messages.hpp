@@ -1,5 +1,5 @@
 void add_messages() {
-    librg_network_add(&network_context, NETWORK_VEHICLE_ON_DRIVER_DISCONNECT, [](librg_message * msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_DISCONNECT, [](librg_message * msg) {
 
         u32 vehicle_id = librg_data_ru32(msg->data);
         auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
@@ -232,12 +232,12 @@ void add_messages() {
         auto entity = librg_entity_fetch(&network_context, entity_id);
         if (entity && entity->user_data) {
             auto vehicle = (mafia_vehicle*)entity->user_data;
-            
+
             vehicle->car->RepairPosition(true);
             vehicle->car->SetColsOn(vehicle->collision_state);
 
             auto vehicle_int = vehicle->car->GetInterface()->vehicle_interface;
-            
+
             zpl_vec3 new_pos = EXPAND_VEC(vehicle_int.position);
             lib_inter_reset(vehicle->interp.pos, new_pos);
 

@@ -1,15 +1,15 @@
 #pragma once
 
-auto spawn(zpl_vec3 position, 
+auto spawn(zpl_vec3 position,
                   zpl_vec3 rotation,
                   player_inventory inventory,
                   char *model,
                   u32 current_wep,
                   f32 health,
-                  bool is_local_player, 
+                  bool is_local_player,
                   int expectedWeaponId,
                   bool is_in_car) -> MafiaSDK::C_Player *{
-    
+
     S_vector default_scale = { 1.0f, 1.0f, 1.0f };
     S_vector default_pos = EXPAND_VEC(position);
 
@@ -39,7 +39,7 @@ auto spawn(zpl_vec3 position,
     new_ped->SetActive(1);
     MafiaSDK::GetMission()->GetGame()->AddTemporaryActor(new_ped);
 
-    if (is_local_player) { 
+    if (is_local_player) {
         auto game = MafiaSDK::GetMission()->GetGame();
         if (game) {
             game->GetCamera()->SetCar(NULL);
@@ -76,7 +76,7 @@ auto spawn(zpl_vec3 position,
             new_ped->G_Inventory_AddItem(*item);
         }
     }
-    
+
     //TODO(DavoSK): Make it more fancy !
     //Select right weapon
     modules::player::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
@@ -130,7 +130,7 @@ inline auto get_player_from_base(void* base) -> librg_entity* {
 
     for (u32 i = 0; i < network_context.max_entities; i++) {
         librg_entity *entity = librg_entity_fetch(&network_context, i);
-        if (!entity || entity->type != TYPE_PLAYER || !entity->user_data) continue;	
+        if (!entity || entity->type != TYPE_PLAYER || !entity->user_data) continue;
         auto pl = (mafia_player*)(entity->user_data);
         if (base == pl->ped) return entity;
     }
@@ -141,7 +141,7 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
 
     for (u32 i = 0; i < network_context.max_entities; i++) {
         librg_entity *entity = librg_entity_fetch(&network_context, i);
-        if (!entity || entity->type != TYPE_VEHICLE || !entity->user_data) continue;	
+        if (!entity || entity->type != TYPE_VEHICLE || !entity->user_data) continue;
         auto pl = (mafia_vehicle*)(entity->user_data);
         if (base == pl->car) return entity;
     }
@@ -149,7 +149,7 @@ inline auto get_vehicle_from_base(void* base) -> librg_entity* {
 }
 
 inline void on_key_pressed(bool down, unsigned long key) {
-    
+
     if (clientActiveState != ClientState_Connected) return;
 
     librg_send(&network_context, NETWORK_PLAYER_KEY_PRESS, data, {
@@ -158,7 +158,7 @@ inline void on_key_pressed(bool down, unsigned long key) {
     });
 }
 
-/* 
+/*
 * todo add reason killer and so one ...
 */
 inline auto died() -> void {
@@ -166,9 +166,9 @@ inline auto died() -> void {
 
     if (local_player.dead) return;
 
-    if (!local_player.dead) 
+    if (!local_player.dead)
         local_player.dead = true;
-    
+
     auto player = get_local_player();
     if (player) {
 
@@ -201,18 +201,18 @@ inline auto died() -> void {
 
 inline auto hit(
     MafiaSDK::C_Human* victim,
-    DWORD hit_type, 
-    const S_vector* unk1, 
-    const S_vector* unk2, 
+    DWORD hit_type,
+    const S_vector* unk1,
+    const S_vector* unk2,
     const S_vector* unk3,
     float damage,
-    MafiaSDK::C_Actor* attacker, 
+    MafiaSDK::C_Actor* attacker,
     unsigned int player_part) -> void {
 
     auto attacker_ent = get_player_from_base(attacker);
-    
+
     if (!victim || !attacker_ent) return;
-    
+
     librg_send(&network_context, NETWORK_PLAYER_HIT, data, {
         librg_data_went(&data, attacker_ent->id);
         librg_data_wu32(&data, hit_type);
@@ -253,12 +253,12 @@ inline auto weaponchange(u32 index) -> void {
 }
 
 inline auto fromcar() -> void {
-    librg_send(&network_context, NETWORK_PLAYER_FROM_CAR, data, {});
+    librg_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, data, {});
 }
 
 //TODO send inventory on each message related with weapons !
 inline auto reload() -> void {
-    librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});	
+    librg_send(&network_context, NETWORK_PLAYER_WEAPON_RELOAD, data, {});
 }
 
 inline auto holster() -> void {
@@ -292,7 +292,7 @@ inline auto useactor(DWORD actor, int action, int seat_id, int unk3) -> void {
     auto vehicle_ent = get_vehicle_from_base((void*)actor);
     if (!vehicle_ent) return;
 
-    librg_send(&network_context, NETWORK_PLAYER_USE_ACTOR, data, {
+    librg_send(&network_context, NETWORK_VEHICLE_PLAYER_USE_DOOR, data, {
         librg_data_wu32(&data, vehicle_ent->id);
         librg_data_wi32(&data, action);
         librg_data_wi32(&data, seat_id);
@@ -301,16 +301,16 @@ inline auto useactor(DWORD actor, int action, int seat_id, int unk3) -> void {
 }
 
 inline void use_door(MafiaSDK::C_Door* door, MafiaSDK::C_Door_Enum::States state) {
-    
+
     if(!door || clientActiveState != ClientState_Connected) return;
-    
+
     auto door_int = door->GetInterface();
     if (door_int && door_int->entity.frame) {
 
         auto door_frame_name = door_int->entity.frame->GetInterface()->name;
         auto door_name_len = strlen(door_frame_name);
         if (door_name_len) {
-            librg_send(&network_context, NETWORK_PLAYER_USE_DOORS, data, {
+            librg_send(&network_context, NETWORK_PLAYER_USE_DOOR, data, {
                 librg_data_wu32(&data, door_name_len);
                 librg_data_wptr(&data, door_frame_name, door_name_len);
                 librg_data_wu32(&data, state);
@@ -324,7 +324,7 @@ inline auto hijack(DWORD car, int seat) -> void {
     auto vehicle_ent = get_vehicle_from_base((void*)car);
     if (!vehicle_ent) return;
 
-    librg_send(&network_context, NETWORK_PLAYER_HIJACK, data, {
+    librg_send(&network_context, NETWORK_VEHICLE_PLAYER_HIJACK, data, {
         librg_data_wu32(&data, vehicle_ent->id);
         librg_data_wi32(&data, seat);
     });

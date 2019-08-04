@@ -39,7 +39,7 @@ void oak_ev_door_client_remove(librg_event *e) {
 /* DOOR MESSAGES */
 
 int oak_door_register() {
-    librg_network_add(&network_context, NETWORK_PLAYER_USE_DOORS, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_PLAYER_USE_DOOR, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
         auto door_name_len = librg_data_ru32(msg->data);
         char door_name[32];
@@ -71,7 +71,7 @@ int oak_door_register() {
 
         // NOTE: add event trigger
 
-        mod_message_send(&network_context, NETWORK_PLAYER_USE_DOORS, [&](librg_data *data) {
+        mod_message_send(&network_context, NETWORK_PLAYER_USE_DOOR, [&](librg_data *data) {
             librg_data_went(data, sender_ent->id);
             librg_data_wu32(data, door_name_len);
             librg_data_wptr(data, door_name, door_name_len);

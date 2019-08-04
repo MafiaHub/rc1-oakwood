@@ -202,7 +202,7 @@ void oak_ev_player_client_remove(librg_event *e) {
 
                             if (i == 0) {
                                 mod_vehicle_assign_nearest_player(&network_context, vehicle_ent, evnt->entity->id);
-                                librg_send_all(&network_context, NETWORK_VEHICLE_ON_DRIVER_DISCONNECT, data, {
+                                librg_send_all(&network_context, NETWORK_VEHICLE_PLAYER_DISCONNECT, data, {
                                     librg_data_went(&data, vehicle_ent->id);
                                 });
                             }

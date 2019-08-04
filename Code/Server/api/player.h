@@ -349,7 +349,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot)
 // {
-//     librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA, entity->client_peer, data, {
+//     librg_send_to(&network_context, NETWORK_CAMERA_SET_POS, entity->client_peer, data, {
 //         librg_data_wptr(&data, &pos, sizeof(pos));
 //         librg_data_wptr(&data, &rot, sizeof(rot));
 //     });
@@ -357,7 +357,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void unlock_camera(librg_entity *entity)
 // {
-//     librg_send_to(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, entity->client_peer, data, {});
+//     librg_send_to(&network_context, NETWORK_CAMERA_UNLOCK, entity->client_peer, data, {});
 // }
 
 // void set_camera_target(librg_entity *entity, librg_entity *target)
@@ -379,7 +379,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 //     player->spec_id = id;
 
-//     librg_send_to(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, entity->client_peer, data, {
+//     librg_send_to(&network_context, NETWORK_CAMERA_TARGET, entity->client_peer, data, {
 //         librg_data_went(&data, id);
 //     });
 // }
@@ -387,7 +387,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 // void send_announcement(librg_entity *entity, const char *text, f32 duration)
 // {
 //     auto len = strlen(text);
-//     librg_send_to(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, entity->client_peer, data, {
+//     librg_send_to(&network_context, NETWORK_HUD_ALERT, entity->client_peer, data, {
 //         librg_data_wu32(&data, len);
 //         librg_data_wf32(&data, duration);
 //         librg_data_wptr(&data, (void *)text, len);
@@ -397,7 +397,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 // void send_race_start_flags(librg_entity *entity, u32 flags)
 // {
 
-//     librg_send_to(&network_context, NETWORK_PLAYER_SEND_RACE_START_FLAGS, entity->client_peer, data, {
+//     librg_send_to(&network_context, NETWORK_HUD_COUNTDOWN, entity->client_peer, data, {
 //         librg_data_wu32(&data, flags);
 //     });
 // }
@@ -458,7 +458,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color)
 // {
-//     librg_send_to(&network_context, NETWORK_SEND_FADEOUT, entity->client_peer, data, {
+//     librg_send_to(&network_context, NETWORK_HUD_FADEOUT, entity->client_peer, data, {
 //         librg_data_wu8(&data, fadeout);
 //         librg_data_wu32(&data, duration);
 //         librg_data_wu32(&data, color);

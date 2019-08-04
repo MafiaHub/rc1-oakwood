@@ -27,7 +27,7 @@ int oak_scoreboard_update() {
             return -1;
         }
 
-        librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, data, {
+        librg_send_all(&network_context, NETWORK_ACTION_UPDATE_SCOREBOARD, data, {
             librg_data_wu32(&data, zpl_array_count(scoreboard));
             librg_data_wptr(&data, scoreboard, zpl_array_count(scoreboard) * sizeof(player_scoreboard_info));
         });

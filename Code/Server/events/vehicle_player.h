@@ -1,5 +1,5 @@
 int oak_vehicle_player_register() {
-    librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_HIJACK, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
         auto seat = librg_data_ri32(msg->data);
@@ -10,7 +10,7 @@ int oak_vehicle_player_register() {
         if (vehicle && sender) {
             if (vehicle->seats[seat] != -1) {
 
-                mod_message_send(&network_context, NETWORK_PLAYER_HIJACK, [&](librg_data *data) {
+                mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_HIJACK, [&](librg_data *data) {
                     librg_data_went(data, sender_ent->id);
                     librg_data_went(data, vehicle_ent->id);
                     librg_data_wi32(data, seat);
@@ -34,7 +34,7 @@ int oak_vehicle_player_register() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
 
         if (sender_ent) {
@@ -50,7 +50,7 @@ int oak_vehicle_player_register() {
                             sender_vehicle->seats[i] = -1;
                             sender->vehicle_id = -1;
 
-                            mod_message_send(&network_context, NETWORK_PLAYER_FROM_CAR, [&](librg_data *data) {
+                            mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
                                 librg_data_went(data, sender_ent->id);
                                 librg_data_went(data, sender_vehicle_ent->id);
                                 librg_data_wu32(data, i);
@@ -71,7 +71,7 @@ int oak_vehicle_player_register() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_USE_DOOR, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto action = librg_data_ri32(msg->data);
@@ -109,7 +109,7 @@ int oak_vehicle_player_register() {
                 sender->vehicle_id = -1;
             }
 
-            mod_message_send(&network_context, NETWORK_PLAYER_USE_ACTOR, [&](librg_data *data) {
+            mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_USE_DOOR, [&](librg_data *data) {
                 librg_data_went(data, sender_ent->id);
                 librg_data_went(data, vehicle_ent->id);
                 librg_data_wi32(data, action);

@@ -29,7 +29,7 @@ int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, int seat_id) {
         librg_entity_control_set(&network_context, vehicle->librg_id, player->librg_entity->client_peer);
     }
 
-    librg_send(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, data, {
+    librg_send(&network_context, NETWORK_VEHICLE_PLAYER_PUT, data, {
         librg_data_went(&data, player->librg_id);
         librg_data_went(&data, vehicle->librg_id);
         librg_data_wi32(&data, seat_id);

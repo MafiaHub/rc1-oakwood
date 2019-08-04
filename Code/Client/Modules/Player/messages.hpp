@@ -53,7 +53,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_HIJACK, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_HIJACK, [](librg_message *msg) {
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto seat = librg_data_ri32(msg->data);
@@ -78,7 +78,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_USE_ACTOR, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_USE_DOOR, [](librg_message *msg) {
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto action = librg_data_ri32(msg->data);
@@ -120,7 +120,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_USE_DOORS, [](librg_message *msg) {
+    librg_network_add(&network_context, NETWORK_PLAYER_USE_DOOR, [](librg_message *msg) {
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto door_name_len = librg_data_ru32(msg->data);
         char door_name[32];
@@ -137,8 +137,8 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_FROM_CAR, [](librg_message *msg) {
-        printf("[debug] NETWORK_PLAYER_FROM_CAR -> Intern_FromCar\n");
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [](librg_message *msg) {
+        printf("[debug] NETWORK_VEHICLE_PLAYER_REMOVE -> Intern_FromCar\n");
 
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
@@ -185,7 +185,7 @@ void add_messages() {
         auto entity = librg_entity_fetch(&network_context, id);
         if (entity) {
             auto player = (mafia_player*)entity->user_data;
-            
+
             shoot_queue[(void*)player->ped] = shoot_data;
             *(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
             player->ped->Do_Shoot(true, target);
@@ -375,7 +375,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_CAMERA_SET_POS, [](librg_message* msg) {
 
         S_vector pos, rot;
         librg_data_rptr(msg->data, &pos, sizeof(pos));
@@ -387,12 +387,12 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_SET_CAMERA_TARGET, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_CAMERA_TARGET, [](librg_message* msg) {
         local_player.spec_id = librg_data_rent(msg->data);
         cam_set_target(librg_entity_fetch(&network_context, local_player.spec_id));
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_SEND_ANNOUNCEMENT, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_HUD_ALERT, [](librg_message* msg) {
         zpl_local_persist char msg_buf[256] = { 0 };
         zpl_memset(msg_buf, 0, 256);
         u32 msg_size = librg_data_ru32(msg->data);
@@ -402,12 +402,12 @@ void add_messages() {
         MafiaSDK::GetIndicators()->RaceFlashText(reinterpret_cast<const char*>(msg_buf), msg_duration);
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_SEND_RACE_START_FLAGS, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_HUD_COUNTDOWN, [](librg_message* msg) {
         u32 flags = librg_data_ru32(msg->data);
         MafiaSDK::GetIndicators()->RaceSetStartFlag((BYTE)flags);
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_UNLOCK_CAMERA, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_CAMERA_UNLOCK, [](librg_message* msg) {
         if (MafiaSDK::GetMission()->GetGame()) {
             auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
             camera->Unlock();
@@ -428,7 +428,7 @@ void add_messages() {
         }
     });
 
-    librg_network_add(&network_context, NETWORK_PLAYER_PUT_TO_VEHICLE, [](librg_message* msg) {
+    librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_PUT, [](librg_message* msg) {
         auto player_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
         auto vehicle_id = librg_data_rent(msg->data);
         int seat_id = librg_data_ri32(msg->data);

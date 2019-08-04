@@ -19,7 +19,7 @@ int launcher_gameinit(std::string localpath, std::string gamepath);
 #define json_apply(OBJ, VAR, NAME, STR, DEF, CAST)           \
     do {                                                     \
         zpl_json_object *NAME = zpl_json_find(OBJ, #NAME, false);     \
-        VAR = (CAST)((NAME && NAME->STR) ? NAME->STR : DEF); \
+        VAR = (CAST)((NAME) ? NAME->STR : DEF); \
     } while (0)
 
 /* entry function */
