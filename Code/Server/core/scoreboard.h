@@ -17,7 +17,7 @@ int oak_scoreboard_update() {
             player_scoreboard_info player_info;
             strcpy(player_info.nickname, entity->name);
             player_info.ping = entity->librg_entity->client_peer->roundTripTime;
-            player_info.server_id = i;
+            player_info.server_id = entity->oak_id;
             zpl_array_append(scoreboard, player_info);
         }
 
