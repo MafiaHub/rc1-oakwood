@@ -13,7 +13,7 @@
 oak_vehicle oak_vehicle_spawn(const char *model, int length) {
     auto oak_id = oak_entity_next(OAK_VEHICLE);
     auto entity = oak_entity_vehicle_get(oak_id);
-    auto native = librg_entity_create(&network_context, OAK_VEHICLE);
+    auto native = librg_entity_create(oak_network_ctx_get(), OAK_VEHICLE);
 
     entity->reset();
     entity->native_id = native->id;
@@ -33,7 +33,7 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
     zpl_memcopy(entity->model, model, length);
 
     // TODO: refactor
-    mod_vehicle_assign_nearest_player(&network_context, native);
+    mod_vehicle_assign_nearest_player(oak_network_ctx_get(), native);
 
     return oak_id;
 }
@@ -46,34 +46,30 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
 int oak_vehicle_despawn(oak_vehicle id) {
     if (oak_vehicle_invalid(id)) return -1;
 
-    // TODO: refactor
     auto vehicle = oak_entity_vehicle_get(id);
 
-    for(size_t i = 0; i < 4; i++) {
+    for(size_t i = 0; i < OAK_MAX_SEATS; i++) {
         auto pid = vehicle->seats[i];
 
         if (pid == -1) continue;
 
-        auto player_ent = librg_entity_fetch(&network_context, pid);
+        auto player_ent = librg_entity_fetch(oak_network_ctx_get(), pid);
+        auto player = oak_entity_player_get_from_librg(player_ent);
 
-        if (player_ent && player_ent->user_data) {
-            auto player = oak_entity_player_get((oak_player)player_ent->user_data);
+        player->vehicle_id = -1;
 
-            player->vehicle_id = -1;
-
-            mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
-                librg_data_went(data, player_ent->id);
-                librg_data_went(data, vehicle->native_id);
-                librg_data_wu32(data, i);
-            });
-        }
+        mod_message_send(oak_network_ctx_get(), NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
+            librg_data_went(data, player_ent->id);
+            librg_data_went(data, vehicle->native_id);
+            librg_data_wu32(data, i);
+        });
     }
 
-    mod_message_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, [&](librg_data * data) {
+    mod_message_send(oak_network_ctx_get(), NETWORK_VEHICLE_GAME_DESTROY, [&](librg_data * data) {
         librg_data_went(data, vehicle->native_id);
     });
 
-    librg_entity_destroy(&network_context, vehicle->native_id);
+    librg_entity_destroy(oak_network_ctx_get(), vehicle->native_id);
     oak_entity_free(OAK_VEHICLE, id);
     vehicle->native_entity->user_data = nullptr;
 
@@ -98,7 +94,7 @@ int oak_vehicle_repair(oak_vehicle id) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
 
-    librg_send(&network_context, NETWORK_VEHICLE_REPAIR, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_REPAIR, data, {
         librg_data_went(&data, entity->native_id);
     });
 
@@ -122,7 +118,7 @@ int oak_vehicle_fuel_set(oak_vehicle id, float fuel) {
     auto entity = oak_entity_vehicle_get(id);
 
     /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
+    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->fuel = fuel;
 
     return 0;
@@ -139,7 +135,7 @@ int oak_vehicle_direction_set(oak_vehicle id, oak_vec3 direction) {
     auto entity = oak_entity_vehicle_get(id);
 
     /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
+    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->rot_forward = hard_cast(zpl_vec3*)direction;
 
     return 0;
@@ -155,7 +151,7 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
 
-    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
+    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->native_entity->position = hard_cast(zpl_vec3*)(position);
 
     return 0;
@@ -191,7 +187,7 @@ int oak_vehicle_transparency_set(oak_vehicle id, float transparency) {
 
     entity->transparency = transparency;
 
-    librg_send(&network_context, NETWORK_VEHICLE_SET_TRANSPARENCY, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_TRANSPARENCY, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wf32(&data, transparency);
     });
@@ -272,7 +268,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
         case OAK_VISIBILITY_ICON: {
             entity->is_visible_on_map = state;
 
-            librg_send(&network_context, NETWORK_VEHICLE_MAP_VISIBILITY, data, {
+            librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_MAP_VISIBILITY, data, {
                 librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
@@ -283,7 +279,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
         case OAK_VISIBILITY_RADAR: {
             entity->is_car_in_radar = state;
 
-            librg_send(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, data, {
+            librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_RADAR_VISIBILITY, data, {
                 librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
@@ -294,7 +290,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
         case OAK_VISIBILITY_COLLISION: {
             entity->collision_state = state;
 
-            librg_send(&network_context, NETWORK_VEHICLE_SET_COLLISION_STATE, data, {
+            librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_COLLISION_STATE, data, {
                 librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
