@@ -2,22 +2,22 @@
 
 enum GameMenuStaticAddresses {
     //float
-    AIM_SENSITIVITY_X = 0x006D4B00,
-    AIM_SENSITIVITY_Y = 0x006D4B04,
-    AIM_SPEED = 0x006D4B08,
-    STEERING_LINEARITY = 0x006D4AEC,
+    ADDR_AIM_SENSITIVITY_X = 0x006D4B00,
+    ADDR_AIM_SENSITIVITY_Y = 0x006D4B04,
+    ADDR_AIM_SPEED = 0x006D4B08,
+    ADDR_STEERING_LINEARITY = 0x006D4AEC,
 
-    SOUNDS_SLIDER = 0x006D4B0C,
-    SOUND_GAME_ADDR = 0x00634B00,
-    MUSIC_SLIDER = 0x006D4B10,
-    SPEECH_SLIDER = 0x006D4B18,
+    ADDR_SOUNDS_SLIDER = 0x006D4B0C,
+    ADDR_SOUND_GAME_ADDR = 0x00634B00,
+    ADDR_MUSIC_SLIDER = 0x006D4B10,
+    ADDR_SPEECH_SLIDER = 0x006D4B18,
 
     //byte
-    CROSSHAIR_TYPE = 0x006D4B40,
-    SPEEDOMETER_TYPE = 0x006D4B44,
-    SIDE_ROLL = 0x006D4B45,
-    MOUSE_CONTROL = 0x006D4B46,
-    ENABLE_SUBTITLES = 0x006D4B47,
+    ADDR_CROSSHAIR_TYPE = 0x006D4B40,
+    ADDR_SPEEDOMETER_TYPE = 0x006D4B44,
+    ADDR_SIDE_ROLL = 0x006D4B45,
+    ADDR_MOUSE_CONTROL = 0x006D4B46,
+    ADDR_ENABLE_SUBTITLES = 0x006D4B47,
 };
 
 
@@ -27,106 +27,190 @@ namespace Profile {
         int port;
     };
 
-    struct OakwoodProfile {
-        u8 username[32];
-        u8 address[32];
-        u32 port;
-        MafiaSDK::GameKey key_bindings[60];
-
-        f32 aim_speed;
-        f32 aim_sensitivity_x;
-        f32 aim_sensitivity_y;
-        f32 steering_linearity;
-
-        u8 crosshair_type;
-        u8 speedometer_type;
-        u8 sideroll;
-        u8 mouse_control;
-        u8 enable_subtitles;
-
-        f32 sounds_slider;
-        f32 cars_slider;
-        f32 music_slider;
-        f32 speech_slider;
-    };
-
     /*
-        * Load all settings from file
-        */
-    inline auto load_profile() -> OakwoodProfile {
-        std::ifstream load_file("OakwoodProfile.data", std::ios::binary);
-        if (load_file.good()) {
-            OakwoodProfile save_struct;
-            load_file.read((char*)& save_struct, sizeof(OakwoodProfile));
+     * Load all settings from file
+    */
+    inline auto load_profile() -> void {
+       
+        std::string profile_path = GlobalConfig.localpath + "config/profile.json";
+        const char* filename = profile_path.c_str();
+        if (!zpl_fs_exists(filename)) {
+            strcpy(GlobalConfig.username, "ChangeName");
+            strcpy(GlobalConfig.server_address, "127.0.0.1");
+            return;
+        }
 
-            strcpy(GlobalConfig.username, (char*)save_struct.username);
-            strcpy(GlobalConfig.server_address, (char*)save_struct.address);
+        /* read and copy the data */
+        zpl_file_contents json_file = zpl_file_read_contents(zpl_heap(), true, filename);
 
-            if (!strlen(GlobalConfig.username)) {
-                strcpy(GlobalConfig.username, "ChangeName");
+        u8 failed = 0;
+        zpl_string json_config_data = zpl_string_make(zpl_heap(), (const char*)json_file.data);
+
+        zpl_json_object json_master_data = { 0 };
+        zpl_json_parse(&json_master_data, zpl_string_length(json_config_data), json_config_data, zpl_heap(), true, &failed);
+
+        if (!failed) {
+            zpl_json_object* geted_property;
+            
+            //gobal settings & network
+            geted_property = zpl_json_find(&json_master_data, "username", false);
+            if (geted_property) {
+                strcpy(GlobalConfig.username, (char*)geted_property->string);
+
+                if (!strlen(GlobalConfig.username))
+                    strcpy(GlobalConfig.username, "ChangeName");
             }
 
-            GlobalConfig.port = save_struct.port;
+            geted_property = zpl_json_find(&json_master_data, "server_address", false);
+            if (geted_property) {
+                strcpy(GlobalConfig.server_address, (char*)geted_property->string);
+
+                if(!strlen(GlobalConfig.server_address))
+                    strcpy(GlobalConfig.server_address, "127.0.0.1");
+            }
+
+            json_apply(&json_master_data, GlobalConfig.port, port, integer, 27010);
+ 
+            //game settings
+            json_apply(&json_master_data, *(f32*)(ADDR_AIM_SENSITIVITY_X), aim_sensitivity_x, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_AIM_SENSITIVITY_Y), aim_sensitivity_y, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_AIM_SPEED), aim_speed, real, 0.0f);
+
+            json_apply(&json_master_data, *(f32*)(ADDR_STEERING_LINEARITY), steering_linearity, real, 0.0f);
+            json_apply(&json_master_data, *(u8*)(ADDR_CROSSHAIR_TYPE), crosshair_type, integer, 0);
+            json_apply(&json_master_data, *(u8*)(ADDR_SPEEDOMETER_TYPE), speedometer_type, constant, 0);
+
+            json_apply(&json_master_data, *(u8*)(ADDR_SIDE_ROLL), sideroll, constant, 0);
+            json_apply(&json_master_data, *(u8*)(ADDR_MOUSE_CONTROL), mouse_control, constant, 0);
+            json_apply(&json_master_data, *(u8*)(ADDR_ENABLE_SUBTITLES), enable_subtitles, constant, 0);
+         
+            json_apply(&json_master_data, *(f32*)(ADDR_SOUNDS_SLIDER), sounds_slider, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_SOUND_GAME_ADDR), cars_slider, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_MUSIC_SLIDER), music_slider, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_SPEECH_SLIDER), speech_slider, real, 0.0f);
+     
+            geted_property = zpl_json_find(&json_master_data, "keys", false);
+            if (!geted_property)
+                return;
 
             auto game_key_buffer = MafiaSDK::GetKeysBuffer();
-            memcpy(game_key_buffer, save_struct.key_bindings, sizeof(MafiaSDK::GameKey) * 60);
-            for (int i = 0; i < 60; i++) {
-                MafiaSDK::GetInput()->BindKey(*game_key_buffer, i);
-                game_key_buffer++;
+            for (i32 i = 0; i < zpl_array_count(geted_property->nodes); ++i) {
+                zpl_json_object* server_node = (geted_property->nodes + i);
+                if (server_node) {
+                    zpl_json_object* key_property;
+
+                    WORD dik_key;
+                    key_property = zpl_json_find(server_node, "dik", false);
+                    dik_key = key_property->integer;
+                    
+                    WORD type;
+                    key_property = zpl_json_find(server_node, "type", false);
+                    type = key_property->integer;
+
+                    game_key_buffer->SetKey(dik_key, (MafiaSDK::GameKey_Type)type);
+                    MafiaSDK::GetInput()->BindKey(*game_key_buffer, i);
+                    game_key_buffer++;
+                }
             }
-
-            *(float*)(AIM_SENSITIVITY_X) = save_struct.aim_sensitivity_x;
-            *(float*)(AIM_SENSITIVITY_Y) = save_struct.aim_sensitivity_y;
-            *(float*)(AIM_SPEED) = save_struct.aim_speed;
-
-            *(float*)(STEERING_LINEARITY) = save_struct.steering_linearity;
-            *(BYTE*)(CROSSHAIR_TYPE) = save_struct.crosshair_type;
-            *(bool*)(SPEEDOMETER_TYPE) = save_struct.speedometer_type;
-            *(bool*)(SIDE_ROLL) = save_struct.sideroll;
-            *(bool*)(MOUSE_CONTROL) = save_struct.mouse_control;
-            *(bool*)(ENABLE_SUBTITLES) = save_struct.enable_subtitles;
-
-
-            *(float*)(SOUNDS_SLIDER) = save_struct.sounds_slider;
-            *(float*)(SOUND_GAME_ADDR) = save_struct.cars_slider;
-            *(float*)(MUSIC_SLIDER) = save_struct.music_slider;
-            *(float*)(SPEECH_SLIDER) = save_struct.speech_slider;
-
-            return save_struct;
         }
     }
 
     /*
-* Generates oakwood profile containing all game & multiplayer settings
-*/
+    * Generates oakwood profile containing all game & multiplayer settings
+    */
     inline auto generate_profile(ExtraFields extra) {
-        OakwoodProfile save_struct;
-        strcpy((char*)save_struct.username, GlobalConfig.username);
+      
+        zpl_json_object new_json_file = { 0 };
+        zpl_json_init_node(&new_json_file, zpl_heap(), NULL, ZPL_JSON_TYPE_OBJECT);
 
-        strcpy((char*)save_struct.address, extra.address.c_str());
-        save_struct.port = extra.port;
+        //global & keys
+        zpl_json_object* new_node = zpl_json_add(&new_json_file, "username", ZPL_JSON_TYPE_STRING);
+        new_node->string = GlobalConfig.username;
 
-        memcpy(save_struct.key_bindings, MafiaSDK::GetKeysBuffer(), sizeof(MafiaSDK::GameKey) * 60);
+        new_node = zpl_json_add(&new_json_file, "address", ZPL_JSON_TYPE_STRING);
+        new_node->string = (char*)extra.address.c_str();
 
-        save_struct.aim_sensitivity_x = *(float*)(AIM_SENSITIVITY_X);
-        save_struct.aim_sensitivity_y = *(float*)(AIM_SENSITIVITY_Y);
-        save_struct.aim_speed = *(float*)(AIM_SPEED);
+        new_node = zpl_json_add(&new_json_file, "port", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = extra.port;
 
-        save_struct.steering_linearity = *(float*)(STEERING_LINEARITY);
-        save_struct.crosshair_type = *(BYTE*)(CROSSHAIR_TYPE);
-        save_struct.speedometer_type = *(bool*)(SPEEDOMETER_TYPE);
-        save_struct.sideroll = *(bool*)(SIDE_ROLL);
-        save_struct.mouse_control = *(bool*)(MOUSE_CONTROL);
-        save_struct.enable_subtitles = *(bool*)(ENABLE_SUBTITLES);
+        //game settings
+        new_node = zpl_json_add(&new_json_file, "aim_sensitivity_x", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_AIM_SENSITIVITY_X);
 
+        new_node = zpl_json_add(&new_json_file, "aim_sensitivity_y", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_AIM_SENSITIVITY_Y);
 
-        save_struct.sounds_slider = *(float*)(SOUNDS_SLIDER);
-        save_struct.cars_slider = *(float*)(SOUND_GAME_ADDR);
-        save_struct.music_slider = *(float*)(MUSIC_SLIDER);
-        save_struct.speech_slider = *(float*)(SPEECH_SLIDER);
+        new_node = zpl_json_add(&new_json_file, "aim_speed", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_AIM_SPEED);
 
-        std::ofstream save_file("OakwoodProfile.data", std::ios::binary);
-        save_file.write((const char*)& save_struct, sizeof(OakwoodProfile));
+        new_node = zpl_json_add(&new_json_file, "steering_linearity", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_STEERING_LINEARITY);
+
+        new_node = zpl_json_add(&new_json_file, "crosshair_type", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = *(u8*)(ADDR_CROSSHAIR_TYPE);
+
+        new_node = zpl_json_add(&new_json_file, "speedometer_type", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = *(u8*)(ADDR_SPEEDOMETER_TYPE);
+
+        new_node = zpl_json_add(&new_json_file, "sideroll", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = *(u8*)(ADDR_SIDE_ROLL);
+
+        new_node = zpl_json_add(&new_json_file, "mouse_control", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = *(u8*)(ADDR_MOUSE_CONTROL);
+
+        new_node = zpl_json_add(&new_json_file, "enable_subtitles", ZPL_JSON_TYPE_INTEGER);
+        new_node->integer = *(u8*)(ADDR_ENABLE_SUBTITLES);
+
+        //audio
+        new_node = zpl_json_add(&new_json_file, "sounds_slider", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_SOUNDS_SLIDER);
+
+        new_node = zpl_json_add(&new_json_file, "cars_slider", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_SOUND_GAME_ADDR);
+
+        new_node = zpl_json_add(&new_json_file, "music_slider", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_MUSIC_SLIDER);
+
+        new_node = zpl_json_add(&new_json_file, "speech_slider", ZPL_JSON_TYPE_REAL);
+        new_node->real = *(f32*)(ADDR_SPEECH_SLIDER);
+
+        //keys
+        MafiaSDK::GameKey* game_key_buffer = MafiaSDK::GetKeysBuffer();
+        zpl_json_object* keys_array = zpl_json_add(&new_json_file, "keys", ZPL_JSON_TYPE_ARRAY);
+
+        std::vector<char*> allocated_key_names;
+
+        for (u32 i = 0; i < 60; i++) {
+            zpl_json_object* new_key_object = zpl_json_add(keys_array, NULL, ZPL_JSON_TYPE_OBJECT);
+
+            new_node = zpl_json_add(new_key_object, "name", ZPL_JSON_TYPE_STRING);
+
+            const char* geted_name = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[i]);
+            if (geted_name) {
+                new_node->string = zpl_alloc_str(zpl_heap(), geted_name);
+                allocated_key_names.push_back(new_node->string);
+            } else new_node->string = "Undefined";
+
+            new_node = zpl_json_add(new_key_object, "dik", ZPL_JSON_TYPE_INTEGER);
+            new_node->integer = game_key_buffer[i].GetDIK();
+
+            new_node = zpl_json_add(new_key_object, "type", ZPL_JSON_TYPE_INTEGER);
+            new_node->integer = game_key_buffer[i].GetType();
+        }
+
+        std::string profile_path = GlobalConfig.localpath + "config/profile.json";
+        
+        zpl_file file = { 0 };
+        zpl_file_error error = zpl_file_create(&file, profile_path.c_str());
+        if(error == ZPL_FILE_ERROR_NONE) {
+            zpl_json_write(&file, &new_json_file, 0);
+            zpl_file_close(&file);
+
+            for (char* allocated_key : allocated_key_names)
+                zpl_mfree(allocated_key);
+        }
+       
+        zpl_json_free(&new_json_file);
     }
 
 }

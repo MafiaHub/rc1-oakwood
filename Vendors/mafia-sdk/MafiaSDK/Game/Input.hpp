@@ -47,6 +47,13 @@ namespace MafiaSDK
             dik_key = (dik << 16) | (WORD)type;
         }
 
+        void SetKey(DWORD dik, GameKey_Type type) {
+            dik_key = (dik << 16) | (WORD)type;
+        }
+   
+        WORD GetDIK() { return (dik_key >> 16) & 0x0000FFFF; }
+        WORD GetType() { return dik_key & 0x0000FFFF; }
+
         bool IsKeyboardKey() { return (dik_key & GameKey_Type::KEYBOARD); }
         bool IsMouseKey() 	 { return (dik_key & GameKey_Type::MOUSE); 	  }
         bool IsJoyKey() 	 { return (dik_key & GameKey_Type::JOY);	  } 
