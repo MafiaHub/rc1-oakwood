@@ -16,7 +16,7 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
     auto native = librg_entity_create(&network_context, OAK_VEHICLE);
 
     entity->reset();
-    entity->librg_id = native->id;
+    entity->native_id = native->id;
     entity->native_entity = native;
     native->user_data = (void *)(uintptr)oak_id;
     native->position = {0};
@@ -63,17 +63,17 @@ int oak_vehicle_despawn(oak_vehicle id) {
 
             mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
                 librg_data_went(data, player_ent->id);
-                librg_data_went(data, vehicle->librg_id);
+                librg_data_went(data, vehicle->native_id);
                 librg_data_wu32(data, i);
             });
         }
     }
 
     mod_message_send(&network_context, NETWORK_VEHICLE_GAME_DESTROY, [&](librg_data * data) {
-        librg_data_went(data, vehicle->librg_id);
+        librg_data_went(data, vehicle->native_id);
     });
 
-    librg_entity_destroy(&network_context, vehicle->librg_id);
+    librg_entity_destroy(&network_context, vehicle->native_id);
     oak_entity_free(OAK_VEHICLE, id);
     vehicle->native_entity->user_data = nullptr;
 
@@ -99,7 +99,7 @@ int oak_vehicle_repair(oak_vehicle id) {
     auto entity = oak_entity_vehicle_get(id);
 
     librg_send(&network_context, NETWORK_VEHICLE_REPAIR, data, {
-        librg_data_went(&data, entity->librg_id);
+        librg_data_went(&data, entity->native_id);
     });
 
     return 0;
@@ -122,7 +122,7 @@ int oak_vehicle_fuel_set(oak_vehicle id, float fuel) {
     auto entity = oak_entity_vehicle_get(id);
 
     /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(&network_context, entity->librg_id);
+    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
     entity->fuel = fuel;
 
     return 0;
@@ -139,7 +139,7 @@ int oak_vehicle_direction_set(oak_vehicle id, oak_vec3 direction) {
     auto entity = oak_entity_vehicle_get(id);
 
     /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(&network_context, entity->librg_id);
+    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
     entity->rot_forward = hard_cast(zpl_vec3*)direction;
 
     return 0;
@@ -155,7 +155,7 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
 
-    librg_entity_control_ignore_next_update(&network_context, entity->librg_id);
+    librg_entity_control_ignore_next_update(&network_context, entity->native_id);
     entity->native_entity->position = hard_cast(zpl_vec3*)(position);
 
     return 0;
@@ -192,7 +192,7 @@ int oak_vehicle_transparency_set(oak_vehicle id, float transparency) {
     entity->transparency = transparency;
 
     librg_send(&network_context, NETWORK_VEHICLE_SET_TRANSPARENCY, data, {
-        librg_data_went(&data, entity->librg_id);
+        librg_data_went(&data, entity->native_id);
         librg_data_wf32(&data, transparency);
     });
 
@@ -273,7 +273,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
             entity->is_visible_on_map = state;
 
             librg_send(&network_context, NETWORK_VEHICLE_MAP_VISIBILITY, data, {
-                librg_data_went(&data, entity->librg_id);
+                librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
 
@@ -284,7 +284,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
             entity->is_car_in_radar = state;
 
             librg_send(&network_context, NETWORK_VEHICLE_RADAR_VISIBILITY, data, {
-                librg_data_went(&data, entity->librg_id);
+                librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
 
@@ -295,7 +295,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
             entity->collision_state = state;
 
             librg_send(&network_context, NETWORK_VEHICLE_SET_COLLISION_STATE, data, {
-                librg_data_went(&data, entity->librg_id);
+                librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
 
@@ -325,4 +325,96 @@ int oak_vehicle_visibility_get(oak_vehicle id, oak_visiblity_type type) {
         case OAK_VISIBILITY_COLLISION: return (int)entity->collision_state; break;
         default: return -1;
     }
+}
+
+/**
+ * Attempts to put player into vehicle
+ * @param  oak_vehicle
+ * @param  oak_player
+ * @param  oak_seat_id
+ * @return
+ */
+int oak_vehicle_seat_assign(oak_vehicle vid, oak_player pid, oak_seat_id seat_id) {
+    auto player = oak_entity_player_get(pid);
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    if (!player || !vehicle)
+        return -1;
+
+    if (seat_id < 0 || seat_id >= OAK_MAX_SEATS)
+        return -2;
+
+    if (vehicle->seats[seat_id] != -1)
+        return -3;
+
+    if (player->vehicle_id != -1)
+        return -4;
+
+    vehicle->seats[seat_id] = player->native_id;
+    player->vehicle_id = vehicle->native_id;
+
+    if (seat_id == 0) {
+        oak_vehicle_streamer_set(vid, pid);
+    }
+
+    return 0;
+}
+
+/**
+ * Retrieve the current vehicle streamer
+ * @param  oak_vehicle
+ * @return
+ */
+oak_player oak_vehicle_streamer_get(oak_vehicle vid) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    if (!vehicle)
+        return -1;
+
+    if (!librg_entity_valid(oak_network_ctx_get(), vehicle->native_id)) {
+        return -2;
+    }
+
+    auto peer = librg_entity_control_get(oak_network_ctx_get(), vehicle->native_id);
+
+    if (!peer) {
+        return -3;
+    }
+
+    auto player_ent = librg_entity_find(oak_network_ctx_get(), peer);
+
+    if (!player_ent) {
+        return -4;
+    }
+
+    auto player = oak_entity_player_get_from_librg(player_ent);
+
+    if (!player) {
+        return -5;
+    }
+
+    return player->oak_id;
+}
+
+/**
+ * Assigns a new streamer to the vehicle
+ * @param  oak_vehicle
+ * @param  oak_player
+ * @return
+ */
+int oak_vehicle_streamer_set(oak_vehicle vid, oak_player pid) {
+    auto player = oak_entity_player_get(pid);
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    if (!player || !vehicle)
+        return -1;
+
+    if (!librg_entity_valid(oak_network_ctx_get(), vehicle->native_id)) {
+        return -2;
+    }
+
+    librg_entity_control_set(oak_network_ctx_get(), vehicle->native_id,
+            player->native_entity->client_peer);
+
+    return 0;
 }

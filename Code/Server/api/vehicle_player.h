@@ -6,32 +6,17 @@
  * @param  seat
  * @return
  */
-int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, int seat_id) {
+int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, oak_seat_id seat_id) {
     auto player = oak_entity_player_get(pid);
     auto vehicle = oak_entity_vehicle_get(vid);
 
-    if (!player || !vehicle)
+    if (oak_vehicle_seat_assign(vid, pid, seat_id) < 0) {
         return -1;
-
-    if (vehicle->seats[seat_id] != -1)
-        return -2;
-
-    if (player->vehicle_id != -1)
-        return -3;
-
-    if (seat_id < 0 || seat_id > 3)
-        return -4;
-
-    vehicle->seats[seat_id] = player->librg_id;
-    player->vehicle_id = vehicle->librg_id;
-
-    if (seat_id == 0 && vehicle->seats[0] == -1) {
-        librg_entity_control_set(&network_context, vehicle->librg_id, player->native_entity->client_peer);
     }
 
     librg_send(&network_context, NETWORK_VEHICLE_PLAYER_PUT, data, {
-        librg_data_went(&data, player->librg_id);
-        librg_data_went(&data, vehicle->librg_id);
+        librg_data_went(&data, player->native_id);
+        librg_data_went(&data, vehicle->native_id);
         librg_data_wi32(&data, seat_id);
     });
 
@@ -52,7 +37,7 @@ int oak_vehicle_player_get(oak_vehicle vid, oak_player pid) {
         return -1;
 
     for (size_t i = 0; i < 4; i++) {
-        if (vehicle->seats[i] == player->librg_id)
+        if (vehicle->seats[i] == player->native_id)
             return i;
     }
 
@@ -77,7 +62,7 @@ oak_vehicle oak_vehicle_player_inside(oak_player pid) {
 
     if (player->vehicle_id != -1) {
         auto vehicle = librg_entity_fetch(&network_context, player->vehicle_id);
-        return (oak_vehicle)vehicle->user_data;
+        return oak_entity_get_id_from_librg(vehicle);
     }
 
     return -2;
@@ -104,7 +89,7 @@ oak_seat_id oak_vehicle_player_seat_get(oak_vehicle vid, oak_player pid) {
 
     for (int i = 0; i < OAK_MAX_SEATS; ++i)
     {
-        if (player->librg_id == vehicle->seats[i]) {
+        if (player->native_id == vehicle->seats[i]) {
             return i;
         }
     }

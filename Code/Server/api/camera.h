@@ -1,10 +1,10 @@
 #define OAK_CAMERA_TARGETING(player, target) do { \
         i32 id = -1; \
         if (player->spec_id != -1) \
-            librg_entity_visibility_set_for(&network_context, player->librg_id, target->librg_id, LIBRG_DEFAULT_VISIBILITY); \
+            librg_entity_visibility_set_for(&network_context, player->native_id, target->native_id, LIBRG_DEFAULT_VISIBILITY); \
         if (target) { \
-            id = target->librg_id; \
-            librg_entity_visibility_set_for(&network_context, player->librg_id, target->librg_id, LIBRG_ALWAYS_VISIBLE); \
+            id = target->native_id; \
+            librg_entity_visibility_set_for(&network_context, player->native_id, target->native_id, LIBRG_ALWAYS_VISIBLE); \
         } \
         player->spec_id = id; \
         librg_send_to(&network_context, NETWORK_CAMERA_TARGET, player->native_entity->client_peer, data, { librg_data_went(&data, id); }); \
@@ -79,7 +79,7 @@ int oak_camera_target_unset(oak_player id) {
     auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
 
     if (player->spec_id != -1) {
-        librg_entity_visibility_set_for(&network_context, player->librg_id, -1, LIBRG_DEFAULT_VISIBILITY);
+        librg_entity_visibility_set_for(&network_context, player->native_id, -1, LIBRG_DEFAULT_VISIBILITY);
     }
 
     player->spec_id = -1;

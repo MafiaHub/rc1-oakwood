@@ -1,6 +1,6 @@
 struct oak_object {
     u32 oak_id;
-    u32 librg_id;
+    u32 native_id;
 
     librg_entity *native_entity;
 

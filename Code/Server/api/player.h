@@ -14,7 +14,7 @@ oak_player oak_player_create(librg_event *e) {
     auto oak_id = oak_entity_next(OAK_PLAYER);
     auto entity = oak_entity_player_get(oak_id);
 
-    entity->librg_id = e->entity->id;
+    entity->native_id = e->entity->id;
     entity->native_entity = e->entity;
     entity->reset();
 
@@ -103,7 +103,7 @@ int oak_player_kill(oak_player id) {
 
         if (vehicle) {
             for (int i = 0; i < 4; i++) {
-                if (vehicle->seats[i] == player->librg_id) {
+                if (vehicle->seats[i] == player->native_id) {
                     vehicle->seats[i] = -1;
                     if (i == 0) {
                         mod_vehicle_assign_nearest_player(&network_context, vehicle_ent);
@@ -139,7 +139,7 @@ int oak_player_playanim(oak_player id, const char *text, int length) {
     zpl_strncpy(animation, text, length);
 
     librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {
-        librg_data_went(&data, entity->librg_id);
+        librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, animation, sizeof(char) * 32);
     });
 
@@ -159,7 +159,7 @@ int oak_player_playanim(oak_player id, const char *text, int length) {
         auto entity = oak_entity_player_get(id);                                        \
                                                                                         \
         /* skip updates for the next change */                                          \
-        librg_entity_control_ignore_next_update(&network_context, entity->librg_id);    \
+        librg_entity_control_ignore_next_update(&network_context, entity->native_id);    \
                                                                                         \
         /* apply new value */                                                           \
         entity->ALIAS = *((CAST*)&NAME);                                                \
@@ -176,7 +176,7 @@ int oak_player_health_set(oak_player id, float health) {
     auto entity = oak_entity_player_get(id);
 
     librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
-        librg_data_went(&data, entity->librg_id);
+        librg_data_went(&data, entity->native_id);
         librg_data_wf32(&data, health);
     });
 
@@ -216,7 +216,7 @@ int oak_player_model_set(oak_player id, const char *model, int length) {
     zpl_memcopy(entity->model, model, length);
 
     librg_send(&network_context, NETWORK_PLAYER_SET_MODEL, data, {
-        librg_data_went(&data, entity->librg_id);
+        librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, (void *)entity->model, sizeof(char) * OAK_PLAYER_MODEL_SIZE);
     });
 
@@ -289,7 +289,7 @@ int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state)
             entity->is_visible_on_map = state;
 
             librg_send(&network_context, NETWORK_PLAYER_MAP_VISIBILITY, data, {
-                librg_data_went(&data, entity->librg_id);
+                librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
 
@@ -300,7 +300,7 @@ int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state)
             entity->has_visible_nameplate = state;
 
             librg_send(&network_context, NETWORK_PLAYER_NAMEPLATE_VISIBILITY, data, {
-                librg_data_went(&data, entity->librg_id);
+                librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
 
