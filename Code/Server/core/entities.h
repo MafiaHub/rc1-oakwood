@@ -6,7 +6,7 @@ zpl_global struct {
     u32 ids[OAK_ENTITY_TYPE_LAST];
     u32 counts[OAK_ENTITY_TYPE_LAST];
     u32 cursors[OAK_ENTITY_TYPE_LAST];
-} oak_ent = {};
+} oak__entities_data = {};
 
 zpl_global u32 oak_ent_limits[OAK_ENTITY_TYPE_LAST] = {
     OAK_MAX_PLAYERS,
@@ -17,8 +17,32 @@ zpl_global u32 oak_ent_limits[OAK_ENTITY_TYPE_LAST] = {
 };
 
 int oak_entities_init() {
-    zpl_memset(&oak_ent, 0, sizeof(oak_ent));
+    zpl_memset(&oak__entities_data, 0, sizeof(oak__entities_data));
     return 0;
+}
+
+int oak_entities_count_get(oak_type type) {
+    ZPL_ASSERT(type >= 0 && type < OAK_ENTITY_TYPE_LAST);
+
+    return oak__entities_data.counts[type];
+}
+
+oak_object **oak_entity_list(oak_type type, int *count) {
+    ZPL_ASSERT(type >= 0 && type < OAK_ENTITY_TYPE_LAST);
+    zpl_local_persist oak_object *list[OAK_MAX_ENTITIES];
+    int len = 0;
+
+    for (int i=0; i<oak_ent_limits[type]; ++i) {
+        if (!oak_entity_invalid(type, i)) {
+            list[len++] = oak_entity_get(type, i);
+        }
+    }
+
+    if (count) {
+        *count = len;
+    }
+
+    return list;
 }
 
 /**
@@ -28,16 +52,16 @@ int oak_entities_init() {
  */
 u32 oak_entity_next(oak_type type) {
     ZPL_ASSERT(type >= 0 && type < OAK_ENTITY_TYPE_LAST);
-    ZPL_ASSERT_MSG(oak_ent.counts[type] < oak_ent_limits[type], "reached max_entities limit");
+    ZPL_ASSERT_MSG(oak__entities_data.counts[type] < oak_ent_limits[type], "reached max_entities limit");
 
-    ++oak_ent.counts[type];
+    ++oak__entities_data.counts[type];
 
-    if (oak_ent.cursors[type] >= (oak_ent_limits[type] - 1) || oak_ent_limits[type] == 0) {
-        oak_ent.cursors[type] = 0;
+    if (oak__entities_data.cursors[type] >= (oak_ent_limits[type] - 1) || oak_ent_limits[type] == 0) {
+        oak__entities_data.cursors[type] = 0;
     }
 
-    for (; oak_ent.cursors[type] < oak_ent_limits[type]; ++oak_ent.cursors[type]) {
-        auto id = oak_ent.cursors[type];
+    for (; oak__entities_data.cursors[type] < oak_ent_limits[type]; ++oak__entities_data.cursors[type]) {
+        auto id = oak__entities_data.cursors[type];
         auto entity = oak_entity_get(type, id);
         ZPL_ASSERT(entity);
 
@@ -64,9 +88,9 @@ oak_object *oak_entity_get(oak_type type, u32 id) {
     ZPL_ASSERT(id < oak_ent_limits[type]);
 
     switch (type) {
-        case OAK_PLAYER: return &oak_ent.players[id]; break;
-        case OAK_VEHICLE: return &oak_ent.vehicles[id]; break;
-        case OAK_DOOR: return &oak_ent.doors[id]; break;
+        case OAK_PLAYER: return &oak__entities_data.players[id]; break;
+        case OAK_VEHICLE: return &oak__entities_data.vehicles[id]; break;
+        case OAK_DOOR: return &oak__entities_data.doors[id]; break;
         default:
             ZPL_PANIC("oak_entity_get: specified entity is not handled");
             break;
@@ -111,12 +135,12 @@ int oak_entity_invalid(oak_type type, u32 id) {
  */
 int oak_entity_free(oak_type type, u32 id) {
     ZPL_ASSERT(type >= 0 && type < OAK_ENTITY_TYPE_LAST);
-    ZPL_ASSERT(oak_ent.counts[type] > 0);
+    ZPL_ASSERT(oak__entities_data.counts[type] > 0);
 
     auto entity = oak_entity_get(type, id);
     entity->is_valid = 0;
 
-    oak_ent.counts[type]--;
+    oak__entities_data.counts[type]--;
 
     return 0;
 }
@@ -124,7 +148,7 @@ int oak_entity_free(oak_type type, u32 id) {
 #define OAK_ENTITY_SELECTOR(TYPE, NAME, ETYPE) \
     TYPE *ZPL_JOIN3(oak_entity_,NAME,_get)(ZPL_JOIN2(oak_,NAME) id) { \
         ZPL_ASSERT(id >= 0 && id < oak_ent_limits[ETYPE]); \
-        auto entity = &oak_ent.ZPL_JOIN2(NAME,s)[id]; \
+        auto entity = &oak__entities_data.ZPL_JOIN2(NAME,s)[id]; \
         return (TYPE *)(entity->is_valid ? entity : nullptr); \
     }
 

@@ -82,6 +82,7 @@
 #include "core/config.h"
 #include "core/signal_handling.h"
 #include "core/console.h"
+#include "core/cli_opts.h"
 #include "core/entities.h"
 #include "core/logger.h"
 #include "core/network.h"
@@ -91,10 +92,11 @@
 #include "core/masterlist.h"
 #include "core/webserver.h"
 
+#include "core/gamemap.h"
+
 #include "Workers/misc.hpp"
 #include "utils.hpp"
 #include "peer_control.hpp"
-#include "core/cli_opts.h"
 
 #include "api/chat.h"
 #include "api/camera.h"
@@ -158,7 +160,7 @@ int main(int argc, char **argv)
         misc::vehicles_streamer_update();
         oak_console_console_update_stats();
         misc::scoreboard_update();
-        misc::gamemap_update();
+        oak_gamemap_update();
         oak_masterlist_update();
         oak_console_block_input(0);
         zpl_sleep_ms(1);

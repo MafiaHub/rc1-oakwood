@@ -2,7 +2,6 @@
 
 constexpr float VEHICLE_SELECTION_TIME = 2.0f;
 constexpr float SCOREBOARD_UPDATE_TIME = 2.0f;
-constexpr float GAMEMAP_UPDATE_TIME = 0.5f;
 
 namespace misc {
 
@@ -53,46 +52,6 @@ namespace misc {
             librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_SCOREBOARD, data, {
                 librg_data_wu32(&data, scoreboard.size());
                 librg_data_wptr(&data, scoreboard.data(), scoreboard.size() * sizeof(player_scoreboard_info));
-            });
-        }
-    }
-
-    void gamemap_update() {
-        zpl_local_persist f64 last_gamemap_update = 0.0f;
-
-        if (zpl_time_now() - last_gamemap_update > GAMEMAP_UPDATE_TIME) {
-            last_gamemap_update = zpl_time_now();
-
-            std::vector<gamemap_info> gamemap;
-            for (int i = 0; i < network_context.max_entities; i++) {
-                auto entity = librg_entity_fetch(&network_context, i);
-                if (entity) {
-
-                    bool visible = false;
-                    if (entity->type == TYPE_PLAYER) {
-                        visible = oak_player_visibility_get((oak_player)entity->user_data, OAK_VISIBILITY_ICON);
-                    }
-                    else if (entity->type == TYPE_VEHICLE) {
-                        visible = oak_vehicle_visibility_get((oak_vehicle)entity->user_data, OAK_VISIBILITY_ICON);
-                    }
-
-                    if (visible) {
-                        gamemap.push_back({
-                            entity->id,
-                            (u8)entity->type,
-                            entity->position
-                        });
-                    }
-                }
-            }
-
-            if (gamemap.size() < 1) {
-                return;
-            }
-
-            librg_send_all(&network_context, NETWORK_PLAYER_UPDATE_GAMEMAP, data, {
-                librg_data_wu32(&data, gamemap.size());
-                librg_data_wptr(&data, gamemap.data(), gamemap.size() * sizeof(gamemap_info));
             });
         }
     }
