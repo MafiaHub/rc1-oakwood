@@ -77,10 +77,23 @@ u32 oak_entity_next(oak_type type);
 int oak_entity_free(oak_type type);
 int oak_entity_invalid(oak_type type, u32);
 oak_object *oak_entity_get(oak_type, u32 id);
+int oak_entity_get_id_from_librg(librg_entity *);
 
 mafia_player *oak_entity_player_get(oak_player);
 mafia_vehicle *oak_entity_vehicle_get(oak_vehicle);
 mafia_door *oak_entity_door_get(oak_door);
+
+#define OAK_ENTITY_LIBRG_GETTER(NAME, ID) \
+ZPL_JOIN2(mafia_,NAME) *ZPL_JOIN3(oak_entity_,NAME,_get_from_librg)(librg_entity *entity) { \
+    ZPL_ASSERT_NOT_NULL(entity); \
+    return (ZPL_JOIN2(mafia_,NAME) *)oak_entity_get(ID, oak_entity_get_id_from_librg(entity)); \
+}
+
+OAK_ENTITY_LIBRG_GETTER(player, OAK_PLAYER)
+OAK_ENTITY_LIBRG_GETTER(vehicle, OAK_VEHICLE)
+OAK_ENTITY_LIBRG_GETTER(door, OAK_DOOR)
+
+#undef OAK_ENTITY_LIBRG_GETTER
 
 /* VEHICLES */
 

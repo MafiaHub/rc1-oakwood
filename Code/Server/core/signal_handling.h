@@ -10,7 +10,7 @@ void shutdown_server();
         {
         case CTRL_C_EVENT:
         case DBG_CONTROL_C:
-            oak_log("Ctrl-C pressed, stopping the server...");
+            oak_log("Ctrl-C pressed, stopping the server...\n");
             shutdown_server();
             return 0;
         case CTRL_CLOSE_EVENT:
@@ -32,11 +32,11 @@ void shutdown_server();
 
 void oak_sighandler_register() {
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
-    oak_log("Installing signal handlers...");
+    oak_log("Installing signal handlers...\n");
     #ifdef ZPL_SYSTEM_WINDOWS
     {
         if (!SetConsoleCtrlHandler(oak__sighandler_win32_control_handler, 1)) {
-            oak_log("Could not set up signal handler!");
+            oak_log("Could not set up signal handler!\n");
         }
     }
     #else // POSIX compliant
@@ -48,7 +48,7 @@ void oak_sighandler_register() {
 
 void oak_sighandler_unregister() {
 #ifndef OAK_DISABLE_SIGNAL_HANDLING
-    oak_log("Installing signal handlers...");
+    oak_log("Installing signal handlers...\n");
     #ifdef ZPL_SYSTEM_WINDOWS
     {
         if (!SetConsoleCtrlHandler(oak__sighandler_win32_control_handler, 0)) {

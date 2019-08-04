@@ -12,7 +12,7 @@ static const char *oak__config_mod_default = "\n"\
     "whitelist = false\n";
 
 int oak_config_init() {
-    oak_log("Loading config...");
+    oak_log("Loading config...\n");
 
     auto json = config_get(oak__config_file_name, oak__config_mod_default);
 

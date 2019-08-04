@@ -76,6 +76,17 @@ oak_object *oak_entity_get(oak_type type, u32 id) {
 }
 
 /**
+ * Retrieve an ID stored in a librg_entity
+ * @param  entity
+ * @return
+ */
+int oak_entity_get_id_from_librg(librg_entity *entity) {
+    ZPL_ASSERT_NOT_NULL(entity);
+
+    return (int)(entity->user_data);
+}
+
+/**
  * Check if specified entity id is valid
  * @param  oak_type
  * @param  id

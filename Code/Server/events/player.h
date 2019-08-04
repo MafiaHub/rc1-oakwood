@@ -99,7 +99,7 @@ void oak_ev_player_connected(librg_event *e) {
 }
 
 void oak_ev_player_disconnected(librg_event *e) {
-    auto player = oak_entity_player_get((oak_player)e->entity->user_data);
+    auto player = oak_entity_player_get_from_librg(e->entity);
     ZPL_ASSERT_NOT_NULL(player);
 
     /* remove player from vehicle if any */
@@ -114,7 +114,7 @@ void oak_ev_player_disconnected(librg_event *e) {
 /* GENERAL ENTITY EVENTS */
 
 void oak_ev_player_create(librg_event *e) {
-    auto player = oak_entity_player_get((oak_player)e->entity->user_data);
+    auto player = oak_entity_player_get_from_librg(e->entity);
     ZPL_ASSERT_NOT_NULL(player);
 
     librg_data_wi32(e->data, player->vehicle_id);
@@ -138,7 +138,7 @@ void oak_ev_player_remove(librg_event *e) {
 }
 
 void oak_ev_player_update(librg_event *e) {
-    auto player = oak_entity_player_get((oak_player)e->entity->user_data);
+    auto player = oak_entity_player_get_from_librg(e->entity);
     ZPL_ASSERT_NOT_NULL(player);
 
     librg_data_wptr(e->data, &player->position, sizeof(zpl_vec3));
@@ -158,7 +158,7 @@ void oak_ev_player_client_add(librg_event *e) {
 }
 
 void oak_ev_player_client_update(librg_event *e) {
-    auto player = oak_entity_player_get((oak_player)e->entity->user_data);
+    auto player = oak_entity_player_get_from_librg(e->entity);
     ZPL_ASSERT_NOT_NULL(player);
 
     /*if (!player) {
