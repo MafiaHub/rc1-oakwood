@@ -156,7 +156,7 @@ int main(int argc, char **argv)
         oak_network_tick();
         oak_bridge_tick();
         misc::vehicles_streamer_update();
-        misc::console_update_stats();
+        oak_console_console_update_stats();
         misc::scoreboard_update();
         misc::gamemap_update();
         oak_masterlist_update();

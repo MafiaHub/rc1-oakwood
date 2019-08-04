@@ -42,6 +42,9 @@ int oak_network_init();
 int oak_network_free();
 int oak_network_tick();
 
+// todo: find a better place for the ctx
+librg_ctx *oak_network_ctx_get();
+
 #define OAK_NETWORK_DECLS(TYPE) \
     void ZPL_JOIN3(oak_ev_,TYPE,_create)(librg_event *); \
     void ZPL_JOIN3(oak_ev_,TYPE,_update)(librg_event *); \
@@ -111,6 +114,7 @@ void oak_console_draw(const char *format, ...);
 void oak_console_printf(const char *format, ...);
 char oak_console_update_loader();
 void oak_console_block_input(int);
+void oak_console_console_update_stats();
 
 /* SIGNAL HANDLER */
 

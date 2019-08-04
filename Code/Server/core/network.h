@@ -63,5 +63,9 @@ int oak_network_free() {
     return 0;
 }
 
+librg_ctx *oak_network_ctx_get() {
+    return &network_context;
+}
+
 #undef OAK_ROUTER_CASE
 #undef OAK_ROUTER_HANDLER

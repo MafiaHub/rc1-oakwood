@@ -290,3 +290,41 @@ char oak_console_update_loader() {
     }
     return ' ';
 }
+
+zpl_global f64 oak__console_last_console_update  = 0.0f;
+zpl_global f64 oak__console_last_fps_update      = 0.0f;
+zpl_global u32 oak__console_fps_counter          = 0;
+zpl_global u32 oak__console_computed_fps         = 0;
+
+void oak_console_console_update_stats() {
+    #ifndef _WIN32
+        return;
+    #endif
+
+    f64 current_time = zpl_time_now();
+    f64 diff = current_time - oak__console_last_fps_update;
+
+    oak__console_fps_counter++;
+    if (diff >= 1.0) {
+        oak__console_computed_fps = oak__console_fps_counter;
+        oak__console_fps_counter = 0;
+        oak__console_last_fps_update = current_time;
+    }
+
+    //NOTE(DavoSK): Update our debug tag every 200ms
+    if (current_time - oak__console_last_console_update > 0.2f) {
+        oak_console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
+            132,
+            130,
+            oak_console_update_loader(),
+            132,
+            oak_network_ctx_get()->network.host->totalReceivedData / 1024,
+            oak_network_ctx_get()->network.host->totalSentData / 1024,
+            oak__console_computed_fps,
+            1000.0f / oak__console_computed_fps,
+            (u32)GlobalConfig.players,
+            (u32)GlobalConfig.max_players);
+
+        oak__console_last_console_update = current_time;
+    }
+}
