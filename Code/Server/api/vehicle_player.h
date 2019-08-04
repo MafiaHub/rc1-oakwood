@@ -149,3 +149,111 @@ oak_player oak_vehicle_player_seat_player_get(oak_vehicle vid, oak_seat_id seat_
 
     return player;
 }
+
+/**
+ * Enter a vehicle seat
+ * @param  vid
+ * @param  pid
+ * @param  seat_id
+ * @param  enterFromPassengerSeat
+ * @return
+ */
+int oak_vehicle_player_enter(oak_vehicle vid, oak_player pid, oak_seat_id seat_id, int enterFromPassengerSeat) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+    auto player = oak_entity_player_get(pid);
+
+    if (seat_id < 0 || seat_id >= OAK_MAX_SEATS) {
+        return -1;
+    }
+
+    if (!vehicle || !player) {
+        return -2;
+    }
+
+    if (enterFromPassengerSeat && seat_id == 1) {
+        seat_id = 0;
+    }
+
+    vehicle->seats[seat_id] = player->native_id;
+    player->vehicle_id = vehicle->native_id;
+
+    librg_entity_control_set(oak_network_ctx_get(), vehicle->native_id,
+            player->native_entity->client_peer);
+}
+
+/**
+ * Leave a vehicle seat
+ * @param  vid
+ * @param  pid
+ * @param  seat_id
+ * @return
+ */
+int oak_vehicle_player_leave(oak_vehicle vid, oak_player pid, oak_seat_id seat_id) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+    auto player = oak_entity_player_get(pid);
+
+    if (seat_id < 0 || seat_id >= OAK_MAX_SEATS) {
+        return -1;
+    }
+
+    if (!vehicle || !player) {
+        return -2;
+    }
+
+    if (seat_id == 0) {
+        for (int i = 0; i < OAK_MAX_SEATS; i++) {
+            if (vehicle->seats[i] == player->native_id) {
+                seat_id = i;
+                break;
+            }
+        }
+    }
+
+    vehicle->seats[seat_id] = -1;
+    player->vehicle_id = -1;
+
+    oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
+}
+
+/**
+ * Throw player from a vehicle (hijack)
+ * @param  oak_vehicle
+ * @param  oak_player
+ * @param  seat_id
+ * @return
+ */
+int oak_vehicle_player_hijack(oak_vehicle vid, oak_player pid, oak_seat_id seat_id) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+    auto player = oak_entity_player_get(pid);
+
+    if (seat_id < 0 || seat_id >= OAK_MAX_SEATS) {
+        return -1;
+    }
+
+    if (!vehicle || !player) {
+        return -2;
+    }
+
+    if (vehicle->seats[seat_id] == -1) {
+        return -3;
+    }
+
+    mod_message_send(oak_network_ctx_get(), NETWORK_VEHICLE_PLAYER_HIJACK, [&](librg_data *data) {
+        librg_data_went(data, player->native_id);
+        librg_data_went(data, vehicle->native_id);
+        librg_data_wi32(data, seat_id);
+    });
+
+    auto driver_ent = librg_entity_fetch(oak_network_ctx_get(), vehicle->seats[seat_id]);
+    auto driver = oak_entity_player_get_from_librg(driver_ent);
+
+    if (driver) {
+        driver->vehicle_id = -1;
+    }
+
+    vehicle->seats[seat_id] = -1;
+
+    if (seat_id == 0) {
+        oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
+    }
+}

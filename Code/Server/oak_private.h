@@ -102,6 +102,9 @@ oak_player oak_vehicle_streamer_get(oak_vehicle);
 int oak_vehicle_streamer_set(oak_vehicle, oak_player);
 int oak_vehicle_streamer_assign_nearest(oak_vehicle, int exception=-1);
 int oak_vehicle_seat_assign(oak_vehicle, oak_player, oak_seat_id);
+int oak_vehicle_player_enter(oak_vehicle, oak_player, oak_seat_id, int enterFromPassengerSeat = 0);
+int oak_vehicle_player_leave(oak_vehicle, oak_player, oak_seat_id seat_id);
+int oak_vehicle_player_hijack(oak_vehicle, oak_player, oak_seat_id seat_id);
 
 /* MASTERLIST */
 
