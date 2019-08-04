@@ -4,10 +4,14 @@ workspace "Oakwood"
 
     pic "On"
     symbols "On"
-    staticruntime "On"
+
+    if os.istarget('windows') then
+        staticruntime "On"
+    end
 
     startproject "Launcher"
     characterset "MBCS"
+    cppdialect "c++17"
 
     location "../Build/"
     debugdir "../Bin/%{cfg.buildcfg}/"
@@ -71,11 +75,11 @@ workspace "Oakwood"
 
     group "Plugins"
 
-    include "Plugins/Freeride"
-    include "Plugins/EscapeTheCops"
+    -- include "Plugins/Freeride"
+    -- include "Plugins/EscapeTheCops"
     -- include "Plugins/LuaMod"
 
     group "Server"
 
     include "Server"
-    include "Oakgen"
+    -- include "Oakgen"

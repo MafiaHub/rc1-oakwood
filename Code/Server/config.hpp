@@ -76,8 +76,8 @@ namespace config {
         zpl_printf("================================\n");
         zpl_printf("Name: %s\n", GlobalConfig.name.c_str());
         zpl_printf("Module: %s\n", GlobalConfig.gamemode.c_str());
-        zpl_printf("Max players: %d\n", GlobalConfig.max_players);
-        zpl_printf("Port: %d\n", GlobalConfig.port);
+        zpl_printf("Max players: %d\n", (u32)GlobalConfig.max_players);
+        zpl_printf("Port: %d\n", (u32)GlobalConfig.port);
         zpl_printf("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");
         zpl_printf("================================\n");
     }

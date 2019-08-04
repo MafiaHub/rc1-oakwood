@@ -19,6 +19,21 @@
  * sdl2.h
  *
  * Version History:
+ * 5.0.1
+ *  - Fixed entity visiblity states after disconnection
+ *
+ * 5.0.0
+ *  - Changed API for visibility feature:
+ *    - Instead of booleans setting whether or not entity would be included in the query or not
+ *      a multiple constant-based states were inroduced:
+ *        - LIBRG_VISIBILITY_DEFAULT - the original state of visibility, entity is only visible if it is in the stream range
+ *        - LIBRG_ALWAYS_VISIBLE - the entity is visible disregarding if it is the stream range or not
+ *        - LIBRG_ALWAYS_INVISIBLE - opposite of the above, entity will be always invisible
+ *      Entity visibility can be set on per entity-to-entity or global levels. The entity-to-entity relation has a bigger
+ *      priority, so f.e. setting entity to be LIBRG_ALWAYS_VISIBLE on relation level, will override global visibility.
+ *   - Aditionally, if the virtual world feature is enabled, it gains main priotity over visibility, thus entities located in 2 different
+ *     virtual worlds will not be able to see each other in spite of visibility settings.
+ *
  * 4.1.5
  *  - Fix to data send
  *
@@ -136,17 +151,12 @@
 
 #define LIBRG_VERSION_MAJOR 5
 #define LIBRG_VERSION_MINOR 0
-#define LIBRG_VERSION_PATCH 0
+#define LIBRG_VERSION_PATCH 1
 #define LIBRG_VERSION_CREATE(major, minor, patch) (((major)<<16) | ((minor)<<8) | (patch))
 #define LIBRG_VERSION_GET_MAJOR(version) (((version)>>16)&0xFF)
 #define LIBRG_VERSION_GET_MINOR(version) (((version)>>8)&0xFF)
 #define LIBRG_VERSION_GET_PATCH(version) ((version)&0xFF)
 #define LIBRG_VERSION LIBRG_VERSION_CREATE(LIBRG_VERSION_MAJOR, LIBRG_VERSION_MINOR, LIBRG_VERSION_PATCH)
-
-// disable asserts for release build
-#if !defined(LIBRG_DEBUG) || defined(LIBRG_NO_ASSERT)
-#define ZPL_ASSERT_MSG(cond, msg, ...)
-#endif
 
 /* include definitions */
 #ifndef LIBRG_CUSTOM_INCLUDES
@@ -318,14 +328,16 @@ LIBRG_API void librg_tick(struct librg_ctx *ctx);
 #define librg_entity_id u32
 
 enum librg_entity_flag {
-    LIBRG_ENTITY_NONE       = 0,        /* general flag, all destroyed/non-created entities have it */
-    LIBRG_ENTITY_ALIVE      = (1 << 0), /* general flag, all created entities have it */
-    LIBRG_ENTITY_CLIENT     = (1 << 1), /* flag describing entities created for client peer */
-    LIBRG_ENTITY_VISIBILITY = (1 << 2), /* flag showing that entity has visibility overrides */
-    LIBRG_ENTITY_QUERIED    = (1 << 3), /* flag showing that entity has a cached culler query */
-    LIBRG_ENTITY_CONTROLLED = (1 << 4), /* flag showing if the entity is controlled(streamed) by some peer */
-    LIBRG_ENTITY_UNUSED     = (1 << 5), /* flag showing whether the entity's space is unused */
+    LIBRG_ENTITY_NONE              = 0,        /* general flag, all destroyed/non-created entities have it */
+    LIBRG_ENTITY_ALIVE             = (1 << 0), /* general flag, all created entities have it */
+    LIBRG_ENTITY_CLIENT            = (1 << 1), /* flag describing entities created for client peer */
+    LIBRG_ENTITY_VISIBILITY        = (1 << 2), /* flag showing that entity has visibility overrides */
+    LIBRG_ENTITY_QUERIED           = (1 << 3), /* flag showing that entity has a cached culler query */
+    LIBRG_ENTITY_CONTROLLED        = (1 << 4), /* flag showing if the entity is controlled(streamed) by some peer */
     LIBRG_ENTITY_CONTROL_REQUESTED = (1 << 5), /* flag showing whether or not an entity control has been requested, but not yet sent */
+    LIBRG_ENTITY_MARKED_REMOVAL    = (1 << 6), /* flag showing whether or not an entity is marked to be removed */
+    LIBRG_ENTITY_UNUSED            = (1 << 7), /* flag showing whether the entity's space is unused */
+    LIBRG_ENTITY_FLAG_LAST         = (1 << 8),
 };
 
 typedef struct librg_entity {
@@ -1373,6 +1385,8 @@ extern "C" {
 
     void librg_entity_destroy(librg_ctx *ctx, librg_entity_id id) {
         librg_assert(librg_is_server(ctx));
+        librg_entity *blob = librg_entity_fetch(ctx, id);
+        blob->flags |= LIBRG_ENTITY_MARKED_REMOVAL;
         zpl_array_append(ctx->entity.remove_queue, id);
     }
 
@@ -1392,7 +1406,9 @@ extern "C" {
         /* add all currently streamed entities automatically */
         librg_entity_iteratex(ctx, LIBRG_ENTITY_CONTROLLED, librg_lambda(controlled), {
             if (blob->client_peer && librg_entity_control_get(ctx, controlled) == blob->client_peer) {
-                zpl_array_append(blob->last_query, controlled);
+                if (librg_entity_valid(ctx, controlled) && !(librg_entity_fetch(ctx, controlled)->flags & LIBRG_ENTITY_MARKED_REMOVAL)) {
+                    zpl_array_append(blob->last_query, controlled);
+                }
             }
         });
 
@@ -1406,7 +1422,10 @@ extern "C" {
                 #endif
 
                 if (blob->visibility.entries[i].value == LIBRG_ALWAYS_VISIBLE) {
-                    zpl_array_append(blob->last_query, blob->visibility.entries[i].key);
+                    if (librg_entity_valid(ctx, blob->visibility.entries[i].key) &&
+                        !(librg_entity_fetch(ctx, blob->visibility.entries[i].key)->flags & LIBRG_ENTITY_MARKED_REMOVAL)) {
+                        zpl_array_append(blob->last_query, blob->visibility.entries[i].key);
+                    }
                 }
             }
         }
@@ -1419,7 +1438,10 @@ extern "C" {
 
             if (ctx->entity.visibility.entries[i].value == LIBRG_ALWAYS_VISIBLE) {
                 if (librg_entity_visibility_get_for(ctx, blob->id, ctx->entity.visibility.entries[i].key) != LIBRG_ALWAYS_INVISIBLE) {
-                    zpl_array_append(blob->last_query, ctx->entity.visibility.entries[i].key);
+                    if (librg_entity_valid(ctx, ctx->entity.visibility.entries[i].key) &&
+                        !(librg_entity_fetch(ctx, ctx->entity.visibility.entries[i].key)->flags & LIBRG_ENTITY_MARKED_REMOVAL)) {
+                        zpl_array_append(blob->last_query, ctx->entity.visibility.entries[i].key);
+                    }
                 }
             }
         }
@@ -2635,6 +2657,7 @@ extern "C" {
             LIBRG_LOCAL_ASSERT(blob->control_peer == msg->peer, "[dbg] client_streamer_update: entity controller peer and msg->peer are different\n");
             LIBRG_LOCAL_ASSERT(!(blob->flags & LIBRG_ENTITY_CONTROL_REQUESTED), "[dbg] client_streamer_update: entity still has LIBRG_ENTITY_CONTROL_REQUESTED flag\n");
             LIBRG_LOCAL_ASSERT(blob->control_generation == control_generation, "[dbg] client_streamer_update: control_generation is different\n");
+            LIBRG_LOCAL_ASSERT(blob->control_peer->state == ENET_PEER_STATE_CONNECTED, "[dbg] client_streamer_update: peer is no logner connected\n");
 
             #undef LIBRG_LOCAL_ASSERT
 
@@ -2781,6 +2804,12 @@ extern "C" {
                 // fetch value of entity in the last snapshot
                 u32 *existed_in_last = librg_table_get(last_snapshot, entity);
                 librg_entity *eblob  = librg_entity_fetch(ctx, entity);
+
+                /* to additionally prevent issue with entity updating after removal */
+                if (eblob->flags & LIBRG_ENTITY_MARKED_REMOVAL) {
+                    updated_entities--;
+                    continue;
+                }
 
                 // write create
                 if (entity != player && !existed_in_last) {
@@ -3211,7 +3240,7 @@ extern "C" {
                     inside = zpl_vec3_mag2(diff) < zpl_square(ent_blob->stream_range);
                 }
 
-                if (inside) {
+                if (inside && !(blob->flags & LIBRG_ENTITY_MARKED_REMOVAL)) {
                     zpl_array_append(*out_entities, target);
                 }
             }
@@ -3257,7 +3286,13 @@ extern "C" {
         }
 
         if (librg_is_server(ctx)) {
+            /* remove from global visibility */
             librg_entity_visibility_set(ctx, entity->id, LIBRG_DEFAULT_VISIBILITY);
+
+            /* remove from relation visibilities */
+            librg_entity_iteratex(ctx, LIBRG_ENTITY_VISIBILITY, librg_lambda(relation), {
+                librg_entity_visibility_set_for(ctx, relation, entity->id, LIBRG_DEFAULT_VISIBILITY);
+            });
         }
         #endif
 

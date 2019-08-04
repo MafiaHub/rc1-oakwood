@@ -74,28 +74,31 @@ namespace masterlist {
         }
 
         switch (status) {
-        case HTTP_STATUS_FAILED:
-            zpl_printf("[ERROR] Could not push update to the masterlist! \n\t%s: \"%s\" (%d)\n", 
-                req->reason_phrase, response(req).c_str(), req->status_code);
+            case HTTP_STATUS_FAILED:
+                zpl_printf("[ERROR] Could not push update to the masterlist! \n\t%s: \"%s\" (%d)\n", 
+                    req->reason_phrase, response(req).c_str(), req->status_code);
 
-            if (req->status_code == 502) {
-                mod_log("Masterlist is down! Please, contact developers!");
-            }
+                if (req->status_code == 502) {
+                    mod_log("Masterlist is down! Please, contact developers!");
+                }
 
-            http_release(req);
-            was_push_successful = false;
-            req = nullptr;
-            break;
+                http_release(req);
+                was_push_successful = false;
+                req = nullptr;
+                break;
 
-        case HTTP_STATUS_COMPLETED:
-            http_release(req);
+            case HTTP_STATUS_COMPLETED:
+                http_release(req);
 
-            if (!was_push_successful)
-                mod_log("Successfully registered to the masterlist!");
+                if (!was_push_successful)
+                    mod_log("Successfully registered to the masterlist!");
 
-            was_push_successful = true;
-            req = nullptr;
-            break;
+                was_push_successful = true;
+                req = nullptr;
+                break;
+
+            case HTTP_STATUS_PENDING:
+                break;
         }
     }
 

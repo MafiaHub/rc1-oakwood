@@ -180,6 +180,8 @@ auto mod_bind_events()
         // Spectator camera
         if (local_player.spec_id != -1)
         {
+            zpl_printf("spec_id: %d \n", local_player.spec_id);
+
             librg_entity *ent = librg_entity_fetch(&network_context, local_player.spec_id);
 
             if (ent || local_player.spec_id != local_player.last_spec_id)

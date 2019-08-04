@@ -1,5 +1,8 @@
 #pragma once
 
+#define OAK_PLAYER_NAME_SIZE 32
+#define OAK_PLAYER_MODEL_SIZE 32
+
 struct body_health
 {
 	f32 left_hand;
@@ -13,7 +16,7 @@ enum
 	CLIENTSIDE_PLAYER_WAITING_FOR_VEH = (1 << 10)
 };
 
-struct mafia_player
+struct mafia_player : public oak_object
 {
 	~mafia_player()
 	{
@@ -25,20 +28,25 @@ struct mafia_player
 		}
 #endif
 	}
+    mafia_player() {
+        reset();
+    }
 
-	mafia_player() : streamer_entity_id(-1),
-					 vehicle_id(-1),
-					 spec_id(-1),
-					 hwid(0),
-					 has_visible_nameplate(1),
-					 current_weapon_id(0)
-	{
-		zpl_zero_item(this);
+	void reset() {
+#ifdef MAFIA_SDK_IMPLEMENTATION
+        zpl_printf("calling reset form constructor\n");
+#endif
+
 		streamer_entity_id = -1;
 		vehicle_id = -1;
 		pose = {1.0f, 1.0f, 1.0f};
 		position = {0.0f};
 		rotation = {0.0f, 0.0f, -1.0f};
+        spec_id = -1;
+        hwid = 0;
+        health = 200.0f;
+        has_visible_nameplate = 1;
+        current_weapon_id = 0;
 		strcpy(model, "Tommy.i3d");
 
 		for (size_t i = 0; i < 8; i++)
@@ -62,8 +70,8 @@ struct mafia_player
 	u8 is_crouching;
 	u8 is_visible_on_map;
 	u8 has_visible_nameplate;
-	char model[32];
-	char name[32];
+	char model[OAK_PLAYER_MODEL_SIZE];
+	char name[OAK_PLAYER_NAME_SIZE];
 	u32 aiming_time;
 	player_inventory inventory;
 	u32 current_weapon_id;

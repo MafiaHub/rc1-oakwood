@@ -21,7 +21,6 @@ struct _request_player_data {
     u64 hwid;
 } request_player_data;
 
-librg_ctx network_context = { 0 };
 std::vector<librg_entity*> connected_players;
 
 extern void store_bans();

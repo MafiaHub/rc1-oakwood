@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Structures/oak.hpp"
 #include "Structures/inventory.hpp"
 #include "Structures/player.hpp"
 #include "Structures/scoreboard.hpp"

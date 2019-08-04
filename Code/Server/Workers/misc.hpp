@@ -50,10 +50,10 @@ namespace misc {
             last_streamers_selection = zpl_time_now();
 
             librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | TYPE_VEHICLE), [](librg_ctx *ctx, librg_entity *entity) {
-                if (entity->user_data && entity->type & TYPE_VEHICLE) {
-                    auto vehicle = (mafia_vehicle*)entity->user_data;
+                if (entity->type & TYPE_VEHICLE) {
+                    auto vehicle = oak_entity_vehicle_get((oak_vehicle)entity->user_data);
 
-                    if (vehicle->seats[0] == -1) {
+                    if (vehicle && vehicle->seats[0] == -1) {
                         mod_vehicle_assign_nearest_player(&network_context, entity);
                     }
                 }
@@ -70,13 +70,15 @@ namespace misc {
             std::vector<player_scoreboard_info> scoreboard;
             for (int i = 0; i < connected_players.size(); i++) {
                 auto entity = connected_players.at(i);
-                if (entity && entity->user_data && entity->type == TYPE_PLAYER) {
-                    auto player = (mafia_player*)entity->user_data;
-                    player_scoreboard_info player_info;
-                    strcpy(player_info.nickname, player->name);
-                    player_info.ping = entity->client_peer->roundTripTime;
-                    player_info.server_id = scoreboard.size();
-                    scoreboard.push_back(player_info);
+                if (entity && entity->type == TYPE_PLAYER) {
+                    auto player = oak_entity_player_get((oak_player)entity->user_data);
+                    if (player) {
+                        player_scoreboard_info player_info;
+                        strcpy(player_info.nickname, player->name);
+                        player_info.ping = entity->client_peer->roundTripTime;
+                        player_info.server_id = scoreboard.size();
+                        scoreboard.push_back(player_info);
+                    }
                 }
             }
 
@@ -101,14 +103,14 @@ namespace misc {
             std::vector<gamemap_info> gamemap;
             for (int i = 0; i < network_context.max_entities; i++) {
                 auto entity = librg_entity_fetch(&network_context, i);
-                if (entity && entity->user_data) {
+                if (entity) {
 
                     bool visible = false;
                     if (entity->type == TYPE_PLAYER) {
-                        visible = ((mafia_player*)entity->user_data)->is_visible_on_map;
+                        visible = oak_player_visibility_get((oak_player)entity->user_data, OAK_VISIBILITY_ICON);
                     }
                     else if (entity->type == TYPE_VEHICLE) {
-                        visible = ((mafia_vehicle*)entity->user_data)->is_visible_on_map;
+                        visible = oak_vehicle_visibility_get((oak_vehicle)entity->user_data, OAK_VISIBILITY_ICON);
                     }
                
                     if (visible) {

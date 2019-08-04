@@ -20,6 +20,9 @@ void cam_set_target(librg_entity* ent) {
             else if (ent->user_data && ent->type == TYPE_PLAYER) {
                 auto player = (mafia_player*)ent->user_data;
                 auto ped = player->ped;
+
+                if (!ped) return;
+
                 auto veh = ped->GetInterface()->playersCar;
 
                 if (veh) {

@@ -1,3 +1,5 @@
+#define OAK_VEHICLE_MODEL_SIZE 32
+
 struct mafia_vehicle_tyre {
 	u32 flags;
 	f32 health;
@@ -14,10 +16,12 @@ enum {
     CLIENTSIDE_VEHICLE_STREAMER_REMOVED = (1 << 10)
 };
 
-struct mafia_vehicle {
-	mafia_vehicle() {
-		zpl_zero_item(this);
+struct mafia_vehicle : public oak_object {
+    mafia_vehicle() {
+        reset();
+    }
 
+	void reset() {
 		for (int i = 0; i < 4; i++)
 			seats[i] = -1;
 
@@ -30,7 +34,7 @@ struct mafia_vehicle {
 		collision_state = true;
 	}
 
-	char model[32];
+	char model[OAK_VEHICLE_MODEL_SIZE];
 	i32 seats[4];
     float engine_health;
     float health;

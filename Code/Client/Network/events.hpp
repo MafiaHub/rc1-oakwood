@@ -29,6 +29,8 @@ void handle_disconnection()
     }
 
     zpl_zero_item(&local_player);
+    local_player.spec_id = -1;
+    local_player.last_spec_id = -1;
     //librg_free(&network_context);
 
     car_delte_queue.clear();

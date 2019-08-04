@@ -19,7 +19,7 @@ namespace webserver {
     }
 
     void init() {
-        mod_log("Initializing webserver at :" + std::to_string(GlobalConfig.port) + "...");
+        oak_log("Initializing webserver at :%s...\n", std::to_string(GlobalConfig.port).c_str());
         mg_mgr_init(&mgr, NULL);
         nc = mg_bind(&mgr, std::to_string(GlobalConfig.port).c_str(), ev_handler);
         if (nc == NULL) {

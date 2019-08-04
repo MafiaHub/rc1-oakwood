@@ -10,6 +10,8 @@ Vendors/[Cc]ef
 Tools/[Oo]akgen.exe
 Tools/premake/cache
 *.code-workspace
+Code/Server/core/bridge.generated.h
 Code/Plugins/LuaMod/LuaBindings.hpp
 Tools/Oakgen.pdb
 Tools/Oakgen.ilk
+node_modules/
