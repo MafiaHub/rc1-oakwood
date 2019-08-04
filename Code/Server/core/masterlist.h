@@ -62,7 +62,7 @@ void oak__masterlist_push() {
                 req->reason_phrase, oak__masterlist_response(req), req->status_code);
 
             if (req->status_code == 502) {
-                mod_log("Masterlist is down! Please, contact developers!");
+                oak_log("Masterlist is down! Please, contact developers!");
             }
 
             http_release(req);

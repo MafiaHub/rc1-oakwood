@@ -118,6 +118,17 @@ void oak_bridge_event_player_chat(oak_player player, oak_string text) {
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
 
+void oak_bridge_event_console(oak_string text) {
+    printf("[info] executing server command: %s\n", text);
+    char buffer[OAK_BRIDGE_BUFFER] = {};
+    cw_pack_context pc;
+    cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
+    cw_pack_array_size(&pc, 2);
+    cw_pack_str(&pc, zpl_str_expand("console"));
+    cw_pack_str(&pc, text, zpl_strlen(text));
+    nn_send(sock_out, buffer, pc.current - pc.start, 0);
+}
+
 void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle) {
     char buffer[OAK_BRIDGE_BUFFER] = {};
     cw_pack_context pc;

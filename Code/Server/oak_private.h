@@ -10,15 +10,15 @@ int oak_log(const char *fmt, ...);
 /* CONFIG */
 
 int oak_config_init();
-int oak_config_free();
+
 int oak_config_port_get();
 int oak_config_maxplayers_get();
 int oak_config_visible_get();
 int oak_config_whitelistonly_get();
+void oak_config_name_set(const char *);
 const char *oak_config_name_get();
 const char *oak_config_host_get();
 const char *oak_config_mapname_get();
-const char *oak_config_gamemode_get();
 
 /* BRIDGE */
 
@@ -32,8 +32,9 @@ void oak_bridge_event_player_disconnect(oak_player player);
 void oak_bridge_event_player_death(oak_player player);
 void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float damage);
 void oak_bridge_event_player_key(oak_player player, int key);
-void oak_bridge_event_player_chat(oak_player player, oak_string text);
+void oak_bridge_event_player_chat(oak_player player, const char *text);
 void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle);
+void oak_bridge_event_console(const char *text);
 
 /* NETWORK */
 
@@ -41,7 +42,7 @@ int oak_network_init();
 int oak_network_free();
 int oak_network_tick();
 
-#define OAK_NETOWORK_DECLS(TYPE) \
+#define OAK_NETWORK_DECLS(TYPE) \
     void ZPL_JOIN3(oak_ev_,TYPE,_create)(librg_event *); \
     void ZPL_JOIN3(oak_ev_,TYPE,_update)(librg_event *); \
     void ZPL_JOIN3(oak_ev_,TYPE,_remove)(librg_event *); \
@@ -53,11 +54,11 @@ void oak_ev_player_requested(librg_event *);
 void oak_ev_player_connected(librg_event *);
 void oak_ev_player_disconnected(librg_event *);
 
-OAK_NETOWORK_DECLS(player);
-OAK_NETOWORK_DECLS(vehicle);
-OAK_NETOWORK_DECLS(door);
+OAK_NETWORK_DECLS(player);
+OAK_NETWORK_DECLS(vehicle);
+OAK_NETWORK_DECLS(door);
 
-#undef OAK_NETOWORK_DECLS
+#undef OAK_NETWORK_DECLS
 
 int oak_player_register();
 int oak_vehicle_register();
@@ -84,9 +85,11 @@ oak_player oak_vehicle_streamer_get(oak_vehicle);
 int oak_vehicle_streamer_set(oak_vehicle, oak_player);
 
 /* MASTERLIST */
+
 void oak_masterlist_update();
 
 /* WEBSERVER */
+
 void oak_webserver_init();
 void oak_webserver_stop();
 
@@ -98,5 +101,26 @@ int oak_player_destroy(librg_event *);
 /* HTTP ENDPOINTS */
 
 int oak_endp_payload_info(char *buf);
+
+/* CONSOLE */
+
+void oak_console_init();
+void oak_console_input_handler_init();
+void oak_console_input_handler_destroy();
+void oak_console_draw(const char *format, ...);
+void oak_console_printf(const char *format, ...);
+char oak_console_update_loader();
+void oak_console_block_input(int);
+
+/* SIGNAL HANDLER */
+
+void oak_sighandler_register();
+void oak_sighandler_unregister();
+
+/* CLI OPTIONS */
+
+void oak_cli_init(int argc, char **argv);
+void oak_cli_replace();
+void oak_cli_free();
 
 #endif // OAK_PRIVATE_H

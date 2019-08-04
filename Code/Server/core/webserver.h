@@ -52,7 +52,7 @@ void oak_webserver_init() {
 }
 
 void oak_webserver_stop() {
-    mod_log("Stopping the webserver...");
+    oak_log("Stopping the webserver...");
     web_server_running = false;
     zpl_thread_destroy(&web_thread);
 }

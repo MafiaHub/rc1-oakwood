@@ -50,13 +50,6 @@
 #include "http/mongoose.h"
 
 /*
-* Console I/O and signal handling
-*/
-
-#include "console.hpp"
-#include "signal_handling.hpp"
-
-/*
 * Shared
 */
 
@@ -87,17 +80,21 @@
 #include "oak_private.h"
 
 #include "core/config.h"
+#include "core/signal_handling.h"
+#include "core/console.h"
 #include "core/entities.h"
 #include "core/logger.h"
 #include "core/network.h"
 #include "core/bridge.h"
 #include "core/bridge.generated.h"
+#include "core/endpoints.h"
+#include "core/masterlist.h"
+#include "core/webserver.h"
 
 #include "Workers/misc.hpp"
 #include "utils.hpp"
 #include "peer_control.hpp"
-#include "config.hpp"
-#include "opts.hpp"
+#include "core/cli_opts.h"
 
 #include "api/chat.h"
 #include "api/camera.h"
@@ -112,10 +109,6 @@
 #include "events/vehicle.h"
 #include "events/vehicle_player.h"
 #include "events/weapons.h"
-
-#include "core/endpoints.h"
-#include "core/masterlist.h"
-#include "core/webserver.h"
 
 
 /*
@@ -136,32 +129,30 @@ int main(int argc, char **argv)
 {
     oak_log_init();
 
-    console::init();
-    console::printf("================================\n");
-    console::printf(banner_text);
-    console::printf("Build version: %s (%x)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
-    console::printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
-    console::printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
-    console::printf("================================\n");
-    opts::init(argc, argv);
+    oak_console_init();
+    oak_console_printf("================================\n");
+    oak_console_printf(banner_text);
+    oak_console_printf("Build version: %s (%x)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
+    oak_console_printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
+    oak_console_printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
+    oak_console_printf("================================\n");
+    oak_cli_init(argc, argv);
 
-#ifndef OAK_DISABLE_SIGNAL_HANDLING
-    register_console_events();
-#endif
+    oak_sighandler_register();
 
-    config::init();
-    opts::replace();
+    oak_config_init();
+    oak_cli_replace();
+
     oak_webserver_init();
-
     oak_bridge_init();
     oak_network_init();
     oak_entities_init();
 
-    console::init_input_handler();
+    oak_console_input_handler_init();
 
     while (true)
     {
-        console::console_data.input_block.store(true);
+        oak_console_block_input(1);
         oak_network_tick();
         oak_bridge_tick();
         misc::vehicles_streamer_update();
@@ -169,7 +160,7 @@ int main(int argc, char **argv)
         misc::scoreboard_update();
         misc::gamemap_update();
         oak_masterlist_update();
-        console::console_data.input_block.store(false);
+        oak_console_block_input(0);
         zpl_sleep_ms(1);
     }
 
@@ -181,23 +172,11 @@ void shutdown_server()
     oak_log("[info] server is shutting down...\n");
 
     oak_webserver_stop();
+    oak_console_input_handler_destroy();
     oak_bridge_free();
     oak_network_free();
-    console::kill_input_handler();
+    oak_sighandler_unregister();
 
-#ifndef OAK_DISABLE_SIGNAL_HANDLING
-    unregister_console_events();
-#endif
-
-    opts::free();
+    oak_cli_free();
     zpl_exit(0);
-}
-
-void execute_command(std::string msg)
-{
-    printf("Executing server command: %s\n", msg.c_str());
-
-    // TODO: add event trigger
-    // if (gm.on_server_command)
-    //     gm.on_server_command(msg);
 }

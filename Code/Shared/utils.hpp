@@ -28,19 +28,19 @@ static std::string implode(const std::vector<std::string>& parts, int index=0, c
     {
     case 0:
         return "";
-    
+
     case 1:
         return parts[0];
-    
+
     default:
         std::ostringstream os;
         std::copy(parts.begin()+index, parts.end()-1, std::ostream_iterator<std::string>(os, sep));
         os << *parts.rbegin();
         return os.str();
     }
-    
+
     std::ostringstream imploded;
-    
+
     return imploded.str();
 }
 
@@ -122,7 +122,7 @@ static void html_encode_string(std::string& data) {
 
 static std::string ConvertColoredString(std::string text) {
     std::stringstream output;
-    
+
     #ifndef OAK_CHAT_DISABLE_STYLING
     b32 following_style = true;
     static std::string begin_style = "<p style=\"color: #";
@@ -157,7 +157,7 @@ static std::string ConvertColoredString(std::string text) {
             if (following_style) {
                 output << end_style;
             }
-            
+
             following_style = true;
             output << begin_style << std::string(hex_col) << enclose_style;
             #endif
@@ -181,7 +181,7 @@ static std::vector<std::string> SplitStringByWhitespace(const std::string &subje
 
 inline auto mod_log(const char* msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console::printf("[Oakwood MP] %s\n", msg);
+    oak_console_printf("[Oakwood MP] %s\n", msg);
 #else
     printf("[Oakwood MP] %s\n", msg);
 #endif
@@ -189,7 +189,7 @@ inline auto mod_log(const char* msg) -> void {
 
 inline auto mod_log(std::string msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console::printf("[Oakwood MP] %s\n", msg.c_str());
+    oak_console_printf("[Oakwood MP] %s\n", msg.c_str());
 #else
     printf("[Oakwood MP] %s\n", msg.c_str());
 #endif
@@ -197,7 +197,7 @@ inline auto mod_log(std::string msg) -> void {
 
 inline auto mod_debug(const char* msg) -> void {
 #ifdef OAKWOOD_SERVER
-    console::printf("[DEBUG] %s\n", msg);
+    oak_console_printf("[DEBUG] %s\n", msg);
 #else
     printf("[DEBUG] %s\n", msg);
 #endif
