@@ -35,7 +35,7 @@ void oak_console_init();
 void oak_console_draw(const char* format, ...);
 void oak_console_printf(const char* format, ...);
 
-int oak__console_input_handler(struct zpl_thread *t) {
+zpl_isize oak__console_input_handler(struct zpl_thread *t) {
     do {
         /* TODO: Rework to C */
         std::string line;
@@ -156,7 +156,7 @@ inline void oak__console_draw_w32(const char* format, va_list va) {
 }
 
 #else
-inline void init_unix() {
+inline void oak__console_init_unix() {
 
     /* std::setlocale(LC_ALL, "");
     std::setlocale(LC_NUMERIC, "C");
