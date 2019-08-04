@@ -21,34 +21,12 @@ echo f|xcopy %pr%\Docs\modding_api.md Server\modding_api.md
 mkdir Server\config
 echo f|xcopy %pr%\Files\config\server.json Server\config\server.json
 
-mkdir Server\plugins
-echo f|xcopy %pr%\Bin\%build%\plugins\*.dll Server\plugins\
+rem mkdir Server\resources
+rem echo f|xcopy %pr%\Bin\%build%\plugins\*.dll Server\plugins\
 
 mkdir Server\static
 echo f|xcopy /S /Q %pr%\Files\static Server\static\
 
-mkdir Server\modding
-pushd Server\modding
-echo f|xcopy %pr%\Scripts\plugin_generate.bat plugin_generate.bat
-mkdir plugins
-echo f|xcopy /E %pr%\Code\Plugins plugins\
-
-mkdir shared
-echo f|xcopy /E %pr%\Code\Shared shared\
-del shared\version.hpp
-del shared\messages.hpp
-del shared\helpers.hpp
-
-mkdir vendors
-mkdir vendors\librg
-echo f|xcopy /E %pr%\Vendors\librg vendors\librg\
-del vendors\librg\librg_ext.h
-
-mkdir tools
-mkdir tools\premake
-echo f|xcopy /E %pr%\Tools\premake\bin tools\premake\
-
-popd
 popd
 
 cd %op%

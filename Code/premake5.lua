@@ -69,17 +69,9 @@ workspace "Oakwood"
         include "Client"
 
         group "Extensions"
-        
+
         include "WidescreenFix"
     end
 
-    group "Plugins"
-
-    -- include "Plugins/Freeride"
-    -- include "Plugins/EscapeTheCops"
-    -- include "Plugins/LuaMod"
-
     group "Server"
-
     include "Server"
-    -- include "Oakgen"

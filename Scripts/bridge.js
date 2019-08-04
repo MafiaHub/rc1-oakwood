@@ -93,7 +93,7 @@ const main = async () => {
     const checkarg = (type, msgpacktype) => `
         if (ipc.item.type != ${msgpacktype}) {
             errcode = -3;
-            errstr = zpl_bprintf("Error: argrument type mismatch; Expected '${type}', got '%d'", ipc.item.type);
+            errstr = zpl_bprintf("Error: argument type mismatch; Expected '${type}', got '%d'", ipc.item.type);
             goto oak_bridge_router_error;
         }
     `
