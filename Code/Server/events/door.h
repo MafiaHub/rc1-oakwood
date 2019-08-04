@@ -64,7 +64,7 @@ int oak_door_register() {
         //If doors doesen't exists yet we create new one
         if (door_ent == nullptr) {
             auto newdoor = oak_door_create(door_name, zpl_strlen(door_name));
-            door_ent = oak_entity_door_get(newdoor)->librg_entity;
+            door_ent = oak_entity_door_get(newdoor)->native_entity;
         }
 
         librg_entity_control_set(&network_context, door_ent->id, sender_ent->client_peer);

@@ -15,7 +15,7 @@ oak_player oak_player_create(librg_event *e) {
     auto entity = oak_entity_player_get(oak_id);
 
     entity->librg_id = e->entity->id;
-    entity->librg_entity = e->entity;
+    entity->native_entity = e->entity;
     entity->reset();
 
     /* store index of our entity in user_data */
@@ -62,7 +62,7 @@ int oak_player_spawn(oak_player id) {
     if (oak_player_invalid(id)) return -1;
 
     auto player = oak_entity_player_get(id);
-    auto entity = player->librg_entity;
+    auto entity = player->native_entity;
 
     librg_send(&network_context, NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
@@ -185,7 +185,7 @@ int oak_player_health_set(oak_player id, float health) {
 
 int oak_player_position_set(oak_player id, oak_vec3 position) {
     if (oak_player_invalid(id)) return -1;
-    oak_entity_player_get(id)->librg_entity->position = EXPAND_VEC(position);
+    oak_entity_player_get(id)->native_entity->position = EXPAND_VEC(position);
     return 0;
 }
 

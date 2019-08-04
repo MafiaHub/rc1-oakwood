@@ -7,7 +7,7 @@
             librg_entity_visibility_set_for(&network_context, player->librg_id, target->librg_id, LIBRG_ALWAYS_VISIBLE); \
         } \
         player->spec_id = id; \
-        librg_send_to(&network_context, NETWORK_CAMERA_TARGET, player->librg_entity->client_peer, data, { librg_data_went(&data, id); }); \
+        librg_send_to(&network_context, NETWORK_CAMERA_TARGET, player->native_entity->client_peer, data, { librg_data_went(&data, id); }); \
     } while (0)
 
 /**
@@ -20,7 +20,7 @@
 int oak_camera_set(oak_player id, oak_vec3 pos, oak_vec3 rot) {
     auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
 
-    librg_send_to(&network_context, NETWORK_CAMERA_SET_POS, player->librg_entity->client_peer, data, {
+    librg_send_to(&network_context, NETWORK_CAMERA_SET_POS, player->native_entity->client_peer, data, {
         librg_data_wptr(&data, &pos, sizeof(pos));
         librg_data_wptr(&data, &rot, sizeof(rot));
     });
@@ -35,7 +35,7 @@ int oak_camera_set(oak_player id, oak_vec3 pos, oak_vec3 rot) {
  */
 int oak_camera_unlock(oak_player id) {
     auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
-    librg_message_send_to(&network_context, NETWORK_CAMERA_UNLOCK, player->librg_entity->client_peer, NULL, 0);
+    librg_message_send_to(&network_context, NETWORK_CAMERA_UNLOCK, player->native_entity->client_peer, NULL, 0);
 
     return 0;
 }
@@ -85,7 +85,7 @@ int oak_camera_target_unset(oak_player id) {
     player->spec_id = -1;
 
     /* send invalid player to reset */
-    librg_send_to(&network_context, NETWORK_CAMERA_TARGET, player->librg_entity->client_peer, data, {
+    librg_send_to(&network_context, NETWORK_CAMERA_TARGET, player->native_entity->client_peer, data, {
         librg_data_went(&data, -1);
     });
 

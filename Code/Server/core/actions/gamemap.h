@@ -36,7 +36,7 @@ int oak_gamemap_update() {
                 gamemap_info info = {
                     vehicle->oak_id,
                     (u8)TYPE_VEHICLE, // todo: OAK_VEHICLE
-                    vehicle->librg_entity->position
+                    vehicle->native_entity->position
                 };
 
                 zpl_array_append(gamemap, info);

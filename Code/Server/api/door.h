@@ -4,7 +4,7 @@ oak_door oak_door_create(const char *name, int length) {
     auto native = librg_entity_create(&network_context, OAK_DOOR);
 
     entity->librg_id = native->id;
-    entity->librg_entity = native;
+    entity->native_entity = native;
     native->user_data = (void *)(uintptr)oak_id;
     native->position = {0};
 

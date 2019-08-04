@@ -78,9 +78,6 @@ void oak_ev_player_connected(librg_event *e) {
 
     oak_log("[info] player '%s'(%llu) has been connected!\n", player->name, player->hwid);
 
-    // oak_player_position_set(id, {61.4763f, 4.72524f, 107.708f});
-    // oak_player_spawn(id);
-
     oak_bridge_event_player_connect(id);
 }
 
@@ -223,18 +220,7 @@ int oak_player_register() {
         oak_bridge_event_player_death(pid);
     });
 
-    /*librg_network_add(&network_context, NETWORK_PLAYER_INVENTORY_SYNC, [](librg_message *msg) {
-        auto sender_ent = librg_entity_find(&network_context, msg->peer);
-
-        if (sender_ent->user_data && sender_ent->type == TYPE_PLAYER) {
-            auto player = (mafia_player *)sender_ent->user_data;
-            librg_data_rptr(msg->data, &player->inventory, sizeof(player_inventory));
-            inventory_send(sender_ent);
-        }
-    });*/
-
     librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
-
         auto sender_ent = librg_entity_find(&network_context, msg->peer);
         librg_entity_id attacker_id = librg_data_rent(msg->data);
         u32 hit_type = librg_data_ru32(msg->data);

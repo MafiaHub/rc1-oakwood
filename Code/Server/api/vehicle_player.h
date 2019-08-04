@@ -26,7 +26,7 @@ int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, int seat_id) {
     player->vehicle_id = vehicle->librg_id;
 
     if (seat_id == 0 && vehicle->seats[0] == -1) {
-        librg_entity_control_set(&network_context, vehicle->librg_id, player->librg_entity->client_peer);
+        librg_entity_control_set(&network_context, vehicle->librg_id, player->native_entity->client_peer);
     }
 
     librg_send(&network_context, NETWORK_VEHICLE_PLAYER_PUT, data, {

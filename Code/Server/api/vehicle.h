@@ -17,7 +17,7 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
 
     entity->reset();
     entity->librg_id = native->id;
-    entity->librg_entity = native;
+    entity->native_entity = native;
     native->user_data = (void *)(uintptr)oak_id;
     native->position = {0};
 
@@ -75,7 +75,7 @@ int oak_vehicle_despawn(oak_vehicle id) {
 
     librg_entity_destroy(&network_context, vehicle->librg_id);
     oak_entity_free(OAK_VEHICLE, id);
-    vehicle->librg_entity->user_data = nullptr;
+    vehicle->native_entity->user_data = nullptr;
 
     return 0;
 }
@@ -156,7 +156,7 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     auto entity = oak_entity_vehicle_get(id);
 
     librg_entity_control_ignore_next_update(&network_context, entity->librg_id);
-    entity->librg_entity->position = hard_cast(zpl_vec3*)(position);
+    entity->native_entity->position = hard_cast(zpl_vec3*)(position);
 
     return 0;
 }
@@ -233,7 +233,7 @@ oak_vec3 oak_vehicle_direction_get(oak_vehicle id) {
 oak_vec3 oak_vehicle_position_get(oak_vehicle id) {
     if (oak_vehicle_invalid(id)) return {-1, -1, -1};
     auto entity = oak_entity_vehicle_get(id);
-    return hard_cast(oak_vec3*)entity->librg_entity->position;
+    return hard_cast(oak_vec3*)entity->native_entity->position;
 }
 
 /**
