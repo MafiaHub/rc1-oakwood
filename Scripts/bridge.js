@@ -13,6 +13,7 @@ int oak_bridge_router(const char *nanobuffer, usize size) {
     char *errstr = "";
 
     char buffer[OAK_BRIDGE_BUFFER] = {};
+    char fname[256] = {};
 
     cw_pack_context_init(&opc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_unpack_context_init(&ipc, (void *)nanobuffer, size, 0);
@@ -27,7 +28,6 @@ int oak_bridge_router(const char *nanobuffer, usize size) {
 
     cw_unpack_next(&ipc);
 
-    char fname[256] = {};
 
     if (ipc.item.type != CWP_ITEM_STR) {
         errcode = -1;
