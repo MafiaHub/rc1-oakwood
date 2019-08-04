@@ -101,6 +101,7 @@
 
 #include "api/chat.h"
 #include "api/camera.h"
+#include "api/hud.h"
 #include "api/player.h"
 #include "api/vehicle.h"
 #include "api/vehicle_player.h"

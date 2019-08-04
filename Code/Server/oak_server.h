@@ -89,8 +89,11 @@ OAK_API int oak_camera_unlock(oak_player);
 OAK_API int oak_camera_target_player(oak_player, oak_player);
 OAK_API int oak_camera_target_vehicle(oak_player, oak_vehicle);
 OAK_API int oak_camera_target_unset(oak_player);
-OAK_API int oak_camera_fadeout(oak_player, int, int, int);
-OAK_API int oak_camera_countdown(oak_player, oak_countdown);
+
+/* HUD */
+OAK_API int oak_hud_fadeout(oak_player, int, int, int);
+OAK_API int oak_hud_countdown(oak_player, oak_countdown);
+OAK_API int oak_hud_alert(oak_player, oak_string, float);
 
 /* CHAT */
 
