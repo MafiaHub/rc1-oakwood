@@ -116,8 +116,9 @@ void oak_webserver_stop();
 oak_player oak_player_create(librg_event *);
 int oak_player_destroy(librg_event *);
 
-/* GAMEMAP */
+/* GAMEMAP & SCOREBOARD */
 int oak_gamemap_update();
+int oak_scoreboard_update();
 
 /* HTTP ENDPOINTS */
 

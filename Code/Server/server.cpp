@@ -93,6 +93,7 @@
 #include "core/webserver.h"
 
 #include "core/gamemap.h"
+#include "core/scoreboard.h"
 
 #include "Workers/misc.hpp"
 #include "utils.hpp"
@@ -159,7 +160,7 @@ int main(int argc, char **argv)
         oak_bridge_tick();
         misc::vehicles_streamer_update();
         oak_console_console_update_stats();
-        misc::scoreboard_update();
+        oak_scoreboard_update();
         oak_gamemap_update();
         oak_masterlist_update();
         oak_console_block_input(0);
