@@ -44,9 +44,33 @@ int oak_vehicle_player_get(oak_vehicle vid, oak_player pid) {
     return -1;
 }
 
-int oak_vehicle_player_remove(oak_vehicle, oak_player) {
-    ZPL_ASSERT_MSG(0, "oak_vehicle_player_remove: not implemented");
-    return -1;
+int oak_vehicle_player_remove(oak_vehicle vid, oak_player pid) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+    auto player = oak_entity_player_get(pid);
+
+    if (!player || !vehicle)
+        return -1;
+
+    for (u32 i = 0; i < OAK_MAX_SEATS; i++) {
+        if (vehicle->seats[i] == player->native_id) {
+            vehicle->seats[i] = -1;
+            player->vehicle_id = -1;
+
+            mod_message_send(&network_context, NETWORK_VEHICLE_PLAYER_REMOVE, [&](librg_data *data) {
+                librg_data_went(data, player->native_id);
+                librg_data_went(data, vehicle->native_id);
+                librg_data_wu32(data, i);
+            });
+
+            if (i == 0) {
+                oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
+            }
+
+            break;
+        }
+    }
+
+    return 0;
 }
 
 /**
