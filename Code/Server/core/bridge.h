@@ -59,7 +59,7 @@ void oak_bridge_event_player_connect(oak_player player) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 2);
-    cw_pack_str(&pc, "player_connect", zpl_strlen("player_connect"));
+    cw_pack_str(&pc, zpl_str_expand("player_connect"));
     cw_pack_signed(&pc, player);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
@@ -69,7 +69,7 @@ void oak_bridge_event_player_disconnect(oak_player player) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 2);
-    cw_pack_str(&pc, "player_disconnect", zpl_strlen("player_disconnect"));
+    cw_pack_str(&pc, zpl_str_expand("player_disconnect"));
     cw_pack_signed(&pc, player);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
@@ -79,7 +79,7 @@ void oak_bridge_event_player_death(oak_player player) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 2);
-    cw_pack_str(&pc, "player_death", zpl_strlen("player_death"));
+    cw_pack_str(&pc, zpl_str_expand("player_death"));
     cw_pack_signed(&pc, player);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
@@ -89,7 +89,7 @@ void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float d
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 4);
-    cw_pack_str(&pc, "player_hit", zpl_strlen("player_hit"));
+    cw_pack_str(&pc, zpl_str_expand("player_hit"));
     cw_pack_signed(&pc, player);
     cw_pack_signed(&pc, attacker);
     cw_pack_float(&pc, damage);
@@ -101,7 +101,7 @@ void oak_bridge_event_player_key(oak_player player, int key) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 3);
-    cw_pack_str(&pc, "player_key", zpl_strlen("player_key"));
+    cw_pack_str(&pc, zpl_str_expand("player_key"));
     cw_pack_signed(&pc, player);
     cw_pack_signed(&pc, key);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
@@ -112,7 +112,7 @@ void oak_bridge_event_player_chat(oak_player player, oak_string text) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 3);
-    cw_pack_str(&pc, "player_chat", zpl_strlen("player_chat"));
+    cw_pack_str(&pc, zpl_str_expand("player_chat"));
     cw_pack_signed(&pc, player);
     cw_pack_str(&pc, text, zpl_strlen(text));
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
@@ -134,7 +134,7 @@ void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle) {
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 2);
-    cw_pack_str(&pc, "vehicle_destroy", zpl_strlen("vehicle_destroy"));
+    cw_pack_str(&pc, zpl_str_expand("vehicle_destroy"));
     cw_pack_signed(&pc, vehicle);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
