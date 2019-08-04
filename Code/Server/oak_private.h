@@ -100,6 +100,7 @@ OAK_ENTITY_LIBRG_GETTER(door, OAK_DOOR)
 
 oak_player oak_vehicle_streamer_get(oak_vehicle);
 int oak_vehicle_streamer_set(oak_vehicle, oak_player);
+int oak_vehicle_streamer_assign_nearest(oak_vehicle, int exception=-1);
 int oak_vehicle_seat_assign(oak_vehicle, oak_player, oak_seat_id);
 
 /* MASTERLIST */

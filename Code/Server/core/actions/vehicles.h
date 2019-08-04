@@ -10,8 +10,7 @@ void oak_vehicles_update() {
             auto vehicle = oak_entity_vehicle_get_from_librg(entity);
 
             if (vehicle && vehicle->seats[0] == -1) {
-                // TODO: refactor this code
-                mod_vehicle_assign_nearest_player(&network_context, entity);
+                oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
             }
         });
     }

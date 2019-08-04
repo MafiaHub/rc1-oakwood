@@ -17,18 +17,16 @@ int oak_vehicle_player_register() {
                 });
 
                 auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
-                auto driver = oak_entity_player_get((oak_player)driver_ent->user_data);
-                if (driver_ent && driver) {
+                auto driver = oak_entity_player_get_from_librg(driver_ent);
+
+                if (driver) {
                     driver->vehicle_id = -1;
                 }
 
                 vehicle->seats[seat] = -1;
 
                 if (seat == 0) {
-                    auto streamer = mod_get_nearest_player(&network_context, vehicle_ent->position);
-                    if (streamer != nullptr) {
-                        librg_entity_control_set(&network_context, vehicle_ent->id, streamer->client_peer);
-                    }
+                    oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
                 }
             }
         }
@@ -60,7 +58,7 @@ int oak_vehicle_player_register() {
                             // Do we need this part code if player will not actualy change position until message is send
 
                             if (i == 0) {
-                                mod_vehicle_assign_nearest_player(&network_context, sender_vehicle_ent);
+                                oak_vehicle_streamer_assign_nearest(sender_vehicle->oak_id);
                             }
 
                             break;
@@ -120,7 +118,7 @@ int oak_vehicle_player_register() {
             if (seat_id == 0 && action == 1) {
                 librg_entity_control_set(&network_context, vehicle_ent->id, sender_ent->client_peer);
             } else if (seat_id == 0 && action == 2) {
-                mod_vehicle_assign_nearest_player(&network_context, vehicle_ent);
+                oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
             }
         }
     });

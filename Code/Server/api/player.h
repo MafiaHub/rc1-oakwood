@@ -106,7 +106,7 @@ int oak_player_kill(oak_player id) {
                 if (vehicle->seats[i] == player->native_id) {
                     vehicle->seats[i] = -1;
                     if (i == 0) {
-                        mod_vehicle_assign_nearest_player(&network_context, vehicle_ent);
+                        oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
                     }
                     break;
                 }
