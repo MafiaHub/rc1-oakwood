@@ -7,7 +7,7 @@ zpl_mutex logger_mutex = {0};
  * Init logger
  */
 int oak_log_init() {
-    zpl_file_remove(OAK_LOGGER_FILENAME);
+    zpl_fs_remove(OAK_LOGGER_FILENAME);
     zpl_file_create(&oak__debug_log, OAK_LOGGER_FILENAME);
     zpl_mutex_init(&logger_mutex);
 

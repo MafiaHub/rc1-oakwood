@@ -73,7 +73,6 @@ oak.cmd('car', async (pid, model) => {
     const veh = await oak.vehicle_spawn(vehicles[m][1])
 
     oak.vehicle_position_set(veh, pos)
-    oak.vehicle_player_put(veh, pid, 0)
 })
 
 oak.cmd('help', async (pid) => {

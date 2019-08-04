@@ -41,8 +41,7 @@ namespace masterlist {
             return "Unknown response";
         }
 
-        zpl_json_object *msg;
-        zpl_json_find(&root, "message", false, &msg);
+        zpl_json_object *msg = zpl_json_find(&root, "message", false);
 
         if (!msg) {
             zpl_json_free(&root);
