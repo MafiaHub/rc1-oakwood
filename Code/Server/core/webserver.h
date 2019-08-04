@@ -20,7 +20,7 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
     nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
-int oak__webserver_runner(struct zpl_thread *t) {
+zpl_isize oak__webserver_runner(struct zpl_thread *t) {
     while (web_server_running) {
         mg_mgr_poll(&mgr, 200);
     }
