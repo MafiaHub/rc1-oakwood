@@ -93,8 +93,6 @@
 #include "core/bridge.h"
 #include "core/bridge.generated.h"
 
-#include "Workers/masterlist.hpp"
-#include "Workers/webserver.hpp"
 #include "Workers/misc.hpp"
 #include "utils.hpp"
 #include "peer_control.hpp"
@@ -115,15 +113,9 @@
 #include "events/vehicle_player.h"
 #include "events/weapons.h"
 
-
-// #include "mode.hpp"
-// #include "modules.hpp"
-// #include "Network/base.hpp"
-// #include "natives.hpp"
-
-/*
-* Workers
-*/
+#include "core/endpoints.h"
+#include "core/masterlist.h"
+#include "core/webserver.h"
 
 
 /*
@@ -159,8 +151,7 @@ int main(int argc, char **argv)
 
     config::init();
     opts::replace();
-    webserver::init();
-    // gamemode::init();
+    oak_webserver_init();
 
     oak_bridge_init();
     oak_network_init();
@@ -177,7 +168,7 @@ int main(int argc, char **argv)
         misc::console_update_stats();
         misc::scoreboard_update();
         misc::gamemap_update();
-        masterlist::update();
+        oak_masterlist_update();
         console::console_data.input_block.store(false);
         zpl_sleep_ms(1);
     }
@@ -189,8 +180,7 @@ void shutdown_server()
 {
     oak_log("[info] server is shutting down...\n");
 
-    // gamemode::free_dll();
-    webserver::stop();
+    oak_webserver_stop();
     oak_bridge_free();
     oak_network_free();
     console::kill_input_handler();

@@ -18,8 +18,7 @@ int launcher_gameinit(std::string localpath, std::string gamepath);
 #define concat(local, path) (local + "/" + path).c_str()
 #define json_apply(OBJ, VAR, NAME, STR, DEF, CAST)           \
     do {                                                     \
-        zpl_json_object *NAME;                               \
-        zpl_json_find(OBJ, #NAME, false, &NAME);             \
+        zpl_json_object *NAME = zpl_json_find(OBJ, #NAME, false);     \
         VAR = (CAST)((NAME && NAME->STR) ? NAME->STR : DEF); \
     } while (0)
 
@@ -115,7 +114,7 @@ int main()
     std::replace(gamepath.begin(), gamepath.end(), '\\', '/');
 
     zpl_printf("[info] gamepath: %s\n", gamepath.c_str());
-    if (!zpl_file_exists(concat(gamepath, "Game.exe"))) {
+    if (!zpl_fs_exists(concat(gamepath, "Game.exe"))) {
         return launcher_abort(("Cannot find a game executable by given path:\n" + gamepath + "\n\n Please check your path and try again!").c_str());
     }
 

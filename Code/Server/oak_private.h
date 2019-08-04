@@ -83,11 +83,20 @@ mafia_door *oak_entity_door_get(oak_door);
 oak_player oak_vehicle_streamer_get(oak_vehicle);
 int oak_vehicle_streamer_set(oak_vehicle, oak_player);
 
+/* MASTERLIST */
+void oak_masterlist_update();
+
+/* WEBSERVER */
+void oak_webserver_init();
+void oak_webserver_stop();
+
 /* SEMI PUBLIC METHODS */
 
 oak_player oak_player_create(librg_event *);
 int oak_player_destroy(librg_event *);
 
+/* HTTP ENDPOINTS */
 
+int oak_endp_payload_info(char *buf);
 
 #endif // OAK_PRIVATE_H

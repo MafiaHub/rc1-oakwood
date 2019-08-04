@@ -12,7 +12,7 @@ int sock_in;
 /* GENERAL */
 
 int oak_bridge_init() {
-    oak_log("[info] initializing bridge\n");
+    oak_log("[info] initializing bridge...\n");
 
     sock_out = nn_socket(AF_SP, NN_PUB);
     sock_in = nn_socket(AF_SP, NN_REP);
@@ -30,7 +30,7 @@ int oak_bridge_init() {
 }
 
 int oak_bridge_free() {
-    oak_log("[info] stopping bridge\n");
+    oak_log("[info] stopping bridge...\n");
 
     nn_close(sock_out);
     nn_close(sock_in);
