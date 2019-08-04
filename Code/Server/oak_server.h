@@ -43,6 +43,15 @@ enum  {
     OAK_COUNTDOWN_3,
 };
 
+typedef int oak_seat_id;
+enum {
+    OAK_SEAT_FRONT_LEFT = 0,
+    OAK_SEAT_FRONT_RIGHT,
+    OAK_SEAT_REAR_LEFT,
+    OAK_SEAT_REAR_RIGHT,
+    OAK_MAX_SEATS,
+};
+
 OAK_API int oak_logn(oak_string, int);
 
 /* PLAYERS */
@@ -114,12 +123,14 @@ OAK_API float oak_vehicle_transparency_get(oak_vehicle);
 OAK_API int oak_vehicle_visibility_set(oak_vehicle, oak_visiblity_type, int);
 OAK_API int oak_vehicle_visibility_get(oak_vehicle, oak_visiblity_type);
 
-/* VEHICLE/PLAYER INTEGRATION */
+/* VEHICLE/PLAYER INTERACTION */
 
 OAK_API int oak_vehicle_player_put(oak_vehicle, oak_player, int);
 OAK_API int oak_vehicle_player_get(oak_vehicle, oak_player);
 OAK_API int oak_vehicle_player_remove(oak_vehicle, oak_player);
 OAK_API oak_vehicle oak_vehicle_player_inside(oak_player);
+OAK_API oak_seat_id oak_vehicle_player_seat_get(oak_vehicle, oak_player);
+OAK_API oak_player oak_vehicle_player_seat_player_get(oak_vehicle, oak_seat_id);
 
 /* DOORS */
 OAK_API oak_door oak_door_create(oak_string, int);

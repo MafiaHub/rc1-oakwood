@@ -30,14 +30,7 @@ void oak_ev_player_requested(librg_event *evnt) {
 
     // TODO: Apart from local ban database, fetch global bans as well
     {
-        b32 isBanned = false;
-
-        for (auto id : GlobalConfig.banned) {
-            if (id.first == hwid) {
-                isBanned = true;
-                break;
-            }
-        }
+        b32 isBanned = oak_access_bans_get(hwid);
 
         if (isBanned) {
             oak_log("Connection for %s'%s' has been rejected!\nPlayer is banned! GUID: %llu\n", temp.name, hostname, hwid);
@@ -50,15 +43,8 @@ void oak_ev_player_requested(librg_event *evnt) {
         }
     }
 
-    if (GlobalConfig.whitelistOnly) {
-        b32 isExempted = false;
-
-        for (auto id : GlobalConfig.whitelisted) {
-            if (id.first == hwid) {
-                isExempted = true;
-                break;
-            }
-        }
+    if (oak_access_wh_state_get()) {
+        b32 isExempted = oak_access_wh_get(hwid);
 
         if (!isExempted) {
             oak_log("Connection for %s o'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", temp.name, hostname, hwid);

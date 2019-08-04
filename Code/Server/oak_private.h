@@ -14,7 +14,6 @@ int oak_config_init();
 int oak_config_port_get();
 int oak_config_maxplayers_get();
 int oak_config_visible_get();
-int oak_config_whitelistonly_get();
 void oak_config_name_set(const char *);
 const char *oak_config_name_get();
 const char *oak_config_host_get();
@@ -119,6 +118,21 @@ int oak_player_destroy(librg_event *);
 /* GAMEMAP & SCOREBOARD */
 int oak_gamemap_update();
 int oak_scoreboard_update();
+
+/* PEER ACCESS CONTROL */
+
+void oak_access_bans_store();
+void oak_access_wh_store();
+void oak_access_wh_load();
+void oak_access_bans_load();
+void oak_access_bans_add(IDBind hwid);
+void oak_access_bans_remove(u64 hwid);
+void oak_access_wh_add(IDBind hwid);
+void oak_access_wh_remove(u64 hwid);
+void oak_access_wh_state_set(b32 state);
+int  oak_access_wh_state_get();
+int  oak_access_bans_get(u64 hwid);
+int  oak_access_wh_get(u64 hwid);
 
 /* HTTP ENDPOINTS */
 

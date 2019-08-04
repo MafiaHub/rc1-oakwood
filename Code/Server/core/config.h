@@ -15,6 +15,7 @@ int oak_config_init() {
     oak_log("Loading config...\n");
 
     auto json = config_get(oak__config_file_name, oak__config_mod_default);
+    b32 whOnly = false;
 
     json_apply(json, GlobalConfig.host, host, string, "");
     json_apply(json, GlobalConfig.name, name, string, "default oakwood server");
@@ -22,48 +23,18 @@ int oak_config_init() {
     json_apply(json, GlobalConfig.mapname, mapname, string, "freeride");
     json_apply(json, GlobalConfig.port, port, integer, 27010);
     json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
-    json_apply(json, GlobalConfig.whitelistOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
+    json_apply(json, whOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
 
     if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
         GlobalConfig.visible = false;
 
-    if (GlobalConfig.whitelistOnly == ZPL_JSON_CONST_FALSE)
-        GlobalConfig.whitelistOnly = false;
+    oak_access_wh_state_set(whOnly);
 
-    // todo: port to C
-    if (GlobalConfig.whitelistOnly) {
-        std::string currentLine;
-        std::ifstream inputFile("config/whitelist.txt");
-        while (!inputFile.fail() && !inputFile.eof()) {
-            std::getline(inputFile, currentLine);
-            if (currentLine.length() == 0) continue;
-            u64 hwid;
-            char name[32] = { 0 };
-            ::sscanf(currentLine.c_str(), "%llu %s", &hwid, name);
-            GlobalConfig.whitelisted.push_back(std::make_pair(hwid, std::string(name)));
-        }
-        inputFile.close();
-    }
-
-    // handle bans
-    // todo: port to c
-    {
-        std::string currentLine;
-        std::ifstream inputFile("config/banlist.txt");
-        while (!inputFile.fail() && !inputFile.eof()) {
-            std::getline(inputFile, currentLine);
-            if (currentLine.length() == 0) continue;
-            u64 hwid;
-            char name[32] = { 0 };
-            ::sscanf(currentLine.c_str(), "%llu %s", &hwid, name);
-            GlobalConfig.banned.push_back(std::make_pair(hwid, std::string(name)));
-        }
-        inputFile.close();
-    }
+    oak_access_wh_load();
+    oak_access_bans_load();
 
     oak_log("================================\n");
     oak_log("Name: %s\n", GlobalConfig.name.c_str());
-    oak_log("Module: %s\n", GlobalConfig.gamemode.c_str());
     oak_log("Max players: %d\n", (u32)GlobalConfig.max_players);
     oak_log("Port: %d\n", (u32)GlobalConfig.port);
     oak_log("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");
@@ -82,10 +53,6 @@ int oak_config_maxplayers_get() {
 
 int oak_config_visible_get() {
     return GlobalConfig.visible;
-}
-
-int oak_config_whitelistonly_get() {
-    return GlobalConfig.whitelistOnly;
 }
 
 const char *oak_config_name_get() {

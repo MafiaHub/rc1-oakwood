@@ -11,7 +11,7 @@
     } while (0)
 
 /**
- * Set camera to speficif point
+ * Set camera to spefific point
  * @param  oak_player
  * @param  oak_vec3   position
  * @param  oak_vec3   rotation

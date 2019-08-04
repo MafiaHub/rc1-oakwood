@@ -82,3 +82,61 @@ oak_vehicle oak_vehicle_player_inside(oak_player pid) {
 
     return -2;
 }
+
+/**
+ * Get a current seat ID player is sitting in
+ * @param  vid
+ * @param  pid
+ * @return
+ */
+oak_seat_id oak_vehicle_player_seat_get(oak_vehicle vid, oak_player pid) {
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    if (!vehicle) {
+        return -1;
+    }
+
+    auto player = oak_entity_player_get(pid);
+
+    if (!player) {
+        return -2;
+    }
+
+    for (int i = 0; i < OAK_MAX_SEATS; ++i)
+    {
+        if (player->librg_id == vehicle->seats[i]) {
+            return i;
+        }
+    }
+
+    return -3;
+}
+
+/**
+ * Get player at a specific seat ID
+ * @param  vid
+ * @param  seat_id
+ * @return
+ */
+oak_player oak_vehicle_player_seat_player_get(oak_vehicle vid, oak_seat_id seat_id) {
+    if (seat_id < 0 || seat_id >= OAK_MAX_SEATS) {
+        return -1;
+    }
+
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    if (!vehicle) {
+        return -2;
+    }
+
+    int player_id = vehicle->seats[seat_id];
+    auto player_ent = librg_entity_fetch(oak_network_ctx_get(), player_id);
+
+    if (!player_ent) {
+        return -3;
+    }
+
+    auto player = oak_entity_get_id_from_librg(player_ent);
+
+    return player;
+}
