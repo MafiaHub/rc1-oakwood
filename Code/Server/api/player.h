@@ -84,8 +84,24 @@ int oak_player_spawn(oak_player id) {
  * @return
  */
 int oak_player_despawn(oak_player id) {
-    ZPL_ASSERT_MSG(0, "oak_player_despawn: not implemented");
-    return -1;
+    if (oak_player_invalid(id)) return -1;
+
+    auto player = oak_entity_player_get(id);
+
+    if (player->vehicle_id != -1) {
+        if (librg_entity_valid(oak_network_ctx_get(), player->vehicle_id)) {
+            auto vid = oak_entity_vehicle_get_from_native(
+                librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id))->oak_id;
+
+            oak_vehicle_player_remove(vid, player->oak_id);
+        }
+    }
+
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_DESPAWN, data, {
+        librg_data_went(&data, player->native_id);
+    });
+
+    return 0;
 }
 
 /**

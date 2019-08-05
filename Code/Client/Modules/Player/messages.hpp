@@ -53,6 +53,36 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_PLAYER_DESPAWN, [](librg_message* msg) {
+        auto sender_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+
+        if (!sender_ent) {
+            return;
+        }
+
+        auto player_data = (mafia_player*)sender_ent->user_data;
+
+        if (player_data->ped) {
+            //NOTE(DavoSK): Check if old ped was inside vehicle
+            //remove him from seat of occupied vehicle
+            if (player_data->vehicle_id > -1) {
+                auto vehicle_ent = librg_entity_fetch(&network_context, player_data->vehicle_id);
+                if (vehicle_ent) {
+                    auto mafia_veh = (mafia_vehicle*)(vehicle_ent->user_data);
+                    for (int i = 0; i < 4; i++) {
+                        if (mafia_veh->seats[i] == sender_ent->id) {
+                            mafia_veh->seats[i] = -1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            despawn(player_data->ped);
+            player_data->ped = nullptr;
+        }
+    });
+
     librg_network_add(&network_context, NETWORK_VEHICLE_PLAYER_HIJACK, [](librg_message *msg) {
         auto sender_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));
         auto vehicle_ent = librg_entity_fetch(&network_context, librg_data_ru32(msg->data));

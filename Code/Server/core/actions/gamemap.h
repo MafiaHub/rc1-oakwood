@@ -17,7 +17,7 @@ int oak_gamemap_update() {
             if (oak_player_visibility_get(player->oak_id, OAK_VISIBILITY_ICON)) {
                 gamemap_info info = {
                     player->native_id,
-                    (u8)TYPE_PLAYER, // todo: OAK_PLAYER
+                    (u8)OAK_PLAYER, // todo: OAK_PLAYER
                     player->position
                 };
 
@@ -34,7 +34,7 @@ int oak_gamemap_update() {
             if (oak_vehicle_visibility_get(vehicle->oak_id, OAK_VISIBILITY_ICON)) {
                 gamemap_info info = {
                     vehicle->native_id,
-                    (u8)TYPE_VEHICLE, // todo: OAK_VEHICLE
+                    (u8)OAK_VEHICLE, // todo: OAK_VEHICLE
                     vehicle->native_entity->position
                 };
 

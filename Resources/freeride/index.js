@@ -62,6 +62,10 @@ oak.cmd('spawn', async pid => {
     spawnplayer(pid)
 })
 
+oak.cmd('despawn', async pid => {
+    oak.player_despawn(pid)
+})
+
 oak.cmd('kill', async pid => {
     oak.player_kill(pid)
 })
