@@ -77,7 +77,6 @@ int oak_chat_register();
 
 int oak_entities_init();
 int oak_entities_count_get(oak_type);
-oak_object **oak_entity_list(oak_type, int *);
 u32 oak_entity_next(oak_type type);
 int oak_entity_free(oak_type type);
 int oak_entity_invalid(oak_type type, u32);

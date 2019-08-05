@@ -46,6 +46,10 @@ enum {
 
 OAK_API int oak_logn(oak_string, int);
 
+/* ENTITY LIST */
+oak_player **oak_player_list(int *);
+oak_vehicle **oak_vehicle_list(int *);
+
 /* PLAYERS */
 
 OAK_API int oak_player_spawn(oak_player);
