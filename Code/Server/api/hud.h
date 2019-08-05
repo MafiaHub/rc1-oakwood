@@ -21,14 +21,17 @@ int oak_hud_fadeout(oak_player id, int fadeout, int duration, int color) {
 /**
  * Show a countdown for a player
  * @param  id
- * @param  type
+ * @param  number
  * @return
  */
-int oak_hud_countdown(oak_player id, oak_countdown type) {
+int oak_hud_countdown(oak_player id, int number) {
     auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
 
+    // wrap the number around
+    number = (3 - number % 4);
+
     librg_send_to(&network_context, NETWORK_HUD_COUNTDOWN, player->native_entity->client_peer, data, {
-        librg_data_wu32(&data, type);
+        librg_data_wu32(&data, number);
     });
 
     return 0;

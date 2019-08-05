@@ -35,14 +35,6 @@ enum {
     OAK_VISIBILITY_COLLISION,
 };
 
-typedef int oak_countdown;
-enum  {
-    OAK_COUNTDOWN_0 = 0,
-    OAK_COUNTDOWN_1,
-    OAK_COUNTDOWN_2,
-    OAK_COUNTDOWN_3,
-};
-
 typedef int oak_seat_id;
 enum {
     OAK_SEAT_FRONT_LEFT = 0,
@@ -92,7 +84,7 @@ OAK_API int oak_camera_target_unset(oak_player);
 
 /* HUD */
 OAK_API int oak_hud_fadeout(oak_player, int, int, int);
-OAK_API int oak_hud_countdown(oak_player, oak_countdown);
+OAK_API int oak_hud_countdown(oak_player, int);
 OAK_API int oak_hud_alert(oak_player, oak_string, float);
 
 /* CHAT */

@@ -20,8 +20,8 @@ int oak_bridge_init() {
     const char *addr_in = oak_config_bridge_inbound_get();
     const char *addr_out = oak_config_bridge_outbound_get();
 
-    nn_bind(sock_in, addr_in);
-    nn_bind(sock_out, addr_out);
+    nn_bind(sock_in, addr_out);
+    nn_bind(sock_out, addr_in);
 
     return 0;
 }

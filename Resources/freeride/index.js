@@ -70,6 +70,16 @@ oak.cmd('kill', async pid => {
     oak.player_kill(pid)
 })
 
+oak.cmd('race', async (pid, flags) => {
+    const f = parseInt(flags)
+
+    if (f === NaN) {
+        return oak.chat_send(pid, '[error] pakuj do pici')
+    }
+
+    oak.hud_countdown(pid, f)
+})
+
 const spawncar = async (pid, model, adjustPos) => {
     const m = parseInt(model)
 
