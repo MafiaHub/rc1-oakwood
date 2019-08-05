@@ -2,7 +2,7 @@
 
 static const char *oak__config_file_name = "config/server.json";
 static const char *oak__config_mod_default = "\n"\
-    "max_players = 16\n"\
+    "max_players = 64\n"\
     "name = \"default oakwood server\"\n"\
     "host = \"\"\n"\
     "password = \"\"\n"\

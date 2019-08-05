@@ -28,6 +28,7 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
     entity->is_car_in_radar    = true;
     entity->rot_forward        = ComputeDirVector(0.0f);
     entity->rot_up             = { 0.0f, 1.0f, 0.0f };
+    oak_vehicle_visibility_set(oak_id, OAK_VISIBILITY_ICON, 1);
 
     zpl_memset(entity->model, 0, OAK_VEHICLE_MODEL_SIZE);
     zpl_memcopy(entity->model, model, length);

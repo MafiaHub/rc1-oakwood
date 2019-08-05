@@ -21,6 +21,7 @@ oak_player oak_player_create(librg_event *e) {
     /* store index of our entity in user_data */
     e->entity->stream_range = 500.0f;
     e->entity->user_data = cast(void*)(uintptr)oak_id;
+    oak_player_visibility_set(oak_id, OAK_VISIBILITY_ICON, 1);
 
     /* set our player to be our controller */
     librg_entity_control_set(&network_context, e->entity->id, e->peer);

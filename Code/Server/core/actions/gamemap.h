@@ -6,7 +6,6 @@ int oak_gamemap_update() {
     if (zpl_time_now() - last_gamemap_update > OAK_GAMEMAP_UPDATE_TIME) {
         last_gamemap_update = zpl_time_now();
 
-
         zpl_array_make(gamemap_info, gamemap, zpl_heap());
 
         int player_count;
@@ -17,7 +16,7 @@ int oak_gamemap_update() {
             mafia_player *player = players[i];
             if (oak_player_visibility_get(player->oak_id, OAK_VISIBILITY_ICON)) {
                 gamemap_info info = {
-                    player->oak_id,
+                    player->native_id,
                     (u8)TYPE_PLAYER, // todo: OAK_PLAYER
                     player->position
                 };
@@ -34,7 +33,7 @@ int oak_gamemap_update() {
             mafia_vehicle *vehicle = vehicles[i];
             if (oak_vehicle_visibility_get(vehicle->oak_id, OAK_VISIBILITY_ICON)) {
                 gamemap_info info = {
-                    vehicle->oak_id,
+                    vehicle->native_id,
                     (u8)TYPE_VEHICLE, // todo: OAK_VEHICLE
                     vehicle->native_entity->position
                 };

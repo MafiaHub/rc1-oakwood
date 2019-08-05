@@ -37,7 +37,6 @@ void oak_console_printf(const char* format, ...);
 
 zpl_isize oak__console_input_handler(struct zpl_thread *t) {
     do {
-        /* TODO: Rework to C */
         std::string line;
         std::getline(std::cin, line);
 
