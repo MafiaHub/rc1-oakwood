@@ -10,7 +10,7 @@ void oak_ev_vehicle_create(librg_event *e) {
     librg_data_wptr(e->data, &vehicle->speed, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &e->entity->position, sizeof(zpl_vec3));
     librg_data_wptr(e->data, vehicle->model, sizeof(char) * 32);
-    librg_data_wptr(e->data, vehicle->seats, sizeof(i32) * 4);
+    librg_data_wptr(e->data, vehicle->seats, sizeof(i32) * OAK_MAX_SEATS);
     librg_data_wptr(e->data, vehicle->tyres, sizeof(mafia_vehicle_tyre) * 4);
     librg_data_wptr(e->data, vehicle->destroyed_components, sizeof(u8) * 15);
 
@@ -49,6 +49,7 @@ void oak_ev_vehicle_update(librg_event *e) {
     librg_data_wptr(e->data, &vehicle->rot_up, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &vehicle->rot_speed, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &vehicle->speed, sizeof(zpl_vec3));
+    librg_data_wptr(e->data, vehicle->seats, sizeof(i32) * OAK_MAX_SEATS);
     librg_data_wf32(e->data, vehicle->engine_rpm);
     librg_data_wf32(e->data, vehicle->engine_health);
     librg_data_wf32(e->data, vehicle->wheel_angle);

@@ -9,7 +9,7 @@
 #define VEHICLE_INTERPOLATION_THRESHOLD 15
 
 void target_position_update(mafia_vehicle *car) {
-    
+
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
     zpl_vec3 current_position = EXPAND_VEC(vehicle_int->position);
     zpl_vec3 new_position = lib_inter_interpolate(car->interp.pos, current_position);
@@ -73,7 +73,7 @@ void target_position_set(mafia_vehicle *car, zpl_vec3 target_pos, bool valid_vel
 void target_rotation_update(mafia_vehicle *car) {
 
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
-  
+
     zpl_vec3 new_forward        = lib_inter_interpolate(car->interp.rot, EXPAND_VEC(vehicle_int->rot_forward));
     vehicle_int->rot_forward    = EXPAND_VEC(new_forward);
 
@@ -84,14 +84,14 @@ void target_rotation_update(mafia_vehicle *car) {
 void target_rotation_set(mafia_vehicle *car, zpl_vec3 target_rot_forward, zpl_vec3 target_rot_up) {
 
     target_rotation_update(car);
-    
+
     auto vehicle_int = &car->car->GetInterface()->vehicle_interface;
     lib_inter_set_target(car->interp.rot, EXPAND_VEC(vehicle_int->rot_forward), target_rot_forward);
     lib_inter_set_target(car->interp.rot_up, EXPAND_VEC(vehicle_int->rot_up), target_rot_up);
 }
 
 inline auto entitycreate(librg_event *evnt) {
-   
+
     auto vehicle = new mafia_vehicle();
 
     vehicle->interp.rot     = lib_inter_create_interpolator(GlobalConfig.interp_time_vehicle, true);
@@ -162,14 +162,16 @@ inline auto game_tick(mafia_vehicle *vehicle, f64 delta) {
 }
 
 inline auto entityupdate(librg_event *evnt) {
-   
+
     //NOTE(DavoSK): First we need to read all data so we can skip event
     zpl_vec3 target_rot_forward, target_rot_up, target_pos, rot_speed, speed;
+    i32 seats[4];
 
     librg_data_rptr(evnt->data, &target_rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &target_rot_up, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &rot_speed, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &speed, sizeof(zpl_vec3));
+    librg_data_rptr(evnt->data, seats, sizeof(i32) * 4);
 
     f32 engine_rpm          = librg_data_rf32(evnt->data);
     f32 engine_health       = librg_data_rf32(evnt->data);
@@ -183,7 +185,7 @@ inline auto entityupdate(librg_event *evnt) {
     u8 horn                 = librg_data_ru8(evnt->data);
     u8 siren                = librg_data_ru8(evnt->data);
     u8 engine_on            = librg_data_ru8(evnt->data);
-    
+
     auto vehicle = (mafia_vehicle *)evnt->entity->user_data;
 
     if (!vehicle || !vehicle->car) {
@@ -197,7 +199,8 @@ inline auto entityupdate(librg_event *evnt) {
         return;
     }
 
-    //NOTE(DavoSK): Update mafia_vehicle structure 
+    //NOTE(DavoSK): Update mafia_vehicle structure
+    zpl_memcopy(vehicle->seats, seats, sizeof(i32) * 4);
     vehicle->engine_rpm         = engine_rpm;
     vehicle->engine_health      = engine_health;
     vehicle->wheel_angle        = wheel_angle;
@@ -230,7 +233,7 @@ inline auto entityupdate(librg_event *evnt) {
     if (vehicle_int->engine_on != vehicle->engine_on) {
         vehicle->car->SetEngineOn(vehicle->engine_on, true);
     }
-    
+
     if (vehicle_int->gear != vehicle->gear) {
         vehicle->car->SetGear(vehicle->gear);
     }
@@ -248,7 +251,7 @@ inline auto entityremove(librg_event *evnt) {
         lib_inter_destroy_interpolator(vehicle->interp.pos);
         lib_inter_destroy_interpolator(vehicle->interp.rot);
         lib_inter_destroy_interpolator(vehicle->interp.rot_up);
-        
+
         vehicle->car->SetTransparency(0.5f);
         despawn(vehicle);
 
@@ -299,7 +302,7 @@ inline auto clientstreamer_update(librg_event *evnt) {
 
             auto mafia_tyre = &vehicle->tyres[i];
             auto vehicle_tyre = vehicle->car->GetCarTyre(i);
-            
+
             DWORD tyre_entity_flags = *(DWORD*)(vehicle_tyre + 0x120);
             float tyre_health = *(float*)((DWORD)vehicle_tyre + 0x18C);
 

@@ -19,21 +19,6 @@ void add_messages() {
             auto is_local_player = player_entity_id == local_player.entity_id;
 
             if (player_data->ped) {
-                //NOTE(DavoSK): Check if old ped was inside vehicle
-                //remove him from seat of occupied vehicle
-                if (player_data->vehicle_id > -1) {
-                    auto vehicle_ent = librg_entity_fetch(&network_context, player_data->vehicle_id);
-                    if (vehicle_ent && vehicle_ent->user_data) {
-                        auto mafia_veh = (mafia_vehicle*)(vehicle_ent->user_data);
-                        for (int i = 0; i < 4; i++) {
-                            if (mafia_veh->seats[i] == new_player_entity->id) {
-                                mafia_veh->seats[i] = -1;
-                                break;
-                            }
-                        }
-                    }
-                }
-
                 despawn(player_data->ped);
                 player_data->ped = nullptr;
             }
@@ -63,21 +48,6 @@ void add_messages() {
         auto player_data = (mafia_player*)sender_ent->user_data;
 
         if (player_data->ped) {
-            //NOTE(DavoSK): Check if old ped was inside vehicle
-            //remove him from seat of occupied vehicle
-            if (player_data->vehicle_id > -1) {
-                auto vehicle_ent = librg_entity_fetch(&network_context, player_data->vehicle_id);
-                if (vehicle_ent) {
-                    auto mafia_veh = (mafia_vehicle*)(vehicle_ent->user_data);
-                    for (int i = 0; i < 4; i++) {
-                        if (mafia_veh->seats[i] == sender_ent->id) {
-                            mafia_veh->seats[i] = -1;
-                            break;
-                        }
-                    }
-                }
-            }
-
             despawn(player_data->ped);
             player_data->ped = nullptr;
         }
@@ -95,13 +65,6 @@ void add_messages() {
             if (vehicle->seats[seat] != -1) {
 
                 auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
-                if (driver_ent && driver_ent->user_data) {
-                    auto driver = (mafia_player*)driver_ent->user_data;
-                    driver->vehicle_id = -1;
-                }
-
-                vehicle->seats[seat] = -1;
-
                 if (vehicle->car && sender_ent->id != local_player.entity_id)
                     sender->ped->Do_ThrowCocotFromCar(vehicle->car, seat);
             }
@@ -119,20 +82,6 @@ void add_messages() {
         if (sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-
-            // NOTE(DavoSK) When entering car as driver from passanger seat
-            // change the seat_id accordingly
-            if (unk3 == 1 && seat_id == 1)
-                seat_id = 0;
-
-            if (action == 1) {
-                vehicle->seats[seat_id] = sender_ent->id;
-                sender->vehicle_id = vehicle_ent->id;
-            }
-            else if (action == 2) {
-                vehicle->seats[seat_id] = -1;
-                sender->vehicle_id = -1;
-            }
 
             if (sender_ent->id != local_player.entity_id)
                 sender->ped->Use_Actor(vehicle->car, action, seat_original, unk3);

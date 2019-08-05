@@ -225,7 +225,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
     }
 
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
-        auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
         if (vehicle_ent && vehicle_ent->user_data) {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
             player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
@@ -245,8 +245,6 @@ inline auto entityupdate(librg_event* evnt) -> void {
 }
 
 inline auto entityremove(librg_event* evnt) -> void {
-    printf("[debug] entityremove -> Intern_FromCar\n");
-
     auto player = (mafia_player *)evnt->entity->user_data;
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
@@ -263,7 +261,6 @@ inline auto entityremove(librg_event* evnt) -> void {
                 for (int i = 0; i < 4; i++) {
                     if (vehicle->seats[i] == evnt->entity->id) {
 
-                        vehicle->seats[i] = -1;
                         player->vehicle_id = -1;
 
                         if (player->ped) {
@@ -335,7 +332,6 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
 
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
-                    printf("restore car seat\n");
                     player->ped->Intern_UseCar(vehicle->car, i);
                     break;
                 }
