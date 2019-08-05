@@ -31,12 +31,10 @@ project "Server"
         "../../Vendors/nanomsg/lib",
     }
 
-    -- copy a file from the objects directory to the target directory
     prebuildcommands {
         "node ../Scripts/bridge.js"
     }
 
-        -- TODO: add support for 64 bit versions
     configuration "windows"
         links {
             "nanomsg32",
