@@ -22,7 +22,7 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
 
 zpl_isize oak__webserver_runner(struct zpl_thread *t) {
     while (web_server_running) {
-        mg_mgr_poll(&mgr, 200);
+        mg_mgr_poll(&mgr, 1);
     }
 
     mg_mgr_free(&mgr);
