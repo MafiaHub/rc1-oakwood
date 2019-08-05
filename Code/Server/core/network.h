@@ -49,8 +49,6 @@ int oak_network_init() {
 int oak_network_tick() {
     librg_tick(&network_context);
 
-    // TODO: add event trigger
-
     return 0;
 }
 
