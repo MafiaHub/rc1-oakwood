@@ -214,7 +214,9 @@ int oak_vehicle_player_leave(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
     vehicle->seats[seat_id] = -1;
     player->vehicle_id = -1;
 
-    oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
+    if (seat_id == 0) {
+        oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
+    }
 }
 
 /**
