@@ -19,6 +19,9 @@
  * sdl2.h
  *
  * Version History:
+ * 5.0.2
+ *  - Fixed issue related to visiblity destruction
+ *
  * 5.0.1
  *  - Fixed entity visiblity states after disconnection
  *
@@ -1493,6 +1496,9 @@ extern "C" {
             librg_assert(librg_is_server(ctx) && librg_entity_valid(ctx, entity));
             librg_entity *blob = librg_entity_fetch(ctx, entity);
 
+            /* prevent any operations on the same entity*/
+            if (entity == target) return;
+
             if (!(blob->flags & LIBRG_ENTITY_VISIBILITY)) {
                 blob->flags |= LIBRG_ENTITY_VISIBILITY;
                 librg_table_init(&blob->visibility, ctx->allocator);
@@ -1510,6 +1516,9 @@ extern "C" {
         librg_visibility librg_entity_visibility_get_for(librg_ctx *ctx, librg_entity_id entity, librg_entity_id target) {
             librg_assert(librg_is_server(ctx));
             librg_entity *blob = librg_entity_fetch(ctx, entity);
+
+            /* prevent any operations on the same entity*/
+            if (entity == target) return LIBRG_DEFAULT_VISIBILITY;
 
             if (!(blob->flags & LIBRG_ENTITY_VISIBILITY)) {
                 return LIBRG_DEFAULT_VISIBILITY;
