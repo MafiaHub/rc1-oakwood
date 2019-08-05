@@ -17,11 +17,8 @@ int oak_bridge_init() {
     sock_out = nn_socket(AF_SP, NN_PUB);
     sock_in = nn_socket(AF_SP, NN_REP);
 
-    // TODO: move to config
-    // const char *addr1 = "tcp://0.0.0.0:10101";
-    // const char *addr2 = "tcp://0.0.0.0:10102";
-    const char *addr1 = "ipc://oakwood-inbound";
-    const char *addr2 = "ipc://oakwood-outbound";
+    const char *addr1 = oak_config_bridge_inbound_get();
+    const char *addr2 = oak_config_bridge_outbound_get();
 
     nn_bind(sock_out, addr1);
     nn_bind(sock_in, addr2);

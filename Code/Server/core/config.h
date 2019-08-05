@@ -9,6 +9,8 @@ static const char *oak__config_mod_default = "\n"\
     "visible = true\n"\
     "port = 27010\n"\
     "mapname = \"freeride\""\
+    "bridge_inbound = \"ipc://oakwood-inbound\""\
+    "bridge_outbound = \"ipc://oakwood-outbound\""\
     "whitelist = false\n";
 
 struct _GlobalConfig {
@@ -19,6 +21,7 @@ struct _GlobalConfig {
     i64 max_players;
     std::string mapname;
     std::string gamemode;
+    std::string bridge_inbound, bridge_outbound;
     b32 visible;
 } GlobalConfig;
 
@@ -35,6 +38,8 @@ int oak_config_init() {
     json_apply(json, GlobalConfig.port, port, integer, 27010);
     json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
     json_apply(json, whOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
+    json_apply(json, GlobalConfig.bridge_inbound, bridge_inbound, string, "ipc://oakwood-inbound");
+    json_apply(json, GlobalConfig.bridge_outbound, bridge_outbound, string, "ipc://oakwood-outbound");
 
     if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
         GlobalConfig.visible = false;
@@ -48,6 +53,8 @@ int oak_config_init() {
     oak_log("Name: %s\n", GlobalConfig.name.c_str());
     oak_log("Max players: %d\n", (u32)GlobalConfig.max_players);
     oak_log("Port: %d\n", (u32)GlobalConfig.port);
+    oak_log("Publisher address: %s\n", GlobalConfig.bridge_outbound.c_str());
+    oak_log("Listener address: %s\n", GlobalConfig.bridge_inbound.c_str());
     oak_log("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");
     oak_log("================================\n");
 
@@ -82,4 +89,10 @@ const char *oak_config_mapname_get() {
     return GlobalConfig.mapname.c_str();
 }
 
+const char *oak_config_bridge_inbound_get() {
+    return GlobalConfig.bridge_inbound.c_str();
+}
 
+const char *oak_config_bridge_outbound_get() {
+    return GlobalConfig.bridge_outbound.c_str();
+}

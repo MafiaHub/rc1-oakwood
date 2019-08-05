@@ -20,6 +20,8 @@ void oak_config_name_set(const char *);
 const char *oak_config_name_get();
 const char *oak_config_host_get();
 const char *oak_config_mapname_get();
+const char *oak_config_bridge_inbound_get();
+const char *oak_config_bridge_outbound_get();
 
 /* BRIDGE */
 
