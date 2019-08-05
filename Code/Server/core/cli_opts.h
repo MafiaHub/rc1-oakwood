@@ -33,7 +33,6 @@ void oak_cli_replace() {
     GlobalConfig.port = zpl_opts_integer(&oak__cli, "port", GlobalConfig.port);
     GlobalConfig.host = zpl_opts_string(&oak__cli, "host", GlobalConfig.host.c_str());
     GlobalConfig.name = zpl_opts_string(&oak__cli, "name", GlobalConfig.name.c_str());
-    GlobalConfig.gamemode = zpl_opts_string(&oak__cli, "gamemode", GlobalConfig.gamemode.c_str());
 }
 
 void oak_cli_free() {
