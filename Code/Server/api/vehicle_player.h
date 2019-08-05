@@ -20,6 +20,8 @@ int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, oak_seat_id seat_id)
         librg_data_wi32(&data, seat_id);
     });
 
+    librg_entity_visibility_set_for(oak_network_ctx_get(), player->native_id, vehicle->native_id, LIBRG_ALWAYS_VISIBLE);
+
     return 0;
 }
 
@@ -65,6 +67,8 @@ int oak_vehicle_player_remove(oak_vehicle vid, oak_player pid) {
             if (i == 0) {
                 oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
             }
+
+            librg_entity_visibility_set_for(oak_network_ctx_get(), player->native_id, vehicle->native_id, LIBRG_DEFAULT_VISIBILITY);
 
             break;
         }
@@ -182,6 +186,8 @@ int oak_vehicle_player_enter(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
             player->native_entity->client_peer);
     }
 
+    librg_entity_visibility_set_for(oak_network_ctx_get(), player->native_id, vehicle->native_id, LIBRG_ALWAYS_VISIBLE);
+
     return 0;
 }
 
@@ -219,6 +225,8 @@ int oak_vehicle_player_leave(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
     if (seat_id == 0) {
         oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
     }
+
+    librg_entity_visibility_set_for(oak_network_ctx_get(), player->native_id, vehicle->native_id, LIBRG_DEFAULT_VISIBILITY);
 
     return 0;
 }
@@ -264,6 +272,8 @@ int oak_vehicle_player_hijack(oak_vehicle vid, oak_player pid, oak_seat_id seat_
     if (seat_id == 0) {
         oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
     }
+
+    librg_entity_visibility_set_for(oak_network_ctx_get(), player->native_id, vehicle->native_id, LIBRG_DEFAULT_VISIBILITY);
 
     return 0;
 }
