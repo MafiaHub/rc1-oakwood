@@ -98,22 +98,12 @@ int oak_player_kill(oak_player id) {
     auto player = oak_entity_player_get(id);
 
     if (player->vehicle_id != -1) {
-        auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
-        auto vehicle = oak_entity_vehicle_get((oak_vehicle)vehicle_ent->user_data);
+        auto vehicle_ent = librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id);
+        auto vehicle = oak_entity_vehicle_get_from_librg(vehicle_ent);
 
         if (vehicle) {
-            for (int i = 0; i < 4; i++) {
-                if (vehicle->seats[i] == player->native_id) {
-                    vehicle->seats[i] = -1;
-                    if (i == 0) {
-                        oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
-                    }
-                    break;
-                }
-            }
+            oak_vehicle_player_remove(vehicle->oak_id, player->oak_id);
         }
-
-        player->vehicle_id = -1;
     }
 
     return res;
@@ -174,6 +164,8 @@ OAK_PLAYER_SETTER(oak_vec3, zpl_vec3, direction, rotation);
 int oak_player_health_set(oak_player id, float health) {
     if (oak_player_invalid(id)) return -1;
     auto entity = oak_entity_player_get(id);
+
+    entity->health = health;
 
     librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
         librg_data_went(&data, entity->native_id);

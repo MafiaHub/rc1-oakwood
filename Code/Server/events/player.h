@@ -144,24 +144,6 @@ void oak_ev_player_client_update(librg_event *e) {
     auto player = oak_entity_player_get_from_librg(e->entity);
     ZPL_ASSERT_NOT_NULL(player);
 
-    /*if (!player) {
-        usize size = librg_data_get_rpos(e->data);
-
-        size += sizeof(zpl_vec3);
-        size += sizeof(zpl_vec3);
-        size += sizeof(zpl_vec3);
-        size += sizeof(f32);
-        size += sizeof(u8);
-        size += sizeof(u8);
-        size += sizeof(u8);
-        size += sizeof(f32);
-        size += sizeof(u64);
-
-        librg_data_set_rpos(e->data, size);
-        librg_event_reject(e);
-        return;
-    }*/
-
     librg_data_rptr(e->data, &player->position, sizeof(zpl_vec3));
     librg_data_rptr(e->data, &player->rotation, sizeof(zpl_vec3));
     librg_data_rptr(e->data, &player->pose, sizeof(zpl_vec3));

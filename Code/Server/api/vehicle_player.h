@@ -177,8 +177,10 @@ int oak_vehicle_player_enter(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
     vehicle->seats[seat_id] = player->native_id;
     player->vehicle_id = vehicle->native_id;
 
-    librg_entity_control_set(oak_network_ctx_get(), vehicle->native_id,
+    if (seat_id == 0) {
+        librg_entity_control_set(oak_network_ctx_get(), vehicle->native_id,
             player->native_entity->client_peer);
+    }
 }
 
 /**

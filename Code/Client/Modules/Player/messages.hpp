@@ -337,6 +337,10 @@ void add_messages() {
                         MafiaSDK::GetIndicators()->PlayerSetWingmanLives((int)(health / 2.0f));
 
                     player_int->health = health;
+
+                    if (player->health <= 0.0f) {
+                        player->ped->Intern_ForceDeath();
+                    }
                 }
             }
         }

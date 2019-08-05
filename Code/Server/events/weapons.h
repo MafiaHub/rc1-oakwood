@@ -75,34 +75,5 @@ int oak_weapon_register() {
         });
     });
 
-    // librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_DROP, [](librg_message* msg) {
-
-    //     auto entity = librg_entity_find(&network_context, msg->peer);
-    //     inventory_item item = {0};
-    //     char model[32] = "";
-
-    //     librg_data_rptr(msg->data, &item, sizeof(inventory_item));
-    //     librg_data_rptr(msg->data, model, sizeof(char) * 32);
-
-    //     spawn_weapon_drop(entity->position, model, item);
-    //     inventory_remove(entity, item.weaponId, true, true);
-    // });
-
-    // librg_network_add(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, [](librg_message* msg) {
-
-    //     auto player_entity      = librg_entity_find(&network_context, msg->peer);
-    //     librg_entity_id id      = librg_data_rent(msg->data);
-    //     auto entity             = librg_entity_fetch(&network_context, id);
-    //     auto weapon_drop        = oak_weapoentity_weapon_drop_get((oak_weapon_drop*)entity->user_data);
-
-    //     inventory_add(player_entity, &weapon_drop->weapon, true, true);
-
-    //     if (entity) {
-    //         if (entity->user_data)
-    //             delete (mafia_player *)entity->user_data;
-    //         librg_entity_destroy(&network_context, id);
-    //     }
-    // });
-
     return 0;
 }

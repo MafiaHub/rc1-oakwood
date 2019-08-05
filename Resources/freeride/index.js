@@ -18,6 +18,8 @@ oak.event('start', async () => {
 const spawnplayer = pid => {
     oak.player_position_set(pid, [-1774.59301758, -4.88487052917, -2.40491962433])
     oak.player_health_set(pid, 200)
+    oak.hud_fadeout(pid, 1, 500, 0xFFFFFF)
+    oak.hud_fadeout(pid, 0, 500, 0xFFFFFF)
     oak.player_spawn(pid)
 }
 
@@ -60,7 +62,11 @@ oak.cmd('spawn', async pid => {
     spawnplayer(pid)
 })
 
-oak.cmd('car', async (pid, model) => {
+oak.cmd('kill', async pid => {
+    oak.player_kill(pid)
+})
+
+const spawncar = async (pid, model, adjustPos) => {
     const m = parseInt(model)
 
     if (m === NaN) {
@@ -70,15 +76,30 @@ oak.cmd('car', async (pid, model) => {
     oak.chat_send(pid, `[info] spawning vehicle model ${vehicles[m][0]}`)
 
     let pos = await oak.player_position_get(pid)
-    let dir = await oak.player_direction_get(pid)
     let heading = await oak.player_heading_get(pid)
 
-    pos = pos.map((p, i) => p + dir[i] * 1.5)
+    if (adjustPos === true) {
+        let dir = await oak.player_direction_get(pid)
+
+        pos = pos.map((p, i) => p + dir[i] * 1.5)
+    }
 
     const veh = await oak.vehicle_spawn(vehicles[m][1])
 
     oak.vehicle_position_set(veh, pos)
     oak.vehicle_heading_set(veh, heading - 90.0)
+
+    return veh
+}
+
+oak.cmd('car', async (pid, model) => {
+    spawncar(pid, model, true)
+})
+
+oak.cmd('putcar', async (pid, model) => {
+    const veh = await spawncar(pid, model, false)
+
+    oak.vehicle_player_put(veh, pid, 0)
 })
 
 oak.cmd('help', async (pid) => {
