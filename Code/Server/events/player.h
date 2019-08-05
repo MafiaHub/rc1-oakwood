@@ -177,40 +177,6 @@ void oak_ev_player_client_remove(librg_event *e) {
     // NOTE: not implmented
 }
 
-#if 0
-    inline auto drop_entitycreate(librg_event* evnt) -> void {
-        auto drop = (mafia_weapon_drop *)evnt->entity->user_data;
-        librg_data_wptr(evnt->data, drop->model, sizeof(char) * 32);
-        librg_data_wptr(evnt->data, &drop->weapon, sizeof(inventory_item));
-    }
-
-
-    inline auto connection_disconnect(librg_event* evnt) -> void {
-        if (evnt->entity && evnt->entity->user_data) {
-            auto player = (mafia_player*)evnt->entity->user_data;
-            if (player->vehicle_id != -1) {
-                auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
-                if (vehicle_ent && vehicle_ent->user_data) {
-                    auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-                    for (int i = 0; i < 4; i++) {
-                        if (vehicle->seats[i] == evnt->entity->id) {
-                            vehicle->seats[i] = -1;
-                            player->vehicle_id = -1;
-
-                            if (i == 0) {
-                                mod_vehicle_assign_nearest_player(&network_context, vehicle_ent, evnt->entity->id);
-                                librg_send_all(&network_context, NETWORK_VEHICLE_PLAYER_DISCONNECT, data, {
-                                    librg_data_went(&data, vehicle_ent->id);
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-#endif
-
 /* PLAYER MESSAGES */
 
 int oak_player_register() {
