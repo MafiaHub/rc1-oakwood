@@ -24,7 +24,7 @@ oak_player oak_player_create(librg_event *e) {
     oak_player_visibility_set(oak_id, OAK_VISIBILITY_ICON, 1);
 
     /* set our player to be our controller */
-    librg_entity_control_set(&network_context, e->entity->id, e->peer);
+    librg_entity_control_set(oak_network_ctx_get(), e->entity->id, e->peer);
     oak_log("[info] player connected with oakid: %d\n", oak_id);
 
     return oak_id;
@@ -65,7 +65,7 @@ int oak_player_spawn(oak_player id) {
     auto player = oak_entity_player_get(id);
     auto entity = player->native_entity;
 
-    librg_send(&network_context, NETWORK_PLAYER_SPAWN, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
         librg_data_wptr(&data, &entity->position, sizeof(zpl_vec3));
         librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
@@ -111,8 +111,16 @@ int oak_player_kill(oak_player id) {
 }
 
 int oak_player_kick(oak_player id, const char *reason, int length) {
-    ZPL_PANIC("oak_player_kick: not implemnented");
-    return -1;
+    // todo: send reason
+
+    auto player = oak_entity_player_get(id);
+
+    if (!player) {
+        return -1;
+    }
+
+    librg_network_kick(oak_network_ctx_get(), player->native_entity->client_peer);
+    return 0;
 }
 
 /**
@@ -129,7 +137,7 @@ int oak_player_playanim(oak_player id, const char *text, int length) {
     char animation[32] = {};
     zpl_strncpy(animation, text, length);
 
-    librg_send(&network_context, NETWORK_PLAYER_PLAY_ANIMATION, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_PLAY_ANIMATION, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, animation, sizeof(char) * 32);
     });
@@ -150,7 +158,7 @@ int oak_player_playanim(oak_player id, const char *text, int length) {
         auto entity = oak_entity_player_get(id);                                        \
                                                                                         \
         /* skip updates for the next change */                                          \
-        librg_entity_control_ignore_next_update(&network_context, entity->native_id);    \
+        librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);    \
                                                                                         \
         /* apply new value */                                                           \
         entity->ALIAS = *((CAST*)&NAME);                                                \
@@ -168,7 +176,7 @@ int oak_player_health_set(oak_player id, float health) {
 
     entity->health = health;
 
-    librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_HEALTH, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wf32(&data, health);
     });
@@ -208,7 +216,7 @@ int oak_player_model_set(oak_player id, const char *model, int length) {
     zpl_memset(entity->model, 0, OAK_PLAYER_MODEL_SIZE);
     zpl_memcopy(entity->model, model, length);
 
-    librg_send(&network_context, NETWORK_PLAYER_SET_MODEL, data, {
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_MODEL, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, (void *)entity->model, sizeof(char) * OAK_PLAYER_MODEL_SIZE);
     });
@@ -281,7 +289,7 @@ int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state)
         case OAK_VISIBILITY_ICON: {
             entity->is_visible_on_map = state;
 
-            librg_send(&network_context, NETWORK_PLAYER_MAP_VISIBILITY, data, {
+            librg_send(oak_network_ctx_get(), NETWORK_PLAYER_MAP_VISIBILITY, data, {
                 librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
@@ -292,7 +300,7 @@ int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state)
         case OAK_VISIBILITY_NAME: {
             entity->has_visible_nameplate = state;
 
-            librg_send(&network_context, NETWORK_PLAYER_NAMEPLATE_VISIBILITY, data, {
+            librg_send(oak_network_ctx_get(), NETWORK_PLAYER_NAMEPLATE_VISIBILITY, data, {
                 librg_data_went(&data, entity->native_id);
                 librg_data_wu8(&data, (u8)state);
             });
@@ -350,7 +358,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void set_camera(librg_entity *entity, zpl_vec3 pos, zpl_vec3 rot)
 // {
-//     librg_send_to(&network_context, NETWORK_CAMERA_SET_POS, entity->client_peer, data, {
+//     librg_send_to(oak_network_ctx_get(), NETWORK_CAMERA_SET_POS, entity->client_peer, data, {
 //         librg_data_wptr(&data, &pos, sizeof(pos));
 //         librg_data_wptr(&data, &rot, sizeof(rot));
 //     });
@@ -358,7 +366,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void unlock_camera(librg_entity *entity)
 // {
-//     librg_send_to(&network_context, NETWORK_CAMERA_UNLOCK, entity->client_peer, data, {});
+//     librg_send_to(oak_network_ctx_get(), NETWORK_CAMERA_UNLOCK, entity->client_peer, data, {});
 // }
 
 // void set_camera_target(librg_entity *entity, librg_entity *target)
@@ -368,19 +376,19 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 //     if (player->spec_id != -1)
 //     {
-//         librg_entity_visibility_set_for(&network_context, entity->id, target->id, LIBRG_DEFAULT_VISIBILITY);
+//         librg_entity_visibility_set_for(oak_network_ctx_get(), entity->id, target->id, LIBRG_DEFAULT_VISIBILITY);
 //     }
 
 //     if (target)
 //     {
 //         id = target->id;
 
-//         librg_entity_visibility_set_for(&network_context, entity->id, target->id, LIBRG_ALWAYS_VISIBLE);
+//         librg_entity_visibility_set_for(oak_network_ctx_get(), entity->id, target->id, LIBRG_ALWAYS_VISIBLE);
 //     }
 
 //     player->spec_id = id;
 
-//     librg_send_to(&network_context, NETWORK_CAMERA_TARGET, entity->client_peer, data, {
+//     librg_send_to(oak_network_ctx_get(), NETWORK_CAMERA_TARGET, entity->client_peer, data, {
 //         librg_data_went(&data, id);
 //     });
 // }
@@ -388,7 +396,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 // void send_announcement(librg_entity *entity, const char *text, f32 duration)
 // {
 //     auto len = strlen(text);
-//     librg_send_to(&network_context, NETWORK_HUD_ALERT, entity->client_peer, data, {
+//     librg_send_to(oak_network_ctx_get(), NETWORK_HUD_ALERT, entity->client_peer, data, {
 //         librg_data_wu32(&data, len);
 //         librg_data_wf32(&data, duration);
 //         librg_data_wptr(&data, (void *)text, len);
@@ -398,7 +406,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 // void send_race_start_flags(librg_entity *entity, u32 flags)
 // {
 
-//     librg_send_to(&network_context, NETWORK_HUD_COUNTDOWN, entity->client_peer, data, {
+//     librg_send_to(oak_network_ctx_get(), NETWORK_HUD_COUNTDOWN, entity->client_peer, data, {
 //         librg_data_wu32(&data, flags);
 //     });
 // }
@@ -406,7 +414,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 // void set_pos(librg_entity *entity, zpl_vec3 position)
 // {
 //     entity->position = position;
-//     librg_send(&network_context, NETWORK_PLAYER_SET_POS, data, {
+//     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_POS, data, {
 //         librg_data_went(&data, entity->id);
 //         librg_data_wptr(&data, &position, sizeof(position));
 //     });
@@ -421,7 +429,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //         player->rotation = rotation;
 //     }
 
-//     librg_send(&network_context, NETWORK_PLAYER_SET_ROT, data, {
+//     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_ROT, data, {
 //         librg_data_went(&data, entity->id);
 //         librg_data_wptr(&data, &rotation, sizeof(rotation));
 //     });
@@ -438,7 +446,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //         auto player = (mafia_player *)entity->user_data;
 //         player->health = health;
 
-//         librg_send(&network_context, NETWORK_PLAYER_SET_HEALTH, data, {
+//         librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_HEALTH, data, {
 //             librg_data_went(&data, entity->id);
 //             librg_data_wf32(&data, health);
 //         });
@@ -451,7 +459,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 //     strncpy(player->model, modelName, 32);
 
-//     librg_send(&network_context, NETWORK_PLAYER_SET_MODEL, data, {
+//     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_MODEL, data, {
 //         librg_data_went(&data, entity->id);
 //         librg_data_wptr(&data, (void *)player->model, sizeof(char) * 32);
 //     });
@@ -459,7 +467,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 // void fadeout(librg_entity *entity, bool fadeout, u32 duration, u32 color)
 // {
-//     librg_send_to(&network_context, NETWORK_HUD_FADEOUT, entity->client_peer, data, {
+//     librg_send_to(oak_network_ctx_get(), NETWORK_HUD_FADEOUT, entity->client_peer, data, {
 //         librg_data_wu8(&data, fadeout);
 //         librg_data_wu32(&data, duration);
 //         librg_data_wu32(&data, color);
@@ -477,7 +485,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //     drop->weapon = item;
 //     strncpy(drop->model, model, strlen(model));
 
-//     auto new_weapon_entity = librg_entity_create(&network_context, TYPE_WEAPONDROP);
+//     auto new_weapon_entity = librg_entity_create(oak_network_ctx_get(), TYPE_WEAPONDROP);
 //     new_weapon_entity->position = position;
 //     new_weapon_entity->position.y += 0.7f;
 //     new_weapon_entity->user_data = drop;
@@ -568,7 +576,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //     if (weapon_picked)
 //     {
 
-//         librg_send_except(&network_context, NETWORK_PLAYER_WEAPON_PICKUP, player_ent->client_peer, data, {
+//         librg_send_except(oak_network_ctx_get(), NETWORK_PLAYER_WEAPON_PICKUP, player_ent->client_peer, data, {
 //             librg_data_went(&data, player_ent->id);
 //             librg_data_wptr(&data, item, sizeof(inventory_item));
 //         });
@@ -578,7 +586,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //     }
 
 //     //broadcast to others for giving a weapon
-//     librg_send(&network_context, NETWORK_PLAYER_WEAPON_ADD, data, {
+//     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_WEAPON_ADD, data, {
 //         librg_data_went(&data, player_ent->id);
 //         librg_data_wptr(&data, item, sizeof(inventory_item));
 //     });
@@ -616,7 +624,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 //     if (weapon_dropped)
 //     {
-//         librg_send_except(&network_context, NETWORK_PLAYER_WEAPON_DROP, player_ent->client_peer, data, {
+//         librg_send_except(oak_network_ctx_get(), NETWORK_PLAYER_WEAPON_DROP, player_ent->client_peer, data, {
 //             librg_data_went(&data, player_ent->id);
 //             librg_data_wu32(&data, id);
 //         });
@@ -624,7 +632,7 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 //     }
 
 //     //broadcast message
-//     librg_send(&network_context, NETWORK_PLAYER_WEAPON_REMOVE, data, {
+//     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_WEAPON_REMOVE, data, {
 //         librg_data_went(&data, player_ent->id);
 //         librg_data_wu32(&data, id);
 //     });
