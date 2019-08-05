@@ -228,10 +228,10 @@ inline auto entityupdate(librg_event* evnt) -> void {
             auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
         if (vehicle_ent && vehicle_ent->user_data) {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
 
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
+                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
                     player->ped->Intern_UseCar(vehicle->car, i);
                     break;
                 }
@@ -328,10 +328,10 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
         auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
         if (vehicle_ent && vehicle_ent->user_data) {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
 
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
+                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
                     player->ped->Intern_UseCar(vehicle->car, i);
                     break;
                 }
