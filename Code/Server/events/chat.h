@@ -10,8 +10,6 @@ int oak_chat_register() {
         text_len = zpl_min(text_len, 128);
         librg_data_rptr(msg->data, text, text_len);
 
-        auto is_handled = false;
-
         oak_bridge_event_player_chat(pid, text);
     });
 
