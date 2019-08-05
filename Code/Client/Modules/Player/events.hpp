@@ -15,7 +15,7 @@ void target_position_update(mafia_player *player) {
     constexpr float distance_threshold = 2.0f;
     zpl_vec3 distance;
     zpl_vec3_sub(&distance, current_position, player->interp.pos->target);
-    
+
     if (zpl_vec3_mag(distance) > distance_threshold) {
         new_position = player->interp.pos->target;
         lib_inter_reset(player->interp.pos, new_position);
@@ -63,7 +63,7 @@ void target_rotation_set(mafia_player *player, zpl_vec3 target_rot) {
 // =======================================================================//
 
 void target_pose_update(mafia_player* player) {
-    
+
     //NOTE(DavoSK): Move current pose into MafiaSDK
     zpl_vec3 current_player_pose = *(zpl_vec3*)((DWORD)player->ped + 0xA7C);
     zpl_vec3 new_pose = lib_inter_interpolate(player->interp.pose, current_player_pose);
@@ -73,7 +73,7 @@ void target_pose_update(mafia_player* player) {
     if (player->is_aiming)
         player->ped->PoseSetPoseAimed(mafia_pose);
     else
-        player->ped->PoseSetPoseNormal(mafia_pose); 
+        player->ped->PoseSetPoseNormal(mafia_pose);
 }
 
 void target_pose_set(mafia_player* player, zpl_vec3 target_pose) {
@@ -88,7 +88,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
     auto player					= new mafia_player();
     player->vehicle_id			= librg_data_ri32(evnt->data);
     player->streamer_entity_id	= librg_data_ri32(evnt->data);
-    
+
     player->interp.pos          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
     player->interp.rot          = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
     player->interp.pose         = lib_inter_create_interpolator(GlobalConfig.interp_time_player, false);
@@ -175,8 +175,8 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
 }
 
 inline auto entityupdate(librg_event* evnt) -> void {
-    
-    //NOTE(DavoSK): We need to read data before we can skip event ! 
+
+    //NOTE(DavoSK): We need to read data before we can skip event !
     zpl_vec3 recv_pose, recv_rotation, recv_position;
     librg_data_rptr(evnt->data, &recv_position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
@@ -194,7 +194,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
         librg_event_reject(evnt);
         return;
     }
-    
+
     //NOTE(DavoSK): If player exists we update mafia_player structure and gameobject
     auto player_int = player->ped->GetInterface();
     player->animation_state     = animation_state;
@@ -229,7 +229,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
         if (vehicle_ent && vehicle_ent->user_data) {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
             player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
-            
+
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
                     player->ped->Intern_UseCar(vehicle->car, i);
@@ -285,14 +285,14 @@ inline auto entityremove(librg_event* evnt) -> void {
 
 inline auto clientstreamer_update(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
-    
+
     if (!player) {
         librg_event_reject(evnt);
         return;
     }
 
     auto player_int = reinterpret_cast<MafiaSDK::C_Player*>(player->ped)->GetInterface();
-    if (!player_int || !player_int->humanObject.entity.frame || 
+    if (!player_int || !player_int->humanObject.entity.frame ||
         !player_int->humanObject.entity.frame->GetInterface()) {
         librg_event_reject(evnt);
         return;
@@ -332,9 +332,10 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
         if (vehicle_ent && vehicle_ent->user_data) {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
             player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
-            
+
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
+                    printf("restore car seat\n");
                     player->ped->Intern_UseCar(vehicle->car, i);
                     break;
                 }

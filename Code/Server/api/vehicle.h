@@ -415,18 +415,20 @@ int oak_vehicle_streamer_set(oak_vehicle vid, oak_player pid) {
     return 0;
 }
 
-librg_entity *oak__vehicle_streamer_nearest_find(zpl_vec3 pos, int exception = -1) {
+librg_entity *oak__vehicle_streamer_nearest_find(librg_entity *vehicle, int exception = -1) {
     int smallest_distance = 1000.0f;
     librg_entity *current_entity = nullptr;
     auto ctx = oak_network_ctx_get();
 
-    for (u32 i = 0; i < ctx->max_entities; i++) {
-        librg_entity *entity = librg_entity_fetch(ctx, i);
-        if (!entity) continue;
-        if (entity->type != TYPE_PLAYER || exception == entity->id) continue;
+    librg_entity_id *list;
+    auto amount = librg_entity_query(ctx, vehicle->id, &list);
+
+    for (u32 i = 0; i < amount; i++) {
+        librg_entity *entity = librg_entity_fetch(ctx, list[i]);
+        if (entity->type != OAK_PLAYER || exception == entity->id) continue;
 
         zpl_vec3 final_vec;
-        zpl_vec3_sub(&final_vec, entity->position, pos);
+        zpl_vec3_sub(&final_vec, entity->position, vehicle->position);
         float dist = zpl_vec3_mag(final_vec);
         if (dist < smallest_distance && dist < entity->stream_range) {
             smallest_distance = dist;
@@ -450,7 +452,7 @@ int oak_vehicle_streamer_assign_nearest(oak_vehicle vid, int exception) {
         return -1;
     }
 
-    auto streamer = oak__vehicle_streamer_nearest_find(vehicle->native_entity->position, exception);
+    auto streamer = oak__vehicle_streamer_nearest_find(vehicle->native_entity, exception);
 
     if (streamer != nullptr) {
         librg_entity_control_set(ctx, vehicle->native_id, streamer->client_peer);
