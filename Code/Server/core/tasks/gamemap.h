@@ -48,7 +48,7 @@ int oak_gamemap_update() {
             return -1;
         }
 
-        librg_send_all(&network_context, NETWORK_ACTION_UPDATE_GAMEMAP, data, {
+        librg_send_all(&network_context, NETWORK_TASK_UPDATE_GAMEMAP, data, {
             librg_data_wu32(&data, zpl_array_count(gamemap));
             librg_data_wptr(&data, gamemap, zpl_array_count(gamemap) * sizeof(gamemap_info));
         });

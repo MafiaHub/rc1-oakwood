@@ -76,10 +76,10 @@
 #include "core/endpoints.h"
 #include "core/webserver.h"
 
-#include "core/actions/masterlist.h"
-#include "core/actions/gamemap.h"
-#include "core/actions/scoreboard.h"
-#include "core/actions/vehicles.h"
+#include "core/tasks/masterlist.h"
+#include "core/tasks/gamemap.h"
+#include "core/tasks/scoreboard.h"
+#include "core/tasks/vehicles.h"
 
 #include "utils.hpp"
 

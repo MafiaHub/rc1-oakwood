@@ -182,7 +182,7 @@ namespace gamemap
     }
 
     inline void add_messages() {
-        librg_network_add(&network_context, NETWORK_ACTION_UPDATE_GAMEMAP, [](librg_message * msg) {
+        librg_network_add(&network_context, NETWORK_TASK_UPDATE_GAMEMAP, [](librg_message * msg) {
 
             u32 info_count = librg_data_ru32(msg->data);
             std::vector<gamemap_info> new_snapshot;

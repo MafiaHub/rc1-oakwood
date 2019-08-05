@@ -39,7 +39,7 @@ namespace playerlist {
     }
 
     void add_messages() {
-        librg_network_add(&network_context, NETWORK_ACTION_UPDATE_SCOREBOARD, [](librg_message * msg) {
+        librg_network_add(&network_context, NETWORK_TASK_UPDATE_SCOREBOARD, [](librg_message * msg) {
             current_scoreboard.player_count = librg_data_ru32(msg->data);
 
             if (current_scoreboard.players_info != nullptr)
