@@ -17,11 +17,11 @@ int oak_bridge_init() {
     sock_out = nn_socket(AF_SP, NN_PUB);
     sock_in = nn_socket(AF_SP, NN_REP);
 
-    const char *addr1 = oak_config_bridge_inbound_get();
-    const char *addr2 = oak_config_bridge_outbound_get();
+    const char *addr_in = oak_config_bridge_inbound_get();
+    const char *addr_out = oak_config_bridge_outbound_get();
 
-    nn_bind(sock_out, addr1);
-    nn_bind(sock_in, addr2);
+    nn_bind(sock_in, addr_in);
+    nn_bind(sock_out, addr_out);
 
     return 0;
 }
