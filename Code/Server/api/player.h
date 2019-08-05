@@ -6,7 +6,7 @@
 
 /**
  * Allocate a player struct and store it in the player buffer (sike)
- * (should be used on successfull conenction)
+ * (should be used on successful connection)
  * @param  event
  * @return
  */
