@@ -8,9 +8,9 @@ static const char *oak__config_mod_default = "\n"\
     "password = \"\"\n"\
     "visible = true\n"\
     "port = 27010\n"\
-    "mapname = \"freeride\""\
-    "bridge_inbound = \"ipc://oakwood-inbound\""\
-    "bridge_outbound = \"ipc://oakwood-outbound\""\
+    "mapname = \"freeride\"\n"\
+    "bridge_inbound = \"ipc://oakwood-inbound\"\n"\
+    "bridge_outbound = \"ipc://oakwood-outbound\"\n"\
     "whitelist = false\n";
 
 struct _GlobalConfig {
