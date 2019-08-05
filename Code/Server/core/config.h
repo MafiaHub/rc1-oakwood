@@ -11,6 +11,17 @@ static const char *oak__config_mod_default = "\n"\
     "mapname = \"freeride\""\
     "whitelist = false\n";
 
+struct _GlobalConfig {
+    std::string name;
+    std::string host;
+    i64 port;
+    i64 players;
+    i64 max_players;
+    std::string mapname;
+    std::string gamemode;
+    b32 visible;
+} GlobalConfig;
+
 int oak_config_init() {
     oak_log("Loading config...\n");
 

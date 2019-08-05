@@ -58,21 +58,6 @@
 #include "helpers.hpp"
 
 /*
-* Globals
-*/
-
-#include "server.hpp"
-
-/*
-* Switches
-*/
-
-#define OAK_CHAT_DISABLE_STYLING
-
-/* Useful when debugging crashes. */
-// #define OAK_DISABLE_SIGNAL_HANDLING
-
-/*
 * Core
 */
 

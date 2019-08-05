@@ -1,6 +1,8 @@
 #ifndef OAK_PRIVATE_H
 #define OAK_PRIVATE_H
 
+using IDBind = std::pair<u64, std::string>;
+
 /* LOGGER */
 
 int oak_log_init();
