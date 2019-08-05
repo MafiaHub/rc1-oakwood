@@ -33,7 +33,7 @@ zpl_isize oak__webserver_runner(struct zpl_thread *t) {
 void oak_webserver_init() {
     oak_log("[info] Initializing webserver at :%d...\n", GlobalConfig.port);
     mg_mgr_init(&mgr, NULL);
-    nc = mg_bind(&mgr, zpl_bprintf("%d", GlobalConfig.port), oak__webserver_ev_handler);
+    nc = mg_bind(&mgr, zpl_bprintf("%d", (int)GlobalConfig.port), oak__webserver_ev_handler);
 
     if (nc == NULL) {
         oak_log("[error] Failed to create listener for webserver, check ports !\n");

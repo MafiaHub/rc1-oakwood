@@ -181,6 +181,8 @@ int oak_vehicle_player_enter(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
         librg_entity_control_set(oak_network_ctx_get(), vehicle->native_id,
             player->native_entity->client_peer);
     }
+
+    return 0;
 }
 
 /**
@@ -217,6 +219,8 @@ int oak_vehicle_player_leave(oak_vehicle vid, oak_player pid, oak_seat_id seat_i
     if (seat_id == 0) {
         oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
     }
+
+    return 0;
 }
 
 /**
@@ -260,4 +264,6 @@ int oak_vehicle_player_hijack(oak_vehicle vid, oak_player pid, oak_seat_id seat_
     if (seat_id == 0) {
         oak_vehicle_streamer_assign_nearest(vehicle->oak_id);
     }
+
+    return 0;
 }
