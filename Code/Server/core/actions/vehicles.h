@@ -7,7 +7,7 @@ void oak_vehicles_update() {
         last_streamers_selection = zpl_time_now();
 
         librg_entity_iterate(&network_context, (LIBRG_ENTITY_ALIVE | OAK_VEHICLE), [](librg_ctx *ctx, librg_entity *entity) {
-            auto vehicle = oak_entity_vehicle_get_from_librg(entity);
+            auto vehicle = oak_entity_vehicle_get_from_native(entity);
 
             if (vehicle && vehicle->seats[0] == -1) {
                 oak_vehicle_streamer_assign_nearest(vehicle->oak_id);

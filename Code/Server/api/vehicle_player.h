@@ -86,7 +86,7 @@ oak_vehicle oak_vehicle_player_inside(oak_player pid) {
 
     if (player->vehicle_id != -1) {
         auto vehicle = librg_entity_fetch(&network_context, player->vehicle_id);
-        return oak_entity_get_id_from_librg(vehicle);
+        return oak_entity_get_id_from_native(vehicle);
     }
 
     return -2;
@@ -145,7 +145,7 @@ oak_player oak_vehicle_player_seat_player_get(oak_vehicle vid, oak_seat_id seat_
         return -3;
     }
 
-    auto player = oak_entity_get_id_from_librg(player_ent);
+    auto player = oak_entity_get_id_from_native(player_ent);
 
     return player;
 }
@@ -249,7 +249,7 @@ int oak_vehicle_player_hijack(oak_vehicle vid, oak_player pid, oak_seat_id seat_
     });
 
     auto driver_ent = librg_entity_fetch(oak_network_ctx_get(), vehicle->seats[seat_id]);
-    auto driver = oak_entity_player_get_from_librg(driver_ent);
+    auto driver = oak_entity_player_get_from_native(driver_ent);
 
     if (driver) {
         driver->vehicle_id = -1;

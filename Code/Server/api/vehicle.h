@@ -54,7 +54,7 @@ int oak_vehicle_despawn(oak_vehicle id) {
         if (pid == -1) continue;
 
         auto player_ent = librg_entity_fetch(oak_network_ctx_get(), pid);
-        auto player = oak_entity_player_get_from_librg(player_ent);
+        auto player = oak_entity_player_get_from_native(player_ent);
 
         player->vehicle_id = -1;
 
@@ -383,7 +383,7 @@ oak_player oak_vehicle_streamer_get(oak_vehicle vid) {
         return -4;
     }
 
-    auto player = oak_entity_player_get_from_librg(player_ent);
+    auto player = oak_entity_player_get_from_native(player_ent);
 
     if (!player) {
         return -5;

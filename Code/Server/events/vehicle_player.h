@@ -4,8 +4,8 @@ int oak_vehicle_player_register() {
         auto vehicle_ent = librg_entity_fetch(oak_network_ctx_get(), librg_data_rent(msg->data));
         auto seat = librg_data_ri32(msg->data);
 
-        auto vehicle = oak_entity_vehicle_get_from_librg(vehicle_ent);
-        auto sender = oak_entity_player_get_from_librg(sender_ent);
+        auto vehicle = oak_entity_vehicle_get_from_native(vehicle_ent);
+        auto sender = oak_entity_player_get_from_native(sender_ent);
 
         if (!vehicle || !sender) {
             return;
@@ -16,7 +16,7 @@ int oak_vehicle_player_register() {
 
     librg_network_add(oak_network_ctx_get(), NETWORK_VEHICLE_PLAYER_REMOVE, [](librg_message *msg) {
         auto sender_ent = librg_entity_find(oak_network_ctx_get(), msg->peer);
-        auto sender = oak_entity_player_get_from_librg(sender_ent);
+        auto sender = oak_entity_player_get_from_native(sender_ent);
 
         if (!sender) {
             return;
@@ -27,7 +27,7 @@ int oak_vehicle_player_register() {
         }
 
         auto sender_vehicle_ent = librg_entity_fetch(oak_network_ctx_get(), sender->vehicle_id);
-        auto sender_vehicle = oak_entity_vehicle_get_from_librg(sender_vehicle_ent);
+        auto sender_vehicle = oak_entity_vehicle_get_from_native(sender_vehicle_ent);
 
         if (!sender_vehicle) {
             return;
@@ -44,8 +44,8 @@ int oak_vehicle_player_register() {
         i32 seat_original = seat_id;
         auto enter_from_passenger_seat = librg_data_ri32(msg->data);
 
-        auto vehicle = oak_entity_vehicle_get_from_librg(vehicle_ent);
-        auto sender = oak_entity_player_get_from_librg(sender_ent);
+        auto vehicle = oak_entity_vehicle_get_from_native(vehicle_ent);
+        auto sender = oak_entity_player_get_from_native(sender_ent);
 
         if (vehicle && sender) {
             if(action == 1) {
