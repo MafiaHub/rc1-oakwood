@@ -9,12 +9,12 @@ int oak_gamemap_update() {
         zpl_array_make(gamemap_info, gamemap, zpl_heap());
 
         int player_count;
-        mafia_player **players = cast(mafia_player **)oak_entity_list(OAK_PLAYER, &player_count);
+        oak_player *players = oak_player_list(&player_count);
 
-        for (int i = 0; i < player_count; ++i)
-        {
-            mafia_player *player = players[i];
-            if (oak_player_visibility_get(player->oak_id, OAK_VISIBILITY_ICON)) {
+        for (int i = 0; i < player_count; ++i) {
+            if (oak_player_visibility_get(players[i], OAK_VISIBILITY_ICON)) {
+                mafia_player *player = oak_entity_player_get(players[i]);
+
                 gamemap_info info = {
                     player->native_id,
                     (u8)OAK_PLAYER, // todo: OAK_PLAYER
@@ -26,11 +26,11 @@ int oak_gamemap_update() {
         }
 
         int vehicle_count;
-        mafia_vehicle **vehicles = cast(mafia_vehicle **)oak_entity_list(OAK_VEHICLE, &vehicle_count);
+        oak_vehicle *vehicles = oak_vehicle_list(&vehicle_count);
 
-        for (int i = 0; i < vehicle_count; ++i)
-        {
-            mafia_vehicle *vehicle = vehicles[i];
+        for (int i = 0; i < vehicle_count; ++i) {
+            mafia_vehicle *vehicle = oak_entity_vehicle_get(vehicles[i]);
+
             if (oak_vehicle_visibility_get(vehicle->oak_id, OAK_VISIBILITY_ICON)) {
                 gamemap_info info = {
                     vehicle->native_id,

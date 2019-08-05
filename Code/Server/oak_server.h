@@ -8,10 +8,17 @@
 #define OAK_API
 #define OAK_API_TYPE(a, b)
 
+#define oak_array(type) type *
+#define oak_ref(type) type *
+
 OAK_API_TYPE(float, float)
 OAK_API_TYPE(oak_string, str)
 OAK_API_TYPE(oak_vec3, vec3)
 OAK_API_TYPE(oak_vec2, vec2)
+OAK_API_TYPE(oak_ref(int), oak_ref(int))
+OAK_API_TYPE(oak_array(oak_player), oak_array(int))
+OAK_API_TYPE(oak_array(oak_vehicle), oak_array(int))
+OAK_API_TYPE(oak_array(oak_door), oak_array(int))
 
 typedef union {
     struct { float x, y, z; };
@@ -46,9 +53,11 @@ enum {
 
 OAK_API int oak_logn(oak_string, int);
 
-/* ENTITY LIST */
-oak_player **oak_player_list(int *);
-oak_vehicle **oak_vehicle_list(int *);
+/* ENTITY LISTS */
+
+OAK_API oak_array(oak_player) oak_player_list(oak_ref(int));
+OAK_API oak_array(oak_vehicle) oak_vehicle_list(oak_ref(int));
+OAK_API oak_array(oak_door) oak_door_list(oak_ref(int));
 
 /* PLAYERS */
 
@@ -132,9 +141,10 @@ OAK_API oak_seat_id oak_vehicle_player_seat_get(oak_vehicle, oak_player);
 OAK_API oak_player oak_vehicle_player_seat_player_get(oak_vehicle, oak_seat_id);
 
 /* DOORS */
+
 OAK_API oak_door oak_door_create(oak_string, int);
 OAK_API int oak_door_destroy(oak_door);
-
+OAK_API int oak_door_invalid(oak_door);
 OAK_API oak_string oak_door_name_get(oak_door);
 
 #endif // OAK_SERVER_H

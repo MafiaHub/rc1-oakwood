@@ -61,12 +61,12 @@ const main = async () => {
     /* get dictionary with types from OAK_API_TYPE macros */
     const types = data
         .split('\n')
-        .filter(line => line.indexOf('OAK_API_TYPE(') !== -1)
+        .filter(l => l.indexOf('OAK_API_TYPE') !== -1)
+        .filter(l => l.indexOf('#define') === -1)
         .map(l => l.replace('OAK_API_TYPE', '').trim())
-        .map(l => l.replace('(', ''))
-        .map(l => l.replace(')', ''))
-        .map(l => l.trim())
+        .map(l => l.replace(/\s+/gm, ''))
         .map(l => l.split(',').map(a => a.trim()))
+        .map(l => [l[0].slice(1), l[1].slice(0, -1)])
         .reduce((c, l) => Object.assign(c, {[l[0]]: l[1]}), {})
 
     console.log(`[bridge] parsed ${Object.values(types).length} custom types`)
@@ -78,7 +78,7 @@ const main = async () => {
         .filter(line => line.indexOf('#define') === -1)
         .map(l => l.replace(/OAK_API[\s+]/, ''))
         .map(l => l.replace(';',''))
-        .map(l => /(\w+)\s([a-z0-9_]+)\(([\w, ]*)\)/.exec(l))
+        .map(l => /([\w\(\)]+)\s([a-z0-9_]+)\(([\w,\(\) ]*)\)/.exec(l))
         .filter(l => l)
         .map(l => [
             l[1].trim(),
@@ -106,6 +106,10 @@ const main = async () => {
                 cw_unpack_next(&ipc);`
 
             switch (types[a]) {
+                case 'oak_ref(int)':
+                    instruction = `
+                        int arg${i} = 0;
+                    `; break;
                 case 'float':
                     instruction += `
                         float arg${i} = 0.0f;
@@ -170,6 +174,11 @@ const main = async () => {
         switch (types[ret]) {
             case 'float': resline = `cw_pack_float(&opc, res);`; break;
             case 'str': resline = `cw_pack_str(&opc, res, zpl_strlen(res));`; break;
+            case 'oak_array(int)': resline = `
+                cw_pack_array_size(&opc, arg0);
+                for (int i=0; i<arg0; i++)
+                    cw_pack_signed(&opc, res[i]);
+            `; break;
             case 'vec3': resline = `
                 cw_pack_array_size(&opc, 3);
                 cw_pack_float(&opc, res.x);
@@ -179,19 +188,27 @@ const main = async () => {
             default: resline = `cw_pack_signed(&opc, res);`; break;
         }
 
+        const pureArgLength = args.filter(a => a.indexOf('oak_ref') === -1).length;
+        const argString = args
+            .map((a, i) => a.indexOf('_ref') !== -1
+                ? `&arg${i}`
+                : `arg${i}`
+            )
+            .join(', ')
+
         return `
         if (!zpl_strncmp("${name}", fname, ${name.length})) {
             cw_unpack_next(&ipc);
 
-            if (ipc.item.as.array.size != ${args.length}) {
+            if (ipc.item.as.array.size != ${pureArgLength}) {
                 errcode = -2;
-                errstr = zpl_bprintf("Error: argrument count invalid; Expected '${args.length}', got '%d'", ipc.item.as.array.size);
+                errstr = zpl_bprintf("Error: argrument count invalid; Expected '${pureArgLength}', got '%d'", ipc.item.as.array.size);
                 goto oak_bridge_router_error;
             }
 
             ${argline.join('').trim()}
 
-            ${ret} res = ${name}(${args.map((a, i) => `arg${i}`).join(', ')});
+            ${ret} res = ${name}(${argString});
 
             cw_pack_array_size(&opc, 2);
             cw_pack_signed(&opc, 0);

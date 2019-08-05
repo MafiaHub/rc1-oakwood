@@ -464,12 +464,3 @@ int oak_vehicle_streamer_assign_nearest(oak_vehicle vid, int exception) {
 
     return 0;
 }
-
-/**
- * Get spawned vehicles
- * @param  count
- * @return
- */
-oak_vehicle **oak_vehicle_list(int *count) {
-    return (oak_vehicle **)oak_entity_list(OAK_VEHICLE, count);
-}

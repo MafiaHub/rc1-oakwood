@@ -27,24 +27,6 @@ int oak_entities_count_get(oak_type type) {
     return oak__entities_data.counts[type];
 }
 
-oak_object **oak_entity_list(oak_type type, int *count) {
-    ZPL_ASSERT(type >= 0 && type < OAK_ENTITY_TYPE_LAST);
-    zpl_local_persist oak_object *list[OAK_MAX_ENTITIES];
-    int len = 0;
-
-    for (int i=0; i<oak_ent_limits[type]; ++i) {
-        if (!oak_entity_invalid(type, i)) {
-            list[len++] = oak_entity_get(type, i);
-        }
-    }
-
-    if (count) {
-        *count = len;
-    }
-
-    return list;
-}
-
 /**
  * Iterate and find new free entity slot
  * @param  type
@@ -145,11 +127,13 @@ int oak_entity_free(oak_type type, u32 id) {
     return 0;
 }
 
-#define OAK_ENTITY_SELECTOR(TYPE, NAME, ETYPE) \
-    TYPE *ZPL_JOIN3(oak_entity_,NAME,_get)(ZPL_JOIN2(oak_,NAME) id) { \
-        ZPL_ASSERT(id >= 0 && id < oak_ent_limits[ETYPE]); \
-        auto entity = &oak__entities_data.ZPL_JOIN2(NAME,s)[id]; \
-        return (TYPE *)(entity->is_valid ? entity : nullptr); \
+/* implement entity selects */
+
+#define OAK_ENTITY_SELECTOR(TYPE, NAME, ETYPE)                          \
+    TYPE *ZPL_JOIN3(oak_entity_,NAME,_get)(ZPL_JOIN2(oak_,NAME) id) {   \
+        ZPL_ASSERT(id >= 0 && id < oak_ent_limits[ETYPE]);              \
+        auto entity = &oak__entities_data.ZPL_JOIN2(NAME,s)[id];        \
+        return (TYPE *)(entity->is_valid ? entity : nullptr);           \
     }
 
 OAK_ENTITY_SELECTOR(mafia_player, player, OAK_PLAYER);
@@ -157,3 +141,28 @@ OAK_ENTITY_SELECTOR(mafia_vehicle, vehicle, OAK_VEHICLE);
 OAK_ENTITY_SELECTOR(mafia_door, door, OAK_DOOR);
 
 #undef OAK_ENTITY_SELECTOR
+
+/* implement entity lists */
+
+#define OAK_ENTITY_LIST(NAME, MAX_LIMIT)                            \
+ZPL_JOIN2(oak_, NAME) *ZPL_JOIN3(oak_,NAME,_list)(int *count) {     \
+    zpl_local_persist ZPL_JOIN2(oak_, NAME) buffer[MAX_LIMIT] = {}; \
+    int length = 0;                                                 \
+                                                                    \
+    /* clean up old data */                                         \
+    zpl_memset(buffer, 0, MAX_LIMIT*sizeof(int));                   \
+                                                                    \
+    for (int i=0; i<MAX_LIMIT; ++i)                                 \
+        if (!ZPL_JOIN3(oak_,NAME,_invalid)(i))                      \
+            buffer[length++] = i;                                   \
+                                                                    \
+    if (count) *count = length;                                     \
+    return buffer;                                                  \
+}
+
+
+OAK_ENTITY_LIST(player, OAK_MAX_PLAYERS);
+OAK_ENTITY_LIST(vehicle, OAK_MAX_VEHICLES);
+OAK_ENTITY_LIST(door, OAK_MAX_DOORS);
+
+#undef OAK_ENTITY_LIST

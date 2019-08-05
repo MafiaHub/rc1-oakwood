@@ -138,3 +138,13 @@ oak.cmd('goto', async (pid, targetid) => {
     /* set our player position */
     oak.player_position_set(pid, pos)
 })
+
+oak.cmd('list', async pid => {
+    console.log("players", await oak.player_list())
+    console.log("cars", await oak.vehicle_list())
+})
+
+oak.cmd('delcar', async (pid, arg1) => {
+    const vid = parseInt(arg1)
+    oak.vehicle_despawn(vid)
+})

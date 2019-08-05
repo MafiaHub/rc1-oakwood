@@ -9,10 +9,10 @@ int oak_scoreboard_update() {
         zpl_array_make(player_scoreboard_info, scoreboard, zpl_heap());
 
         int player_count;
-        mafia_player **players = cast(mafia_player **)oak_entity_list(OAK_PLAYER, &player_count);
+        oak_player *players = oak_player_list(&player_count);
 
         for (int i = 0; i < player_count; i++) {
-            mafia_player *entity = players[i];
+            mafia_player *entity = oak_entity_player_get(players[i]);
 
             player_scoreboard_info player_info;
             strcpy(player_info.nickname, entity->name);
