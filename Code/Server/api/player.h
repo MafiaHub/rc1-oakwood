@@ -358,8 +358,8 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
 
 /**
  * Get online players
- * @param  count [description]
- * @return       [description]
+ * @param  count
+ * @return
  */
 oak_player **oak_player_list(int *count) {
     return (oak_player **)oak_entity_list(OAK_PLAYER, count);
