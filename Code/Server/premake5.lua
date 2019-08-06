@@ -12,6 +12,7 @@ project "Server"
         "../../Vendors/msgpack/cwpack.c",
         "../../Vendors/http/mongoose.c",
         "../../Vendors/http/mongoose.h",
+        "../../Vendors/http/mongoose.h",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../../Vendors/librg/*.h",
@@ -27,8 +28,13 @@ project "Server"
         "../../Vendors/nanomsg/include",
     }
 
+    defines {
+        "CURL_STATICLIB"
+    }
+
     libdirs {
         "../../Vendors/nanomsg/lib",
+        "../../Vendors/curl",
     }
 
     prebuildcommands {
@@ -37,6 +43,8 @@ project "Server"
 
     configuration "windows"
         links {
+            "Crypt32",
+            "libcurl",
             "nanomsg32",
             "ws2_32",
             "mswsock",
@@ -45,6 +53,7 @@ project "Server"
 
     configuration "linux or macosx"
         links {
+            "libcurl",
             "nanomsg",
             "pthread",
             "curses",
