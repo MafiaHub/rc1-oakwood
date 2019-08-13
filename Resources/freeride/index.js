@@ -1,8 +1,7 @@
 const fs = require('fs')
 
 const {createClient, constants} = require('oakwood')
-const {vehicleModel, playerModel} = require('oakwood')
-const {playerModelList, vehicleModelList} = require('oakwood')
+const {vehicleModels, playerModels} = require('oakwood')
 
 const {
     VISIBILITY_NAME,
@@ -25,21 +24,21 @@ oak.event('stop', () => console.log('[info] connection stopped'))
 
 /* chat system */
 
-oak.event('player_chat', async (pid, text) => {
+oak.event('playerChat', async (pid, text) => {
     /* skip messages with commands */
-    if (text.indexOf('/') === 0){
+    if (text.indexOf('/') === 0) {
         return;
     }
 
     /* get author player name */
-    const name = await oak.player_name_get(pid)
+    const name = await oak.playerNameGet(pid)
     const msg = `[chat] ${name}: ${text}`
 
     /* log stuff into our local console */
     console.log('[chat]', `${name}:`, msg)
 
     /* send messages to each clients' chat windows */
-    oak.chat_broadcast(msg)
+    oak.chatBroadcast(msg)
 })
 
 
@@ -62,34 +61,34 @@ const spawnLocs = [
 
 const spawnplayer = pid => {
     const loc = rndarr(spawnLocs)
-    const model = rndarr(playerModelList)
+    const model = rndarr(playerModels)
 
-    oak.chat_send(pid, `[info] spawning you at location: ${loc.name}`)
-    oak.player_model_set(pid, model)
-    oak.player_position_set(pid, loc.pos)
-    oak.player_health_set(pid, 200)
-    oak.hud_fadeout(pid, 1, 500, 0xFFFFFF)
-    oak.hud_fadeout(pid, 0, 500, 0xFFFFFF)
-    oak.player_spawn(pid)
+    oak.chatSend(pid, `[info] spawning you at location: ${loc.name}`)
+    oak.playerModelSet(pid, model[1])
+    oak.playerPositionSet(pid, loc.pos)
+    oak.playerHealthSet(pid, 200)
+    oak.hudFadeout(pid, 1, 500, 0xFFFFFF)
+    oak.hudFadeout(pid, 0, 500, 0xFFFFFF)
+    oak.playerSpawn(pid)
 }
 
-oak.event('player_connect', async pid => {
+oak.event('playerConnect', async pid => {
     console.log('[info] player connected', pid)
-    oak.chat_broadcast(`[info] player ${await oak.player_name_get(pid)} connected.`)
+    oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} connected.`)
     spawnplayer(pid)
 })
 
-oak.event('player_death', async pid => {
-    oak.chat_broadcast(`[info] player ${await oak.player_name_get(pid)} died.`)
+oak.event('playerDeath', async pid => {
+    oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} died.`)
     spawnplayer(pid)
 })
 
-oak.event('player_disconnect', async pid => {
-    oak.chat_broadcast(`[info] player ${await oak.player_name_get(pid)} disconnected.`)
+oak.event('playerDisconnect', async pid => {
+    oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} disconnected.`)
 })
 
-oak.event('player_hit', (pid, atkr, dmg) => {
-    console.log('[info] player_hit', pid, atkr, dmg)
+oak.event('playerHit', (pid, atkr, dmg) => {
+    console.log('[info] playerHit', pid, atkr, dmg)
 })
 
 oak.cmd('spawn', async pid => {
@@ -97,96 +96,96 @@ oak.cmd('spawn', async pid => {
 })
 
 oak.cmd('despawn', async pid => {
-    oak.player_despawn(pid)
+    oak.playerDespawn(pid)
 })
 
 oak.cmd('kill', async pid => {
-    oak.player_kill(pid)
+    oak.playerKill(pid)
 })
 
 oak.cmd('help', async (pid) => {
     console.log('[info] player asks for help', pid)
-    oak.chat_send(pid, '[info] sorry, we cant help you')
+    oak.chatSend(pid, '[info] sorry, we cant help you')
 })
 
 oak.cmd('heal', async (pid) => {
-    oak.player_health_set(pid, 200.0)
+    oak.playerHealthSet(pid, 200.0)
 })
 
 oak.cmd('healme', async (pid) => {
-    oak.player_health_set(pid, 200.0)
+    oak.playerHealthSet(pid, 200.0)
 })
 
 oak.cmd('id', pid => {
-    oak.chat_send(pid, `[info] your ID is: ${pid}`)
+    oak.chatSend(pid, `[info] your ID is: ${pid}`)
 })
 
 oak.cmd('tp', async (pid, targetid) => {
     const tid = parseInt(targetid)
 
     if (tid === NaN) {
-        return oak.chat_send(pid, `[error] provided argument should be a valid number`)
+        return oak.chatSend(pid, `[error] provided argument should be a valid number`)
     }
 
     if (pid == tid) {
-        return oak.chat_send(pid, `[error] you can't teleport to yourself`)
+        return oak.chatSend(pid, `[error] you can't teleport to yourself`)
     }
 
-    if (await oak.player_invalid(tid)) {
-        return oak.chat_send(pid, `[error] player you provided was not found`)
+    if (await oak.playerInvalid(tid)) {
+        return oak.chatSend(pid, `[error] player you provided was not found`)
     }
 
     /* get target name and position */
-    const pos = await oak.player_position_get(tid)
-    const name = await oak.player_name_get(tid)
+    const pos = await oak.playerPositionGet(tid)
+    const name = await oak.playerNameGet(tid)
 
     /* are we in any vehicle */
-    const veh = await oak.vehicle_player_inside(pid)
+    const veh = await oak.vehiclePlayerInside(pid)
 
-    if (!await oak.vehicle_invalid(veh)) {
+    if (!await oak.vehicleInvalid(veh)) {
         /* offset by height */
         pos[1] += 2;
 
-        oak.chat_send(pid, `[info] teleporting your car to player ${name}.`)
+        oak.chatSend(pid, `[info] teleporting your car to player ${name}.`)
 
         /* set our vehicle position */
-        oak.vehicle_position_set(veh, pos)
+        oak.vehiclePositionSet(veh, pos)
     } else {
-        oak.chat_send(pid, `[info] teleporting you to player ${name}.`)
+        oak.chatSend(pid, `[info] teleporting you to player ${name}.`)
 
         /* set our player position */
-        oak.player_position_set(pid, pos)
+        oak.playerPositionSet(pid, pos)
     }
 })
 
 oak.cmd('list', async pid => {
-    const players = await oak.player_list()
+    const players = await oak.playerList()
 
-    oak.chat_send(pid, `[info] connected players:`)
-    players.map(async (tid, i) => oak.chat_send(pid, `ID: ${tid} | ${await oak.player_name_get(tid)}`))
-    oak.chat_send(pid, '---------------------------')
+    oak.chatSend(pid, `[info] connected players:`)
+    players.map(async (tid, i) => oak.chatSend(pid, `ID: ${tid} | ${await oak.playerNameGet(tid)}`))
+    oak.chatSend(pid, '---------------------------')
 })
 
 oak.cmd('skin', async (pid, arg1) => {
     if (!arg1) {
-        return oak.chat_send(pid, '[info] usage: /skin [modelId]')
+        return oak.chatSend(pid, '[info] usage: /skin [modelId]')
     }
 
-    const veh = await oak.vehicle_player_inside(pid)
+    const veh = await oak.vehiclePlayerInside(pid)
 
-    if (!await oak.vehicle_invalid(veh)) {
-        return oak.chat_send(pid, `[error] you can't change skin inside of vehicle!`)
+    if (!await oak.vehicleInvalid(veh)) {
+        return oak.chatSend(pid, `[error] you can't change skin inside of vehicle!`)
     }
 
     const modelid = parseInt(arg1)
-    oak.player_model_set(pid, playerModel(modelid))
+    oak.playerModelSet(pid, playerModels[modelid][1])
 })
 
 oak.cmd('telelist', async (pid) => {
-    oak.chat_send(pid, `Location names for /tele :`)
+    oak.chatSend(pid, `Location names for /tele :`)
 
     spawnLocs.map((a, i) => {
-        oak.chat_send(pid, `${i}. ${a.name}`)
+        oak.chatSend(pid, `${i}. ${a.name}`)
     })
 })
 
@@ -194,18 +193,18 @@ oak.cmd('tele', async (pid, name) => {
     const location = spawnLocs.find(el => el.name == name)
 
     if (!location) {
-        return oak.chat_send(pid, `[error] cound't find any locations by given name, use /telelist`)
+        return oak.chatSend(pid, `[error] cound't find any locations by given name, use /telelist`)
     }
 
-    oak.chat_send(pid, `[info] teleporting your car to a location ${location.name}.`)
+    oak.chatSend(pid, `[info] teleporting your car to a location ${location.name}.`)
 
     /* are we in any vehicle */
-    const veh = await oak.vehicle_player_inside(pid)
+    const veh = await oak.vehiclePlayerInside(pid)
 
-    if (!await oak.vehicle_invalid(veh)) {
-        oak.vehicle_position_set(veh, location.pos)
+    if (!await oak.vehicleInvalid(veh)) {
+        oak.vehiclePositionSet(veh, location.pos)
     } else {
-        oak.player_position_set(pid, location.pos)
+        oak.playerPositionSet(pid, location.pos)
     }
 })
 
@@ -215,25 +214,25 @@ oak.cmd('tele', async (pid, name) => {
 /* Spectating system */
 
 oak.cmd('hideme', async (pid) => {
-    const nameVisible = await player_visibility_get(pid, VISIBILITY_NAME)
-    const iconVisible = await player_visibility_get(pid, VISIBILITY_ICON)
+    const nameVisible = await oak.playerVisibilityGet(pid, VISIBILITY_NAME)
+    const iconVisible = await oak.playerVisibilityGet(pid, VISIBILITY_ICON)
 
-    oak.player_visibility_set(pid, VISIBILITY_NAME, !nameVisible)
-    oak.player_visibility_set(pid, VISIBILITY_ICON, !iconVisible)
+    oak.playerVisibilitySet(pid, VISIBILITY_NAME, !nameVisible)
+    oak.playerVisibilitySet(pid, VISIBILITY_ICON, !iconVisible)
 })
 
 oak.cmd('spectate', async (pid, arg1) => {
     const tid = parseInt(arg1)
 
-    if (await oak.player_invalid(tid)) {
-        return oak.chat_send(pid, `[error] unknown player target`)
+    if (await oak.playerInvalid(tid)) {
+        return oak.chatSend(pid, `[error] unknown player target`)
     }
 
-    oak.camera_target_player(pid, tid)
+    oak.cameraTargetPlayer(pid, tid)
 })
 
 oak.cmd('stop', async (pid) => {
-    oak.camera_target_unset(pid)
+    oak.cameraTargetUnset(pid)
 })
 
 
@@ -256,7 +255,7 @@ let playerVehiclesAdd = (pid, vid) => {
 }
 
 oak.event('start', async () => {
-    const existing = await oak.vehicle_list()
+    const existing = await oak.vehicleList()
 
     /* despawn all empty vehicles */
     if (existing.length > 0) {
@@ -264,10 +263,10 @@ oak.event('start', async () => {
 
         for (var i = 0; i < existing.length; i++) {
             const veh = existing[i]
-            const pass = await oak.vehicle_player_list(veh)
+            const pass = await oak.vehiclePlayerList(veh)
 
             if (pass.length == 0) {
-                await oak.vehicle_despawn(veh)
+                await oak.vehicleDespawn(veh)
             } else {
                 console.log('[info] skipping respawn for occupied vehicle', veh)
             }
@@ -301,7 +300,7 @@ oak.event('start', async () => {
 
     models.concat(data).map(async car => {
         const {pos, heading, model} = car;
-        oak.vehicle_spawn(vehicleModel(model), pos, heading)
+        oak.vehicleSpawn(vehicleModels[model][1], pos, heading)
     })
 })
 
@@ -309,21 +308,21 @@ const spawncar = async (pid, model, adjustPos) => {
     const m = parseInt(model)
 
     if (m === NaN) {
-        return oak.chat_send(pid, `[error] provided argument should be a valid number`)
+        return oak.chatSend(pid, `[error] provided argument should be a valid number`)
     }
 
-    oak.chat_send(pid, `[info] spawning vehicle model ${vehicleModelList[m][0]}`)
+    oak.chatSend(pid, `[info] spawning vehicle model ${vehicleModels[m][0]}`)
 
-    let pos = await oak.player_position_get(pid)
-    let heading = await oak.player_heading_get(pid)
+    let pos = await oak.playerPositionGet(pid)
+    let heading = await oak.playerHeadingGet(pid)
 
     if (adjustPos === true) {
-        let dir = await oak.player_direction_get(pid)
+        let dir = await oak.playerDirectionGet(pid)
         pos = pos.map((p, i) => p + dir[i] * 1.5)
         heading -= 90.0
     }
 
-    const veh = await oak.vehicle_spawn(vehicleModel(m), pos, heading)
+    const veh = await oak.vehicleSpawn(vehicleModels[m][1], pos, heading)
 
     playerVehiclesAdd(pid, veh)
 
@@ -336,45 +335,45 @@ oak.cmd('car', async (pid, model) => {
 
 oak.cmd('putcar', async (pid, model) => {
     const veh = await spawncar(pid, model, false)
-    oak.vehicle_player_put(veh, pid, 0)
+    oak.vehiclePlayerPut(veh, pid, 0)
 })
 
 oak.cmd('repair', async pid => {
-    const veh = await oak.vehicle_player_inside(pid)
-    if (await oak.vehicle_invalid(veh)) return;
-    oak.vehicle_repair(veh)
+    const veh = await oak.vehiclePlayerInside(pid)
+    if (await oak.vehicleInvalid(veh)) return;
+    oak.vehicleRepair(veh)
 })
 
 oak.cmd('delcar', async (pid) => {
-    const veh = await oak.vehicle_player_inside(pid)
+    const veh = await oak.vehiclePlayerInside(pid)
 
-    if (await oak.vehicle_invalid(veh)) {
-        return oak.chat_send(pid, '[error] you are not in a vehicle')
+    if (await oak.vehicleInvalid(veh)) {
+        return oak.chatSend(pid, '[error] you are not in a vehicle')
     }
 
     if (!playerVehiclesValid(pid, veh)) {
-        return oak.chat_send(pid, `[error] you can't remove car not spawned by you`)
+        return oak.chatSend(pid, `[error] you can't remove car not spawned by you`)
     }
 
-    oak.vehicle_despawn(vid)
-    oak.chat_send(pid, `[info] car has been successfully removed`)
+    oak.vehicleDespawn(vid)
+    oak.chatSend(pid, `[info] car has been successfully removed`)
 })
 
 oak.cmd('fuel', async (pid, arg1 = 10.0) => {
     const fuel = parseFloat(arg1)
 
-    const veh = await oak.vehicle_player_inside(pid)
-    if (await oak.vehicle_invalid(veh)) return;
+    const veh = await oak.vehiclePlayerInside(pid)
+    if (await oak.vehicleInvalid(veh)) return;
 
-    oak.vehicle_fuel_set(veh, fuel)
+    oak.vehicleFuelSet(veh, fuel)
 })
 
 oak.cmd('race', async (pid, flags) => {
     const f = parseInt(flags)
 
     if (f === NaN) {
-        return oak.chat_send(pid, '[error] pakuj do pici')
+        return oak.chatSend(pid, '[error] pakuj do pici')
     }
 
-    oak.hud_countdown(pid, f)
+    oak.hudCountdown(pid, f)
 })

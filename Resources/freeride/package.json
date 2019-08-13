@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "oakwood": "^1.4.0"
+    "oakwood": "^2.0.0"
   }
 }
