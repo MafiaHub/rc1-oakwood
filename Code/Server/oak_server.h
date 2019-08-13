@@ -108,7 +108,7 @@ OAK_API int oak_chat_broadcast_color(oak_string, int, int);
 
 /* VEHICLES */
 
-OAK_API oak_vehicle oak_vehicle_spawn(oak_string, int);
+OAK_API oak_vehicle oak_vehicle_spawn(oak_string, int, oak_vec3, float);
 OAK_API int oak_vehicle_despawn(oak_vehicle);
 
 OAK_API int oak_vehicle_invalid(oak_vehicle);
@@ -139,6 +139,7 @@ OAK_API int oak_vehicle_player_remove(oak_vehicle, oak_player);
 OAK_API oak_vehicle oak_vehicle_player_inside(oak_player);
 OAK_API oak_seat_id oak_vehicle_player_seat_get(oak_vehicle, oak_player);
 OAK_API oak_player oak_vehicle_player_seat_player_get(oak_vehicle, oak_seat_id);
+OAK_API oak_array(oak_player) oak_vehicle_player_list(oak_vehicle, oak_ref(int));
 
 /* DOORS */
 

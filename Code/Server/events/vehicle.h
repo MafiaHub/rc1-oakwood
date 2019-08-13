@@ -74,7 +74,13 @@ void oak_ev_vehicle_client_add(librg_event *e) {
 
 void oak_ev_vehicle_client_update(librg_event *e) {
     auto vehicle = oak_entity_vehicle_get((oak_vehicle)e->entity->user_data);
-    ZPL_ASSERT_NOT_NULL(vehicle);
+
+    /* handle cases when entity is already deleted on the server */
+    /* but we are still receiving updates from the clients */
+    if (!vehicle) {
+        librg_event_reject(e);
+        return;
+    }
 
     librg_data_rptr(e->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_rptr(e->data, &vehicle->rot_up, sizeof(zpl_vec3));

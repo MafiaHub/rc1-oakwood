@@ -218,7 +218,9 @@ Releases the resources acquired by `http_get` or `http_post`. Should be call whe
 
 #ifndef HTTP_MALLOC
     #define _CRT_NONSTDC_NO_DEPRECATE 
+#ifndef _CRT_SECURE_NO_WARNINGS
     #define _CRT_SECURE_NO_WARNINGS
+#endif
     #include <stdlib.h>
     #define HTTP_MALLOC( ctx, size ) ( malloc( size ) )
     #define HTTP_FREE( ctx, ptr ) ( free( ptr ) )

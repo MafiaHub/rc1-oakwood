@@ -44,7 +44,7 @@ int oak_hud_countdown(oak_player id, int number) {
  * @param  duration
  * @return
  */
-int oak_hud_alert(oak_player id, oak_string text, float duration) {
+int oak_hud_alert(oak_player id, const char *text, float duration) {
     auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
 
     auto len = zpl_strlen(text);

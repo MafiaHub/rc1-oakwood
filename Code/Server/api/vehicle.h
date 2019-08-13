@@ -10,7 +10,7 @@
  * @param model
  * @return
  */
-oak_vehicle oak_vehicle_spawn(const char *model, int length) {
+oak_vehicle oak_vehicle_spawn(const char *model, int length, oak_vec3 position, float heading) {
     auto oak_id = oak_entity_next(OAK_VEHICLE);
     auto entity = oak_entity_vehicle_get(oak_id);
     auto native = librg_entity_create(oak_network_ctx_get(), OAK_VEHICLE);
@@ -19,14 +19,14 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length) {
     entity->native_id = native->id;
     entity->native_entity = native;
     native->user_data = (void *)(uintptr)oak_id;
-    native->position = {0};
+    native->position = EXPAND_VEC(position);
 
     entity->health             = 100.0f;
     entity->engine_health      = 100.0f;
     entity->fuel               = 60.0f;
     entity->sound_enabled      = 1;
     entity->is_car_in_radar    = true;
-    entity->rot_forward        = ComputeDirVector(0.0f);
+    entity->rot_forward        = ComputeDirVector(heading);
     entity->rot_up             = { 0.0f, 1.0f, 0.0f };
     oak_vehicle_visibility_set(oak_id, OAK_VISIBILITY_ICON, 1);
 
@@ -138,6 +138,11 @@ int oak_vehicle_direction_set(oak_vehicle id, oak_vec3 direction) {
     librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->rot_forward = hard_cast(zpl_vec3*)direction;
 
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_DIR, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wptr(&data, &direction, sizeof(zpl_vec3));
+    });
+
     return 0;
 }
 
@@ -151,8 +156,13 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
 
-    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
-    entity->native_entity->position = hard_cast(zpl_vec3*)(position);
+    // librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
+    entity->native_entity->position = EXPAND_VEC(position);
+
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_POS, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wptr(&data, &position, sizeof(zpl_vec3));
+    });
 
     return 0;
 }

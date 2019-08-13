@@ -104,7 +104,7 @@ void oak_bridge_event_player_key(oak_player player, int key) {
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
 
-void oak_bridge_event_player_chat(oak_player player, oak_string text) {
+void oak_bridge_event_player_chat(oak_player player, const char *text) {
     char buffer[OAK_BRIDGE_BUFFER] = {};
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
@@ -115,7 +115,7 @@ void oak_bridge_event_player_chat(oak_player player, oak_string text) {
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
 
-void oak_bridge_event_console(oak_string text) {
+void oak_bridge_event_console(const char *text) {
     printf("[info] executing server command: %s\n", text);
     char buffer[OAK_BRIDGE_BUFFER] = {};
     cw_pack_context pc;
@@ -135,4 +135,3 @@ void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle) {
     cw_pack_signed(&pc, vehicle);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
-

@@ -142,7 +142,13 @@ void oak_ev_player_client_add(librg_event *e) {
 
 void oak_ev_player_client_update(librg_event *e) {
     auto player = oak_entity_player_get_from_native(e->entity);
-    ZPL_ASSERT_NOT_NULL(player);
+
+    /* handle cases when entity is already deleted on the server */
+    /* but we are still receiving updates from the clients */
+    if (!player) {
+        librg_event_reject(e);
+        return;
+    }
 
     librg_data_rptr(e->data, &player->position, sizeof(zpl_vec3));
     librg_data_rptr(e->data, &player->rotation, sizeof(zpl_vec3));

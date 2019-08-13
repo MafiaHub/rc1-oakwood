@@ -42,7 +42,8 @@ workspace "Oakwood"
     filter {}
 
     defines {
-        "NOMINMAX",
+        "_CRT_SECURE_NO_WARNINGS"
+        -- "NOMINMAX",
         --"WIN32_LEAN_AND_MEAN"
     }
 

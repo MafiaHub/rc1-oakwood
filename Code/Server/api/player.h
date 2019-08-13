@@ -202,15 +202,19 @@ int oak_player_health_set(oak_player id, float health) {
 
 int oak_player_position_set(oak_player id, oak_vec3 position) {
     if (oak_player_invalid(id)) return -1;
-    oak_entity_player_get(id)->native_entity->position = EXPAND_VEC(position);
+    auto entity = oak_entity_player_get(id);
+
+    // TODO: fix bug with interpolation on client side
+    // librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->id);
+    entity->native_entity->position = EXPAND_VEC(position);
+
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_POS, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wptr(&data, &position, sizeof(zpl_vec3));
+    });
+
     return 0;
 }
-
-// =======================================================================//
-// !
-// ! DATA SETTERS (action-based values)
-// !
-// =======================================================================//
 
 int oak_player_heading_set(oak_player id, float angle) {
     auto player = oak_entity_player_get(id);
@@ -219,10 +223,17 @@ int oak_player_heading_set(oak_player id, float angle) {
         return -1;
     }
 
+    librg_entity_control_ignore_next_update(oak_network_ctx_get(), player->native_id);
     player->rotation = ComputeDirVector(angle);
 
     return 0;
 }
+
+// =======================================================================//
+// !
+// ! DATA SETTERS (action-based values)
+// !
+// =======================================================================//
 
 /**
  * Set player model to a specific model

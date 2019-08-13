@@ -277,3 +277,27 @@ int oak_vehicle_player_hijack(oak_vehicle vid, oak_player pid, oak_seat_id seat_
 
     return 0;
 }
+
+oak_player *oak_vehicle_player_list(oak_vehicle vid, int *count) {
+    zpl_local_persist oak_player buffer[OAK_MAX_SEATS] = {};
+    int length = 0;
+
+    /* clean up old data */
+    zpl_memset(buffer, 0, OAK_MAX_SEATS * sizeof(oak_player));
+
+    if (oak_vehicle_invalid(vid)) return NULL;
+    auto vehicle = oak_entity_vehicle_get(vid);
+
+    for (int i=0; i<OAK_MAX_SEATS; ++i) {
+        librg_entity *entity = librg_entity_fetch(oak_network_ctx_get(), vehicle->seats[i]);
+        if (!entity) continue;
+
+        oak_player pid = oak_entity_get_id_from_native(entity);
+        if (oak_player_invalid(pid)) continue;
+
+        buffer[length++] = pid;
+    }
+
+    if (count) *count = length;
+    return buffer;
+}

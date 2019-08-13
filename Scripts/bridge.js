@@ -6,6 +6,20 @@ const char *oak__methods() {
     return "METHOD_DATA";
 }
 
+int oak__heartbeat() {
+    static bool launched = false;
+    static zpl_random rand = {0};
+    static int id = 0;
+
+    if (!launched) {
+        zpl_random_init(&rand);
+        id = zpl_random_gen_u32(&rand);
+        launched = true;
+    }
+
+    return id;
+}
+
 int oak_bridge_router(const char *nanobuffer, usize size) {
     cw_pack_context opc;
     cw_unpack_context ipc;
@@ -89,6 +103,7 @@ const main = async () => {
     console.log(`[bridge] parsed ${fns.length} functions`)
 
     fns.push(['oak_string', 'oak__methods', []])
+    fns.push(['int', 'oak__heartbeat', []])
 
     const checkarg = (type, msgpacktype) => `
         if (ipc.item.type != ${msgpacktype}) {
@@ -100,6 +115,7 @@ const main = async () => {
 
     const result = fns.map(fn => {
         const [ret, name, args] = fn
+        let refarg = 0;
 
         const argline = args.map((a, i) => {
             let instruction = `
@@ -107,6 +123,7 @@ const main = async () => {
 
             switch (types[a]) {
                 case 'oak_ref(int)':
+                    refarg = i;
                     instruction = `
                         int arg${i} = 0;
                     `; break;
@@ -175,8 +192,8 @@ const main = async () => {
             case 'float': resline = `cw_pack_float(&opc, res);`; break;
             case 'str': resline = `cw_pack_str(&opc, res, zpl_strlen(res));`; break;
             case 'oak_array(int)': resline = `
-                cw_pack_array_size(&opc, arg0);
-                for (int i=0; i<arg0; i++)
+                cw_pack_array_size(&opc, arg${refarg});
+                for (int i=0; i<arg${refarg}; i++)
                     cw_pack_signed(&opc, res[i]);
             `; break;
             case 'vec3': resline = `
