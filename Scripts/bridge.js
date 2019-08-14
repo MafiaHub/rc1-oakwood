@@ -160,10 +160,23 @@ const main = async () => {
                     `; break;
                 case 'str':
                     instruction += `
-                        oak_string arg${i};
+                        char *arg${i};
+                        int arg${i}_len;
+
                         ${checkarg('str', 'CWP_ITEM_STR')}
-                        arg${i} = (const char *)ipc.item.as.str.start;
-                    `; break;
+
+                        arg${i} = (char *)ipc.item.as.str.start;
+                        arg${i}_len = ipc.item.as.str.length;
+
+                        if (arg${i}_len != zpl_strlen(arg${i})+1) {
+                            errcode = -4;
+                            errstr = zpl_bprintf("Error: string length mismatch. Make sure packed string contains NULL terminator at the end.");
+                            goto oak_bridge_router_error;
+                        }
+
+                        arg${i}[arg${i}_len-1] = '\\0';
+                    `;
+                    break;
                 default:
                     instruction += `
                         int arg${i} = 0;

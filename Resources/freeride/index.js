@@ -19,7 +19,11 @@ const oak = createClient(process.platform !== "win32" ? {
 /* get random element from an array */
 const rndarr = arr => arr[Math.floor(Math.random()*arr.length)]
 
-oak.event('start', () => console.log('[info] connection started'))
+oak.event('start', () => {
+    console.log('[info] connection started')
+    oak.log('[info] oakwood-node connected')
+})
+
 oak.event('stop', () => console.log('[info] connection stopped'))
 
 /* chat system */
