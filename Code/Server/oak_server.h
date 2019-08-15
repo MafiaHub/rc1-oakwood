@@ -53,6 +53,11 @@ enum {
 
 OAK_API int oak_logn(oak_string, int);
 
+/* MISC */
+
+OAK_API int   oak_killbox_set(float);
+OAK_API float oak_killbox_get(int);
+
 /* ENTITY LISTS */
 
 OAK_API oak_array(oak_player) oak_player_list(oak_ref(int));

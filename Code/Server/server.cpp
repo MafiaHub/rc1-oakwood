@@ -76,6 +76,7 @@
 #include "core/endpoints.h"
 #include "core/webserver.h"
 
+#include "core/tasks/killbox.h"
 #include "core/tasks/masterlist.h"
 #include "core/tasks/gamemap.h"
 #include "core/tasks/scoreboard.h"
@@ -83,6 +84,7 @@
 
 #include "utils.hpp"
 
+#include "api/misc.h"
 #include "api/chat.h"
 #include "api/camera.h"
 #include "api/hud.h"
@@ -98,6 +100,8 @@
 #include "events/vehicle_player.h"
 #include "events/weapons.h"
 
+
+void oak_tasks_process();
 
 /*
 * Entry point
@@ -143,11 +147,7 @@ int main(int argc, char **argv)
         oak_console_block_input(1);
         oak_network_tick();
         oak_bridge_tick();
-        oak_vehicles_update();
-        oak_console_console_update_stats();
-        oak_scoreboard_update();
-        oak_gamemap_update();
-        oak_masterlist_update();
+        oak_tasks_process();
         oak_console_block_input(0);
         zpl_sleep_ms(1);
     }
@@ -167,4 +167,13 @@ void shutdown_server()
 
     oak_cli_free();
     zpl_exit(0);
+}
+
+void oak_tasks_process() {
+    oak_killbox_update();
+    oak_vehicles_update();
+    oak_console_console_update_stats();
+    oak_scoreboard_update();
+    oak_gamemap_update();
+    oak_masterlist_update();
 }
