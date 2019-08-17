@@ -359,7 +359,7 @@ oak.cmd('delcar', async (pid) => {
         return oak.chatSend(pid, `[error] you can't remove car not spawned by you`)
     }
 
-    oak.vehicleDespawn(vid)
+    oak.vehicleDespawn(veh)
     oak.chatSend(pid, `[info] car has been successfully removed`)
 })
 

@@ -14,7 +14,7 @@ int oak_killbox_update() {
         for (int i = 0; i < player_count; i++) {
             mafia_player *entity = oak_entity_player_get(players[i]);
 
-            if (entity->position.y <= oak_config_killbox_get()) {
+            if (entity && entity->position.y <= oak_config_killbox_get()) {
                 oak_player_kill(players[i]);
             }
         }
@@ -27,7 +27,7 @@ int oak_killbox_update() {
         for (int i = 0; i < vehicle_count; i++) {
             mafia_vehicle *entity = oak_entity_vehicle_get(players[i]);
 
-            if (entity->native_entity->position.y <= oak_config_killbox_get()) {
+            if (entity && entity->native_entity->position.y <= oak_config_killbox_get()) {
                 oak_vehicle_despawn(vehicles[i]);
             }
         }
