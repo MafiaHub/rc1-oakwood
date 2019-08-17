@@ -30,9 +30,8 @@ oak.event('stop', () => console.log('[info] connection stopped'))
 
 oak.event('playerChat', async (pid, text) => {
     /* skip messages with commands */
-    if (text.indexOf('/') === 0) {
+    if (text.startsWith('/'))
         return;
-    }
 
     /* get author player name */
     const name = await oak.playerNameGet(pid)
@@ -45,6 +44,13 @@ oak.event('playerChat', async (pid, text) => {
     oak.chatBroadcast(msg)
 })
 
+oak.event('unknownCommand', (pid, text) => {
+    oak.chatSend(pid, `[error] unknown command: ${text}`)
+})
+
+oak.cmd('clear', (pid) => {
+    oak.chatSend(pid, '\n'.repeat(12))
+})
 
 
 /* Player system */
