@@ -56,7 +56,7 @@ OAK_API int oak_logn(oak_string, int);
 /* MISC */
 
 OAK_API int   oak_killbox_set(float);
-OAK_API float oak_killbox_get(int);
+OAK_API float oak_killbox_get();
 
 /* ENTITY LISTS */
 
