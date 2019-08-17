@@ -25,27 +25,6 @@ int oak_vehicle_player_put(oak_vehicle vid, oak_player pid, oak_seat_id seat_id)
     return 0;
 }
 
-/**
- * Get a seat id of specified player in a specified vehicle
- * @param  vid
- * @param  pid
- * @return
- */
-int oak_vehicle_player_get(oak_vehicle vid, oak_player pid) {
-    auto player = oak_entity_player_get(pid);
-    auto vehicle = oak_entity_vehicle_get(vid);
-
-    if (!player || !vehicle)
-        return -1;
-
-    for (size_t i = 0; i < 4; i++) {
-        if (vehicle->seats[i] == player->native_id)
-            return i;
-    }
-
-    return -1;
-}
-
 int oak_vehicle_player_remove(oak_vehicle vid, oak_player pid) {
     auto vehicle = oak_entity_vehicle_get(vid);
     auto player = oak_entity_player_get(pid);
@@ -131,7 +110,7 @@ oak_seat_id oak_vehicle_player_seat_get(oak_vehicle vid, oak_player pid) {
  * @param  seat_id
  * @return
  */
-oak_player oak_vehicle_player_seat_player_get(oak_vehicle vid, oak_seat_id seat_id) {
+oak_player oak_vehicle_player_at_seat(oak_vehicle vid, oak_seat_id seat_id) {
     if (seat_id < 0 || seat_id >= OAK_MAX_SEATS) {
         return -1;
     }

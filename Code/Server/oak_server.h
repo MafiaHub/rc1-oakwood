@@ -138,12 +138,11 @@ OAK_API int oak_vehicle_visibility_get(oak_vehicle, oak_visiblity_type);
 
 /* VEHICLE/PLAYER INTERACTION */
 
-OAK_API int oak_vehicle_player_put(oak_vehicle, oak_player, int);
-OAK_API int oak_vehicle_player_get(oak_vehicle, oak_player);
+OAK_API int oak_vehicle_player_put(oak_vehicle, oak_player, oak_seat_id);
 OAK_API int oak_vehicle_player_remove(oak_vehicle, oak_player);
 OAK_API oak_vehicle oak_vehicle_player_inside(oak_player);
 OAK_API oak_seat_id oak_vehicle_player_seat_get(oak_vehicle, oak_player);
-OAK_API oak_player oak_vehicle_player_seat_player_get(oak_vehicle, oak_seat_id);
+OAK_API oak_player oak_vehicle_player_at_seat(oak_vehicle, oak_seat_id);
 OAK_API oak_array(oak_player) oak_vehicle_player_list(oak_vehicle, oak_ref(int));
 
 /* DOORS */
