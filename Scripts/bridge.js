@@ -97,7 +97,7 @@ const main = async () => {
         .map(l => [
             l[1].trim(),
             l[2].trim(),
-            l[3].split(',').map(v => v.trim())
+            l[3].split(',').map(v => v.trim()).filter(a => a)
         ])
 
     console.log(`[bridge] parsed ${fns.length} functions`)
