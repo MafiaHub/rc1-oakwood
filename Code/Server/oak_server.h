@@ -69,7 +69,7 @@ OAK_API oak_array(oak_door) oak_door_list(oak_ref(int));
 OAK_API int oak_player_spawn(oak_player);
 OAK_API int oak_player_despawn(oak_player);
 
-OAK_API int oak_player_invalid(oak_vehicle);
+OAK_API int oak_player_invalid(oak_player);
 OAK_API int oak_player_kick(oak_player, oak_string, int);
 OAK_API int oak_player_kill(oak_player);
 OAK_API int oak_player_playanim(oak_player, oak_string, int);
