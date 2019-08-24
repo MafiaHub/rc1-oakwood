@@ -50,10 +50,11 @@ int oak_vehicle_despawn(oak_vehicle id) {
 
     for(size_t i = 0; i < OAK_MAX_SEATS; i++) {
         auto pid = vehicle->seats[i];
-
         if (pid == -1) continue;
 
         auto player_ent = librg_entity_fetch(oak_network_ctx_get(), pid);
+        if (!player_ent) continue;
+
         auto player = oak_entity_player_get_from_native(player_ent);
 
         player->vehicle_id = -1;

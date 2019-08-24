@@ -29,19 +29,3 @@ int oak_chat_broadcast(const char *text, int length) {
 
     return 0;
 }
-
-/**
- * Send a message to all players with specific color
- * @param  text
- * @param  color
- * @return
- */
-int oak_chat_broadcast_color(const char *text, int length, int color) {
-    librg_send(&network_context, NETWORK_SEND_CONSOLE_MSG, data, {
-        librg_data_wu32(&data, length);
-        librg_data_wu32(&data, color);
-        librg_data_wptr(&data, (void*)text, length);
-    });
-
-    return 0;
-}

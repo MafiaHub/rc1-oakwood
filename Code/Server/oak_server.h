@@ -103,13 +103,13 @@ OAK_API int oak_camera_target_unset(oak_player);
 /* HUD */
 OAK_API int oak_hud_fadeout(oak_player, int, int, int);
 OAK_API int oak_hud_countdown(oak_player, int);
-OAK_API int oak_hud_alert(oak_player, oak_string, float);
+OAK_API int oak_hud_announce(oak_player, oak_string, int, float);
+OAK_API int oak_hud_message(oak_player, oak_string, int, int);
 
 /* CHAT */
 
 OAK_API int oak_chat_send(oak_player, oak_string, int);
 OAK_API int oak_chat_broadcast(oak_string, int);
-OAK_API int oak_chat_broadcast_color(oak_string, int, int);
 
 /* VEHICLES */
 
