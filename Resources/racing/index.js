@@ -6,7 +6,7 @@ const fs = require('fs')
 const { createClient, constants } = require('oakwood')
 const { vehicleModels, playerModels } = require('oakwood')
 
-const oak = createClient(process.platform !== "win32" ? {
+const oak = createClient(process.platform === "darwin" ? {
     inbound: 'tcp://192.168.1.3:10101',
     outbound: 'tcp://192.168.1.3:10102',
 } : {})
@@ -187,15 +187,28 @@ const setupStartingCamera = (pid) => {
     const camPos = [316.769, 12.445, -166.209]
     const camDir = [-0.915, -0.346, 0.402]
 
-    // setTimeout(() => oak.cameraSet(pid, camPos, camDir), 250)
+    setTimeout(() => oak.cameraSet(pid, camPos, camDir), 250)
 }
 
 /*
 * on node start
 */
+
 oak.event('start', async () => {
     console.log('[info] connection started')
     oak.log('[info] oakwood-node connected')
+
+    const existing = await oak.vehicleList()
+    console.log('[info] found', existing.length, 'existing cars on start-up')
+
+    /* despawn all empty vehicles */
+    if (existing.length > 0) {
+        for (var i = 0; i < existing.length; i++) {
+            const veh = existing[i]
+            await oak.vehicleDespawn(veh)
+        }
+    }
+
 
     raceStart()
 

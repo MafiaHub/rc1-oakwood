@@ -71,5 +71,8 @@ struct shoot_info
 
 std::unordered_map<void *, shoot_info> shoot_queue;
 std::vector<MafiaSDK::C_Car *> car_delte_queue;
-std::unordered_map<u32, MafiaSDK::C_Car *> car_cache;
 IDirect3DDevice9 *global_device = nullptr;
+
+#ifdef OAK_FEATURE_VEHICLE_CACHE
+std::unordered_map<u32, MafiaSDK::C_Car *> car_cache;
+#endif

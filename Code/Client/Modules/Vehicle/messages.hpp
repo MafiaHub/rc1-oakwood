@@ -78,9 +78,9 @@ void add_messages() {
     });
 
    librg_network_add(&network_context, NETWORK_VEHICLE_GAME_DESTROY, [](librg_message * msg) {
-
-        u32 vehicle_id = librg_data_ru32(msg->data);
-        printf("Game destroy vehicle: %d\n", vehicle_id);
+       u32 vehicle_id = librg_data_ru32(msg->data);
+       printf("Game destroy vehicle: %d\n", vehicle_id);
+#ifdef OAK_FEATURE_VEHICLE_CACHE
         auto cached_car = car_cache[vehicle_id];
         if (cached_car) {
             if (std::find(car_delte_queue.begin(), car_delte_queue.end(), cached_car) == car_delte_queue.end()) {
@@ -88,6 +88,14 @@ void add_messages() {
                 car_cache[vehicle_id] = nullptr;
             }
         }
+#else
+        auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+        if (vehicle_ent && vehicle_ent->user_data) {
+            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+            car_delte_queue.push_back(vehicle->car);
+        }
+#endif
     });
 
     librg_network_add(&network_context, NETWORK_VEHICLE_EXPLODE, [](librg_message* msg) {

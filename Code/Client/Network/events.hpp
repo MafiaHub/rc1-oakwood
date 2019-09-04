@@ -34,7 +34,9 @@ void handle_disconnection()
     //librg_free(&network_context);
 
     car_delte_queue.clear();
+#ifdef OAK_FEATURE_VEHICLE_CACHE
     car_cache.clear();
+#endif
     //mod_init_networking();
 }
 

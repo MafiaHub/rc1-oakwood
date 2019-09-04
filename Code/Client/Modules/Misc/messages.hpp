@@ -43,7 +43,10 @@ void add_messages()
         }
 
         car_delte_queue.clear();
-        car_cache.clear();
         librg_network_stop(msg->ctx);
+
+        #ifdef OAK_FEATURE_VEHICLE_CACHE
+        car_cache.clear();
+        #endif
     });
 }

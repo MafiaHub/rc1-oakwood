@@ -142,9 +142,12 @@ inline auto entitycreate(librg_event *evnt) {
     vehicle->is_visible_on_map = librg_data_ru8(evnt->data);
     vehicle->transparency = librg_data_rf32(evnt->data);
     vehicle->collision_state = librg_data_ru8(evnt->data);
-
+#ifdef OAK_FEATURE_VEHICLE_CACHE
     vehicle->car = spawn(position, vehicle, car_cache[evnt->entity->id]);
     car_cache[evnt->entity->id] = vehicle->car;
+#else
+    vehicle->car = spawn(position, vehicle, nullptr);
+#endif
 
     evnt->entity->user_data = (void *)vehicle;
     evnt->entity->flags |= ENTITY_INTERPOLATED;

@@ -1,4 +1,4 @@
-auto spawn(zpl_vec3 position, 
-           mafia_vehicle* spawn_struct, MafiaSDK::C_Car* cached) -> MafiaSDK::C_Car*;
+MafiaSDK::C_Car* spawn(zpl_vec3 position,
+           mafia_vehicle* spawn_struct, MafiaSDK::C_Car* cached);
 
 auto despawn(mafia_vehicle* vehicle) -> void;
