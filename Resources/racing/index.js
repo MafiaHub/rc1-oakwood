@@ -11,6 +11,13 @@ const oak = createClient(process.platform === "darwin" ? {
     outbound: 'tcp://192.168.1.3:10102',
 } : {})
 
+const getDistanceBetweenPoints = (v1, v2)=> {
+    const dx = v1[0] - v2[0]
+    const dy = v1[1] - v2[1]
+    const dz = v1[2] - v2[2]
+    return Math.sqrt( dx * dx + dy * dy + dz * dz )
+}
+
 /*
 * Gamemode constants
 */
@@ -61,15 +68,52 @@ let raceState = RACE_FINISHED
 let raceParticipants = {}
 let raceCheckpoints = []
 let raceCheckStateInteval = new Date()
+let raceCheckpointInterval = new Date()
 
 /*
 * check race state only in 5 second interval
 */
 const onRaceTick = () => {
-    if(new Date() - raceCheckStateInteval > 5000) {
+    const currentTime = new Date()
+    if(currentTime - raceCheckStateInteval > 5000) {
         raceCheckState()
         raceCheckStateInteval = new Date()
     }
+
+    if(currentTime - raceCheckpointInterval > 100 && raceState === RACE_ACTIVE) {
+        processPlayersCheckpoints()
+        raceCheckpointInterval = new Date()
+    }
+}
+
+/* 
+* updates player checkpoints
+*/
+const processPlayersCheckpoints = async () => {
+    
+    //NOTE(DavoSK) we do foreach for active racers and we do update their checkpoints 
+    Object.values(raceParticipants)
+          .filter(player => player.state === PLAYER_STATE_RACING)
+          .map(async racer => {
+        
+        if(!await oak.vehicleInvalid(racer.vehicle)) {
+            const racePos = await oak.vehiclePositionGet(racer.vehicle)
+            
+            //get nearest checkpoint 
+            let smallestDistance = 1000.0
+            let nearestCheckpointIndex = -1
+            
+            racer.laps.map((checkpoint, i) => {
+                const currentDistance = getDistanceBetweenPoints(checkpoint, racePos) 
+                if(currentDistance < smallestDistance) {
+                    smallestDistance = currentDistance
+                    nearestCheckpointIndex = i
+                }            
+            })
+
+            oak.hudAnnounce(racer.id, `Your nearest checkpoint is ${nearestCheckpointIndex} at ${smallestDistance.toFixed(2)} feet away `, 500)
+        }
+    })
 }
 
 /* 
@@ -79,8 +123,8 @@ const raceFinished = async () => {
     Object.values(raceParticipants).map(async player => {
         await oak.playerDespawn(player.id)
 
-        if(player.vehicle > -1)
-            await oak.vehicleDespawn(player.vehicle)
+        if(!await oak.vehicleInvalid(racer.vehicle))
+            oak.vehicleDespawn(player.vehicle)
 
         player.state = PLAYER_STATE_WAITING
 
@@ -94,15 +138,10 @@ const raceFinished = async () => {
 const raceCheckState = async () => {
     const participantsArray = Object.values(raceParticipants)
 
-    // console.log(raceState, participantsArray.filter(player => player.laps === raceCheckpoints.length).length, participantsArray.filter(player => player.state !== PLAYER_STATE_RACING).length)
-
     //when some player finished racing circuit or 
     //player count in race has lowered and race cannot continue
-
     const activeRacers = participantsArray.filter(player => player.state === PLAYER_STATE_RACING)
     if (raceState === RACE_ACTIVE && activeRacers.length < 2) {
-        console.log('FINSIHING RACE')
-
         raceFinished()
         raceState = RACE_FINISHED
     }
@@ -125,7 +164,7 @@ const raceCheckState = async () => {
             const playerPos = [].concat(spawnPos)
 
             player.state            = PLAYER_STATE_RACING
-            player.laps             = 0
+            player.laps             = [].concat(raceCheckpoints)
             player.lastCheckpoint   = 0
             player.vehicle          = await oak.vehicleSpawn(vehicleModels[vehicleModelsList.random()][1], spawnPos, 90)
 
@@ -135,11 +174,7 @@ const raceCheckState = async () => {
             await oak.playerHealthSet(player.id, 200.0)
             await oak.playerSpawn(player.id)
 
-                oak.vehiclePlayerPut(player.vehicle, player.id, 0)
-            // oak.cameraUnlock(player.id)
-
-            setTimeout(() => {
-            }, 1000)
+            oak.vehiclePlayerPut(player.vehicle, player.id, 0)
         })
 
         let currentCountdown = 3
@@ -236,7 +271,7 @@ oak.event('playerConnect', pid => {
     setupStartingCamera(pid)
     raceParticipants[pid] = {
         id: pid,
-        laps: 0,
+        laps: [],
         lastCheckpoint: 0,
         vehicle: -1,
         state: PLAYER_STATE_WAITING
