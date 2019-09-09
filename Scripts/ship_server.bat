@@ -16,16 +16,15 @@ cd Shipping
 if exist Server rmdir /Q /S Server
 mkdir Server
 echo f|xcopy %pr%\Bin\%build%\OakwoodServer.exe Server\Server.exe
-echo f|xcopy %pr%\Docs\modding_api.md Server\modding_api.md
 
 mkdir Server\config
 echo f|xcopy %pr%\Files\config\server.json Server\config\server.json
 
-rem mkdir Server\resources
-rem echo f|xcopy %pr%\Bin\%build%\plugins\*.dll Server\plugins\
-
 mkdir Server\static
 echo f|xcopy /S /Q %pr%\Files\static Server\static\
+
+mkdir Server\resources
+echo f|xcopy /s /q %pr%\Resources Server\resources
 
 popd
 
