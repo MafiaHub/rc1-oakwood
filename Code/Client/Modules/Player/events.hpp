@@ -181,16 +181,37 @@ inline auto entityupdate(librg_event* evnt) -> void {
     librg_data_rptr(evnt->data, &recv_position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
-    auto health         = librg_data_rf32(evnt->data);
-    u8 animation_state  = librg_data_ru8(evnt->data);
-    u8 is_crouching     = librg_data_ru8(evnt->data);
-    u8 is_aiming        = librg_data_ru8(evnt->data);
-    u32 aiming_time     = librg_data_ru32(evnt->data);
-    f32 aim             = librg_data_rf32(evnt->data);
-    u32 ping            = librg_data_ru32(evnt->data);
+    auto health = librg_data_rf32(evnt->data);
+    u8 animation_state = librg_data_ru8(evnt->data);
+    u8 is_crouching = librg_data_ru8(evnt->data);
+    u8 is_aiming = librg_data_ru8(evnt->data);
+    u32 aiming_time = librg_data_ru32(evnt->data);
+    f32 aim = librg_data_rf32(evnt->data);
+    u32 ping = librg_data_ru32(evnt->data);
 
-    auto player = (mafia_player *)evnt->entity->user_data;
-    if (!player || !player->ped || player->ped == MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) {
+    auto player = (mafia_player*)evnt->entity->user_data;
+    if (!player || !player->ped) {
+        librg_event_reject(evnt);
+        return;
+    }
+
+    if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
+        auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
+        if (vehicle_ent && vehicle_ent->user_data) {
+            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+            for (int i = 0; i < 4; i++) {
+                if (vehicle->seats[i] == evnt->entity->id) {
+                    player->ped->Intern_UseCar(vehicle->car, i);
+                    printf("UseCar: %d(%X) seat: %d\n", player->vehicle_id, vehicle->car, i);
+                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (player->ped == MafiaSDK::GetMission()->GetGame()->GetLocalPlayer()) {
         librg_event_reject(evnt);
         return;
     }
@@ -222,21 +243,6 @@ inline auto entityupdate(librg_event* evnt) -> void {
         player_int->isDucking	= player->is_crouching;
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
-    }
-
-    if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
-            auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
-        if (vehicle_ent && vehicle_ent->user_data) {
-            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-
-            for (int i = 0; i < 4; i++) {
-                if (vehicle->seats[i] == evnt->entity->id) {
-                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
-                    player->ped->Intern_UseCar(vehicle->car, i);
-                    break;
-                }
-            }
-        }
     }
 
     if (evnt->entity->id != local_player.entity_id) {
@@ -331,8 +337,8 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
 
             for (int i = 0; i < 4; i++) {
                 if (vehicle->seats[i] == evnt->entity->id) {
-                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
                     player->ped->Intern_UseCar(vehicle->car, i);
+                    player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
                     break;
                 }
             }

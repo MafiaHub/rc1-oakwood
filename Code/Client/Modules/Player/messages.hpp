@@ -419,7 +419,16 @@ void add_messages() {
         if (player_ent && player_ent->user_data) {
             auto player = (mafia_player*)player_ent->user_data;
             player->vehicle_id = vehicle_id;
-            player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+
+            auto player_vehicle = librg_entity_fetch(&network_context, vehicle_id);
+            if(player_vehicle && player_vehicle->user_data) {
+                auto vehicle = (mafia_vehicle*)player_vehicle->user_data;
+                if (vehicle->car && player->ped) {
+                    player->ped->Intern_UseCar(vehicle->car, seat_id);
+                } else player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+            } else {
+                player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_VEH;
+            }
         }
     });
 }
