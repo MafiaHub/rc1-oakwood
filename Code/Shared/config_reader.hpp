@@ -7,7 +7,7 @@ do { \
 } while (0)
 
 inline auto config_get(const char *filename, const char *default_cfg) -> zpl_json_object* {
-    zpl_path_mkdir("config", 0666);
+    zpl_path_mkdir("config", 0775);
     
     if (!zpl_fs_exists(filename)) {
         printf("No JSON config found! Generating...");
