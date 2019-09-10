@@ -408,15 +408,16 @@ namespace mainmenu {
 
                     for (auto server : servers) {
                         if (ImGui::Button(server.server_name.c_str())) {
-                            if (::strcmp(GlobalConfig.username, "ChangeMe") == 0 ||
+                            if (::strnicmp(GlobalConfig.username, "ChangeName", 10) == 0 ||
                                 ::strlen(GlobalConfig.username) == 0)
                             {
-                                MessageBox(NULL, "You need to set your nickname first! See Player tab.", "Change your nickname", MB_OK);
-                                return;
+                                modules::infobox::displayError("You need to set your nickname first! See Player tab.");
                             }
-
-                            Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
-                            ServerInfo::join_server(server);
+                            else
+                            {
+                                Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+                                ServerInfo::join_server(server);
+                            }
                         } ImGui::NextColumn();
 
                         ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
@@ -439,11 +440,26 @@ namespace mainmenu {
                     ImGui::InputInt("Port", &qc_port);
 
                     if (ImGui::Button("Connect")) {
-                        ServerInfo::ServerData server = ServerInfo::fetch_server_data(qc_address, qc_port);
-                        server.server_ip = std::string(qc_address);
-                        server.port = qc_port;
-                        Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
-                        ServerInfo::join_server(server);
+                        if (::strnicmp(GlobalConfig.username, "ChangeName", 10) == 0 ||
+                            ::strlen(GlobalConfig.username) == 0)
+                        {
+                            modules::infobox::displayError("You need to set your nickname first! See Player tab.");
+                        }
+                        else
+                        {
+                            ServerInfo::ServerData server = ServerInfo::fetch_server_data(qc_address, qc_port);
+
+                            if (!server.valid) {
+                                modules::infobox::displayError("Could not connect to the server!");
+                            }
+                            else
+                            {
+                                server.server_ip = std::string(qc_address);
+                                server.port = qc_port;
+                                Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+                                ServerInfo::join_server(server);
+                            }
+                        }
                     }  ImGui::SameLine();
 
                     ImGui::EndTabItem();

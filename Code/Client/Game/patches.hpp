@@ -35,7 +35,7 @@ auto mod_init_patches() {
     MafiaSDK::C_Game_Patches::PatchDisableInventory();
     MafiaSDK::C_Game_Patches::PatchDisablePauseMenu();
     MafiaSDK::C_Game_Patches::PatchJumpToGame("tutorial");
-  
+
     MemoryPatcher::InstallJmpHook(0x005EA7E0, (DWORD)&RETN4);
 
     // 0004E034A

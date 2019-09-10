@@ -34,13 +34,18 @@ void oak_ev_player_requested(librg_event *evnt) {
     librg_data_rptr(evnt->data, temp.name, sizeof(char) * OAK_PLAYER_NAME_SIZE);
 
     if (GlobalConfig.password.size() != 0) {
+        if (evnt->data->capacity == evnt->data->read_pos) {
+            oak_log("Connection for '%s' has been rejected!\nIncorrect password!\n", hostname);
+            oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
+            return;
+        }
+
         char prompt_pass[32] = "";
         librg_data_rptr(evnt->data, prompt_pass, sizeof(char) * 32);
 
         if (std::string(prompt_pass) != GlobalConfig.password) {
             oak_log("Connection for '%s' has been rejected!\nIncorrect password!\n", hostname);
             oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
-
             return;
         }
     }
