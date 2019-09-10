@@ -80,6 +80,7 @@ namespace mainmenu {
                 for (i32 i = 0; i < zpl_array_count(server_property->nodes); ++i) {
                     zpl_json_object* server_node = (server_property->nodes + i);
                     ServerInfo::ServerData new_server_data = ServerInfo::populate_server_data(server_node);
+                    if (!new_server_data.valid) continue;
 
                     servers.push_back(new_server_data);
                 }
@@ -280,7 +281,8 @@ namespace mainmenu {
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }
 
-        ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)ADDR_SOUND_GAME_ADDR, 0.0f, 1.0f);
+        ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)ADDR_CAR_SLIDER, 0.0f, 1.0f);
+
         ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)ADDR_SPEECH_SLIDER, 0.0f, 1.0f);
 
         if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
@@ -289,6 +291,7 @@ namespace mainmenu {
             *(float*)(ADDR_SOUNDS_SLIDER)    = new_sound_val;
             *(float*)(ADDR_SOUND_GAME_ADDR)  = new_sound_val;
             *(float*)(ADDR_SPEECH_SLIDER)    = new_sound_val;
+            *(float*)(ADDR_CAR_SLIDER)       = new_sound_val;
             *(float*)(ADDR_MUSIC_SLIDER)     = new_sound_val;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_val);
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();

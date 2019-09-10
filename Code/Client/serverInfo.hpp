@@ -135,15 +135,26 @@ inline auto fetch_server_info(std::string address, int port) -> std::string
 
 inline ServerData populate_server_data(zpl_json_object *server_node)
 {
+    ServerData invalid_data;
+    invalid_data.valid = false;
+
     if (server_node == nullptr)
     {
-        ServerData invalid_data;
-        invalid_data.valid = false;
         return invalid_data;
     }
 
     zpl_json_object *server_property;
     ServerInfo::ServerData new_server_data;
+
+    server_property = zpl_json_find(server_node, "version", false);
+    u64 ver = 0;
+    sscanf(server_property->string, "%llx", &ver);
+
+    if (ver != OAK_BUILD_VERSION) {
+        return invalid_data;
+    }
+
+    new_server_data.version = ver;
     new_server_data.valid = true;
 
     server_property = zpl_json_find(server_node, "name", false);
@@ -161,10 +172,6 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     server_property = zpl_json_find(server_node, "port", false);
     new_server_data.port = (int)std::atoi(server_property->string);
 
-    server_property = zpl_json_find(server_node, "version", false);
-    u64 ver = 0;
-    sscanf(server_property->string, "%llx", &ver);
-    new_server_data.version = ver;
 
     server_property = zpl_json_find(server_node, "mapname", false);
     new_server_data.mapname = std::string(server_property->string);
