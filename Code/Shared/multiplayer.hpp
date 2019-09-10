@@ -31,6 +31,7 @@ typedef enum {
 
 enum {
     REJECTION_VERSION,
+    REJECTION_PASSWORD,
     REJECTION_WH,
     REJECTION_BANNED,
 };

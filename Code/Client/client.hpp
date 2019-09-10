@@ -18,6 +18,7 @@ enum ClientStates
 {
     ClientState_Browser,
     ClientState_Infobox,
+    ClientState_PasswordPrompt,
     ClientState_Connecting,
     ClientState_Connected,
 };
@@ -26,9 +27,19 @@ int clientActiveState = ClientState_Browser;
 
 void switchClientState(int state);
 
+namespace ServerInfo
+{
+struct ServerData;
+}
+
 namespace modules::infobox
 {
 void displayError(const std::string &, std::function<void()> _cb = nullptr);
+}
+
+namespace modules::passwordPrompt
+{
+void init(ServerInfo::ServerData data);
 }
 
 struct _GlobalConfig
@@ -36,6 +47,9 @@ struct _GlobalConfig
     char server_address[32];
     int port = 27010;
     char username[32];
+    char password[32];
+    bool passworded;
+    bool reconnecting;
     float view_distance;
     std::string localpath;
     std::string gamepath;

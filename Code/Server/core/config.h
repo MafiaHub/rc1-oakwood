@@ -22,7 +22,7 @@ struct _GlobalConfig {
     i64 max_players;
     f64 killbox_level;
     std::string mapname;
-    std::string gamemode;
+    std::string password;
     std::string bridge_inbound, bridge_outbound;
     b32 visible;
 } GlobalConfig;
@@ -38,6 +38,7 @@ int oak_config_init() {
     json_apply(json, GlobalConfig.max_players, max_players, integer, 16);
     json_apply(json, GlobalConfig.killbox_level, killbox_level, real, -40.0);
     json_apply(json, GlobalConfig.mapname, mapname, string, "freeride");
+    json_apply(json, GlobalConfig.password, password, string, "");
     json_apply(json, GlobalConfig.port, port, integer, 27010);
     json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
     json_apply(json, whOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
@@ -56,6 +57,7 @@ int oak_config_init() {
     oak_log("Name: %s\n", GlobalConfig.name.c_str());
     oak_log("Max players: %d\n", (u32)GlobalConfig.max_players);
     oak_log("Port: %d\n", (u32)GlobalConfig.port);
+    oak_log("Passworded: %s\n", (GlobalConfig.password != "") ? "yes" : "no");
     oak_log("Publisher address: %s\n", GlobalConfig.bridge_outbound.c_str());
     oak_log("Listener address: %s\n", GlobalConfig.bridge_inbound.c_str());
     oak_log("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");

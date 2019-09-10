@@ -23,6 +23,7 @@ struct ServerData
     int port;
     u64 version;
     bool valid;
+    bool passworded;
 };
 
 ServerData lastServer;
@@ -151,6 +152,7 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     sscanf(server_property->string, "%llx", &ver);
 
     if (ver != OAK_BUILD_VERSION) {
+        modules::infobox::displayError("The client's version is incompatible with the server!");
         return invalid_data;
     }
 
@@ -172,6 +174,8 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     server_property = zpl_json_find(server_node, "port", false);
     new_server_data.port = (int)std::atoi(server_property->string);
 
+    server_property = zpl_json_find(server_node, "pass", false);
+    new_server_data.passworded = server_property->constant == ZPL_JSON_CONST_TRUE;
 
     server_property = zpl_json_find(server_node, "mapname", false);
     new_server_data.mapname = std::string(server_property->string);
@@ -212,6 +216,16 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
         return;
     }
 
+    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.reconnecting) {
+        modules::passwordPrompt::init(server);
+        GlobalConfig.passworded = true;
+        return;
+    } else if (!server.passworded) {
+        GlobalConfig.passworded = false;
+    }
+
+    GlobalConfig.reconnecting = false;
+
     strcpy(GlobalConfig.server_address, server.server_ip.c_str());
     GlobalConfig.port = server.port;
     lastServer = server;
@@ -232,6 +246,8 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
 
 inline void join_last_server(b32 forceMapReload = true)
 {
+    GlobalConfig.reconnecting = true;
     join_server(lastServer, forceMapReload);
 }
+
 } // namespace ServerInfo

@@ -5,22 +5,27 @@ typedef struct {
 
 /* PLAYER EVENTS */
 
+void oak_ev_player_send_rejection(u32 type, librg_event *evnt) {
+    librg_event_reject(evnt);
+
+    librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
+        librg_data_wu32(&data, type);
+    });
+}
+
 void oak_ev_player_requested(librg_event *evnt) {
-    auto build_magic = librg_data_ru64(evnt->data);
-    auto build_ver = librg_data_ru64(evnt->data);
     auto peer_ip = evnt->peer->address;
 
     oak_temp_userdata temp = {0};
     char hostname[128] = { 0 };
     enet_address_get_host_ip(&peer_ip, hostname, 128);
 
+    auto build_magic = librg_data_ru64(evnt->data);
+    auto build_ver = librg_data_ru64(evnt->data);
+
     if (build_magic != OAK_BUILD_MAGIC || build_ver != OAK_BUILD_VERSION) {
         oak_log("Connection for '%s' has been rejected!\nOur magic: %X\tTheir magic: %X\nOur version: %X\tTheir version: %X\n", hostname, OAK_BUILD_MAGIC, build_magic, OAK_BUILD_VERSION, build_ver);
-        librg_event_reject(evnt);
-
-        librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
-            librg_data_wu32(&data, REJECTION_VERSION);
-        });
+        oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;
     }
 
@@ -28,17 +33,25 @@ void oak_ev_player_requested(librg_event *evnt) {
 
     librg_data_rptr(evnt->data, temp.name, sizeof(char) * OAK_PLAYER_NAME_SIZE);
 
+    if (GlobalConfig.password.size() != 0) {
+        char prompt_pass[32] = "";
+        librg_data_rptr(evnt->data, prompt_pass, sizeof(char) * 32);
+
+        if (std::string(prompt_pass) != GlobalConfig.password) {
+            oak_log("Connection for '%s' has been rejected!\nIncorrect password!\n", hostname);
+            oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
+
+            return;
+        }
+    }
+
     // TODO: Apart from local ban database, fetch global bans as well
     {
         b32 isBanned = oak_access_bans_get(hwid);
 
         if (isBanned) {
             oak_log("Connection for %s'%s' has been rejected!\nPlayer is banned! GUID: %llu\n", temp.name, hostname, hwid);
-            librg_event_reject(evnt);
-
-            librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
-                librg_data_wu32(&data, REJECTION_BANNED);
-            });
+            oak_ev_player_send_rejection(REJECTION_BANNED, evnt);
             return;
         }
     }
@@ -48,11 +61,7 @@ void oak_ev_player_requested(librg_event *evnt) {
 
         if (!isExempted) {
             oak_log("Connection for %s o'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", temp.name, hostname, hwid);
-            librg_event_reject(evnt);
-
-            librg_send_to(&network_context, NETWORK_SEND_REJECTION, evnt->peer, data, {
-                librg_data_wu32(&data, REJECTION_WH);
-            });
+            oak_ev_player_send_rejection(REJECTION_WH, evnt);
             return;
         }
     }

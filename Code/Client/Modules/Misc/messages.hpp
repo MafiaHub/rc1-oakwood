@@ -33,6 +33,10 @@ void add_messages()
             modules::infobox::displayError("The client's version is incompatible with the server!");
             break;
 
+        case REJECTION_PASSWORD:
+            modules::infobox::displayError("Server password is incorrect!");
+            break;
+
         case REJECTION_WH:
             modules::infobox::displayError("You are not whitelisted on this server!");
             break;

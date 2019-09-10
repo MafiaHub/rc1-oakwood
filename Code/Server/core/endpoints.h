@@ -8,7 +8,7 @@ int oak_endp_payload_info(char *buf) {
         GlobalConfig.name.c_str(),
         (int)GlobalConfig.players,
         (int)GlobalConfig.max_players,
-        "false",
+        (GlobalConfig.password.size()) ? "true" : "false",
         (int)GlobalConfig.port,
         OAK_BUILD_VERSION,
         GlobalConfig.mapname.c_str()

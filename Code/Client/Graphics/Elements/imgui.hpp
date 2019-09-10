@@ -47,7 +47,7 @@ namespace imgui {
             case Menu_DebugMode: {
                 modules::debug::render();
             } break;
-#endif            
+#endif
             }
 
             modules::playerlist::render();
@@ -58,6 +58,9 @@ namespace imgui {
         }
         else if (clientActiveState == ClientState_Infobox) {
             modules::infobox::render();
+        }
+        else if (clientActiveState == ClientState_PasswordPrompt) {
+            modules::passwordPrompt::render();
         }
 
         ImGui::EndFrame();

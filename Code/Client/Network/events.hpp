@@ -213,6 +213,10 @@ auto mod_add_network_events()
         librg_data_wu64(evnt->data, hwid::getID());
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
 
+        if (GlobalConfig.passworded) {
+            librg_data_wptr(evnt->data, GlobalConfig.password, sizeof(char) * 32);
+        }
+
 #ifdef OAKWOOD_DEBUG
         zpl_printf("GUID: %llu\n", hwid::getID());
 #endif
