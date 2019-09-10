@@ -34,7 +34,7 @@ project "Server"
 
     libdirs {
         "../../Vendors/nanomsg/lib",
-        "../../Vendors/curl",
+        -- "../../Vendors/curl",
     }
 
     prebuildcommands {
@@ -53,7 +53,7 @@ project "Server"
 
     configuration "linux or macosx"
         links {
-            "libcurl",
+        --    "libcurl",
             "nanomsg",
             "pthread",
             "curses",
