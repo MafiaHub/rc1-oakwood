@@ -69,6 +69,8 @@ let raceParticipants = {}
 let raceCheckpoints = []
 let raceCheckStateInteval = new Date()
 let raceCheckpointInterval = new Date()
+let raceStartTime = new Date()
+let raceLastScoreboard = []
 
 /*
 * check race state only in 5 second interval
@@ -91,28 +93,42 @@ const onRaceTick = () => {
 */
 const processPlayersCheckpoints = async () => {
     
-    //NOTE(DavoSK) we do foreach for active racers and we do update their checkpoints 
-    Object.values(raceParticipants)
-          .filter(player => player.state === PLAYER_STATE_RACING)
-          .map(async racer => {
+    //NOTE(DavoSK) we do foreach for active racers and we do update their checkpoints
+    const activeRacers = Object.values(raceParticipants).filter(player => player.state === PLAYER_STATE_RACING)
+    const activeRacersCopy = [].concat(activeRacers).sort((a, b) => b.racePosition - a.racePosition) 
+
+    activeRacers.map(async (racer, i) => {
         
         if(!await oak.vehicleInvalid(racer.vehicle)) {
             const racePos = await oak.vehiclePositionGet(racer.vehicle)
             
             //get nearest checkpoint 
-            let smallestDistance = 1000.0
-            let nearestCheckpointIndex = -1
-            
-            racer.laps.map((checkpoint, i) => {
-                const currentDistance = getDistanceBetweenPoints(checkpoint, racePos) 
-                if(currentDistance < smallestDistance) {
-                    smallestDistance = currentDistance
-                    nearestCheckpointIndex = i
-                }            
-            })
+            const distanceTreshold = 20.0
+            const currentDistance = getDistanceBetweenPoints(racer.laps[racer.lastCheckpoint], racePos) 
+            if(currentDistance < distanceTreshold) {
+                racer.lastCheckpoint++
+                racer.lastCheckpointTime = new Date()
 
-            oak.hudAnnounce(racer.id, `Your nearest checkpoint is ${nearestCheckpointIndex} at ${smallestDistance.toFixed(2)} feet away `, 500)
+                let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint) 
+                let foundRacer = sortedRacers.find(currentRacer => currentRacer.id === racer.id)
+        
+                if(foundRacer) {
+                    if(sortedRacers.indexOf(foundRacer) !== i) {
+                        const overTakerName = await oak.playerNameGet(racer.id)
+                        const victimName = await oak.playerNameGet(sortedRacers[i].id)
+
+                        for(let pid of await oak.playerList()) 
+                            oak.hudMessage(pid, `Player ${overTakerName} overtook position of ${victimName}`, 0xFFFFFF)
+                    }
+                }
+            }
         }
+    })
+
+    let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint) 
+    activeRacers.map(async (racer, i)=> {
+        let foundRacer = sortedRacers.find(currentRacer => currentRacer.id === racer.id)
+        racer.racePosition = sortedRacers.indexOf(foundRacer)
     })
 }
 
@@ -123,7 +139,7 @@ const raceFinished = async () => {
     Object.values(raceParticipants).map(async player => {
         await oak.playerDespawn(player.id)
 
-        if(!await oak.vehicleInvalid(racer.vehicle))
+        if(!await oak.vehicleInvalid(player.vehicle))
             oak.vehicleDespawn(player.vehicle)
 
         player.state = PLAYER_STATE_WAITING
@@ -163,10 +179,12 @@ const raceCheckState = async () => {
             const spawnPos = vehicleSpawnPositions[playerCounter++]
             const playerPos = [].concat(spawnPos)
 
-            player.state            = PLAYER_STATE_RACING
-            player.laps             = [].concat(raceCheckpoints)
-            player.lastCheckpoint   = 0
-            player.vehicle          = await oak.vehicleSpawn(vehicleModels[vehicleModelsList.random()][1], spawnPos, 90)
+            player.state                = PLAYER_STATE_RACING
+            player.laps                 = [].concat(raceCheckpoints)
+            player.lastCheckpoint       = 0
+            player.racePosition         = 0
+            player.lastCheckpointTime   = new Date()
+            player.vehicle              = await oak.vehicleSpawn(vehicleModels[vehicleModelsList.random()][1], spawnPos, 90)
 
             playerPos[2] += 1.5;
 
@@ -188,6 +206,7 @@ const raceCheckState = async () => {
             if (--currentCountdown < 0) {
                 clearInterval(countDownInterval)
                 raceState = RACE_ACTIVE
+                raceStartTime = new Date()
             }
         }, 1000)
     }
@@ -273,6 +292,8 @@ oak.event('playerConnect', pid => {
         id: pid,
         laps: [],
         lastCheckpoint: 0,
+        lastCheckpointTime: null,
+        racePosition: 0,
         vehicle: -1,
         state: PLAYER_STATE_WAITING
     }
