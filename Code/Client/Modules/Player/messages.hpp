@@ -295,6 +295,9 @@ void add_messages() {
             {
                 auto player_int = player->ped->GetInterface();
                 player_int->entity.position = EXPAND_VEC(entity->position);
+
+                if (local_player.entity_id != entity_id)
+                    lib_inter_reset(player->interp.pos, EXPAND_VEC(entity->position));
             }
         }
     });

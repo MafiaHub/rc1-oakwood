@@ -157,7 +157,7 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
 
-    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
+    // librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->native_entity->position = EXPAND_VEC(position);
 
     librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_POS, data, {

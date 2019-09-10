@@ -120,11 +120,13 @@ auto despawn(mafia_vehicle* vehicle) -> void {
                     if (player->ped) {
                         player->ped->Intern_FromCar();
                     }
-                    
+
                     player->vehicle_id = -1;
                     vehicle->seats[i] = -1;
                 }
             }
         }
+
+        car_delte_queue.push_back(vehicle->car);
     }
 }

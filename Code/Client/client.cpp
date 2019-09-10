@@ -1,7 +1,9 @@
-/* 
+/*
 * OAKWOOD MULTIPLAYER - CLIENT
 * (C) 2019 Oakwood Team. All Rights Reserved.
 */
+
+// #define OAK_FEATURE_VEHICLE_CACHE
 
 #define ZPL_IMPLEMENTATION
 #include "librg/zpl.h"
@@ -12,7 +14,7 @@
 #include "version.hpp"
 #include "multiplayer.hpp"
 
-/* 
+/*
 * Networking library
 */
 
@@ -45,7 +47,7 @@
 #include "librg/librg_ext.h"
 
 /*
-* Stack walker 
+* Stack walker
 */
 
 #include "Game/CrashHandler/StackWalker/StackWalker.h"
@@ -94,13 +96,13 @@
 #include "messages.hpp"
 #include "helpers.hpp"
 
-/* 
+/*
 * Globals
 */
 
 #include "client.hpp"
 
-/* 
+/*
 * Switches
 */
 

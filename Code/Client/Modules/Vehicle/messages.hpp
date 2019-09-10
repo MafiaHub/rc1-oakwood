@@ -200,6 +200,12 @@ void add_messages() {
         auto entity = librg_entity_fetch(&network_context, entity_id);
         if (entity) {
             librg_data_rptr(msg->data, &entity->position, sizeof(entity->position));
+
+            auto vehicle = (mafia_vehicle*)entity->user_data;
+
+            if (vehicle) {
+                lib_inter_reset(vehicle->interp.pos, EXPAND_VEC(entity->position));
+            }
         }
     });
 

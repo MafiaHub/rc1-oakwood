@@ -255,8 +255,11 @@ inline auto entityremove(librg_event *evnt) {
         lib_inter_destroy_interpolator(vehicle->interp.rot);
         lib_inter_destroy_interpolator(vehicle->interp.rot_up);
 
+#ifdef OAK_FEATURE_VEHICLE_CACHE
         vehicle->car->SetTransparency(0.5f);
+#else
         despawn(vehicle);
+#endif
 
         delete vehicle;
         evnt->entity->user_data = nullptr;

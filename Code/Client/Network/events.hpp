@@ -32,11 +32,6 @@ void handle_disconnection()
     local_player.spec_id = -1;
     local_player.last_spec_id = -1;
     //librg_free(&network_context);
-
-    car_delte_queue.clear();
-#ifdef OAK_FEATURE_VEHICLE_CACHE
-    car_cache.clear();
-#endif
     //mod_init_networking();
 }
 
