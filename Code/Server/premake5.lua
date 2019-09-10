@@ -34,7 +34,7 @@ project "Server"
 
     libdirs {
         "../../Vendors/nanomsg/lib",
-        -- "../../Vendors/curl",
+        "../../Vendors/curl",
     }
 
     prebuildcommands {
