@@ -273,7 +273,6 @@ namespace mainmenu {
         ImGui::Text(GET_TEXT(TEXT_AUDIO));
         if (ImGui::SliderFloat(GET_TEXT(TEXT_SOUNDS), (float*)ADDR_SOUNDS_SLIDER, 0.0f, 1.0f)) {
             float new_sound_volume      = *(float*)ADDR_SOUNDS_SLIDER;
-            *(float*)(ADDR_SOUND_GAME_ADDR)  = new_sound_volume;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_volume);
         }
 
@@ -289,9 +288,8 @@ namespace mainmenu {
             //Sounds, car, music, speech = 1.0f;
             float new_sound_val = 1.0f;
             *(float*)(ADDR_SOUNDS_SLIDER)    = new_sound_val;
-            *(float*)(ADDR_SOUND_GAME_ADDR)  = new_sound_val;
-            *(float*)(ADDR_SPEECH_SLIDER)    = new_sound_val;
             *(float*)(ADDR_CAR_SLIDER)       = new_sound_val;
+            *(float*)(ADDR_SPEECH_SLIDER)    = new_sound_val;
             *(float*)(ADDR_MUSIC_SLIDER)     = new_sound_val;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_val);
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();

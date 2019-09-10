@@ -8,9 +8,8 @@ enum GameMenuStaticAddresses {
     ADDR_STEERING_LINEARITY = 0x006D4AEC,
 
     ADDR_SOUNDS_SLIDER = 0x006D4B0C,
-    ADDR_SOUND_GAME_ADDR = 0x00634B00,
-    ADDR_MUSIC_SLIDER = 0x006D4B10,
-    ADDR_CAR_SLIDER = 0x006D4B14,
+    ADDR_CAR_SLIDER    = 0x00634B00,
+    ADDR_MUSIC_SLIDER  = 0x006D4B10,
     ADDR_SPEECH_SLIDER = 0x006D4B18,
 
     //byte
@@ -86,9 +85,8 @@ namespace Profile {
             json_apply(&json_master_data, *(u8*)(ADDR_ENABLE_SUBTITLES), enable_subtitles, constant, 0);
 
             json_apply(&json_master_data, *(f32*)(ADDR_SOUNDS_SLIDER), sounds_slider, real, 0.0f);
-            json_apply(&json_master_data, *(f32*)(ADDR_SOUND_GAME_ADDR), cars_slider, real, 0.0f);
+            json_apply(&json_master_data, *(f32*)(ADDR_CAR_SLIDER), cars_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_MUSIC_SLIDER), music_slider, real, 0.0f);
-            json_apply(&json_master_data, *(f32*)(ADDR_CAR_SLIDER), car_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_SPEECH_SLIDER), speech_slider, real, 0.0f);
 
             node_property = zpl_json_find(&json_master_data, "keys", false);
@@ -168,13 +166,10 @@ namespace Profile {
         new_node->real = *(f32*)(ADDR_SOUNDS_SLIDER);
 
         new_node = zpl_json_add(&new_json_file, "cars_slider", ZPL_JSON_TYPE_REAL);
-        new_node->real = *(f32*)(ADDR_SOUND_GAME_ADDR);
+        new_node->real = *(f32*)(ADDR_CAR_SLIDER);
 
         new_node = zpl_json_add(&new_json_file, "music_slider", ZPL_JSON_TYPE_REAL);
         new_node->real = *(f32*)(ADDR_MUSIC_SLIDER);
-
-        new_node = zpl_json_add(&new_json_file, "car_slider", ZPL_JSON_TYPE_REAL);
-        new_node->real = *(f32*)(ADDR_CAR_SLIDER);
 
         new_node = zpl_json_add(&new_json_file, "speech_slider", ZPL_JSON_TYPE_REAL);
         new_node->real = *(f32*)(ADDR_SPEECH_SLIDER);
