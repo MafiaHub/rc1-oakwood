@@ -13,7 +13,9 @@ struct body_health
 
 enum
 {
-	CLIENTSIDE_PLAYER_WAITING_FOR_VEH = (1 << 10)
+	CLIENTSIDE_PLAYER_WAITING_FOR_VEH         = ZPL_BIT(1),
+    CLIENTSIDE_PLAYER_WAITING_FOR_DEATH       = ZPL_BIT(2),
+    CLIENTSIDE_PLAYER_WAITING_FOR_SKIN        = ZPL_BIT(3),
 };
 
 struct mafia_player : public oak_object

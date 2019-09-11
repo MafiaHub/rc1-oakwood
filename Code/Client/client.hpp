@@ -69,6 +69,7 @@ struct data
     u32 entity_id;
     zpl_vec3 pose;
     bool dead;
+    bool death_svr;
 
     // Spectator
     i32 spec_id;

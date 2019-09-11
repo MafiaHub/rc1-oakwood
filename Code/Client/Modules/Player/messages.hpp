@@ -309,6 +309,13 @@ void add_messages() {
             auto health = librg_data_rf32(msg->data);
             auto player = (mafia_player*)entity->user_data;
 
+            // avoid creating death loop by skipping the first call to setHealth if death is caused by server
+            if (player->ped == get_local_ped() && local_player.death_svr)
+            {
+                local_player.death_svr = false;
+                return;
+            }
+
             if (player) {
                 player->health = health;
 
@@ -321,7 +328,11 @@ void add_messages() {
                     player_int->health = health;
 
                     if (player->health <= 0.0f) {
-                        player->ped->Intern_ForceDeath();
+                        player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_DEATH;
+
+                        // we died because server wanted to do so, make sure we won't send our death back.
+                        if (player->ped == get_local_ped())
+                            local_player.death_svr = true;
                     }
                 }
             }
@@ -341,7 +352,7 @@ void add_messages() {
                 strncpy(player->model, modelName, 32);
 
                 if (player->ped) {
-                    ((MafiaSDK::C_Human*)player->ped)->Intern_ChangeModel(modelName);
+                    player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_SKIN;
                 }
             }
         }

@@ -93,6 +93,7 @@ void oak_ev_player_connected(librg_event *e) {
     oak_log("[info] player '%s'(%llu) has been connected!\n", player->name, player->hwid);
 
     oak_bridge_event_player_connect(id);
+    GlobalConfig.players++;
 }
 
 void oak_ev_player_disconnected(librg_event *e) {
@@ -106,6 +107,7 @@ void oak_ev_player_disconnected(librg_event *e) {
 
     oak_bridge_event_player_disconnect(player->oak_id);
     oak_player_destroy(e);
+    GlobalConfig.players--;
 }
 
 /* GENERAL ENTITY EVENTS */

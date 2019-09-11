@@ -53,6 +53,7 @@ auto spawn(zpl_vec3 position,
         auto player = get_local_player();
         if (player) {
             local_player.dead = false;
+            local_player.death_svr = false;
             if (player->ped) {
                 despawn(player->ped);
             }
@@ -162,7 +163,8 @@ inline void on_key_pressed(bool down, unsigned long key) {
 * todo add reason killer and so one ...
 */
 inline auto died() -> void {
-    printf("[debug] died -> Intern_FromCar\n");
+    modules::chat::add_debug("[debug] died\n");
+    printf("[debug] died\n");
 
     if (local_player.dead) return;
 

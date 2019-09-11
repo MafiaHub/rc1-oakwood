@@ -330,6 +330,21 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     librg_data_wf32(evnt->data, player->aim);
     librg_data_wu64(evnt->data, player->aiming_time);
 
+    if (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_DEATH) {
+        if (!player->ped->GetInterface()->carLeavingOrEntering) {
+            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_DEATH;
+            modules::chat::add_debug("lol") ;
+            player->ped->Intern_ForceDeath();
+        }
+    }
+
+    if (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_SKIN) {
+        if (!player->ped->GetInterface()->playersCar && !player->ped->GetInterface()->carLeavingOrEntering) {
+            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_SKIN;
+            ((MafiaSDK::C_Human*)player->ped)->Intern_ChangeModel(player->model);
+        }
+    }
+
     if (player->vehicle_id != -1 && (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)) {
         auto vehicle_ent = librg_entity_fetch(&network_context, player->vehicle_id);
         if (vehicle_ent && vehicle_ent->user_data) {
