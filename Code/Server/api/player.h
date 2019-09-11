@@ -106,6 +106,8 @@ int oak_player_spawn(oak_player id) {
     auto player = oak_entity_player_get(id);
     auto entity = player->native_entity;
 
+    TEMP_add_weapons(id);
+
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
         librg_data_wptr(&data, &entity->position, sizeof(zpl_vec3));
@@ -115,8 +117,6 @@ int oak_player_spawn(oak_player id) {
         librg_data_wu32(&data, player->current_weapon_id);
         librg_data_wf32(&data, player->health);
     });
-
-    TEMP_add_weapons(id);
 
     return 0;
 }

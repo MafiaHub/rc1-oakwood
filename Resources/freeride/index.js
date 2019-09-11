@@ -348,11 +348,11 @@ oak.cmd('putcar', async (pid, model) => {
     oak.vehiclePlayerPut(veh, pid, 0)
 })
 
-oak.cmd('repair', async pid => {
+/*oak.cmd('repair', async pid => {
     const veh = await oak.vehiclePlayerInside(pid)
     if (await oak.vehicleInvalid(veh)) return;
     oak.vehicleRepair(veh)
-})
+})*/
 
 oak.cmd('delcar', async (pid) => {
     const veh = await oak.vehiclePlayerInside(pid)
