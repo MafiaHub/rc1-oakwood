@@ -163,7 +163,6 @@ inline void on_key_pressed(bool down, unsigned long key) {
 * todo add reason killer and so one ...
 */
 inline auto died() -> void {
-    modules::chat::add_debug("[debug] died\n");
     printf("[debug] died\n");
 
     if (local_player.dead) return;

@@ -333,7 +333,6 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     if (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_DEATH) {
         if (!player->ped->GetInterface()->carLeavingOrEntering) {
             player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_DEATH;
-            modules::chat::add_debug("lol") ;
             player->ped->Intern_ForceDeath();
         }
     }
