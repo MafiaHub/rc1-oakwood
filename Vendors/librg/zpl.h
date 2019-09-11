@@ -45,6 +45,7 @@ GitHub:
   https://github.com/zpl-c/zpl
 
 Version History:
+  9.8.2 - Fix VS C4190 issue
   9.8.1 - Fix several C++ type casting quirks
   9.8.0 - Incorporated OpenGL into ZPL core as an optional module
   9.7.0 - Added co-routine module
@@ -3640,10 +3641,10 @@ ZPL_DEF void   zpl_co_destroy(void);
 
 /**
  * Create a paused coroutine
- * @param  f Coroutine method
- * @return   Paused coroutine
+ * @param  co Coroutine reference
+ * @param  f  Coroutine method
  */
-ZPL_DEF zpl_co  zpl_co_make(zpl_co_proc f);
+ZPL_DEF void zpl_co_make(zpl_co *co, zpl_co_proc f);
 
 /**
  * Starts/Resumes a coroutine execution.
@@ -5035,12 +5036,12 @@ ZPL_DEF void    zpl_platform_hide_window(zpl_platform *p);
 
   #ifndef ZPLGL_FONT_CHAR_LIST
   #define ZPLGL_FONT_CHAR_LIST \
-      "Ā�\x81ăĄąĆćĈĉĊċČ�\x8dĎ�\x8f�\x90đĒēĔĕĖėĘęĚěĜ�\x9dĞğĠġĢģĤĥĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľ�\x81ł"\
-      "ŃńŅņņŇňŉŊŋŌ�\x8d�\x8dŎ�\x8f�\x90őŒœŕŖŗŘřŚśŜ�\x9dŞşŠšŢţŤťŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽža!ö"\
+      "ĀāăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľŁł"\
+      "ŃńŅņņŇňŉŊŋŌōōŎŏŐőŒœŕŖŗŘřŚśŜŝŞşŠšŢţŤťŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽža!ö"\
       "\"#$%%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"\
-      "ŠšŒœŸÀ�\x81ÂÃÄÅÆÇÈÉÊËÌ�\x8dÎ�\x8f�\x90ÑÒÓÔÕÖØÙÚÛÜ�\x9dÞßàáâãäåæçèéêëìíîïðñòóôõøùúûüýþÿ®™£"\
-      "абвгдеёжзийклмнопр�\x81туфхцчшщъыь�\x8dю�\x8f"\
-      "�\x90БВГДЕ�\x81ЖЗИЙКЛМ�\x9dОПРСТУФХЦЧШЩЪЫЬЭЮЯ"\
+      "ŠšŒœŸÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõøùúûüýþÿ®™£"\
+      "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"\
+      "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"\
       " \t\r\n"
   #endif
 
@@ -12791,9 +12792,9 @@ zpl_inline zpl_i32 zpl_pr_create(zpl_pr *process, const char **args, zpl_isize a
         c_env = true;
     }
     else if (!(options & ZPL_PR_OPTS_INHERIT_ENV)) {
-        env = "\0\0\0\0";
+        env = (zpl_string)"\0\0\0\0";
     } else {
-        env = NULL;
+        env = (zpl_string)NULL;
     }
 
     process->f_stdin  = zpl__pr_open_handle(ZPL_PR_HANDLE_MODE_WRITE, "wb", &psi.hStdInput);
@@ -13173,15 +13174,13 @@ zpl_inline void zpl_co_destroy(void) {
     zpl_mfence();
 }
 
-zpl_inline zpl_co zpl_co_make(zpl_co_proc f) {
+zpl_inline void zpl_co_make(zpl_co *co, zpl_co_proc f) {
     ZPL_ASSERT_MSG(zpl__co_internals.is_ready, "Coroutines module is not initialized. Call zpl_co_init first!");
-    zpl_co co = {0};
+    ZPL_ASSERT_NOT_NULL(co);
 
-    co.f = f;
-    zpl_atomic32_store(&co.status, ZPL_CO_READY);
-    zpl_atomic32_store(&co.resume, 0);
-
-    return co;
+    co->f = f;
+    zpl_atomic32_store(&co->status, ZPL_CO_READY);
+    zpl_atomic32_store(&co->resume, 0);
 }
 
 zpl_inline void zpl_co_resume(zpl_co *co, void *data) {

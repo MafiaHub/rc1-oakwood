@@ -37,6 +37,8 @@ auto TEMP_add_weapons(oak_player id) {
         //set new weapon as current
         player->current_weapon_id = gun->weaponId;
     }
+
+    return 0;
 }
 
 // =======================================================================//

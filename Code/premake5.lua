@@ -34,7 +34,8 @@ workspace "Oakwood"
     filter "action:vs*"
 
     if os.istarget('windows') then
-        buildoptions "/std:c++latest"
+        -- causes D9025 warning
+        -- buildoptions "/std:c++latest"
     else
         buildoptions "-std=c++17"
     end
