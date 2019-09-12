@@ -152,7 +152,7 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     sscanf(server_property->string, "%llx", &ver);
 
     if (ver != OAK_BUILD_VERSION) {
-        modules::infobox::displayError("The client's version is incompatible with the server!");
+        // modules::infobox::displayError("The client's version is incompatible with the server!");
         return invalid_data;
     }
 
