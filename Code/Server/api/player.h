@@ -237,10 +237,18 @@ int oak_player_health_set(oak_player id, float health) {
 
     entity->health = health;
 
-    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_HEALTH, data, {
-        librg_data_went(&data, entity->native_id);
-        librg_data_wf32(&data, health);
-    });
+    if (entity->died_ingame) {
+        librg_send_except(oak_network_ctx_get(), NETWORK_PLAYER_SET_HEALTH, entity->native_entity->client_peer, data, {
+            librg_data_went(&data, entity->native_id);
+            librg_data_wf32(&data, health);
+        });
+    }
+    else {
+        librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_HEALTH, data, {
+            librg_data_went(&data, entity->native_id);
+            librg_data_wf32(&data, health);
+        });
+    }
 
     return 0;
 }

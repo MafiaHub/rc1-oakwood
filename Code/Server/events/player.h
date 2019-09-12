@@ -186,7 +186,11 @@ void oak_ev_player_client_remove(librg_event *e) {
 int oak_player_register() {
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
         oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data;
+        if (oak_player_invalid(pid)) return;
+        auto entity = oak_entity_player_get(pid);
+        entity->died_ingame = true;
         oak_player_kill(pid);
+        entity->died_ingame = false;
         oak_bridge_event_player_death(pid);
     });
 

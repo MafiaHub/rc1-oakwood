@@ -53,7 +53,6 @@ auto spawn(zpl_vec3 position,
         auto player = get_local_player();
         if (player) {
             local_player.dead = false;
-            local_player.death_svr = false;
             if (player->ped) {
                 despawn(player->ped);
             }
