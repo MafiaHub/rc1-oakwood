@@ -91,6 +91,7 @@ const spawnplayer = pid => {
 oak.event('playerConnect', async pid => {
     console.log('[info] player connected', pid)
     oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} connected.`)
+    oak.tempWeaponsSpawn(pid)
     spawnplayer(pid)
 })
 
@@ -110,6 +111,10 @@ oak.event('playerHit', (pid, atkr, dmg) => {
 
 oak.cmd('spawn', async pid => {
     spawnplayer(pid)
+})
+
+oak.cmd('weapons', pid => {
+    oak.tempWeaponsSpawn(pid)
 })
 
 oak.cmd('despawn', async pid => {

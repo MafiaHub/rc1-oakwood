@@ -92,7 +92,7 @@ const main = async () => {
         .filter(line => line.indexOf('#define') === -1)
         .map(l => l.replace(/OAK_API[\s+]/, ''))
         .map(l => l.replace(';',''))
-        .map(l => /([\w\(\)]+)\s([a-z0-9_]+)\(([\w,\(\) ]*)\)/.exec(l))
+        .map(l => /([\w\(\)]+)\s+([a-z0-9_]+)\(([\w,\(\) ]*)\)/.exec(l))
         .filter(l => l)
         .map(l => [
             l[1].trim(),

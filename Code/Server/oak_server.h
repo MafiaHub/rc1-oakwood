@@ -57,6 +57,7 @@ OAK_API int oak_logn(oak_string, int);
 
 OAK_API int   oak_killbox_set(float);
 OAK_API float oak_killbox_get();
+OAK_API int   oak_temp_weapons_spawn(oak_player);
 
 /* ENTITY LISTS */
 
