@@ -224,19 +224,28 @@ __declspec(naked) void PlayerFall() {
 //----------------------------------------------
 typedef bool(__thiscall* C_Human_Use_Actor_t)(void* _this, DWORD actor, int unk1, int unk2, int unk3);
 C_Human_Use_Actor_t human_use_actor_original = nullptr;
-bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int action, int unk2, int unk3) {
-	
-	bool return_val = human_use_actor_original(_this, actor, action, unk2, unk3);
+bool __fastcall C_Human_Use_Actor(void* _this, DWORD edx, DWORD actor, int action, int seat_id, int unk3) {
+    bool return_val = false;
+
 	if (_this == modules::player::get_local_ped()) {
 		auto ped_interface = ((MafiaSDK::C_Human*)_this)->GetInterface();
-		
-		/* 
+
+        if (use_actor_skip || /* normal doors */get_vehicle_from_base((void*)actor) == NULL) {
+            return_val = human_use_actor_original(_this, actor, action, seat_id, unk3);
+            use_actor_skip = false;
+            return return_val;
+        }
+
+		/*
 		* We send use actor only when we entering car or exiting
 		* If player forceexit carLeavingOrEntering is NULL, thats why we check if we are exiting by action
 		*/
-		if(ped_interface->carLeavingOrEntering || action == 2)
-            modules::player::useactor(actor, action, unk2, unk3);
-	}
+		// if(ped_interface->carLeavingOrEntering || action == 2)
+        modules::player::useactor(actor, action, seat_id, unk3);
+
+	} else {
+        return_val = human_use_actor_original(_this, actor, action, seat_id, unk3);
+    }
 
 	return return_val;
 }
@@ -248,11 +257,20 @@ typedef bool(__thiscall* C_Human_Do_ThrowCocotFromCar_t)(void* _this, DWORD car,
 C_Human_Do_ThrowCocotFromCar_t human_do_throw_cocot_from_car_original = nullptr;
 bool __fastcall C_Human_Do_ThrowCocotFromCar(void* _this, DWORD edx, DWORD car, int seat) {
 
-	if (_this == modules::player::get_local_ped()) {
-        modules::player::hijack(car, seat);
-	}
+    bool retval=false;
 
-	return human_do_throw_cocot_from_car_original(_this, car, seat);
+	if (_this == modules::player::get_local_ped()) {
+        if (hijack_skip) {
+            return human_do_throw_cocot_from_car_original(_this, car, seat);
+            hijack_skip=false;
+            return retval;
+        }
+        modules::player::hijack(car, seat);
+	} else {
+        retval = human_do_throw_cocot_from_car_original(_this, car, seat);
+    }
+
+	return retval;
 }
 
 //----------------------------------------------

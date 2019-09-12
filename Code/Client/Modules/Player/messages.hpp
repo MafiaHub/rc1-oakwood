@@ -64,8 +64,12 @@ void add_messages() {
 
             if (vehicle->seats[seat] != -1) {
 
+                if (sender_ent->id == local_player.entity_id) {
+                    hijack_skip=true;
+                }
+
                 auto driver_ent = librg_entity_fetch(&network_context, vehicle->seats[seat]);
-                if (vehicle->car && sender_ent->id != local_player.entity_id)
+                if (vehicle->car)
                     sender->ped->Do_ThrowCocotFromCar(vehicle->car, seat);
             }
         }
@@ -83,8 +87,11 @@ void add_messages() {
             auto sender = (mafia_player*)sender_ent->user_data;
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
 
-            if (sender_ent->id != local_player.entity_id)
-                sender->ped->Use_Actor(vehicle->car, action, seat_original, unk3);
+            if (sender_ent->id == local_player.entity_id) {
+                use_actor_skip=true;
+            }
+
+            sender->ped->Use_Actor(vehicle->car, action, seat_original, unk3);
         }
     });
 

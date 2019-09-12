@@ -135,3 +135,17 @@ void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle) {
     cw_pack_signed(&pc, vehicle);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
+
+void oak_bridge_event_vehicle_player_use(oak_vehicle vehicle, oak_player player, bool success, int seat_id, int entrance) {
+    char buffer[OAK_BRIDGE_BUFFER] = {};
+    cw_pack_context pc;
+    cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
+    cw_pack_array_size(&pc, 6);
+    cw_pack_str(&pc, zpl_str_expand("vehicleUse"));
+    cw_pack_signed(&pc, vehicle);
+    cw_pack_signed(&pc, player);
+    cw_pack_signed(&pc, success);
+    cw_pack_signed(&pc, seat_id);
+    cw_pack_signed(&pc, entrance);
+    nn_send(sock_out, buffer, pc.current - pc.start, 0);
+}

@@ -206,6 +206,21 @@ int oak_vehicle_transparency_set(oak_vehicle id, float transparency) {
     return 0;
 }
 
+/**
+ * Locks/Unlocks the vehicle
+ * @param  id
+ * @param  state
+ * @return
+ */
+int oak_vehicle_lock_set(oak_vehicle id, int state) {
+    if (oak_vehicle_invalid(id)) return -1;
+    auto entity = oak_entity_vehicle_get(id);
+
+    entity->lock = state;
+
+    return 0;
+}
+
 // =======================================================================//
 // !
 // ! GETTERS
@@ -257,6 +272,18 @@ float oak_vehicle_heading_get(oak_vehicle id) {
 float oak_vehicle_transparency_get(oak_vehicle id) {
     if (oak_vehicle_invalid(id)) return -1.0f;
     return oak_entity_vehicle_get(id)->transparency;
+}
+
+/**
+ * Retrieves vehicle lock state
+ * @param  id
+ * @return car lock state
+ */
+int oak_vehicle_lock_get(oak_vehicle id) {
+    if (oak_vehicle_invalid(id)) return -1;
+    auto entity = oak_entity_vehicle_get(id);
+
+    return entity->lock;
 }
 
 // =======================================================================//

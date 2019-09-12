@@ -26,6 +26,12 @@ oak.event('start', () => {
 
 oak.event('stop', () => console.log('[info] connection stopped'))
 
+oak.event("vehicleUse", async (veh, pid, success, seatId, enterOrLeave) => {
+    if (success) return;
+
+    oak.hudMessage(pid, "This vehicle is locked!", 0xff0000)
+})
+
 /* chat system */
 
 oak.event('playerChat', async (pid, text) => {
@@ -124,6 +130,16 @@ oak.cmd('heal', async (pid) => {
 
 oak.cmd('healme', async (pid) => {
     oak.playerHealthSet(pid, 200.0)
+})
+
+oak.cmd('lock', async (pid, state) => {
+    const veh = await oak.vehiclePlayerInside(pid)
+    if (await oak.vehicleInvalid(veh)) return;
+    state = parseInt(state)
+    stateMsg = (state === 0) ? "unlocked" : "locked"
+
+    oak.chatSend(pid, `Vehicle is now ${stateMsg}!`)
+    oak.vehicleLockSet(veh, state)
 })
 
 oak.cmd('id', pid => {

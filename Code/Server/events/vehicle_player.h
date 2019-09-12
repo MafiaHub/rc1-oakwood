@@ -7,7 +7,7 @@ int oak_vehicle_player_register() {
         auto vehicle = oak_entity_vehicle_get_from_native(vehicle_ent);
         auto sender = oak_entity_player_get_from_native(sender_ent);
 
-        if (!vehicle || !sender) {
+        if (!vehicle || !sender || vehicle->lock) {
             return;
         }
 
@@ -48,6 +48,13 @@ int oak_vehicle_player_register() {
         auto sender = oak_entity_player_get_from_native(sender_ent);
 
         if (vehicle && sender) {
+
+            oak_bridge_event_vehicle_player_use(vehicle->oak_id, sender->oak_id, !vehicle->lock, seat_id, action == 1);
+
+            if (vehicle->lock) {
+                return;
+            }
+
             if(action == 1) {
                 oak_vehicle_player_enter(vehicle->oak_id, sender->oak_id, seat_id, enter_from_passenger_seat);
             } else if (action == 2) {

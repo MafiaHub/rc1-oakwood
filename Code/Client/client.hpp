@@ -2,6 +2,8 @@ librg_ctx network_context = {0};
 f64 last_delta = 0.0f;
 f64 last_update = 0.0f;
 bool hit_hook_skip = true;
+bool use_actor_skip = false;
+bool hijack_skip = false;
 
 enum
 {

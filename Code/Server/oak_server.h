@@ -124,12 +124,14 @@ OAK_API int oak_vehicle_direction_set(oak_vehicle, oak_vec3);
 OAK_API int oak_vehicle_heading_set(oak_vehicle, float);
 OAK_API int oak_vehicle_fuel_set(oak_vehicle, float);
 OAK_API int oak_vehicle_transparency_set(oak_vehicle, float);
+OAK_API int oak_vehicle_lock_set(oak_vehicle, int);
 
 OAK_API oak_vec3 oak_vehicle_position_get(oak_vehicle);
 OAK_API oak_vec3 oak_vehicle_direction_get(oak_vehicle);
 OAK_API float oak_vehicle_heading_get(oak_vehicle);
 OAK_API float oak_vehicle_fuel_get(oak_vehicle);
 OAK_API float oak_vehicle_transparency_get(oak_vehicle);
+OAK_API int oak_vehicle_lock_get(oak_vehicle id);
 
 /* VEHICLE VISIBILITY */
 

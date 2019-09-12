@@ -39,6 +39,7 @@ void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float d
 void oak_bridge_event_player_key(oak_player player, int key);
 void oak_bridge_event_player_chat(oak_player player, const char *text);
 void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle);
+void oak_bridge_event_vehicle_player_use(oak_vehicle vehicle, oak_player player, bool success, int seat_id, int entrance);
 void oak_bridge_event_console(const char *text);
 
 /* NETWORK */

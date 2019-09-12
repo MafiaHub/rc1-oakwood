@@ -32,6 +32,7 @@ struct mafia_vehicle : public oak_object {
 
 		transparency = 1.0f;
 		collision_state = true;
+        lock = false;
 	}
 
 	char model[OAK_VEHICLE_MODEL_SIZE];
@@ -60,6 +61,7 @@ struct mafia_vehicle : public oak_object {
 	zpl_vec3 speed;
 	f32 transparency;
 	b32 collision_state;
+    b32 lock;
 	mafia_vehicle_tyre tyres[4];
 	u8 destroyed_components[15];
     std::vector<mafia_vehicle_deform> deform_deltas;
