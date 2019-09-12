@@ -310,7 +310,15 @@ int oak_player_model_set(oak_player id, const char *model, int length) {
 // =======================================================================//
 
 const char *oak_player_name_get(oak_player id) {
-    return oak_player_invalid(id) ? nullptr : oak_entity_player_get(id)->name;
+    int code = oak_player_invalid(id);
+
+    /* entity is valid, or exists, but marked as invalid */
+    /* extract raw data to access values even if player removed (disconnected) */
+    if (code == 0 || code == 3) {
+        return oak__entities_data.players[id].name;
+    }
+
+    return nullptr;
 }
 
 const char *oak_player_model_get(oak_player id) {

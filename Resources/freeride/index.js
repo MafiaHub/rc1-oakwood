@@ -101,6 +101,7 @@ oak.event('playerDeath', async pid => {
 
 oak.event('playerDisconnect', async pid => {
     oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} disconnected.`)
+    console.log(`[info] player ${await oak.playerNameGet(pid)} disconnected.`)
 })
 
 oak.event('playerHit', (pid, atkr, dmg) => {
