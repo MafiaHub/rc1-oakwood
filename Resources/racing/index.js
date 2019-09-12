@@ -11,23 +11,23 @@ const oak = createClient(process.platform === "darwin" ? {
     outbound: 'tcp://192.168.1.3:10102',
 } : {})
 
-const getDistanceBetweenPoints = (v1, v2)=> {
+const getDistanceBetweenPoints = (v1, v2) => {
     const dx = v1[0] - v2[0]
     const dy = v1[1] - v2[1]
     const dz = v1[2] - v2[2]
-    return Math.sqrt( dx * dx + dy * dy + dz * dz )
+    return Math.sqrt(dx * dx + dy * dy + dz * dz)
 }
 
 /*
 * Gamemode constants
 */
 const PLAYER_STATE_RACING = 'PLAYER_STATE_RACING',
-      PLAYER_STATE_WAITING = 'PLAYER_STATE_WAITING'
+    PLAYER_STATE_WAITING = 'PLAYER_STATE_WAITING'
 
 const RACE_STARTING = 'RACE_STARTING',
-      RACE_WARMUP = 'RACE_WARMUP',
-      RACE_ACTIVE = 'RACE_ACTIVE',
-      RACE_FINISHED = 'RACE_FINISHED'
+    RACE_WARMUP = 'RACE_WARMUP',
+    RACE_ACTIVE = 'RACE_ACTIVE',
+    RACE_FINISHED = 'RACE_FINISHED'
 
 const {
     VISIBILITY_NAME,
@@ -36,6 +36,9 @@ const {
     VISIBILITY_MODEL,
     VISIBILITY_COLLISION,
 } = constants
+
+const ARROW_KEY_LEFT = 37,
+    ARROW_KEY_RIGHT = 39
 
 const vehicleModelsList = [
     87, 88
@@ -77,12 +80,12 @@ let raceLastScoreboard = []
 */
 const onRaceTick = () => {
     const currentTime = new Date()
-    if(currentTime - raceCheckStateInteval > 5000) {
+    if (currentTime - raceCheckStateInteval > 5000) {
         raceCheckState()
         raceCheckStateInteval = new Date()
     }
 
-    if(currentTime - raceCheckpointInterval > 100 && raceState === RACE_ACTIVE) {
+    if (currentTime - raceCheckpointInterval > 100 && raceState === RACE_ACTIVE) {
         processPlayersCheckpoints()
         raceCheckpointInterval = new Date()
     }
@@ -92,43 +95,45 @@ const onRaceTick = () => {
 * updates player checkpoints
 */
 const processPlayersCheckpoints = async () => {
-    
+
     //NOTE(DavoSK) we do foreach for active racers and we do update their checkpoints
     const activeRacers = Object.values(raceParticipants).filter(player => player.state === PLAYER_STATE_RACING)
-    const activeRacersCopy = [].concat(activeRacers).sort((a, b) => b.racePosition - a.racePosition) 
+    const activeRacersCopy = [].concat(activeRacers).sort((a, b) => b.racePosition - a.racePosition)
 
     activeRacers.map(async (racer, i) => {
-        
-        if(!await oak.vehicleInvalid(racer.vehicle)) {
+
+        if (!await oak.vehicleInvalid(racer.vehicle)) {
             const racePos = await oak.vehiclePositionGet(racer.vehicle)
-            
+
             //get nearest checkpoint 
             const distanceTreshold = 20.0
-            const currentDistance = getDistanceBetweenPoints(racer.laps[racer.lastCheckpoint], racePos) 
-            if(currentDistance < distanceTreshold) {
+            const currentDistance = getDistanceBetweenPoints(racer.laps[racer.lastCheckpoint], racePos)
+            if (currentDistance < distanceTreshold) {
                 racer.lastCheckpoint++
                 racer.lastCheckpointTime = new Date()
 
-                let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint) 
+                /*let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint)
                 let foundRacer = sortedRacers.find(currentRacer => currentRacer.id === racer.id)
-        
-                if(foundRacer) {
-                    if(sortedRacers.indexOf(foundRacer) !== i) {
+
+                if (foundRacer) {
+                    if (sortedRacers.indexOf(foundRacer) !== i) {
                         const overTakerName = await oak.playerNameGet(racer.id)
                         const victimName = await oak.playerNameGet(sortedRacers[i].id)
 
-                        for(let pid of await oak.playerList()) 
+                        for (let pid of await oak.playerList())
                             oak.hudMessage(pid, `Player ${overTakerName} overtook position of ${victimName}`, 0xFFFFFF)
                     }
-                }
+                }*/
             }
         }
     })
 
-    let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint) 
-    activeRacers.map(async (racer, i)=> {
+    let sortedRacers = activeRacersCopy.sort((a, b) => a.lastCheckpoint - b.lastCheckpoint)
+    activeRacersCopy.map(async (racer, i) => {
         let foundRacer = sortedRacers.find(currentRacer => currentRacer.id === racer.id)
         racer.racePosition = sortedRacers.indexOf(foundRacer)
+        
+        oak.hudAnnounce(racer.id, `${racer.racePosition + 1}/${activeRacers.length}`, 2)
     })
 }
 
@@ -139,13 +144,11 @@ const raceFinished = async () => {
     Object.values(raceParticipants).map(async player => {
         await oak.playerDespawn(player.id)
 
-        if(!await oak.vehicleInvalid(player.vehicle))
+        if (!await oak.vehicleInvalid(player.vehicle))
             oak.vehicleDespawn(player.vehicle)
 
         player.state = PLAYER_STATE_WAITING
-
         setupStartingCamera(player.id)
-
         oak.hudMessage(player.id, 'Race finished, wating for enough players...', 0xFF0000)
     })
 
@@ -167,32 +170,41 @@ const raceCheckState = async () => {
     }
 
     //NOTE(DavoSK): check if race is in starting mode and there are more then 1 player waiting 
-    if (raceState === RACE_STARTING && 
+    if (raceState === RACE_STARTING &&
         participantsArray.filter(player => player.state === PLAYER_STATE_WAITING).length > 1) {
 
         //NOTE(DavoSK): pepare vehicles on start & change race state to starting 
         raceState = RACE_WARMUP
 
         let playerCounter = 0
-
         Object.values(raceParticipants).map(async player => {
-            const spawnPos = vehicleSpawnPositions[playerCounter++]
-            const playerPos = [].concat(spawnPos)
+            if (playerCounter < vehicleSpawnPositions.length) {
+                const spawnPos = vehicleSpawnPositions[playerCounter++]
+                const playerPos = [].concat(spawnPos)
 
-            player.state                = PLAYER_STATE_RACING
-            player.laps                 = [].concat(raceCheckpoints)
-            player.lastCheckpoint       = 0
-            player.racePosition         = 0
-            player.lastCheckpointTime   = new Date()
-            player.vehicle              = await oak.vehicleSpawn(vehicleModels[vehicleModelsList.random()][1], spawnPos, 90)
+                player.state = PLAYER_STATE_RACING
+                player.laps = [].concat(raceCheckpoints)
+                player.lastCheckpoint = 0
+                player.racePosition = 0
+                player.lastCheckpointTime = new Date()
+                player.lastSpectatorTargetIndex = 0
+                player.lastSpectatorId = -1
+                player.vehicle = await oak.vehicleSpawn(vehicleModels[vehicleModelsList.random()][1], spawnPos, 90)
 
-            playerPos[2] += 1.5;
+                playerPos[2] += 1.5;
 
-            await oak.playerPositionSet(player.id, playerPos)
-            await oak.playerHealthSet(player.id, 200.0)
-            await oak.playerSpawn(player.id)
+                await oak.playerPositionSet(player.id, playerPos)
+                await oak.playerHealthSet(player.id, 200.0)
+                await oak.playerSpawn(player.id)
 
-            oak.vehiclePlayerPut(player.vehicle, player.id, 0)
+                oak.vehiclePlayerPut(player.vehicle, player.id, 0)
+                oak.cameraTargetUnset(player.id)
+
+            } else {
+                player.state = PLAYER_STATE_WAITING
+                player.vehicle = -1
+                oak.hudMessage(player.id, 'We are sorry but there is no more room for next player', 0xFFFFFF)
+            }
         })
 
         let currentCountdown = 3
@@ -223,31 +235,72 @@ const raceStart = async () => {
 
     //#2 get checkpoints from file
     raceCheckpoints = fs.readFileSync('route.txt', 'utf8')
-                        .split('\n')
-                        .map(l => l.split(','))
+        .split('\n')
+        .map(l => l.split(','))
 
     mainTicker = setInterval(onRaceTick, 100)
 }
 
 const cleanClientState = async () => {
-    for(vid of await oak.vehicleList())
+    for (vid of await oak.vehicleList())
         oak.vehicleDespawn(vid)
 
     for (pid of await oak.playerList())
         oak.playerDespawn(pid)
 }
 
-const setupStartingCamera = (pid) => {
+const setupStartingCamera = async (pid) => {
     const camPos = [316.769, 12.445, -166.209]
     const camDir = [-0.915, -0.346, 0.402]
 
     setTimeout(() => oak.cameraSet(pid, camPos, camDir), 250)
 }
 
+
+const getActiveSpectatorTarget = (except, next) => {
+
+    const activeRacers = Object.values(raceParticipants)
+        .filter(player => player.state === PLAYER_STATE_RACING && player.id != except.id)
+
+    if (activeRacers.length > 0) {
+        except.lastSpectatorTargetIndex += next
+        if (except.lastSpectatorTargetIndex >= activeRacers.length) {
+            except.lastSpectatorTargetIndex = 0
+        } else if (except.lastSpectatorTargetIndex < 0) {
+            except.lastSpectatorTargetIndex = activeRacers.length - 1
+        }
+
+        except.lastSpectatorId = activeRacers[except.lastSpectatorTargetIndex].id
+        return activeRacers[except.lastSpectatorTargetIndex]
+    }
+
+    return null
+}
+
+/*
+* on player key press 
+*/
+oak.event('playerKey', async (pid, key, isDown) => {
+
+    const racer = raceParticipants[pid]
+    if (racer && racer.state == PLAYER_STATE_WAITING && isDown) {
+        let choosenActiveRacer = null
+        if (key === ARROW_KEY_LEFT)
+            choosenActiveRacer = getActiveSpectatorTarget(racer, -1)
+        else if (key === ARROW_KEY_RIGHT)
+            choosenActiveRacer = getActiveSpectatorTarget(racer, 1)
+
+        if (choosenActiveRacer !== null) {
+            oak.cameraUnlock(pid)
+            oak.cameraTargetPlayer(pid, choosenActiveRacer.id)
+            oak.hudAnnounce(pid, `Specating  ${await oak.playerNameGet(choosenActiveRacer.id)}`, 2)
+        }
+    }
+})
+
 /*
 * on node start
 */
-
 oak.event('start', async () => {
     console.log('[info] connection started')
     oak.log('[info] oakwood-node connected')
@@ -262,7 +315,6 @@ oak.event('start', async () => {
             await oak.vehicleDespawn(veh)
         }
     }
-
 
     raceStart()
 
@@ -287,10 +339,19 @@ oak.event('stop', () => {
 */
 oak.event('playerConnect', pid => {
 
+    oak.hudFadeout(pid, 1, 1, 0x000000)
+    oak.playerSpawn(pid)
+    setTimeout(() => { 
+        oak.hudFadeout(pid, 0, 1000, 0x000000)
+        oak.playerDespawn(pid)
+    }, 1000)
+
     setupStartingCamera(pid)
     raceParticipants[pid] = {
         id: pid,
         laps: [],
+        lastSpectatorTargetIndex: 0,
+        lastSpectatorId: 0,
         lastCheckpoint: 0,
         lastCheckpointTime: null,
         racePosition: 0,
@@ -310,12 +371,18 @@ oak.event('playerConnect', pid => {
 oak.event('playerDeath', async pid => {
     let playerObject = raceParticipants[pid]
     if (playerObject) {
-        if(playerObject.vehicle > -1)
+        if (!await oak.vehicleInvalid(playerObject.vehicle))
             await oak.vehicleDespawn(playerObject.vehicle)
 
         await oak.playerDespawn(pid)
         playerObject.state = PLAYER_STATE_WAITING
-        setupStartingCamera(pid)
+
+        const choosenActiveRacer = getActiveSpectatorTarget(playerObject, 0)
+        if (choosenActiveRacer !== null) {
+            oak.cameraUnlock(pid)
+            oak.cameraTargetPlayer(pid, choosenActiveRacer.id)
+            oak.hudAnnounce(pid, `Specating  ${await oak.playerNameGet(choosenActiveRacer.id)}`, 500)
+        } else setupStartingCamera(pid)
     }
 
     oak.hudMessage(pid, 'You are dead, now you can spectate others players during race', 0xFF0000)
@@ -331,13 +398,27 @@ oak.event('playerDeath', async pid => {
 oak.event('playerDisconnect', async pid => {
 
     let playerObject = raceParticipants[pid]
-    if (playerObject && playerObject.vehicle > -1)
+    if (playerObject && !await oak.vehicleInvalid(playerObject.vehicle))
         await oak.vehicleDespawn(playerObject.vehicle)
 
-    delete raceParticipants[pid]
+    const possibleSpectators = Object.values(raceParticipants)
+        .filter(player => player.state === PLAYER_STATE_WAITING && player.lastSpectatorId === pid)
 
-    for(let otherPid of await oak.playerList()) 
+    for (let spectator of possibleSpectators) {
+        if (!await oak.playerInvalid(spectator.id)) {
+            const choosenActiveRacer = getActiveSpectatorTarget(spectator, 0)
+            if (choosenActiveRacer !== null) {
+                oak.cameraUnlock(spectator.id)
+                oak.cameraTargetPlayer(spectator.id, choosenActiveRacer.id)
+                oak.hudAnnounce(spectator.id, `Specating  ${await oak.playerNameGet(choosenActiveRacer.id)}`, 500)
+            } else setupStartingCamera(spectator.id)
+        }
+    }
+
+    for (let otherPid of await oak.playerList())
         oak.hudMessage(otherPid, 'Player ' + await oak.playerNameGet(pid) + ' has disconnected', 0xFF0000)
+
+    delete raceParticipants[pid]
 })
 
 oak.cmd('die', pid => {
