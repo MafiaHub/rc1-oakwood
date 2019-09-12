@@ -93,14 +93,15 @@ void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float d
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
 
-void oak_bridge_event_player_key(oak_player player, int key) {
+void oak_bridge_event_player_key(oak_player player, int key, bool is_pressed) {
     char buffer[OAK_BRIDGE_BUFFER] = {};
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
-    cw_pack_array_size(&pc, 3);
+    cw_pack_array_size(&pc, 4);
     cw_pack_str(&pc, zpl_str_expand("playerKey"));
     cw_pack_signed(&pc, player);
     cw_pack_signed(&pc, key);
+    cw_pack_signed(&pc, is_pressed);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
 }
 

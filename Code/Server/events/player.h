@@ -233,7 +233,7 @@ int oak_player_register() {
         auto key = librg_data_ru32(msg->data);
 
         oak_player pid = (oak_player)player_entity->user_data;
-        oak_bridge_event_player_key(pid, key);
+        oak_bridge_event_player_key(pid, key, is_pressed);
     });
 
     return 0;
