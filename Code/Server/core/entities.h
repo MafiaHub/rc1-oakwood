@@ -103,10 +103,10 @@ int oak_entity_invalid(oak_type type, u32 id) {
         return 1;
 
     if (!(id < oak_ent_limits[type]))
-        return 1;
+        return 2;
 
     auto entity = oak_entity_get(type, id);
-    return !entity->is_valid;
+    return entity->is_valid ? 0 : 3;
 }
 
 /**
