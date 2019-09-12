@@ -212,7 +212,7 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
     // Version mismatch, let the user know!
     if (server.version != OAK_BUILD_VERSION)
     {
-        modules::infobox::displayError("The client's version is incompatible with the server!");
+        // modules::infobox::displayError("The client's version is incompatible with the server!");
         return;
     }
 
