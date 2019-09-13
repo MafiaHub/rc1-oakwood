@@ -126,8 +126,34 @@ oak.cmd('kill', async pid => {
 })
 
 oak.cmd('help', async (pid) => {
-    console.log('[info] player asks for help', pid)
-    oak.chatSend(pid, '[info] sorry, we cant help you')
+    const commands = [
+        '/help - shows this message',
+        '/clear - clears chat box',
+
+        '/spawn - respawns you at random spawn location',
+        '/despawn - despawns the local player',
+        '/kill - kills your player',
+        '/heal or /healme - heals your player',
+
+        '/id - prints your player id',
+        '/list - prints current online players',
+        '/tp ID - teleport to a player with provided id',
+        '/tele NAME - teleport to a location (use /telelist to get locations)',
+        '/telelist - prints list of possible locations to teleport to',
+
+        '/weapons - gives you new set of weapons',
+        '/skin SKINID sets a specific skin model for your player',
+        '/car MODELID - creates car near player with specified model',
+        '/putcar - creates a car on player position with specified model, and puts him inside',
+        '/delcar - deletes a car you are curently in (only for cars created by you)',
+        '/fuel AMOUNT - sets fuel level in the car',
+        '/lock VALUE - set vehicle lock on or off (0 - to unlock, 1 - to lock)',
+
+        '/spectate PLAYERID - enable specator mode, and follow specified player',
+        '/stop - disable spectating mode',
+    ]
+
+    oak.chatSend(pid, `Help:\n----------------\n${commands.join('\n')}`)
 })
 
 oak.cmd('heal', async (pid) => {
@@ -409,3 +435,4 @@ oak.cmd('race', async (pid, flags) => {
 
     oak.hudCountdown(pid, f)
 })
+
