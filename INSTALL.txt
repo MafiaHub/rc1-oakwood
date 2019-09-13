@@ -1,0 +1,24 @@
+Mafia: Oakwood
+
+The following prerequisites are required to play Mafia Oakwood:
+- Windows 10 x64
+- The original copy of Mafia (GOG/Steam/Discord/Retail 1.2 EN)
+
+Installation Instructions:
+1. Launch OakwoodLauncher.exe
+2. Set up your multiplayer using the launcher by providing the game path
+3. Launch the client and change your nickname in Player Settings
+4. Enjoy!
+
+Known Issues:
+
+Q: I receive script errors when launching OakwoodLauncher.exe!
+A: Use Windows 10!
+
+Q: My game doesn't want to launch! It says multiplayer failed to initialize!
+A: Client is only supported on Windows 10!
+
+Q: I don't see any servers!
+A: Servers are either down or not reachable from your location
+
+Note: Some Russian residents might have an issue connecting to servers. Sadly, a range of IP addresses was banned by the Russian government, which also influences our services. We're unable to solve that issue sadly.

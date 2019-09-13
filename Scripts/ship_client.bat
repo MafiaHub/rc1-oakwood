@@ -18,6 +18,7 @@ mkdir Client
 echo f|xcopy %pr%\Bin\%build%\Oakwood.exe Client\Oakwood.exe
 echo f|xcopy %pr%\Bin\%build%\OakwoodClient.dll Client\OakwoodClient.dll
 echo f|xcopy %pr%\CHANGELOG.txt Client\
+echo f|xcopy %pr%\INSTALL.txt Client\
 
 mkdir Client\config
 echo f|xcopy %pr%\Files\config\Client.json Client\config\Client.json
