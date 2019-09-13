@@ -1,0 +1,15 @@
+Mafia: Oakwood Changelog
+
+20.0 (RC1 Release):
+- Foot and vehicle sync
+- Server Browser and Game Settings integration
+- Weapon and combat sync
+- Custom mission load support
+- Object spawning
+- Camera manipulation (we can now spectate other players or create scenic views over landscape)
+- Stability improvements
+- Solved numerous desync issues
+- Server browser now shows only servers relevant to client's version
+- Passworded servers added
+- Improved several death conditions in game
+- Vehicle sync has been improved significantly
