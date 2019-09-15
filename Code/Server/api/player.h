@@ -167,25 +167,6 @@ int oak_player_playanim(oak_player id, const char *text, int length) {
 // !
 // =======================================================================//
 
-#define OAK_PLAYER_SETTER(TYPE, CAST, NAME, ALIAS)                                      \
-    int ZPL_JOIN3(oak_player_,NAME,_set)(oak_player id, TYPE NAME) {                    \
-        if (oak_player_invalid(id)) return -1;                                          \
-                                                                                        \
-        auto entity = oak_entity_player_get(id);                                        \
-                                                                                        \
-        /* skip updates for the next change */                                          \
-        librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);    \
-                                                                                        \
-        /* apply new value */                                                           \
-        entity->ALIAS = *((CAST*)&NAME);                                                \
-                                                                                        \
-        return 0;                                                                       \
-    }
-
-OAK_PLAYER_SETTER(oak_vec3, zpl_vec3, direction, rotation);
-
-#undef OAK_PLAYER_SETTER
-
 int oak_player_health_set(oak_player id, float health) {
     if (oak_player_invalid(id)) return -1;
     auto entity = oak_entity_player_get(id);
@@ -213,12 +194,28 @@ int oak_player_position_set(oak_player id, oak_vec3 position) {
     auto entity = oak_entity_player_get(id);
 
     // TODO: fix bug with interpolation on client side
-    // librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->id);
     entity->native_entity->position = EXPAND_VEC(position);
 
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_POS, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, &position, sizeof(zpl_vec3));
+    });
+
+    return 0;
+}
+
+int oak_player_direction_set(oak_player id, oak_vec3 direction) {
+    auto player = oak_entity_player_get(id);
+
+    if (!player) {
+        return -1;
+    }
+
+    player->rotation = EXPAND_VEC(direction);
+
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_ROT, data, {
+        librg_data_went(&data, player->native_id);
+        librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
     });
 
     return 0;
@@ -231,8 +228,12 @@ int oak_player_heading_set(oak_player id, float angle) {
         return -1;
     }
 
-    librg_entity_control_ignore_next_update(oak_network_ctx_get(), player->native_id);
     player->rotation = ComputeDirVector(angle);
+
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_ROT, data, {
+        librg_data_went(&data, player->native_id);
+        librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
+    });
 
     return 0;
 }

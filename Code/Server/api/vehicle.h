@@ -117,10 +117,12 @@ int oak_vehicle_repair(oak_vehicle id) {
 int oak_vehicle_fuel_set(oak_vehicle id, float fuel) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
-
-    /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->fuel = fuel;
+
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_FUEL, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wf32(&data, fuel);
+    });
 
     return 0;
 }
@@ -134,9 +136,6 @@ int oak_vehicle_fuel_set(oak_vehicle id, float fuel) {
 int oak_vehicle_direction_set(oak_vehicle id, oak_vec3 direction) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
-
-    /* skip updates for the next change */
-    librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->rot_forward = hard_cast(zpl_vec3*)direction;
 
     librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_DIR, data, {
@@ -156,8 +155,6 @@ int oak_vehicle_direction_set(oak_vehicle id, oak_vec3 direction) {
 int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     if (oak_vehicle_invalid(id)) return -1;
     auto entity = oak_entity_vehicle_get(id);
-
-    // librg_entity_control_ignore_next_update(oak_network_ctx_get(), entity->native_id);
     entity->native_entity->position = EXPAND_VEC(position);
 
     librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_POS, data, {
