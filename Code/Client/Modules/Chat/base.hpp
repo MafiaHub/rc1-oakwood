@@ -167,7 +167,6 @@ namespace chat {
             }
         }
 
-        ImGui::SetScrollHere(1.0f);
         ImGui::EndChild();
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
@@ -199,8 +198,9 @@ namespace chat {
 
                 input::toggle_block_input();
             }
+
+            ImGui::SetScrollHere(1.0f);
         }
-        ImGui::SetScrollHere(1.0f);
         ImGui::End();
     }
 }
