@@ -86,7 +86,6 @@ const spawnplayer = pid => {
     oak.playerHealthSet(pid, 200)
     oak.hudFadeout(pid, 1, 500, 0xFFFFFF)
     oak.hudFadeout(pid, 0, 500, 0xFFFFFF)
-    
 }
 
 oak.event('playerConnect', async pid => {
@@ -97,13 +96,8 @@ oak.event('playerConnect', async pid => {
 })
 
 oak.event('playerDeath', async pid => {
-
-    setTimeout(()=> {
-        spawnplayer(pid)
-        oak.chatBroadcast('respawn ' + pid)
-    }, 5000) 
+    setTimeout(()=> spawnplayer(pid), 5000)
     oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} died.`)
-   
 })
 
 oak.event('playerDisconnect', async pid => {
@@ -112,7 +106,7 @@ oak.event('playerDisconnect', async pid => {
 })
 
 oak.event('playerHit', (pid, atkr, dmg) => {
-    console.log('[info] playerHit', pid, atkr, dmg)
+    // console.log('[info] playerHit', pid, atkr, dmg)
 })
 
 oak.cmd('spawn', async pid => {

@@ -115,7 +115,7 @@ bool __fastcall OnHit(void* _this, DWORD edx, int type, S_vector* unk1,S_vector*
         float new_health = victim->GetInterface()->health;
 
         //damage = (current_health - new_health);
-        printf("Local player damage:\nCurrent health: %f\nNew health: %f\nDamage: %f\n", current_health, new_health, damage);
+        // printf("Local player damage:\nCurrent health: %f\nNew health: %f\nDamage: %f\n", current_health, new_health, damage);
 
         modules::player::hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, attacker, player_part);
 		auto player_int = ped->GetInterface();

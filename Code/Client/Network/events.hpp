@@ -31,6 +31,12 @@ void handle_disconnection()
     zpl_zero_item(&local_player);
     local_player.spec_id = -1;
     local_player.last_spec_id = -1;
+
+    for (auto car_to_remove : car_delte_queue)
+        MafiaSDK::GetMission()->GetGame()->RemoveTemporaryActor(car_to_remove);
+
+    car_delte_queue.clear();
+
     //librg_free(&network_context);
     //mod_init_networking();
 }

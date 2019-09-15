@@ -4,6 +4,7 @@
 #include <nanomsg/nn.h>
 #include <nanomsg/pubsub.h>
 #include <nanomsg/reqrep.h>
+#include <nanomsg/survey.h>
 #include <msgpack/cwpack.h>
 
 int sock_out;
@@ -14,7 +15,7 @@ int sock_in;
 int oak_bridge_init() {
     oak_log("[info] initializing bridge...\n");
 
-    sock_out = nn_socket(AF_SP, NN_PUB);
+    sock_out = nn_socket(AF_SP, NN_SURVEYOR);
     sock_in = nn_socket(AF_SP, NN_REP);
 
     const char *addr_in = oak_config_bridge_inbound_get();
@@ -72,13 +73,14 @@ void oak_bridge_event_player_disconnect(oak_player player) {
 }
 
 void oak_bridge_event_player_death(oak_player player) {
-    char buffer[OAK_BRIDGE_BUFFER] = {};
-    cw_pack_context pc;
+    char buffer[OAK_BRIDGE_BUFFER] = {0};
+    cw_pack_context pc = {0};
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
     cw_pack_array_size(&pc, 2);
     cw_pack_str(&pc, zpl_str_expand("playerDeath"));
     cw_pack_signed(&pc, player);
-    nn_send(sock_out, buffer, pc.current - pc.start, 0);
+    int retval = nn_send(sock_out, buffer, pc.current - pc.start, 0);
+    ZPL_ASSERT(retval > 0);
 }
 
 void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float damage) {
