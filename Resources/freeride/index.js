@@ -121,10 +121,6 @@ oak.cmd('despawn', async pid => {
     oak.playerDespawn(pid)
 })
 
-oak.cmd('kill', async pid => {
-    oak.playerKill(pid)
-})
-
 oak.cmd('help', async (pid) => {
     const commands = [
         '/help - shows this message',
