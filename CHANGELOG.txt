@@ -1,5 +1,11 @@
 Mafia: Oakwood Changelog
 
+21.0:
+- Improved death and damage system
+- Fixed /fuel command
+- Fixed small bugs related to sync
+- Server now uses different approach to internal event handling
+
 20.0 (RC1 Release):
 - Foot and vehicle sync
 - Server Browser and Game Settings integration
