@@ -30,7 +30,10 @@ struct mafia_vehicle : public oak_object {
 			tyres[i].flags = 0x0;
 		}
 
+#ifdef MAFIA_SDK_IMPLEMENTATION
         wants_explode = false;
+#endif
+
 		transparency = 1.0f;
 		collision_state = true;
         lock = false;
