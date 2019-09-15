@@ -204,6 +204,7 @@ void add_messages() {
 
             if (vehicle) {
                 lib_inter_reset(vehicle->interp.pos, EXPAND_VEC(entity->position));
+                vehicle->car->GetInterface()->vehicle_interface.position = EXPAND_VEC(entity->position);
             }
         }
     });

@@ -14,6 +14,7 @@ namespace chat {
     unsigned int chat_current_msg;
     constexpr unsigned int VK_T = 0x54;
     bool is_focused = false;
+    bool new_msg_arrived=false;
    
     /* keys definitions */
     input::KeyToggle key_chat_open(VK_T);
@@ -40,6 +41,8 @@ namespace chat {
            ImColor(255, 255, 255, 255),
            msg
         });
+
+        new_msg_arrived=true;
     }
 
     inline void register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
@@ -144,6 +147,8 @@ namespace chat {
             input::block_input(is_focused);
         }
 
+        bool chat_send = key_chat_send;
+
         if (!MafiaSDK::GetMission()->GetGame() || input::is_key_down(VK_TAB)) 
             return;
 
@@ -167,6 +172,35 @@ namespace chat {
             }
         }
 
+        if (new_msg_arrived) {
+            ImGui::SetScrollHere(1.0f);
+            new_msg_arrived=false;
+        }
+
+        if (chat_send) {
+            is_focused = false;
+            if (strlen(add_text)) {
+                bool is_command = false;
+
+                if (add_text[0] == '/')
+                    is_command = parse_command(add_text);
+
+                if (!is_command) {
+                    librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
+                        librg_data_wu16(&data, zpl_strlen(add_text));
+                        librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
+                    });
+                }
+
+                chat_history.insert(chat_history.begin(), std::string(add_text));
+                chat_history_index = -1;
+                strcpy(add_text, "");
+            }
+
+            input::toggle_block_input();
+            ImGui::SetScrollHere(1.0f);
+        }
+
         ImGui::EndChild();
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
@@ -175,32 +209,8 @@ namespace chat {
                 ImGui::SetKeyboardFocusHere(0);
 
             ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
-
-            if (key_chat_send) {
-                is_focused = false;
-                if (strlen(add_text)) {
-                    bool is_command = false;
-
-                    if (add_text[0] == '/')
-                        is_command = parse_command(add_text);
-
-                    if (!is_command) {
-                        librg_send(&network_context, NETWORK_SEND_CHAT_MSG, data, {
-                            librg_data_wu16(&data, zpl_strlen(add_text));
-                            librg_data_wptr(&data, (void *)add_text, zpl_strlen(add_text));
-                        });
-                    }
-
-                    chat_history.insert(chat_history.begin(), std::string(add_text));
-                    chat_history_index = -1;
-                    strcpy(add_text, "");
-                }
-
-                input::toggle_block_input();
-            }
-
-            ImGui::SetScrollHere(1.0f);
         }
+        ImGui::SetScrollHere(1.0f);
         ImGui::End();
     }
 }

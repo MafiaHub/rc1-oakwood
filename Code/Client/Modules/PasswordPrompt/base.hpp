@@ -7,6 +7,7 @@ void init(ServerInfo::ServerData data) {
     server = data;
 
     switchClientState(ClientState_PasswordPrompt);
+    strcpy(GlobalConfig.password, "");
 }
 
 void render()

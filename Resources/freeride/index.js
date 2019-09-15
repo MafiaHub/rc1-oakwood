@@ -132,7 +132,6 @@ oak.cmd('help', async (pid) => {
 
         '/spawn - respawns you at random spawn location',
         '/despawn - despawns the local player',
-        '/kill - kills your player',
         '/heal or /healme - heals your player',
 
         '/id - prints your player id',
