@@ -75,14 +75,24 @@ bool __fastcall C_car_CarExplosion(void* _this, DWORD edx, unsigned int tick) {
 	if (!vehicle_ent) return false;
 
 	auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-
+    
 	//NOTE(DavoSK): prevents spamming network when vehicle is not yet exploded
 	if (vehicle && !vehicle->wants_explode) {
 		librg_send(&network_context, NETWORK_VEHICLE_EXPLODE, data, {
 			librg_data_wu32(&data, vehicle_ent->id);
 		});
+
 		vehicle->wants_explode = true;
+        vehicle->last_explode_announce = zpl_time_now();
 	}
+
+    if (vehicle && vehicle->wants_explode && (zpl_time_now() - vehicle->last_explode_announce) > 5.0f) {
+        librg_send(&network_context, NETWORK_VEHICLE_EXPLODE, data, {
+            librg_data_wu32(&data, vehicle_ent->id);
+        });
+
+        vehicle->last_explode_announce = zpl_time_now();
+    }
 
 	return false;
 }

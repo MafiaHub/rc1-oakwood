@@ -3,6 +3,8 @@
 void cam_set_target(librg_entity* ent) {
     if (MafiaSDK::GetMission()->GetGame()) {
         auto camera = MafiaSDK::GetMission()->GetGame()->GetCamera();
+        printf("Camera: %X, ent: %X\n", camera, ent);
+
         if (camera != nullptr) {
             if (!ent) {
                 auto lped = modules::player::get_local_player()->ped;

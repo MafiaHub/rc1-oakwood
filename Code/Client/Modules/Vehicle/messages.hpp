@@ -104,11 +104,10 @@ void add_messages() {
         auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
 
         if (vehicle_ent && vehicle_ent->user_data) {
-
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-            vehicle->wants_explode = false;
-
+          
             if (vehicle->car) {
+                vehicle->wants_explode = false;
                 c_car_carexplosion_original(vehicle->car, 200);
             }
         }

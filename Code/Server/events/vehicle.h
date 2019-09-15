@@ -116,11 +116,10 @@ int oak_vehicle_register() {
             auto control_peer = librg_entity_control_get(&network_context, vehicle_ent->id);
 
             if (sender_ent && sender_ent->client_peer == control_peer && control_peer != nullptr) {
-
                 mod_message_send(&network_context, NETWORK_VEHICLE_EXPLODE, [&](librg_data *data) {
                     librg_data_wu32(data, vehicle_ent->id);
                 });
-
+  
                 oak_vehicle_despawn((oak_vehicle)vehicle_ent->user_data);
             }
         }

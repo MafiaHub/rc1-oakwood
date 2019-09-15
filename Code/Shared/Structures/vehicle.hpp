@@ -30,9 +30,13 @@ struct mafia_vehicle : public oak_object {
 			tyres[i].flags = 0x0;
 		}
 
+        wants_explode = false;
 		transparency = 1.0f;
 		collision_state = true;
         lock = false;
+        
+        rot_speed = { 0.0f, 0.0f, 0.0f };
+        speed = { 0.0f, 0.0f, 0.0f };
 	}
 
 	char model[OAK_VEHICLE_MODEL_SIZE];
@@ -68,7 +72,9 @@ struct mafia_vehicle : public oak_object {
 
 	#ifdef MAFIA_SDK_IMPLEMENTATION
     MafiaSDK::C_Car* car = nullptr;
-	b32 wants_explode;
+    b32 wants_explode;
+    u64 last_explode_announce;
+
     u64 clientside_flags;
 	/* interpolation table */
 	struct {
