@@ -77,15 +77,15 @@ struct data
     i32 last_spec_id;
 } local_player;
 
-struct shoot_info
+/*struct shoot_info
 {
     S_vector pos;
     S_vector dir;
     S_vector screen_coord;
     DWORD player_base;
 } local_shoot_data;
+std::unordered_map<void *, shoot_info> shoot_queue;*/
 
-std::unordered_map<void *, shoot_info> shoot_queue;
 std::vector<MafiaSDK::C_Car *> car_delte_queue;
 IDirect3DDevice9 *global_device = nullptr;
 

@@ -182,15 +182,15 @@ void oak_ev_player_client_remove(librg_event *e) {
 }
 
 /* PLAYER MESSAGES */
-
 int oak_player_register() {
+
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
-        oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data;
-        if (oak_player_invalid(pid)) return;
-        auto entity = oak_entity_player_get(pid);
-        entity->died_ingame = true;
-        oak_player_kill(pid);
-        entity->died_ingame = false;
+        oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data; 
+        if (oak_player_invalid(pid)) { 
+            ZPL_ASSERT(false);
+            return; 
+        }
+ 
         oak_bridge_event_player_death(pid);
     });
 
@@ -214,17 +214,19 @@ int oak_player_register() {
         oak_player_health_set(pid, health);
         oak_bridge_event_player_hit(pid, aid, current_health - health);
 
-        mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data *data) {
-            librg_data_went(data, sender_ent->id);
-            librg_data_went(data, attacker_id);
-            librg_data_wu32(data, hit_type);
-            librg_data_wptr(data, (void*)&unk1, sizeof(zpl_vec3));
-            librg_data_wptr(data, (void*)&unk2, sizeof(zpl_vec3));
-            librg_data_wptr(data, (void*)&unk3, sizeof(zpl_vec3));
-            librg_data_wf32(data, damage);
-            librg_data_wf32(data, health);
-            librg_data_wu32(data, player_part);
-        });
+        /*if (current_health <= 0.0) {
+            mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data* data) {
+                librg_data_went(data, sender_ent->id);
+                librg_data_went(data, attacker_id);
+                librg_data_wu32(data, hit_type);
+                librg_data_wptr(data, (void*)& unk1, sizeof(zpl_vec3));
+                librg_data_wptr(data, (void*)& unk2, sizeof(zpl_vec3));
+                librg_data_wptr(data, (void*)& unk3, sizeof(zpl_vec3));
+                librg_data_wf32(data, damage);
+                librg_data_wf32(data, health);
+                librg_data_wu32(data, player_part);
+            });
+        }*/
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_KEY_PRESS, [](librg_message* msg) {

@@ -161,18 +161,14 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
-        shoot_info shoot_data;
+        zpl_vec3 shoot_data;
         librg_entity_id id = librg_data_rent(msg->data);
-        librg_data_rptr(msg->data, &shoot_data.pos, sizeof(zpl_vec3));
-        librg_data_rptr(msg->data, &shoot_data.dir, sizeof(zpl_vec3));
-        librg_data_rptr(msg->data, &shoot_data.screen_coord, sizeof(zpl_vec3));
+        librg_data_rptr(msg->data, &shoot_data, sizeof(zpl_vec3));
 
-        S_vector target = EXPAND_VEC(shoot_data.screen_coord);
+        S_vector target = EXPAND_VEC(shoot_data);
         auto entity = librg_entity_fetch(&network_context, id);
         if (entity) {
             auto player = (mafia_player*)entity->user_data;
-
-            shoot_queue[(void*)player->ped] = shoot_data;
             *(BYTE*)((DWORD)player->ped + 0x4A4) = 50;
             player->ped->Do_Shoot(true, target);
             player->ped->Do_Shoot(false, target);
@@ -262,7 +258,7 @@ void add_messages() {
 
     librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
 
-        librg_entity_id victim_id = librg_data_rent(msg->data);
+        /*librg_entity_id victim_id = librg_data_rent(msg->data);
         librg_entity_id sender_id = librg_data_rent(msg->data);
 
         auto sender_ent = librg_entity_fetch(&network_context, sender_id);
@@ -288,7 +284,7 @@ void add_messages() {
             victim->ped->Hit(hit_type, unk1, unk2, unk3, damage, player->ped, player_part, NULL);
             hit_hook_skip = true;
             victim->ped->GetInterface()->health = victim->health = health;
-        }
+        }*/
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_SET_POS, [](librg_message* msg) {
@@ -327,9 +323,9 @@ void add_messages() {
 
                     player_int->health = health;
 
-                    if (player->health <= 0.0f) {
+                    /*if (player->health <= 0.0f) {
                         player->clientside_flags |= CLIENTSIDE_PLAYER_WAITING_FOR_DEATH;
-                    }
+                    }*/
                 }
             }
         }

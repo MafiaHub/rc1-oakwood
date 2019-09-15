@@ -162,14 +162,17 @@ inline void on_key_pressed(bool down, unsigned long key) {
 * todo add reason killer and so one ...
 */
 inline auto died() -> void {
-    printf("[debug] died\n");
-
+    
     if (local_player.dead) return;
 
     if (!local_player.dead)
         local_player.dead = true;
 
-    auto player = get_local_player();
+    librg_message_send_all(&network_context, NETWORK_PLAYER_DIE, nullptr, 0);
+    printf("[debug] died\n");
+    
+
+    /*auto player = get_local_player();
     if (player) {
 
         if (player->vehicle_id > -1) {
@@ -193,9 +196,9 @@ inline auto died() -> void {
             }
         }
         //player->ped = nullptr;
-    }
+    }*/
 
-    librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
+    //librg_send(&network_context, NETWORK_PLAYER_DIE, data, {});
 }
 
 
@@ -225,12 +228,10 @@ inline auto hit(
     });
 }
 
-inline auto shoot(shoot_info data_shot) -> void {
+inline auto shoot(S_vector data_shot) -> void {
 
     librg_send(&network_context, NETWORK_PLAYER_SHOOT, data, {
-        librg_data_wptr(&data, &data_shot.pos, sizeof(S_vector));
-        librg_data_wptr(&data, &data_shot.dir, sizeof(S_vector));
-        librg_data_wptr(&data, &data_shot.screen_coord, sizeof(S_vector));
+        librg_data_wptr(&data, &data_shot, sizeof(S_vector));
     });
 }
 

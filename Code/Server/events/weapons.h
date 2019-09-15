@@ -2,18 +2,14 @@ int oak_weapon_register() {
     /* Weapon system */
 
     librg_network_add(&network_context, NETWORK_PLAYER_SHOOT, [](librg_message* msg) {
-        zpl_vec3 pos, dir, screen_coord;
+        zpl_vec3 screen_coord;
         auto entity = librg_entity_find(&network_context, msg->peer);
-        librg_data_rptr(msg->data, &pos, sizeof(zpl_vec3));
-        librg_data_rptr(msg->data, &dir, sizeof(zpl_vec3));
         librg_data_rptr(msg->data, &screen_coord, sizeof(zpl_vec3));
 
         // TODO: add event trigger
 
         mod_message_send_except(&network_context, NETWORK_PLAYER_SHOOT, msg->peer, [&](librg_data *data) {
             librg_data_went(data, entity->id);
-            librg_data_wptr(data, &pos, sizeof(zpl_vec3));
-            librg_data_wptr(data, &dir, sizeof(zpl_vec3));
             librg_data_wptr(data, &screen_coord, sizeof(zpl_vec3));
         });
     });

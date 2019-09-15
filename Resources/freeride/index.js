@@ -80,12 +80,13 @@ const spawnplayer = pid => {
     const model = rndarr(playerModels)
 
     oak.chatSend(pid, `[info] spawning you at location: ${loc.name}`)
+    oak.playerSpawn(pid)
     oak.playerModelSet(pid, model[1])
     oak.playerPositionSet(pid, loc.pos)
     oak.playerHealthSet(pid, 200)
     oak.hudFadeout(pid, 1, 500, 0xFFFFFF)
     oak.hudFadeout(pid, 0, 500, 0xFFFFFF)
-    oak.playerSpawn(pid)
+    
 }
 
 oak.event('playerConnect', async pid => {
@@ -96,8 +97,13 @@ oak.event('playerConnect', async pid => {
 })
 
 oak.event('playerDeath', async pid => {
+
+    setTimeout(()=> {
+        spawnplayer(pid)
+        oak.chatBroadcast('respawn ' + pid)
+    }, 5000) 
     oak.chatBroadcast(`[info] player ${await oak.playerNameGet(pid)} died.`)
-    spawnplayer(pid)
+   
 })
 
 oak.event('playerDisconnect', async pid => {

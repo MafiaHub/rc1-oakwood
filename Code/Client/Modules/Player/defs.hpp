@@ -30,7 +30,7 @@ inline auto hit(
     float damage,
     MafiaSDK::C_Actor* attacker, 
     unsigned int player_part) -> void;
-inline auto shoot(shoot_info data) -> void;
+inline auto shoot(S_vector data) -> void;
 inline auto weapondrop(inventory_item* item, char* model) -> void;
 inline auto weaponchange(u32 index) -> void;
 inline auto fromcar() -> void;

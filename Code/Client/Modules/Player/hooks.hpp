@@ -1,7 +1,7 @@
 //----------------------------------------------
 //C_game::NewShoot((C_actor*, S_vector const&, S_vector const&, float, int, I3D_frame*, int))
 //----------------------------------------------
-typedef DWORD(__thiscall* C_game__NewShoot_t)(void* _this, MafiaSDK::C_Actor* arg1, S_vector arg2, S_vector arg3, float arg4, int arg5, MafiaSDK::I3D_Frame* arg6, int arg7);
+/*typedef DWORD(__thiscall* C_game__NewShoot_t)(void* _this, MafiaSDK::C_Actor* arg1, S_vector arg2, S_vector arg3, float arg4, int arg5, MafiaSDK::I3D_Frame* arg6, int arg7);
 C_game__NewShoot_t game_shoot_original = nullptr;
 DWORD __fastcall C_game__NewShoot(void* _this, DWORD edx, MafiaSDK::C_Actor* arg1, S_vector arg2, S_vector arg3, float arg4, int arg5, MafiaSDK::I3D_Frame* arg6, int arg7) {
     S_vector pos = arg2;
@@ -21,7 +21,7 @@ DWORD __fastcall C_game__NewShoot(void* _this, DWORD edx, MafiaSDK::C_Actor* arg
     }
 
     return game_shoot_original(_this, arg1, pos, dir, arg4, arg5, arg6, arg7);
-}
+}*/
 
 
 //----------------------------------------------
@@ -105,26 +105,29 @@ typedef bool(__thiscall* C_Human_Hit_t)(void* _this, int hitType, S_vector* unk1
 C_Human_Hit_t human_hit_original = nullptr;
 bool __fastcall OnHit(void* _this, DWORD edx, int type, S_vector* unk1,S_vector* unk2, S_vector* unk3, float damage, MafiaSDK::C_Actor* attacker, unsigned long player_part, MafiaSDK::I3D_Frame* frame) {
 	
+    //if (hit_hook_skip && (_this != ped)) return 0;
 	auto ped = modules::player::get_local_ped();
-	if (hit_hook_skip && (_this != ped)) return 0;
 	auto victim = reinterpret_cast<MafiaSDK::C_Human*>(_this);
 
-	float current_health = victim->GetInterface()->health;
-	bool ret_val = human_hit_original(_this, type, unk1, unk2, unk3, damage, attacker, player_part, frame);
-	float new_health = victim->GetInterface()->health;
+	if (_this == ped) {       
+        float current_health = victim->GetInterface()->health;
+        bool ret_val = human_hit_original(_this, type, unk1, unk2, unk3, damage, attacker, player_part, frame);
+        float new_health = victim->GetInterface()->health;
 
-	damage = (current_health - new_health);
+        //damage = (current_health - new_health);
+        printf("Local player damage:\nCurrent health: %f\nNew health: %f\nDamage: %f\n", current_health, new_health, damage);
 
-	if (_this == ped) {
         modules::player::hit(reinterpret_cast<MafiaSDK::C_Human*>(_this), type, unk1, unk2, unk3, damage, attacker, player_part);
 		auto player_int = ped->GetInterface();
 		bool is_alive = player_int->humanObject.entity.isActive;
 
-		if (!is_alive)
+		if (new_health <= 0.0f)
 			modules::player::died();
+
+        return ret_val;
 	}
 	
-	return ret_val;
+	return false;
 }
 
 //----------------------------------------------
@@ -170,8 +173,7 @@ C_Human_Do_Shoot_t human_do_shoot_original = nullptr;
 BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, S_vector* pos) {
 
 	if (do_shoot && pos && _this == modules::player::get_local_ped()) {
-        local_shoot_data.screen_coord = *pos;
-        local_shoot_data.player_base = (DWORD)_this;
+        modules::player::shoot(*pos);
 	}
 	return human_do_shoot_original(_this, do_shoot, pos);
 }
@@ -364,9 +366,9 @@ inline auto init() {
     //Shooting aim 
     MemoryPatcher::InstallJmpHook(0x0057B5C3, (DWORD)ShootingAimCar);
 
-    game_shoot_original = reinterpret_cast<C_game__NewShoot_t>(
+    /*game_shoot_original = reinterpret_cast<C_game__NewShoot_t>(
         DetourFunction((PBYTE)0x005A84A0, (PBYTE)&C_game__NewShoot)
-    );
+    );*/
 
     human_do_shoot_original = reinterpret_cast<C_Human_Do_Shoot_t>(
         DetourFunction((PBYTE)0x00583590, (PBYTE)&HumanDoShoot)
