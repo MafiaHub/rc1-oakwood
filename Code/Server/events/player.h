@@ -185,12 +185,20 @@ void oak_ev_player_client_remove(librg_event *e) {
 int oak_player_register() {
 
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
-        oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data; 
-        if (oak_player_invalid(pid)) { 
-            ZPL_ASSERT(false);
-            return; 
+        oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data;
+        if (oak_player_invalid(pid)) {
+            return;
         }
- 
+
+        auto player = oak_entity_player_get(pid);
+
+        if (librg_entity_valid(oak_network_ctx_get(), player->vehicle_id)) {
+            auto vid = oak_entity_vehicle_get_from_native(
+                librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id))->oak_id;
+
+            oak_vehicle_player_remove(vid, player->oak_id);
+        }
+
         oak_bridge_event_player_death(pid);
     });
 
