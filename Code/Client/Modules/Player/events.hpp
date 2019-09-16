@@ -128,17 +128,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
 
     player->ped = new_ped;
 
-    if(player->streamer_entity_id == local_player.entity_id) {
-        auto me = modules::player::get_local_ped();
-        auto action = player->ped->GetActionManager()->NewFollow(me, 3.0f, 13, 2, 0, 0);
-        player->ped->GetActionManager()->NewTurnTo(me, action->action_id);
-        player->ped->GetActionManager()->AddJob(action);
-        MafiaSDK::GetFollowManager()->AddFollower(player->ped, me);
-        player->ped->ForceAI(0, 1, 0, 0);
-    }
-    else {
-        evnt->entity->flags |= ENTITY_INTERPOLATED;
-    }
+    evnt->entity->flags |= ENTITY_INTERPOLATED;
 
     evnt->entity->user_data = player;
 }
@@ -247,6 +237,13 @@ inline auto entityupdate(librg_event* evnt) -> void {
 
     if (evnt->entity->id != local_player.entity_id) {
         player->health = health;
+    }
+
+    if (player->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_SKIN) {
+        if (!player->ped->GetInterface()->playersCar && !player->ped->GetInterface()->carLeavingOrEntering) {
+            player->clientside_flags &= ~CLIENTSIDE_PLAYER_WAITING_FOR_SKIN;
+            ((MafiaSDK::C_Human*)player->ped)->Intern_ChangeModel(player->model);
+        }
     }
 }
 
