@@ -1,4 +1,10 @@
 Mafia: Oakwood Changelog
+21.1:
+- Fixed player skin desync
+- Additional fixes to duplicate peds issue
+- Improved player positioning
+- Fixed player car death server desync
+- Chat scrollbar improvements
 
 21.0:
 - Improved death and damage system
