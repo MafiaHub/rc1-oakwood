@@ -193,6 +193,9 @@ int oak_player_position_set(oak_player id, oak_vec3 position) {
     if (oak_player_invalid(id)) return -1;
     auto entity = oak_entity_player_get(id);
 
+    // TODO: fix bug with interpolation on client side
+    entity->native_entity->position = EXPAND_VEC(position);
+
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_POS, data, {
         librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, &position, sizeof(zpl_vec3));
@@ -207,6 +210,8 @@ int oak_player_direction_set(oak_player id, oak_vec3 direction) {
     if (!player) {
         return -1;
     }
+
+    player->rotation = EXPAND_VEC(direction);
 
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_ROT, data, {
         librg_data_went(&data, player->native_id);
