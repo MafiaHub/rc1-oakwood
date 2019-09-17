@@ -15,7 +15,6 @@ jobs:
         run: ./premake.sh.bat
 
       - name: Run build on windows
-        if: startsWith(matrix.os, 'windows')
         run: 'cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"'
 
   build-lin:
@@ -34,7 +33,7 @@ jobs:
         run: cd Build && make
 
   build-mac:
-    name: Build macOs
+    name: Build macOS
     runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v1
