@@ -5,35 +5,48 @@ on:
     #   - 'Code/*'
 
 jobs:
-  build:
-    name: Build
-
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-
+  build-win:
+    name: Build Windows
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '10.x'
-
-      - name: Install deps for ubuntu
-        if: startsWith(matrix.os, 'ubuntu')
-        run: sudo apt install -y libnanomsg-dev
-
-      - name: Install deps for macOS
-        if: startsWith(matrix.os, 'macOS')
-        run: brew install nanomsg
 
       - name: Configure the build system
         run: ./premake.sh.bat
 
       - name: Run build on windows
         if: startsWith(matrix.os, 'windows')
-        run: 'cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"'
+        run: 'cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"'
 
-      - name: Run build on unix
-        if: startsWith(matrix.os, 'windows') == false
+  build-lin:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install deps
+        run: sudo apt install -y libnanomsg-dev
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Run build
+        run: cd Build && make
+
+  build-mac:
+    name: Build macOs
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install deps
+        run: brew install nanomsg
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Run build
         run: cd Build && make
