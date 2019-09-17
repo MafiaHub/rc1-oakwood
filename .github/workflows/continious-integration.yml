@@ -21,13 +21,11 @@ jobs:
 
       - name: Install deps for ubuntu
         if: startsWith(matrix.os, 'ubuntu')
-        run:
-          - sudo apt install -y libnanomsg-dev
+        run: sudo apt install -y libnanomsg-dev
 
       - name: Install deps for macOS
         if: startsWith(matrix.os, 'macOS')
-        run:
-          - brew install nanomsg
+        run: brew install nanomsg
 
       - name: Configure the build system
         run: ./premake.sh.bat
