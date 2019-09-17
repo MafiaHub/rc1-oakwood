@@ -4,14 +4,15 @@ on:
     # paths:
     #   - 'Code/*'
 
-strategy:
-  matrix:
-    os: [ubuntu-latest, windows-latest, macOS-latest]
-
 jobs:
   build:
     name: Build
+
     runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
     steps:
       - uses: actions/checkout@v1
       # - uses: ./.github/actions/hello-world-action
