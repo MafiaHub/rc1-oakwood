@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - 'Code/*'
+      - 'Vendors/*'
 
 jobs:
   build-win:
