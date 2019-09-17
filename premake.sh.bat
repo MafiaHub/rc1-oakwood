@@ -8,7 +8,7 @@ case "${unameOut}" in
     *)          machine="unknown"
 esac
 
-if [[ $1 == "clean" ]] 
+if [[ $1 == "clean" ]]
 then
     # Invoke premake5's clean action
     echo "Performing clean action..."
@@ -33,4 +33,4 @@ if "%1" == "clean" (
 
 :: Pause for 5 seconds and auto-close the command window
 :end
-timeout /t 3 /nobreak
+rem timeout /t 3 /nobreak

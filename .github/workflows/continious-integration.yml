@@ -33,4 +33,4 @@ jobs:
 
       - name: Run build on unix
         if: startsWith(matrix.os, 'windows') == false
-        run: make config=release
+        run: make
