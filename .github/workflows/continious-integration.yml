@@ -15,7 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      # - uses: ./.github/actions/hello-world-action
 
       - name: Configure the build system
         run: ./premake.sh.bat
@@ -23,13 +22,9 @@ jobs:
       - name: Enter the temp folder
         run: cd Build
 
-      - name: Loading devenv on windows
-        if: startsWith(matrix.os, 'windows')
-        run: '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat" amd64'
-
       - name: Run build on windows
         if: startsWith(matrix.os, 'windows')
-        run: msbuild Oakwood.sln /p:Configuration='Production' /p:PlatformToolset='v141'
+        run: '"C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat" amd64 && msbuild Oakwood.sln /p:Configuration='Production' /p:PlatformToolset='v141''
 
       - name: Run build on unix
         if: startsWith(matrix.os, 'windows') == false
