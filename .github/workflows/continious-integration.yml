@@ -1,7 +1,8 @@
 name: continious-integration
-on: push
-  paths:
-  - 'Code/*'
+on:
+  push:
+    paths:
+      - 'Code/*'
 
 runs-on: ${{ matrix.os }}
 strategy:
