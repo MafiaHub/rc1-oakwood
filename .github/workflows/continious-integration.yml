@@ -22,7 +22,6 @@ jobs:
       - name: Enter the temp folder
         run: cd Build
 
-      # windows
       - name: Loading devenv on windows
         run: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat" amd64
         runs-on: [windows-latest]
@@ -31,7 +30,6 @@ jobs:
         run: msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"
         runs-on: [windows-latest]
 
-      # linux and macos
       - name: Run build on unix
         run: make config=release
         runs-on: [ubuntu-latest, macOS-latest]
