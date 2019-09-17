@@ -32,7 +32,7 @@ jobs:
 
       - name: Run build on windows
         if: startsWith(matrix.os, 'windows')
-        run: 'cd Build && "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat" x86 && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"'
+        run: 'cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"'
 
       - name: Run build on unix
         if: startsWith(matrix.os, 'windows') == false
