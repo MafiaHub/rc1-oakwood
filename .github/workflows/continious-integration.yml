@@ -1,0 +1,36 @@
+name: continious-integration
+on: push
+  paths:
+  - 'Code/*'
+
+runs-on: ${{ matrix.os }}
+strategy:
+  matrix:
+    os: [ubuntu-latest, windows-latest, macOS-latest]
+
+jobs:
+  build:
+    name: Build
+    steps:
+      - uses: actions/checkout@v1
+      # - uses: ./.github/actions/hello-world-action
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Enter the temp folder
+        run: cd Build
+
+      # windows
+      - name: Loading devenv on windows
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        run: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Enterprise\\VC\\Auxiliary\\Build\\vcvarsall.bat" amd64
+
+      - name: Run build on windows
+        if: ${{ startsWith(matrix.os, 'windows') }}
+        run: msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v141"
+
+      # linux and macos
+      - name: Run build on unix
+        if: ${{ !startsWith(martrix.os, 'windows') }}
+        run: make config=release
