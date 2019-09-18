@@ -10874,13 +10874,13 @@ const github = __webpack_require__(830)
 
 async function main() {
     try {
+        console.log(process.env)
+
         const {GIHUB_TAG, GITHUB_REPO, GITHUB_TOKEN} = process.env
         const octokit   = new github.GitHub(GITHUB_TOKEN)
 
         const input     = core.getInput('input')
         const output    = core.getInput('output')
-
-        console.log(GITHUB_REF, GITHUB_REPOSITORY)
 
         const [owner, repo] = GITHUB_REPO.split('/')
         const release = await octokit.repos.getReleaseByTag({ owner, repo, tag: GIHUB_TAG })
