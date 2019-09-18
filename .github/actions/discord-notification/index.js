@@ -6,7 +6,7 @@ async function main() {
         const platform  = core.getInput('platform')
         const succeeded = core.getInput('succeeded')
 
-        const content = succeeded
+        const content = succeeded == 'true'
             ? `**oakwood** ${platform} build has succeeded :white_check_mark:`
             : `**oakwood** ${platform} build has failed :no_entry:`
 
