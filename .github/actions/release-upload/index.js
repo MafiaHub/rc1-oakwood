@@ -10899,7 +10899,7 @@ async function main() {
                 'content-type': type,
                 'content-length': fileData.length,
             },
-            fileData,
+            file: fileData,
         })
     } catch (error) {
         console.log('error happened')
