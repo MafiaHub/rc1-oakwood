@@ -10888,7 +10888,7 @@ async function main() {
             type = 'application/zip'
         }
 
-        console.log({ tag, input, output, owner, repo, type })
+        console.log({ tag, input, output, owner, repo, type, release })
 
         const fileData = fs.readFileSync(input)
 
@@ -10902,6 +10902,7 @@ async function main() {
             fileData,
         })
     } catch (error) {
+        console.log('error happened')
         core.setFailed(error.message);
     }
 }
