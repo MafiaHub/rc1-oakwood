@@ -20,5 +20,16 @@
   "dependencies": {},
   "devDependencies": {
     "release-it": "^12.4.1"
+  },
+  "release-it": {
+    "npm": {
+      "publish": false
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "./Scripts/release-bump.js": {}
+    }
   }
 }
