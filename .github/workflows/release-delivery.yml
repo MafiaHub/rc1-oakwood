@@ -28,8 +28,8 @@ jobs:
           input: ./Shipping/Client.zip
           output: oakwood-client-v{v}-win32.zip
         env:
-          GITHUB_TAG: ${{ GITHUB_REF }}
-          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TAG: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload assets to the release (server)
@@ -38,8 +38,8 @@ jobs:
           input: ./Bin/Release/OakwoodServer.exe
           output: oakwood-server-v{v}-win32.exe
         env:
-          GITHUB_TAG: ${{ GITHUB_REF }}
-          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TAG: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-lin:
@@ -63,8 +63,8 @@ jobs:
           input: ./Bin/Release/OakwoodServer
           output: oakwood-server-v{v}-lin64
         env:
-          GITHUB_TAG: ${{ GITHUB_REF }}
-          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TAG: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-mac:
@@ -91,6 +91,6 @@ jobs:
           path: ./Bin/Release/OakwoodServer
           output: oakwood-server-v{v}-mac64
         env:
-          GITHUB_TAG: ${{ GITHUB_REF }}
-          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TAG: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
