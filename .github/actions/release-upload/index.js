@@ -10876,14 +10876,13 @@ async function main() {
     try {
         console.log(process.env)
 
-        const {GIHUB_TAG, GITHUB_REPO, GITHUB_TOKEN} = process.env
-        const octokit   = new github.GitHub(GITHUB_TOKEN)
-
+        const octokit   = new github.GitHub(process.env.GITHUB_TOKEN)
+        const tag       = process.env.GITHUB_TAG.replace('refs/tags/', '')
         const input     = core.getInput('input')
         const output    = core.getInput('output')
 
-        const [owner, repo] = GITHUB_REPO.split('/')
-        const release = await octokit.repos.getReleaseByTag({ owner, repo, tag: GIHUB_TAG })
+        const [owner, repo] = process.env.GITHUB_REPO.split('/')
+        const release = await octokit.repos.getReleaseByTag({ owner, repo, tag })
 
         let type = 'application/octet-stream'
 
