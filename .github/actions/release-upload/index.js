@@ -10874,8 +10874,6 @@ const github = __webpack_require__(830)
 
 async function main() {
     try {
-        console.log(process.env)
-
         const octokit   = new github.GitHub(process.env.GITHUB_TOKEN)
         const tag       = process.env.GITHUB_TAG.replace('refs/tags/', '')
         const input     = core.getInput('input')
@@ -10889,6 +10887,8 @@ async function main() {
         if (input.indexOf('zip') !== -1) {
             type = 'application/zip'
         }
+
+        console.log({ tag, input, output, owner, repo, type })
 
         const fileData = fs.readFileSync(input)
 
