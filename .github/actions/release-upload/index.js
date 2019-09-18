@@ -10893,7 +10893,7 @@ async function main() {
         const fileData = fs.readFileSync(input)
 
         await octokit.repos.uploadReleaseAsset({
-            url: release.upload_url,
+            url: release.data.upload_url,
             name: output.replace('{v}', tag),
             headers: {
                 'content-type': type,
