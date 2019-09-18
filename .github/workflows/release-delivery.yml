@@ -35,7 +35,7 @@ jobs:
       - name: Upload assets to the release (server)
         uses: ./.github/actions/release-upload
         with:
-          input: ./Bin/Release/OakwoodServer.exe
+          input: ./Bin/Production/OakwoodServer.exe
           output: oakwood-server-v{v}-win32.exe
         env:
           GITHUB_TAG: ${{ github.ref }}
