@@ -17,7 +17,7 @@ class Bumper extends Plugin {
 
         return data[0]
             .replace('#define OAK_VERSION', '')
-            .replace(/\"/, '')
+            .replace(/\"/gi, '')
             .trim()
     }
 
