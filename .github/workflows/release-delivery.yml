@@ -88,7 +88,7 @@ jobs:
       - name: Upload assets to the release (server)
         uses: ./.github/actions/release-upload
         with:
-          path: ./Bin/Release/OakwoodServer
+          input: ./Bin/Release/OakwoodServer
           output: oakwood-server-v{v}-mac64
         env:
           GITHUB_TAG: ${{ github.ref }}

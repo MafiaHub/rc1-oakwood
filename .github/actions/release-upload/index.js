@@ -10888,6 +10888,8 @@ async function main() {
             type = 'application/zip'
         }
 
+        console.log({ tag, input, output, owner, repo, type })
+
         const fileData = fs.readFileSync(input)
 
         await octokit.repos.uploadReleaseAsset({
