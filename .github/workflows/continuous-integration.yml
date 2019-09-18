@@ -1,9 +1,9 @@
 name: continuous-integration
 on:
   push:
-    paths:
-      - 'Code/*'
-      - 'Vendors/*'
+    # paths:
+    #   - 'Code/*'
+    #   - 'Vendors/*'
 
 jobs:
   build-win:
