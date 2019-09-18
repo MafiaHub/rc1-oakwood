@@ -3,8 +3,48 @@ on:
   create:
     tags:
        - '*'
-
 jobs:
-  test:
+  deploy-win:
+    name: Deploy Windows
+    runs-on: windows-latest
     steps:
-      - run: echo "hello world"
+      - uses: actions/checkout@v1
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Run build on windows
+        run: cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v142"
+
+  deploy-lin:
+    name: Deploy Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install deps
+        run: sudo apt install -y libnanomsg-dev
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Run build
+        run: cd Build && config=release make
+
+  deploy-mac:
+    name: Deploy macOS
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+
+      - name: Install deps
+        run: brew install nanomsg
+
+      - name: Configure the build system
+        run: ./premake.sh.bat
+
+      - name: Run build
+        run: cd Build && config=release make
