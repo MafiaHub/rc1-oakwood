@@ -16,6 +16,32 @@ jobs:
       - name: Run build on windows
         run: cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v142"
 
+      - name: Combine client assets
+        run: cd Scripts && "ship_client.bat"
+
+      - name: Compress client assets
+        run: cd Shipping && 7z a -tzip Client.zip Client
+
+      - name: Upload assets to the release (client)
+        uses: ./.github/actions/release-upload
+        with:
+          input: ./Shipping/Client.zip
+          output: oakwood-client-v{v}-win32.zip
+        env:
+          GITHUB_TAG: ${{ GITHUB_REF }}
+          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload assets to the release (server)
+        uses: ./.github/actions/release-upload
+        with:
+          input: ./Bin/Release/OakwoodServer.exe
+          output: oakwood-server-v{v}-win32.exe
+        env:
+          GITHUB_TAG: ${{ GITHUB_REF }}
+          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   deploy-lin:
     name: Deploy Linux
     runs-on: ubuntu-latest
@@ -30,6 +56,16 @@ jobs:
 
       - name: Run build
         run: cd Build && config=release make
+
+      - name: Upload assets to the release (server)
+        uses: ./.github/actions/release-upload
+        with:
+          input: ./Bin/Release/OakwoodServer
+          output: oakwood-server-v{v}-lin64
+        env:
+          GITHUB_TAG: ${{ GITHUB_REF }}
+          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-mac:
     name: Deploy macOS
@@ -48,3 +84,13 @@ jobs:
 
       - name: Run build
         run: cd Build && config=release make
+
+      - name: Upload assets to the release (server)
+        uses: ./.github/actions/release-upload
+        with:
+          path: ./Bin/Release/OakwoodServer
+          output: oakwood-server-v{v}-mac64
+        env:
+          GITHUB_TAG: ${{ GITHUB_REF }}
+          GITHUB_REPO: ${{ GITHUB_REPOSITORY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

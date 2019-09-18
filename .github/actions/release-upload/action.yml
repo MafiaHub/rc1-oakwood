@@ -1,0 +1,12 @@
+name: release-upload
+description: 'Upload asset to the release'
+inputs:
+  input:
+    description: 'what folder/file'
+    required: true
+  output:
+    description: 'how to name it'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'
