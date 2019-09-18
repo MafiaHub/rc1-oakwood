@@ -1,9 +1,9 @@
 name: continuous-integration
 on:
   push:
-    paths:
-      - 'Code/*'
-      - 'Vendors/*'
+    # paths:
+    #   - 'Code/*'
+    #   - 'Vendors/*'
 
 jobs:
   build-win:
@@ -16,7 +16,10 @@ jobs:
         run: ./premake.sh.bat
 
       - name: Run build on windows
-        run: 'cd Build && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" && msbuild Oakwood.sln /p:Configuration="Production" /p:PlatformToolset="v142"'
+        run:
+          - cd Build
+          - C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat
+          - msbuild Oakwood.sln /p:Configuration='Production' /p:PlatformToolset='v142'
 
       - uses: ./.github/actions/discord-notification
         if: always()
