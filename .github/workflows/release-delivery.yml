@@ -1,0 +1,10 @@
+name: release-delivery
+on:
+  create:
+    tags:
+       - '*'
+
+jobs:
+  test:
+    steps:
+      - run: echo "hello world"
