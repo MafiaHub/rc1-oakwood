@@ -10880,6 +10880,8 @@ async function main() {
         const input     = core.getInput('input')
         const output    = core.getInput('output')
 
+        console.log(GITHUB_TAG, GITHUB_REF, GITHUB_REPO)
+
         const [owner, repo] = GITHUB_REPO.split('/')
         const release = await octokit.repos.getReleaseByTag({ owner, repo, tag: GIHUB_TAG })
 
