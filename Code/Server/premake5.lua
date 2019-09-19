@@ -13,6 +13,7 @@ project "Server"
         "../../Vendors/http/mongoose.c",
         "../../Vendors/http/mongoose.h",
         "../../Vendors/http/mongoose.h",
+        "../../Vendors/semver/semver.c",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../../Vendors/librg/*.h",
@@ -24,6 +25,7 @@ project "Server"
     includedirs {
         "../Shared",
         "../../Vendors/librg",
+        "../../Vendors/semver",
         "../../Vendors",
         "../../Vendors/nanomsg/include",
     }

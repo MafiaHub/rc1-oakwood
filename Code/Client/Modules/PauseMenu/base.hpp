@@ -37,8 +37,8 @@ namespace pausemenu {
                 if (ImGui::BeginTabItem("Info")) {
                     if (clientActiveState == ClientState_Connected) {
                         ImGui::Text(R"(Welcome to Mafia: Oakwood, you are playing a '%s' version of this modification. 
-Please report all your issues on our discord server.)", oak_build_channel[OAK_BUILD_CHANNEL]);
-                        ImGui::Text("Current build: %s (%x)", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
+Please report all your issues on our discord server.)", OAK_BUILD_TYPE);
+                        ImGui::Text("Current build: v%s", OAK_VERSION);
                         ImGui::Text("Current build date: %s %s", OAK_BUILD_DATE, OAK_BUILD_TIME);
                         ImGui::Text("Current server IP: %s", GlobalConfig.server_address);
                     } else {

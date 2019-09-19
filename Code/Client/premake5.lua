@@ -11,11 +11,16 @@ project "Client"
         "**.hpp",
         "**.cpp",
         "**.rc",
+        "../../Vendors/semver/semver.c",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../Shared/*.hpp",
         "../Shared/*.cpp",
         "**.manifest"
+    }
+
+    includedirs {
+        "../../Vendors/semver",
     }
 
     flags "NoManifest"

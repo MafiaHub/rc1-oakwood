@@ -20,11 +20,12 @@ void oak_ev_player_requested(librg_event *evnt) {
     char hostname[128] = { 0 };
     enet_address_get_host_ip(&peer_ip, hostname, 128);
 
-    auto build_magic = librg_data_ru64(evnt->data);
-    auto build_ver = librg_data_ru64(evnt->data);
+    auto build_major = librg_data_ru8(evnt->data);
+    auto build_minor = librg_data_ru8(evnt->data);
+    auto build_patch = librg_data_ru8(evnt->data);
 
-    if (build_magic != OAK_BUILD_MAGIC || build_ver != OAK_BUILD_VERSION) {
-        oak_log("Connection for '%s' has been rejected!\nOur magic: %X\tTheir magic: %X\nOur version: %X\tTheir version: %X\n", hostname, OAK_BUILD_MAGIC, build_magic, OAK_BUILD_VERSION, build_ver);
+    if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR) {
+        oak_log("Connection for '%s' has been rejected!\nOur version: %s\tTheir version: %d.%d.%d\n", hostname, OAK_VERSION, build_major, build_minor, build_patch);
         oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;
     }

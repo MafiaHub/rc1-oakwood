@@ -155,7 +155,7 @@ namespace hwid {
 
     std::wstring getRawID() {
         auto moboID = getMoboID();
-        auto magic = std::to_wstring(OAK_BUILD_MAGIC);
+        auto magic = std::to_wstring((u64)0xDEADC0DEDEADBEEF);
 
         return (moboID + magic);
     }

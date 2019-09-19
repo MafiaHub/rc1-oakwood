@@ -1,6 +1,6 @@
 /* INFO RESPONSE */
 
-#define OAK_ENDP_INFO_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%llx\",\n\"mapname\": \"%s\"\n}"
+#define OAK_ENDP_INFO_FORMAT "{\n\"host\": \"%s\",\n\"name\": \"%s\",\n\"players\": %d,\n\"maxPlayers\": %d,\n\"pass\": %s,\n\"port\": \"%d\",\n\"version\": \"%s\",\n\"mapname\": \"%s\"\n}"
 
 int oak_endp_payload_info(char *buf) {
     return sprintf(buf, OAK_ENDP_INFO_FORMAT,
@@ -10,7 +10,7 @@ int oak_endp_payload_info(char *buf) {
         (int)GlobalConfig.max_players,
         (GlobalConfig.password.size()) ? "true" : "false",
         (int)GlobalConfig.port,
-        OAK_BUILD_VERSION,
+        OAK_VERSION,
         GlobalConfig.mapname.c_str()
     );
 }

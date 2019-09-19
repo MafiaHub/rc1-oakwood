@@ -11,7 +11,7 @@
 #define LIB_INTER_IMPLEMENTATION
 #include "librg/lib_inter.h"
 
-#include "version.hpp"
+#include "version.h"
 #include "multiplayer.hpp"
 
 /*
@@ -129,6 +129,8 @@
 
 ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath)
 {
+    semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
+
     GlobalConfig.localpath = localpath;
     GlobalConfig.gamepath = gamepath;
 

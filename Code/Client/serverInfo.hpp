@@ -20,8 +20,8 @@ struct ServerData
     std::string max_players;
     std::string current_players;
     std::string mapname;
+    std::string version;
     int port;
-    u64 version;
     bool valid;
     bool passworded;
 };
@@ -148,15 +148,16 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     ServerInfo::ServerData new_server_data;
 
     server_property = zpl_json_find(server_node, "version", false);
-    u64 ver = 0;
-    sscanf(server_property->string, "%llx", &ver);
+    new_server_data.version = std::string(server_property->string);
 
-    if (ver != OAK_BUILD_VERSION) {
-        // modules::infobox::displayError("The client's version is incompatible with the server!");
+    semver_t ver = {0};
+    int serr = semver_parse(new_server_data.version.c_str(), &ver);
+    semver_free(&ver); // clean up before return (make sure to handle in case of metadata/prerelease)
+
+    if (!serr && (ver.major != OAK_VERSION_MAJOR || ver.minor != OAK_VERSION_MINOR)) {
         return invalid_data;
     }
 
-    new_server_data.version = ver;
     new_server_data.valid = true;
 
     server_property = zpl_json_find(server_node, "name", false);
@@ -210,11 +211,11 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
     }
 
     // Version mismatch, let the user know!
-    if (server.version != OAK_BUILD_VERSION)
-    {
-        // modules::infobox::displayError("The client's version is incompatible with the server!");
-        return;
-    }
+    // if (server.version != OAK_BUILD_VERSION)
+    // {
+    //     // modules::infobox::displayError("The client's version is incompatible with the server!");
+    //     return;
+    // }
 
     if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.reconnecting) {
         modules::passwordPrompt::init(server);

@@ -2,14 +2,13 @@
 * OAKWOOD MULTIPLAYER - SERVER
 * (C) 2019 Oakwood Team. All Rights Reserved.
 */
+#define OAKWOOD_SERVER 1
 
 #define ZPL_IMPLEMENTATION
 #include "librg/zpl.h"
 
-#include "version.hpp"
+#include "version.h"
 #include "multiplayer.hpp"
-
-#define OAKWOOD_SERVER 1
 
 /*
 * Networking library
@@ -119,13 +118,15 @@ Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88 
 
 int main(int argc, char **argv)
 {
+    semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
+
     oak_log_init();
 
     oak_console_init();
     oak_console_printf("================================\n");
     oak_console_printf(banner_text);
-    oak_console_printf("Build version: %s (%x)\n", OAK_BUILD_VERSION_STR, OAK_BUILD_VERSION);
-    oak_console_printf("Build channel: %s\n", oak_build_channel[OAK_BUILD_CHANNEL]);
+    oak_console_printf("Build version: v%s\n", OAK_VERSION);
+    oak_console_printf("Build channel: %s\n", OAK_BUILD_TYPE);
     oak_console_printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
     oak_console_printf("================================\n");
     oak_cli_init(argc, argv);
