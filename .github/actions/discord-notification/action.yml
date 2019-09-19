@@ -1,12 +1,15 @@
 name: discord-notification
 description: 'Push webhook with data to the discord'
 inputs:
+  type:
+    description: 'what type'
+    required: true
   platform:
     description: 'what platform'
-    required: true
+    required: false
   succeeded:
     description: 'result'
-    required: true
+    required: false
 runs:
   using: 'node12'
   main: 'index.js'
