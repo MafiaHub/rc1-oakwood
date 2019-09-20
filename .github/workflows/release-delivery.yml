@@ -111,15 +111,19 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # notify:
-  #   name: Send announcement
-  #   needs: [deploy-mac, deploy-lin, deploy-win]
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: ./.github/actions/discord-notification
-  #       if: success()
-  #       with:
-  #         type: release
-  #       env:
-  #         DISCORD_WEBHOOK_CHANNEL: 518087246650540043
-  #         DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+  notify:
+    name: Send announcement
+    needs: [deploy-mac, deploy-lin, deploy-win]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Send notification
+        uses: ./.github/actions/discord-notification
+        if: success()
+        with:
+          type: release
+        env:
+          DISCORD_WEBHOOK_CHANNEL: 518087246650540043
+          DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+      - name: Bust the cache
+        run: curl https://releases.mafiahub.dev/api?cache=bust
