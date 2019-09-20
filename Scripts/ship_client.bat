@@ -26,7 +26,8 @@ echo f|xcopy %pr%\Files\config\Client.json Client\config\Client.json
 mkdir Client\bin
 echo f|xcopy %pr%\Files\bin\*.* Client\bin\*.*
 
-echo f|xcopy /e %pr%\Files\launcher\*.* Client\*.*
+rem We provide launcher separately now.
+rem echo f|xcopy /e %pr%\Files\launcher\*.* Client\*.*
 
 mkdir Client\files
 echo f|xcopy %pr%\Bin\%build%\files\*.* Client\files\
