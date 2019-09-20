@@ -22,6 +22,22 @@ jobs:
       - name: Compress client assets
         run: cd Shipping && 7z a -tzip Client.zip Client
 
+      - name: Combine launcher assets
+        run: cd Scripts && "ship_launcher.bat"
+
+      - name: Compress launcher assets
+        run: cd Shipping && 7z a -tzip Launcher.zip Launcher
+
+      - name: Upload assets to the release (launcher)
+        uses: ./.github/actions/release-upload
+        with:
+          input: ./Shipping/Launcher.zip
+          output: oakwood-launcher.zip
+        env:
+          GITHUB_TAG: ${{ github.ref }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload assets to the release (client)
         uses: ./.github/actions/release-upload
         with:
