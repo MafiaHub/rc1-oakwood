@@ -111,6 +111,13 @@ inline auto entitycreate(librg_event* evnt) -> void {
     player->is_visible_on_map = librg_data_ru8(evnt->data);
     player->has_visible_nameplate = librg_data_ru8(evnt->data);
 
+
+    //TODO(DavoSK): Rework respawn/spawn
+    if (player->ped != nullptr) {
+        despawn(player->ped);
+    }
+
+
     auto new_ped = spawn(
         player->position,
         player->rotation,
@@ -122,14 +129,10 @@ inline auto entitycreate(librg_event* evnt) -> void {
         -1,
         player->vehicle_id != -1);
 
-    //TODO(DavoSK): Rework respawn/spawn
-    if (player->ped != nullptr)
-        despawn(player->ped);
 
     player->ped = new_ped;
 
     evnt->entity->flags |= ENTITY_INTERPOLATED;
-
     evnt->entity->user_data = player;
 }
 
@@ -249,6 +252,7 @@ inline auto entityupdate(librg_event* evnt) -> void {
 
 inline auto entityremove(librg_event* evnt) -> void {
     auto player = (mafia_player *)evnt->entity->user_data;
+
     if (player && player->ped) {
         evnt->entity->flags &= ~ENTITY_INTERPOLATED;
 

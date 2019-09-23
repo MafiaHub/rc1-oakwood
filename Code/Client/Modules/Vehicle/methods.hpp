@@ -109,7 +109,6 @@ MafiaSDK::C_Car* spawn(zpl_vec3 position,
 }
 
 auto despawn(mafia_vehicle* vehicle) -> void {
-    printf("[debug] despawn -> Intern_FromCar\n");
 
     if(vehicle && vehicle->car) {
         for (int i = 0; i < 4; i++) {   

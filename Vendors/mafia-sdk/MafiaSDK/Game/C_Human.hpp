@@ -219,7 +219,6 @@ namespace MafiaSDK
 
         void Intern_FromCar(void)
         {
-            printf("Vyjebalo niekoho z auta\n");
             unsigned long funcAddress = C_Human_Enum::FunctionsAddresses::Intern_FromCar;
             I3D_Frame* vehicleFrame  = *(I3D_Frame**)((unsigned long)this + 0x68);
             

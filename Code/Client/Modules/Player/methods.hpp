@@ -10,6 +10,7 @@ auto spawn(zpl_vec3 position,
                   int expectedWeaponId,
                   bool is_in_car) -> MafiaSDK::C_Player *{
 
+
     S_vector default_scale = { 1.0f, 1.0f, 1.0f };
     S_vector default_pos = EXPAND_VEC(position);
 
@@ -76,7 +77,6 @@ auto spawn(zpl_vec3 position,
             new_ped->G_Inventory_AddItem(*item);
         }
     }
-
     //TODO(DavoSK): Make it more fancy !
     //Select right weapon
     modules::player::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);

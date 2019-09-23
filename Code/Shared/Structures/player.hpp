@@ -35,9 +35,6 @@ struct mafia_player : public oak_object
     }
 
 	void reset() {
-#ifdef MAFIA_SDK_IMPLEMENTATION
-        zpl_printf("calling reset form constructor\n");
-#endif
 
 		streamer_entity_id = -1;
 		vehicle_id = -1;
