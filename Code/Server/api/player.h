@@ -116,6 +116,12 @@ int oak_player_kill(oak_player id) {
 
     if (player->vehicle_id != -1) {
         auto vehicle_ent = librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id);
+
+        if (!vehicle_ent) {
+            player->vehicle_id = -1;
+            return -2;
+        }
+
         auto vehicle = oak_entity_vehicle_get_from_native(vehicle_ent);
 
         if (vehicle) {
