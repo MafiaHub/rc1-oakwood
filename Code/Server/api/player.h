@@ -65,8 +65,8 @@ int oak_player_spawn(oak_player id, oak_vec3 position, float heading) {
     auto player = oak_entity_player_get(id);
     auto entity = player->native_entity;
 
-    /* use entity var as temp storage */
-    entity->rotation = ComputeDirVector(heading);
+    /* use player var as temp storage */
+    player->rotation = ComputeDirVector(heading);
 
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
