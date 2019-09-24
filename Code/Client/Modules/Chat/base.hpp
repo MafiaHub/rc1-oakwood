@@ -25,8 +25,8 @@ namespace chat {
     input::KeyToggle key_chat_caret_next(VK_RIGHT);
 
     /* history */
-    static char add_text[4096] = { 0 };
-    static char backup_text[4096] = { 0 };
+    static char add_text[OAK_MAX_CHAT] = { 0 };
+    static char backup_text[OAK_MAX_CHAT] = { 0 };
 
     /* methods */
     inline void add_debug(const std::string& msg) {
