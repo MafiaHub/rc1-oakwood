@@ -23,25 +23,29 @@ DWORD __fastcall C_game__NewShoot(void* _this, DWORD edx, MafiaSDK::C_Actor* arg
     return game_shoot_original(_this, arg1, pos, dir, arg4, arg5, arg6, arg7);
 }*/
 
-
 //----------------------------------------------
-//C_Human::PoseSetPoseAimed() && C_Human::PoseSetPoseNormal
+//C_Human::PoseSetPoseNormal() 
 //----------------------------------------------
-auto __fastcall PoseSetPoseAimed(MafiaSDK::C_Human* _this, S_vector pose) -> int {
+C_Human_PoseSetPose_t human_set_pose_normal_original = nullptr;
+auto __fastcall C_Human_PoseSetPoseNormal(MafiaSDK::C_Human* _this, S_vector pose) -> int {
 
-	if(_this == get_local_ped()) 
-		local_player.pose = EXPAND_VEC(pose);
-
-	_this->PoseSetPoseAimed(pose);
-	return 0;
+    if (_this == modules::player::get_local_ped()) {
+        local_player.pose = EXPAND_VEC(pose);
+        return human_set_pose_normal_original(_this, pose);
+    }
+    return 0;
 }
 
-auto __fastcall PoseSetPoseNormal(MafiaSDK::C_Human* _this, S_vector pose) -> int {
+//----------------------------------------------
+//C_Human::PoseSetPoseAimed() 
+//----------------------------------------------
+C_Human_PoseSetPose_t human_set_pose_aimed_original = nullptr;
+auto __fastcall C_Human_PoseSetPoseAimed(MafiaSDK::C_Human* _this, S_vector pose) -> int {
 
-	if(_this == get_local_ped())
-		local_player.pose = EXPAND_VEC(pose);
-
-	_this->PoseSetPoseNormal(pose);
+    if (_this == modules::player::get_local_ped()) {
+        local_player.pose = EXPAND_VEC(pose);
+        return human_set_pose_aimed_original(_this, pose);
+    }
 	return 0;
 }
 
@@ -353,9 +357,6 @@ inline auto init() {
     //G_Indicators blips rendering hook 
     MemoryPatcher::InstallJmpHook(0x005FFF77, (DWORD)&PlayerCursorHook);
 
-    //Human
-    MemoryPatcher::InstallCallHook(0x00593D46, (DWORD)&PoseSetPoseAimed);
-    MemoryPatcher::InstallCallHook(0x00593D65, (DWORD)&PoseSetPoseNormal); 
     MemoryPatcher::InstallJmpHook(0x00583A56, (DWORD)&ThrowGrenade);
     MemoryPatcher::InstallJmpHook(0x005A543B, (DWORD)&PlayerOnSink);
     MemoryPatcher::InstallJmpHook(0x0057BAA5, (DWORD)&PlayerSinkTwo);
@@ -400,5 +401,13 @@ inline auto init() {
 
     human_do_throw_cocot_from_car_original = reinterpret_cast<C_Human_Do_ThrowCocotFromCar_t>(
         DetourFunction((PBYTE)0x00587D70, (PBYTE)&C_Human_Do_ThrowCocotFromCar)
+    );
+
+    human_set_pose_normal_original = reinterpret_cast<C_Human_PoseSetPose_t>(
+        DetourFunction((PBYTE)0x00579630, (PBYTE)& C_Human_PoseSetPoseNormal)
+    );
+
+    human_set_pose_aimed_original = reinterpret_cast<C_Human_PoseSetPose_t>(
+        DetourFunction((PBYTE)0x00579EA0, (PBYTE)& C_Human_PoseSetPoseAimed)
     );
 }

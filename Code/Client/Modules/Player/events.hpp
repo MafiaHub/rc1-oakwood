@@ -1,5 +1,8 @@
 #pragma once
 
+extern C_Human_PoseSetPose_t human_set_pose_normal_original;
+extern C_Human_PoseSetPose_t human_set_pose_aimed_original;
+
 // =======================================================================//
 // !
 // ! Position Interpolation
@@ -71,9 +74,9 @@ void target_pose_update(mafia_player* player) {
     S_vector mafia_pose = EXPAND_VEC(new_pose);
 
     if (player->is_aiming)
-        player->ped->PoseSetPoseAimed(mafia_pose);
+        human_set_pose_aimed_original(player->ped, mafia_pose);
     else
-        player->ped->PoseSetPoseNormal(mafia_pose);
+        human_set_pose_normal_original(player->ped, mafia_pose);
 }
 
 void target_pose_set(mafia_player* player, zpl_vec3 target_pose) {
