@@ -59,15 +59,18 @@ int oak_player_invalid(oak_player id) {
  * @param  id
  * @return
  */
-int oak_player_spawn(oak_player id) {
+int oak_player_spawn(oak_player id, oak_vec3 position, float heading) {
     if (oak_player_invalid(id)) return -1;
 
     auto player = oak_entity_player_get(id);
     auto entity = player->native_entity;
 
+    /* use player var as temp storage */
+    player->rotation = ComputeDirVector(heading);
+
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
-        librg_data_wptr(&data, &entity->position, sizeof(zpl_vec3));
+        librg_data_wptr(&data, &position, sizeof(oak_vec3));
         librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
         librg_data_wptr(&data, player->model, sizeof(char) * OAK_PLAYER_MODEL_SIZE);
         librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
@@ -198,9 +201,6 @@ int oak_player_health_set(oak_player id, float health) {
 int oak_player_position_set(oak_player id, oak_vec3 position) {
     if (oak_player_invalid(id)) return -1;
     auto entity = oak_entity_player_get(id);
-
-    // TODO: fix bug with interpolation on client side
-    entity->native_entity->position = EXPAND_VEC(position);
 
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SET_POS, data, {
         librg_data_went(&data, entity->native_id);

@@ -67,7 +67,7 @@ OAK_API oak_array(oak_door) oak_door_list(oak_ref(int));
 
 /* PLAYERS */
 
-OAK_API int oak_player_spawn(oak_player);
+OAK_API int oak_player_spawn(oak_player, oak_vec3, float);
 OAK_API int oak_player_despawn(oak_player);
 
 OAK_API int oak_player_invalid(oak_player);
