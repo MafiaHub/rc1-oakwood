@@ -6,7 +6,11 @@
   "scripts": {
     "release": "release-it",
     "release-patch": "release-it patch --ci",
-    "release-minor": "release-it minor --ci"
+    "release-minor": "release-it minor --ci",
+    "release-major": "release-it major --ci",
+    "pre-patch": "release-it patch --ci --preRelease=test",
+    "pre-minor": "release-it minor --ci --preRelease=test",
+    "pre-major": "release-it major --ci --preRelease=test"
   },
   "repository": {
     "type": "git",
