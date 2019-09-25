@@ -23,8 +23,9 @@ void oak_ev_player_requested(librg_event *evnt) {
     auto build_major = librg_data_ru8(evnt->data);
     auto build_minor = librg_data_ru8(evnt->data);
     auto build_patch = librg_data_ru8(evnt->data);
+    auto build_channel = librg_data_ru8(evnt->data);
 
-    if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR) {
+    if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR || build_channel != OAK_BUILD_CHANNEL) {
         oak_log("Connection for '%s' has been rejected!\nOur version: %s\tTheir version: %d.%d.%d\n", hostname, OAK_VERSION, build_major, build_minor, build_patch);
         oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;

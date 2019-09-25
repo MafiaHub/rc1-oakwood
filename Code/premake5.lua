@@ -22,11 +22,12 @@ workspace "Oakwood"
          architecture "x86_64"
 
     filter "configurations:Debug"
-        defines { "DEBUG", "_DEBUG", "GC_DBG" }
+        defines { "DEBUG", "_DEBUG", "GC_DBG", "OAK_BUILD_CHANNEL=1" }
         optimize "Off"
         runtime "Debug"
 
     filter "configurations:Release or Production"
+        defines { "OAK_BUILD_CHANNEL=3" }
         optimize "Off" -- Optimization is disabled due to client issues
 		runtime "Release"
 

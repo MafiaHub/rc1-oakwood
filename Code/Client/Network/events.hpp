@@ -212,6 +212,7 @@ auto mod_add_network_events()
         librg_data_wu8(evnt->data, OAK_VERSION_MAJOR);
         librg_data_wu8(evnt->data, OAK_VERSION_MINOR);
         librg_data_wu8(evnt->data, OAK_VERSION_PATCH);
+        librg_data_wu8(evnt->data, OAK_BUILD_CHANNEL);
         librg_data_wu64(evnt->data, hwid::getID());
         librg_data_wptr(evnt->data, nickname, sizeof(char) * 32);
 
