@@ -16,13 +16,13 @@ struct tmp_weapon {
 tmp_weapon colt = { "2c1911.i3d",{ 9, 50, 50, 0 } };
 tmp_weapon tommy = { "2tommy.i3d",{ 10, 50, 50, 0 } };
 tmp_weapon grenade = { "2grenade.i3d",{ 15, 1, 1, 0 } };
-//weapon palka = { "2palka.i3d",{ 4, 1, 1, 0 } };
+tmp_weapon palka = { "2palka.i3d",{ 4, 1, 1, 0 } };
 
 tmp_weapon *tmp_weaponlist[] = {
     &tommy,
     &colt,
-    &grenade
-  //  &palka
+    &grenade,
+    &palka
 };
 
 int oak_temp_weapons_spawn(oak_player id) {

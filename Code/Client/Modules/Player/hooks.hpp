@@ -171,15 +171,23 @@ __declspec(naked) void ThrowGrenade() {
 //----------------------------------------------
 //CHuman::DoSoot(const S_Vector) custom jmp hook
 //----------------------------------------------
-typedef bool(__thiscall* C_Human_Do_Shoot_t)(void* _this, BOOL do_shoot, S_vector* pos);
 C_Human_Do_Shoot_t human_do_shoot_original = nullptr;
-
 BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, S_vector* pos) {
 
-	if (do_shoot && pos && _this == modules::player::get_local_ped()) {
-        modules::player::shoot(*pos);
+	if (_this == modules::player::get_local_ped()) {
+        //modules::player::shoot(*pos);
+        local_player.is_shooting = do_shoot;
+        local_player.aim_vector = { 0.0, 0.0f, 0.0f };
+
+        if (pos) {
+            S_vector vec = *pos;
+            local_player.aim_vector = EXPAND_VEC(vec);
+        }
+
+        return human_do_shoot_original(_this, do_shoot, pos);
 	}
-	return human_do_shoot_original(_this, do_shoot, pos);
+ 
+    return 0;
 }
 
 //----------------------

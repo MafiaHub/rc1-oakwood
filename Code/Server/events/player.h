@@ -146,6 +146,8 @@ void oak_ev_player_update(librg_event *e) {
     librg_data_wptr(e->data, &player->pose, sizeof(zpl_vec3));
     librg_data_wf32(e->data, player->health);
     librg_data_wu8(e->data, player->animation_state);
+    librg_data_wu8(e->data, player->is_shooting);
+    librg_data_wptr(e->data, &player->aim_vector, sizeof(zpl_vec3));
     librg_data_wu8(e->data, player->is_crouching);
     librg_data_wu8(e->data, player->is_aiming);
     librg_data_wu32(e->data, player->aiming_time);
@@ -172,6 +174,9 @@ void oak_ev_player_client_update(librg_event *e) {
     librg_data_rptr(e->data, &player->pose, sizeof(zpl_vec3));
     player->health = librg_data_rf32(e->data);
     player->animation_state = librg_data_ru8(e->data);
+    player->is_shooting = librg_data_ru8(e->data);
+    librg_data_rptr(e->data, &player->aim_vector, sizeof(zpl_vec3));
+
     player->is_crouching = librg_data_ru8(e->data);
     player->is_aiming = librg_data_ru8(e->data);
     player->aim = librg_data_rf32(e->data);
