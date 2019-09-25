@@ -72,6 +72,9 @@ struct data
     zpl_vec3 pose;
     bool dead;
 
+    u8 is_shooting;
+    zpl_vec3 aim_vector;
+
     // Spectator
     i32 spec_id;
     i32 last_spec_id;

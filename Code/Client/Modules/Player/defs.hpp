@@ -1,5 +1,6 @@
 #pragma once
 typedef bool(__thiscall* C_Human_PoseSetPose_t)(MafiaSDK::C_Human* _this, S_vector pose);
+typedef bool(__thiscall* C_Human_Do_Shoot_t)(void* _this, BOOL do_shoot, S_vector* pos);
 
 auto spawn(zpl_vec3 position, 
                   zpl_vec3 rotation,

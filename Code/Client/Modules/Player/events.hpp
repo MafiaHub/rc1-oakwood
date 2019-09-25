@@ -2,6 +2,7 @@
 
 extern C_Human_PoseSetPose_t human_set_pose_normal_original;
 extern C_Human_PoseSetPose_t human_set_pose_aimed_original;
+extern C_Human_Do_Shoot_t human_do_shoot_original;
 
 // =======================================================================//
 // !
@@ -147,6 +148,9 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
     *(BYTE*)((DWORD)ped->ped + 0x4A8) = 50;
     *(float*)((DWORD)ped->ped + 0x5F4) = ped->aim;
 
+    S_vector aim_vector = EXPAND_VEC(ped->aim_vector);
+    human_do_shoot_original(ped->ped, ped->is_shooting, ped->is_shooting ? &aim_vector : nullptr);
+
     auto player_int = ped->ped->GetInterface();
     if (player_int->playersCar || player_int->carLeavingOrEntering || ped->clientside_flags & CLIENTSIDE_PLAYER_WAITING_FOR_VEH)
         return;
@@ -173,12 +177,16 @@ inline auto game_tick(mafia_player* ped, f64 delta) -> void {
 inline auto entityupdate(librg_event* evnt) -> void {
 
     //NOTE(DavoSK): We need to read data before we can skip event !
-    zpl_vec3 recv_pose, recv_rotation, recv_position;
+    zpl_vec3 recv_pose, recv_rotation, recv_position, recv_aim_vec;
     librg_data_rptr(evnt->data, &recv_position, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_rotation, sizeof(zpl_vec3));
     librg_data_rptr(evnt->data, &recv_pose, sizeof(zpl_vec3));
     auto health = librg_data_rf32(evnt->data);
+    
     u8 animation_state = librg_data_ru8(evnt->data);
+    u8 is_shooting = librg_data_ru8(evnt->data);
+    librg_data_rptr(evnt->data, &recv_aim_vec, sizeof(zpl_vec3));
+
     u8 is_crouching = librg_data_ru8(evnt->data);
     u8 is_aiming = librg_data_ru8(evnt->data);
     u32 aiming_time = librg_data_ru32(evnt->data);
@@ -220,7 +228,9 @@ inline auto entityupdate(librg_event* evnt) -> void {
     player->aiming_time         = aiming_time;
     player->aim                 = aim;
     player->ping                = ping;
-
+    player->is_shooting         = is_shooting;
+    player->aim_vector          = recv_aim_vec;
+    
     player->interp.car_shooting.start = *(float*)((DWORD)player_int + 0x5F4);
     player->interp.car_shooting.target = aim;
     player->interp.car_shooting.alpha = 0.0f;
@@ -240,6 +250,14 @@ inline auto entityupdate(librg_event* evnt) -> void {
         player_int->isAiming	= player->is_aiming;
         *(DWORD*)((DWORD)player_int + 0xAD4) = player->aiming_time;
     }
+
+    //*(BYTE*)((DWORD)player_int + 0x21C) = player->throwing_grenade;
+   /* if (player->throwing_grenade) {
+        *(BYTE*)((DWORD)player_int + 0x21C) = 0;
+        *(BYTE*)((DWORD)player_int + 0x21C) = 0;
+        //printf("player cooking: %d\n", player->throwing_grenade);
+        //player->ped->Do_Shoot(throwing_grenade, {});
+    }*/
 
     if (evnt->entity->id != local_player.entity_id) {
         player->health = health;
@@ -321,6 +339,10 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     player->animation_state = player_int->humanObject.animStateLocal;
     player->is_crouching	= player_int->humanObject.isDucking;
     player->is_aiming		= player_int->humanObject.isAiming;
+
+    player->is_shooting     = local_player.is_shooting;
+    player->aim_vector      = local_player.aim_vector;
+
     player->aiming_time		= *(DWORD*)((DWORD)player_int + 0xAD4);
     player->aim             = *(float*)((DWORD)player_int + 0x5F4);
 
@@ -329,6 +351,9 @@ inline auto clientstreamer_update(librg_event* evnt) -> void {
     librg_data_wptr(evnt->data, &player->pose, sizeof(zpl_vec3));
     librg_data_wf32(evnt->data, player->health);
     librg_data_wu8(evnt->data, player->animation_state);
+    librg_data_wu8(evnt->data, player->is_shooting);
+    librg_data_wptr(evnt->data, &player->aim_vector, sizeof(zpl_vec3));
+
     librg_data_wu8(evnt->data, player->is_crouching);
     librg_data_wu8(evnt->data, player->is_aiming);
     librg_data_wf32(evnt->data, player->aim);

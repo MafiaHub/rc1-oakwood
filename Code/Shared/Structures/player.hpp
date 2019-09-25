@@ -46,6 +46,8 @@ struct mafia_player : public oak_object
         health = 200.0f;
         has_visible_nameplate = 1;
         current_weapon_id = 0;
+        is_shooting = 0;
+        aim_vector = { 0.0f, 0.0f, 0.0f };
 		strcpy(model, "Tommy.i3d");
 
 		for (size_t i = 0; i < 8; i++)
@@ -64,6 +66,8 @@ struct mafia_player : public oak_object
 	zpl_vec3 pose;
 	f32 health;
 	f32 aim;
+    u8 is_shooting;
+    zpl_vec3 aim_vector;
 	u8 animation_state;
 	u8 is_aiming;
 	u8 is_crouching;
