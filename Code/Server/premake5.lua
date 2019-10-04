@@ -58,6 +58,5 @@ project "Server"
         --    "libcurl",
             "nanomsg",
             "pthread",
-            "curses",
             "dl"
         }
