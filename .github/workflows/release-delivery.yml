@@ -124,6 +124,7 @@ jobs:
         if: success()
         with:
           type: release
+          tag: ${{ github.ref }}
         env:
           DISCORD_WEBHOOK_CHANNEL: "624466120719728640"
           DISCORD_WEBHOOK_TOKEN: ${{ secrets.DISCORD_WEBHOOK_TOKEN_ANNOUNCE }}

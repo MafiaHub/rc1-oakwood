@@ -50,4 +50,3 @@ project "Client"
 
     filter "configurations:Production"
         toolset "v141_xp" -- TODO: update to the future releases
-        defines { "OAK_BUILD_CHANNEL=3" }
