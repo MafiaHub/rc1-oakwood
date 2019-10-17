@@ -157,13 +157,29 @@ namespace hwid {
         auto moboID = getMoboID();
         auto magic = std::to_wstring((u64)0xDEADC0DEDEADBEEF);
 
-        return (moboID + magic);
+        WCHAR volumeName[MAX_PATH + 1] = { 0 };
+        WCHAR fileSystemName[MAX_PATH + 1] = { 0 };
+        DWORD serialNumber = 0;
+        DWORD maxComponentLen = 0;
+        DWORD fileSystemFlags = 0;
+
+        GetVolumeInformationW(
+            L"C:\\",
+            volumeName,
+            sizeof(volumeName),
+            &serialNumber,
+            &maxComponentLen,
+            &fileSystemFlags,
+            fileSystemName,
+            sizeof(fileSystemName));
+
+        return (moboID + magic + std::to_wstring(serialNumber));
     }
 
     u64 getID() {
         auto rawID = getRawID();
 
-        auto id = zpl_fnv64(rawID.c_str(), zpl_strlen((char *)rawID.c_str()));
+        auto id = zpl_crc64(rawID.c_str(), zpl_strlen((char *)rawID.c_str()));
 
         return id;
     }
