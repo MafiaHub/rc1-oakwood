@@ -93,7 +93,7 @@ void oak_ev_player_connected(librg_event *e) {
     zpl_mfree(temp);
     char ip[24] = {0};
     enet_address_get_host_ip(&e->peer->address, ip, 24);
-    oak_log("[info] player '%s'(%llu|%s) has been connected!\n", player->name, player->hwid, ip);
+    oak_log("[info] player '%s'(%llu from %s) has been connected!\n", player->name, player->hwid, ip);
 
     oak_bridge_event_player_connect(id);
     GlobalConfig.players++;
