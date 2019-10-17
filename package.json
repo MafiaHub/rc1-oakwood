@@ -1,6 +1,6 @@
 {
   "name": "oakwood",
-  "version": "1.24.1",
+  "version": "1.24.2",
   "description": "Mafia: Oakwood is a multi-player modification that extends the functionality of Mafia: The City of Lost Heaven  by providing a basis for custom scriptable gameplay mechanics available as standalone server module.  This modification provides the sync of many game elements such as of player, vehicle or combat mechanics.",
   "main": "index.js",
   "scripts": {
