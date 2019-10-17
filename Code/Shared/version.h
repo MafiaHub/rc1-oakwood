@@ -12,7 +12,7 @@ static const char *oak__build_channel[4] = {
 };
 
 #define OAK_NAME "Oakwood"
-#define OAK_VERSION "1.24.2"
+#define OAK_VERSION "1.24.3"
 
 #define OAK_VERSION_SEMVER oak__version
 #define OAK_VERSION_MAJOR oak__version.major
