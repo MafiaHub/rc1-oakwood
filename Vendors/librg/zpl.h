@@ -46,6 +46,7 @@ GitHub:
   https://github.com/zpl-c/zpl
 
 Version History:
+  9.8.6 - WIP: Handle inlined methods properly
   9.8.5 - Fix incorrect usage of EOF and opts dependency on JSON5 module's methods
   9.8.4 - Fix MSVC ZPL_NO_MATH_H code branch using incorrect methods internally
   9.8.3 - Fix MinGW GCC related issue with zpl_printf %lld format
@@ -530,6 +531,7 @@ _In_ int nCmdShow)
 #include <time.h>
 #include <string.h>
 #include <unistd.h>
+#include <stdio.h>
 
 #if !defined(ZPL_SYSTEM_ANDROID)
     #include <spawn.h>
@@ -5165,16 +5167,14 @@ ZPL_DEF void    zpl_platform_hide_window(zpl_platform *p);
 #pragma GCC diagnostic pop
 #endif
 
-#if defined(ZPL_IMPLEMENTATION) && !defined(ZPL_IMPLEMENTATION_DONE)
-#define ZPL_IMPLEMENTATION_DONE
+
 
 #if defined(__GCC__) || defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wattributes"
 #pragma GCC diagnostic ignored "-Wunused-value"
 #pragma GCC diagnostic ignored "-Wunused-function"
-#pragma GCC diagnostic ignored "-Wno-write-strings"
-#pragma GCC diagnostic ignored "-Wno-implicit-fallthrough"
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #pragma GCC diagnostic ignored "-Wmissing-braces"
@@ -5186,6 +5186,16 @@ ZPL_DEF void    zpl_platform_hide_window(zpl_platform *p);
 #pragma warning(disable : 4201)
 #pragma warning(disable : 4127) // Conditional expression is constant
 #endif
+
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+    ///////////////////////////////////////////////
+    //
+    // Inline methods
+    //
 
     
 
@@ -7262,11 +7272,13 @@ zpl_inline zpl_b32 zpl_co_waiting(zpl_co *co) {
 
 
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-    
+    ///////////////////////////////////////////////
+    //
+    // Implementation code
+    //
+    #if defined(ZPL_IMPLEMENTATION) && !defined(ZPL_IMPLEMENTATION_DONE)
+    #define ZPL_IMPLEMENTATION_DONE
+      
 
 void zpl_assert_handler(char const *condition, char const *file, zpl_i32 line, char const *msg, ...) {
     zpl_printf_err("%s:(%d): Assert Failure: ", file, line);
@@ -8143,7 +8155,6 @@ zpl_isize zpl_affinity_thread_count_for_core(zpl_affinity *a, zpl_isize core) {
 #elif defined(ZPL_SYSTEM_LINUX)
 // IMPORTANT TODO: This zpl_affinity stuff for linux needs be improved a lot!
 // NOTE(zangent): I have to read /proc/cpuinfo to get the number of threads per core.
-#include <stdio.h>
 
 void zpl_affinity_init(zpl_affinity *a) {
     zpl_b32   accurate = true;
@@ -18419,6 +18430,7 @@ zpl_inline zpl_isize zplgl_bs_draw_string_va(zplgl_basic_state *bs, zplgl_font *
 
 #endif // ZPL_OPENGL
 
+    #endif // ZPL_IMPLEMENTATION
 
 #if defined(__cplusplus)
 }
@@ -18431,8 +18443,6 @@ zpl_inline zpl_isize zplgl_bs_draw_string_va(zplgl_basic_state *bs, zplgl_font *
 #if defined(__GCC__) || defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
-
-#endif // ZPL_IMPLEMENTATION
 
 //<<header.c>>
 //<<mem.c>>
