@@ -155,7 +155,7 @@ namespace hwid {
 
     std::wstring getRawID() {
         auto moboID = getMoboID();
-        auto magic = std::to_wstring((u64)0xDEADC0DEDEADBEEF);
+        auto magic = std::to_wstring((u64)342084380340);
 
         WCHAR volumeName[MAX_PATH + 1] = { 0 };
         WCHAR fileSystemName[MAX_PATH + 1] = { 0 };
@@ -173,7 +173,7 @@ namespace hwid {
             fileSystemName,
             sizeof(fileSystemName));
 
-        return (moboID + magic + std::to_wstring(serialNumber));
+        return (magic + std::to_wstring(serialNumber));
     }
 
     u64 getID() {
