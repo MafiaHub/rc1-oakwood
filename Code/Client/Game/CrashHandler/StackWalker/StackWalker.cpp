@@ -1424,8 +1424,8 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
 #if _MSC_VER >= 1400
   maxLen = _TRUNCATE;
 #endif
-  _snprintf_s(buffer, maxLen, "PRATELSTVI JE SRACKA!\n"); //"SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
-              //szSearchPath, symOptions, szUserName);
+  _snprintf_s(buffer, maxLen, "SymInit: Symbol-SearchPath: '%s', symOptions: %d, UserName: '%s'\n",
+              szSearchPath, symOptions, szUserName);
   buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
   OnOutput(buffer);
   // Also display the OS-version
