@@ -19,7 +19,7 @@ auto spawn(zpl_vec3 position,
         printf("Error: Unable to create player model <%s> !\n", model);
     }
 
-    player_model->SetName("testing_player");
+    player_model->SetName(get_local_player()->name);
     player_model->SetScale(default_scale);
     player_model->SetWorldPos(default_pos);
     player_model->Update();
@@ -70,24 +70,21 @@ auto spawn(zpl_vec3 position,
         new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
     }
 
-    //Foreach every weapon in inventory and give it to the player
-    for (size_t i = 0; i < 8; i++) {
-        S_GameItem* item = (S_GameItem*)&inventory.items[i];
-        if (item->weaponId != expectedWeaponId) {
-            new_ped->G_Inventory_AddItem(*item);
-        }
-    }
-    //TODO(DavoSK): Make it more fancy !
-    //Select right weapon
-    modules::player::select_by_id_original((void *)new_ped->GetInventory(), current_wep, nullptr);
-    new_ped->Do_ChangeWeapon(0, 0);
-    new_ped->ChangeWeaponModel();
-
-    //If player have hands do holster
-    if (current_wep == 0)
-        new_ped->Do_Holster();
-
     return new_ped;
+}
+
+auto giveWeapon(MafiaSDK::C_Human* player, int weapID, player_inventory inv) -> void { 
+    for (size_t i = 0; i < 8; i++) {
+        S_GameItem* item = (S_GameItem*)&inv.items[i];
+
+        player->G_Inventory_RemoveWeapon(item->weaponId);
+
+        player->G_Inventory_AddItem(*item);
+    }
+}
+
+auto removeWeapon(MafiaSDK::C_Human* player, short weapID) -> void {
+    player->G_Inventory_RemoveWeapon(weapID);
 }
 
 auto despawn(MafiaSDK::C_Human* player) -> void {

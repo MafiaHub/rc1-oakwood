@@ -12,7 +12,7 @@ zpl_global librg_ctx network_context = {0};
     OAK_ROUTER_CASE(TYPE, NAME, LIBRG_CLIENT_STREAMER_REMOVE, client_remove)
 
 int oak_network_init() {
-    oak_log("[info] starting network...\n");
+    oak_log("^F[^5INFO^F] Starting network...^R\n");
 
     /* set up defaults */
     network_context.max_entities        = OAK_MAX_ENTITIES;
@@ -53,7 +53,7 @@ int oak_network_tick() {
 }
 
 int oak_network_free() {
-    oak_log("[info] stopping network...\n");
+    oak_log("^F[^5INFO^F] Stopping network...^R\n");
 
     librg_network_stop(&network_context);
     librg_free(&network_context);

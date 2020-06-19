@@ -50,8 +50,8 @@ namespace mainmenu {
     };
 
     std::vector<ServerInfo::ServerData> servers;
-    std::vector<u32> car_names      = { 330, 331, 332, 333, 334, 335, 337, 338, 339, 340, 341, 342, 336, 310, 344 };
-    std::vector<u32> player_names   = { 301, 302, 303, 304, 305, 307, 308, 309, 311, 312, 317, 318, 319, 320, 321, 322, 323, 324, 325, 343 };
+    std::vector<const char*> car_binds = { "Accelerate", "Brake/Back", "Turn Left", "Turn Right", "Handbrake", "Speed Limiter", "Gear change up", "Gear change down", "Horn", "Look Left", "Look Right", "Clutch", "Manual/Automatic transmission", "Change Camera", "Put back on the Track" };
+    std::vector<const char*> player_binds = { "Move Forward", "Move Backwards", "Strafe Left", "Strafe Right", "Walk", "Action Button (Use)", "Fire", "Crouch", "Jump", "Aim", "Next Weapon", "Prev Weapon", "Inventory", "Hide Weapon", "Throw Weapon", "Switch Run/Walk", "Reload", "Sniper Mode", "Objectives", "Map" };
     int is_picking_key              = -1;
     BYTE old_dik_buffer[256];
     char qc_address[32] = "127.0.0.1";
@@ -110,24 +110,24 @@ namespace mainmenu {
 
     inline void render_input_settings() {
         if (ImGui::BeginTabBar("input")) {
-            if (ImGui::BeginTabItem(GET_TEXT(TEXT_PLAYER))) {
+            if (ImGui::BeginTabItem("Player")) {
                 ImGui::Columns(3, "mycolumns");
-                ImGui::Text(GET_TEXT(TEXT_CONTROLS)); ImGui::NextColumn();
-                ImGui::Text(GET_TEXT(TEXT_PRIMARY)); ImGui::NextColumn();
-                ImGui::Text(GET_TEXT(TEXT_SECONDARY)); ImGui::NextColumn();
+                ImGui::Text("Action"); ImGui::NextColumn();
+                ImGui::Text("Primary"); ImGui::NextColumn();
+                ImGui::Text("Secondary"); ImGui::NextColumn();
                 ImGui::Separator();
 
                 MafiaSDK::GameKey* game_key_buffer = MafiaSDK::GetKeysBuffer();
                 int key_idx = 0;
                 for (int i = 0; i < 20; i++) {
-                    ImGui::Text(GET_TEXT(player_names.at(i))); ImGui::NextColumn();
+                    ImGui::Text(player_binds.at(i)); ImGui::NextColumn();
                     const char* key_name = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
 
                     ImGui::PushID(key_idx);
                     if (key_name && ImGui::Button(key_name)) {
                         execute_picking(key_idx);
                     }
-                    if (!key_name && ImGui::Button("EMPTY")) {
+                    if (!key_name && ImGui::Button("NONE")) {
                         execute_picking(key_idx);
                     }
                     ImGui::PopID();
@@ -155,22 +155,22 @@ namespace mainmenu {
                 ImGui::Separator();
                 ImGui::EndTabItem();
 
-                if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
+                if (ImGui::Button("Reset to defaults")) {
                     MafiaSDK::GetInput()->ResetDefault(1);
                 }
             }
 
-            if (ImGui::BeginTabItem(GET_TEXT(TEXT_CAR))) {
+            if (ImGui::BeginTabItem("Car")) {
                 ImGui::Columns(3, "mycolumns");
-                ImGui::Text(GET_TEXT(TEXT_CONTROLS)); ImGui::NextColumn();
-                ImGui::Text(GET_TEXT(TEXT_PRIMARY)); ImGui::NextColumn();
-                ImGui::Text(GET_TEXT(TEXT_SECONDARY)); ImGui::NextColumn();
+                ImGui::Text("Action"); ImGui::NextColumn();
+                ImGui::Text("Primary"); ImGui::NextColumn();
+                ImGui::Text("Secondary"); ImGui::NextColumn();
                 ImGui::Separator();
 
                 MafiaSDK::GameKey* game_key_buffer = MafiaSDK::GetKeysBuffer();
                 int key_idx = 33;
                 for (int i = 0; i < 15; i++) {
-                    ImGui::Text(GET_TEXT(car_names.at(i))); ImGui::NextColumn();
+                    ImGui::Text(car_binds.at(i)); ImGui::NextColumn();
                     const char* key_name = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
 
                     ImGui::PushID(key_idx);
@@ -178,7 +178,7 @@ namespace mainmenu {
                         execute_picking(key_idx);
                     }
 
-                    if (!key_name && ImGui::Button("EMPTY")) {
+                    if (!key_name && ImGui::Button("NONE")) {
                         execute_picking(key_idx);
                     }
                     ImGui::PopID();
@@ -192,7 +192,7 @@ namespace mainmenu {
                             execute_picking(key_idx);
                         }
 
-                        if (!key_name_ex && ImGui::Button("EMPTY")) {
+                        if (!key_name_ex && ImGui::Button("NONE")) {
                             execute_picking(key_idx);
                         }
                         ImGui::PopID();
@@ -207,28 +207,28 @@ namespace mainmenu {
                 ImGui::Separator();
                 ImGui::EndTabItem();
 
-                if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
+                if (ImGui::Button("Reset to defaults")) {
                     MafiaSDK::GetInput()->ResetDefault(2);
                 }
             }
 
-            if (ImGui::BeginTabItem(GET_TEXT(TEXT_OTHERS))) {
-                if (ImGui::TreeNode(GET_TEXT(TEXT_AIMING))) {
-                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_X), (float*)ADDR_AIM_SENSITIVITY_X, 0.0f, 1.0f);
-                    ImGui::SliderFloat(GET_TEXT(TEXT_SENSITIVITY_Y), (float*)ADDR_AIM_SENSITIVITY_Y, 0.0f, 1.0f);
-                    ImGui::SliderFloat(GET_TEXT(TEXT_AIM_SPEED), (float*)ADDR_AIM_SPEED, 0.0f, 1.0f);
+            if (ImGui::BeginTabItem("Misc")) {
+                if (ImGui::TreeNode("Aim")) {
+                    ImGui::SliderFloat("Sensitivity X", (float*)ADDR_AIM_SENSITIVITY_X, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Sensitivity Y", (float*)ADDR_AIM_SENSITIVITY_Y, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Aim Speed", (float*)ADDR_AIM_SPEED, 0.0f, 1.0f);
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode(GET_TEXT(TEXT_STEERING))) {
-                    ImGui::SliderFloat(GET_TEXT(TEXT_STEERING_LINEARITY), (float*)ADDR_STEERING_LINEARITY, 0.0f, 1.0f);
+                if (ImGui::TreeNode("Steering")) {
+                    ImGui::SliderFloat("Unlinear/Linear", (float*)ADDR_STEERING_LINEARITY, 0.0f, 1.0f);
                     ImGui::TreePop();
                 }
 
-                if (ImGui::TreeNode(GET_TEXT(TEXT_NEXT_OTHER))) {
+                if (ImGui::TreeNode("Other")) {
                     static const char* current_item = NULL;
-                    const char* items[] = { GET_TEXT(TEXT_CROSSHAIR),  GET_TEXT(TEXT_CENTER_POINT), GET_TEXT(TEXT_CROSSHAIR_CENTER_POINT) };
-                    if (ImGui::BeginCombo(GET_TEXT(233), current_item)) {
+                    const char* items[] = { "Cross",  "Point", "Cross & Point" };
+                    if (ImGui::BeginCombo("Crosshair", current_item)) {
                         for (int n = 0; n < IM_ARRAYSIZE(items); n++) {
                             bool is_selected = (n == *(BYTE*)(ADDR_CROSSHAIR_TYPE));
                             if (ImGui::Selectable(items[n], is_selected)) {
@@ -241,17 +241,17 @@ namespace mainmenu {
                         ImGui::EndCombo();
                     }
 
-                    ImGui::Checkbox(GET_TEXT(TEXT_SPEEDOMETER),     (bool*)ADDR_SPEEDOMETER_TYPE);
-                    ImGui::Checkbox(GET_TEXT(TEXT_SIDE_ROLL),       (bool*)ADDR_SIDE_ROLL);
-                    ImGui::Checkbox(GET_TEXT(TEXT_MOUSE_CONTROL),   (bool*)ADDR_MOUSE_CONTROL);
-                    ImGui::Checkbox(GET_TEXT(TEXT_SUBTITLES),       (bool*)ADDR_ENABLE_SUBTITLES);
+                    ImGui::Checkbox("Speedometer MPH",     (bool*)ADDR_SPEEDOMETER_TYPE);
+                    ImGui::Checkbox("Side Roll",       (bool*)ADDR_SIDE_ROLL);
+                    ImGui::Checkbox("Inverse mouse movement",   (bool*)ADDR_MOUSE_CONTROL);
+                    ImGui::Checkbox("Enable subtitles",       (bool*)ADDR_ENABLE_SUBTITLES);
 
                     ImGui::TreePop();
                 }
 
                 ImGui::EndTabItem();
 
-                if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
+                if (ImGui::Button("Reset to defaults")) {
                     *(float*)(ADDR_AIM_SENSITIVITY_X)        = 0.5f;
                     *(float*)(ADDR_AIM_SENSITIVITY_Y)        = 0.5f;
                     *(float*)(ADDR_AIM_SPEED)                = 0.5f;
@@ -270,21 +270,21 @@ namespace mainmenu {
 
     inline void render_audio_settings() {
 
-        ImGui::Text(GET_TEXT(TEXT_AUDIO));
-        if (ImGui::SliderFloat(GET_TEXT(TEXT_SOUNDS), (float*)ADDR_SOUNDS_SLIDER, 0.0f, 1.0f)) {
+        ImGui::Text("Audio");
+        if (ImGui::SliderFloat("Sound Effects", (float*)ADDR_SOUNDS_SLIDER, 0.0f, 1.0f)) {
             float new_sound_volume      = *(float*)ADDR_SOUNDS_SLIDER;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_volume);
         }
 
-        if (ImGui::SliderFloat(GET_TEXT(TEXT_MUSIC), (float*)ADDR_MUSIC_SLIDER, 0.0f, 1.0f)) {
+        if (ImGui::SliderFloat("Music", (float*)ADDR_MUSIC_SLIDER, 0.0f, 1.0f)) {
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }
 
-        ImGui::SliderFloat(GET_TEXT(TEXT_CARS), (float*)ADDR_CAR_SLIDER, 0.0f, 1.0f);
+        ImGui::SliderFloat("Vehicles", (float*)ADDR_CAR_SLIDER, 0.0f, 1.0f);
 
-        ImGui::SliderFloat(GET_TEXT(TEXT_SPEECH), (float*)ADDR_SPEECH_SLIDER, 0.0f, 1.0f);
+        ImGui::SliderFloat("Dialogs", (float*)ADDR_SPEECH_SLIDER, 0.0f, 1.0f);
 
-        if (ImGui::Button(GET_TEXT(TEXT_RESET_TO_DEFAULT))) {
+        if (ImGui::Button("Reset to defaults")) {
             //Sounds, car, music, speech = 1.0f;
             float new_sound_val = 1.0f;
             *(float*)(ADDR_SOUNDS_SLIDER)    = new_sound_val;
@@ -314,7 +314,7 @@ namespace mainmenu {
 
     inline void draw_picking_state() {
         ImGui::SetNextWindowPosCenter(ImGuiCond_Once);
-        ImGui::Begin(GET_TEXT(181),
+        ImGui::Begin("Press new Key",
             nullptr,
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoCollapse |
@@ -384,7 +384,7 @@ namespace mainmenu {
     inline void render() {
         if (is_picking_key == -1) {
             ImGui::SetNextWindowPosCenter();
-            ImGui::Begin("Mafia Oakwood",
+            ImGui::Begin("Mafia: Oakwood - Main Menu",
                 nullptr,
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoCollapse);

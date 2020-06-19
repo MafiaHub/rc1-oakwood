@@ -70,6 +70,110 @@ namespace chat {
         return false;
     }
 
+    inline const char color_marker_start = '{';
+    inline const char color_marker_end = '}';
+
+    inline bool process_inline_hex_color(const char* start, const char* end, ImVec4& color)
+    {
+        const int hexCount = (int)(end - start);
+        if (hexCount == 6 || hexCount == 8)
+        {
+            char hex[9];
+            strncpy(hex, start, hexCount);
+            hex[hexCount] = 0;
+
+            unsigned int hexColor = 0;
+            if (sscanf(hex, "%x", &hexColor) > 0)
+            {
+                color.x = static_cast<float>((hexColor & 0x00FF0000) >> 16) / 255.0f;
+                color.y = static_cast<float>((hexColor & 0x0000FF00) >> 8) / 255.0f;
+                color.z = static_cast<float>((hexColor & 0x000000FF)) / 255.0f;
+                color.w = 1.0f;
+
+                if (hexCount == 8)
+                {
+                    color.w = static_cast<float>((hexColor & 0xFF000000) >> 24) / 255.0f;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    inline void draw_colored_text(const char* fmt, ...)
+    {
+        char tempStr[4096];
+
+        va_list argPtr;
+        va_start(argPtr, fmt);
+        _vsnprintf(tempStr, sizeof(tempStr), fmt, argPtr);
+        va_end(argPtr);
+        tempStr[sizeof(tempStr) - 1] = '\0';
+
+        bool pushedColorStyle = false;
+        const char* textStart = tempStr;
+        const char* textCur = tempStr;
+        while (textCur < (tempStr + sizeof(tempStr)) && *textCur != '\0')
+        {
+            if (*textCur == color_marker_start)
+            {
+                // Print accumulated text
+                if (textCur != textStart)
+                {
+                    ImGui::TextUnformatted(textStart, textCur);
+                    ImGui::SameLine(0.0f, 0.0f);
+                }
+
+                // Process color code
+                const char* colorStart = textCur + 1;
+                do
+                {
+                    ++textCur;
+                } while (*textCur != '\0' && *textCur != color_marker_end);
+
+                // Change color
+                if (pushedColorStyle)
+                {
+                    ImGui::PopStyleColor();
+                    pushedColorStyle = false;
+                }
+
+                ImVec4 textColor;
+                if (process_inline_hex_color(colorStart, textCur, textColor))
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+                    pushedColorStyle = true;
+                }
+
+                textStart = textCur + 1;
+            }
+            else if (*textCur == '\n')
+            {
+                // Print accumulated text an go to next line
+                ImGui::TextUnformatted(textStart, textCur);
+                textStart = textCur + 1;
+            }
+
+            ++textCur;
+        }
+
+        if (textCur != textStart)
+        {
+            ImGui::TextUnformatted(textStart, textCur);
+        }
+        else
+        {
+            ImGui::NewLine();
+        }
+
+        if (pushedColorStyle)
+        {
+            ImGui::PopStyleColor();
+        }
+    }
+
     inline void init() {
         zpl_local_persist bool itpl = false;
 
@@ -168,7 +272,7 @@ namespace chat {
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
-                ImGui::TextWrapped("%s", message.second.c_str());
+                draw_colored_text("%s", message.second.c_str());
             }
         }
 

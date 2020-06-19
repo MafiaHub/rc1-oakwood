@@ -71,9 +71,15 @@ inline void oak__console_init_w32() {
     auto std_out = GetStdHandle(STD_OUTPUT_HANDLE);
 
     DWORD dwConInMode;
+    DWORD dwConOutMode;
     GetConsoleMode(std_in, &dwConInMode);
+    GetConsoleMode(std_out, &dwConOutMode);
     SetConsoleMode(std_in, dwConInMode & ~ENABLE_QUICK_EDIT_MODE);
+    dwConOutMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+    SetConsoleMode(std_out, dwConOutMode);
     SetConsoleTextAttribute(std_out, FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+    SetConsoleTitle("Mafia: Oakwood - Dedicated Server");
 
     CONSOLE_SCREEN_BUFFER_INFO buffer_info;
     if (!GetConsoleScreenBufferInfo(std_out, &buffer_info))
@@ -258,15 +264,95 @@ inline void oak_console_draw(const char* format, ...) {
     va_end(arglist);
 }
 
+inline void replace_text(std::string& data, std::string toSearch, std::string replaceStr)
+{
+    // Get the first occurrence
+    size_t pos = data.find(toSearch);
+
+    // Repeat till end is reached
+    while (pos != std::string::npos)
+    {
+        // replace_text this occurrence of Sub String
+        data.replace(pos, toSearch.size(), replaceStr);
+        // Get the next occurrence from the current position
+        pos = data.find(toSearch, pos + replaceStr.size());
+    }
+}
+
+inline const char* oak_console_removecolors(const char* text)
+{
+    std::string strbuf(text);
+
+    replace_text(strbuf, "^0", "");
+    replace_text(strbuf, "^1", "");
+    replace_text(strbuf, "^2", "");
+    replace_text(strbuf, "^3", "");
+    replace_text(strbuf, "^4", "");
+    replace_text(strbuf, "^5", "");
+    replace_text(strbuf, "^6", "");
+    replace_text(strbuf, "^7", "");
+    replace_text(strbuf, "^8", "");
+    replace_text(strbuf, "^9", "");
+    replace_text(strbuf, "^A", "");
+    replace_text(strbuf, "^B", "");
+    replace_text(strbuf, "^C", "");
+    replace_text(strbuf, "^D", "");
+    replace_text(strbuf, "^E", "");
+    replace_text(strbuf, "^F", "");
+    replace_text(strbuf, "^R", "");
+    replace_text(strbuf, "^L", "");
+    replace_text(strbuf, "^U", "");
+    replace_text(strbuf, "^a", "");
+    replace_text(strbuf, "^b", "");
+    replace_text(strbuf, "^c", "");
+    replace_text(strbuf, "^d", "");
+    replace_text(strbuf, "^e", "");
+    replace_text(strbuf, "^f", "");
+    replace_text(strbuf, "^r", "");
+    replace_text(strbuf, "^l", "");
+    replace_text(strbuf, "^u", "");
+
+    return strbuf.c_str();
+}
+
 inline void oak_console_printf(const char* format, ...) {
     va_list arglist;
     va_start(arglist, format);
-#ifdef _WIN32
-    vprintf(format, arglist);
-#else
-    //vwprintw(stdscr, format, arglist);
-    vprintf(format, arglist);
-#endif
+    char buf[2048];
+    vsprintf(buf, format, arglist);
+    std::string strbuf(buf);
+
+    replace_text(strbuf, "^0", "[30m");
+    replace_text(strbuf, "^1", "[31m");
+    replace_text(strbuf, "^2", "[32m");
+    replace_text(strbuf, "^3", "[33m");
+    replace_text(strbuf, "^4", "[34m");
+    replace_text(strbuf, "^5", "[35m");
+    replace_text(strbuf, "^6", "[36m");
+    replace_text(strbuf, "^7", "[37m");
+    replace_text(strbuf, "^8", "[90m");
+    replace_text(strbuf, "^9", "[91m");
+    replace_text(strbuf, "^A", "[92m");
+    replace_text(strbuf, "^B", "[93m");
+    replace_text(strbuf, "^C", "[94m");
+    replace_text(strbuf, "^D", "[95m");
+    replace_text(strbuf, "^E", "[96m");
+    replace_text(strbuf, "^F", "[97m");
+    replace_text(strbuf, "^R", "[0m");
+    replace_text(strbuf, "^L", "[1m");
+    replace_text(strbuf, "^U", "[4m");
+    replace_text(strbuf, "^a", "[92m");
+    replace_text(strbuf, "^b", "[93m");
+    replace_text(strbuf, "^c", "[94m");
+    replace_text(strbuf, "^d", "[95m");
+    replace_text(strbuf, "^e", "[96m");
+    replace_text(strbuf, "^f", "[97m");
+    replace_text(strbuf, "^r", "[0m");
+    replace_text(strbuf, "^l", "[1m");
+    replace_text(strbuf, "^u", "[4m");
+    
+    printf(strbuf.c_str());
+
     va_end(arglist);
 }
 

@@ -12,6 +12,8 @@ auto spawn(zpl_vec3 position,
                   int expectedWeaponId,
                   bool is_in_car) -> MafiaSDK::C_Player *;
 auto despawn(MafiaSDK::C_Human* player) -> void;
+auto giveWeapon(MafiaSDK::C_Human* player, int weapID, player_inventory inv) -> void;
+auto removeWeapon(MafiaSDK::C_Human* player, short weapID) -> void;
 inline auto get_local_entity();
 inline auto get_local_player() -> mafia_player*;
 inline auto get_local_ped() -> MafiaSDK::C_Player*;

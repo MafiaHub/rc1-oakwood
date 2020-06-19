@@ -28,7 +28,7 @@ struct _GlobalConfig {
 } GlobalConfig;
 
 int oak_config_init() {
-    oak_log("Loading config...\n");
+    oak_log("^FLoading config...^R\n");
 
     auto json = config_get(oak__config_file_name, oak__config_mod_default);
     b32 whOnly = false;
@@ -53,15 +53,15 @@ int oak_config_init() {
     oak_access_wh_load();
     oak_access_bans_load();
 
-    oak_log("================================\n");
-    oak_log("Name: %s\n", GlobalConfig.name.c_str());
-    oak_log("Max players: %d\n", (u32)GlobalConfig.max_players);
-    oak_log("Port: %d\n", (u32)GlobalConfig.port);
-    oak_log("Passworded: %s\n", (GlobalConfig.password != "") ? "yes" : "no");
-    oak_log("Publisher address: %s\n", GlobalConfig.bridge_outbound.c_str());
-    oak_log("Listener address: %s\n", GlobalConfig.bridge_inbound.c_str());
-    oak_log("Visible: %s\n", GlobalConfig.visible ? "yes" : "no");
-    oak_log("================================\n");
+    oak_log("^B================================^R\n");
+    oak_log("^FName: ^A%s^R\n", GlobalConfig.name.c_str());
+    oak_log("^FMax players: ^A%d^R\n", (u32)GlobalConfig.max_players);
+    oak_log("^FPort: ^A%d^R\n", (u32)GlobalConfig.port);
+    oak_log("^FPassworded: ^A%s^R\n", (GlobalConfig.password != "") ? "yes" : "no");
+    oak_log("^FPublisher address: ^A%s^R\n", GlobalConfig.bridge_outbound.c_str());
+    oak_log("^FListener address: ^A%s^R\n", GlobalConfig.bridge_inbound.c_str());
+    oak_log("^FVisible: ^A%s^R\n", GlobalConfig.visible ? "yes" : "no");
+    oak_log("^B================================\n");
 
     return 0;
 }

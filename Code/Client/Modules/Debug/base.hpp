@@ -293,7 +293,11 @@ namespace debug {
     }
 
     inline bool check_input() {
+#if _DEBUG // Disable Debug Menu in Release build, why to use Debug Tools in Release? :|
         bool state = !!debug_key;
+#else
+        bool state = false;
+#endif
         if (state) {
             input::block_input(state);
 

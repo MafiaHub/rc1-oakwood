@@ -57,7 +57,6 @@ OAK_API int oak_logn(oak_string, int);
 
 OAK_API int   oak_killbox_set(float);
 OAK_API float oak_killbox_get();
-OAK_API int   oak_temp_weapons_spawn(oak_player);
 
 /* ENTITY LISTS */
 
@@ -80,6 +79,8 @@ OAK_API int oak_player_health_set(oak_player, float);
 OAK_API int oak_player_position_set(oak_player, oak_vec3);
 OAK_API int oak_player_direction_set(oak_player, oak_vec3);
 OAK_API int oak_player_heading_set(oak_player, float);
+
+OAK_API int oak_player_give_weapon(oak_player, int, int, int);
 
 OAK_API oak_string oak_player_name_get(oak_player);
 OAK_API oak_string oak_player_model_get(oak_player);

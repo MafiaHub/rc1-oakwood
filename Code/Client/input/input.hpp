@@ -172,7 +172,7 @@ namespace input {
         SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
 
         auto hwnd = (HWND)MafiaSDK::GetIGraph()->GetMainHWND();
-        SetWindowTextA(mod_win32_hwnd, "Mafia: Oakwood");
+        SetWindowTextA(GetForegroundWindow(), "Mafia: Oakwood");
     }
 
     auto toggle_block_input() {

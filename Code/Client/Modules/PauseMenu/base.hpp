@@ -20,7 +20,7 @@ namespace pausemenu {
         ImGui::SetNextWindowPosCenter(ImGuiCond_Once);
         if (mainmenu::is_picking_key == -1) {
             ImGui::SetNextWindowPosCenter();
-            ImGui::Begin("Mafia Oakwood - ESC",
+            ImGui::Begin("Mafia: Oakwood - Pause Menu",
                 nullptr,
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoResize | 

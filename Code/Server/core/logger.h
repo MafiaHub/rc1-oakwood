@@ -37,8 +37,9 @@ int oak_log(const char *fmt, ...) {
     va_end(ap);
 
     zpl_mutex_lock(&logger_mutex);
-    printf("%s", message);
-    zpl_file_write(&oak__debug_log, message, zpl_strlen(message));
+    oak_console_printf("%s", message);
+    const char* logText = oak_console_removecolors(message);
+    zpl_file_write(&oak__debug_log, logText, zpl_strlen(logText));
     zpl_mutex_unlock(&logger_mutex);
 
     return 0;

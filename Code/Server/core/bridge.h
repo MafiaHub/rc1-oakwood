@@ -13,7 +13,7 @@ int sock_in;
 /* GENERAL */
 
 int oak_bridge_init() {
-    oak_log("[info] initializing bridge...\n");
+    oak_log("^F[^5INFO^F] Initializing bridge...^R\n");
 
     sock_out = nn_socket(AF_SP, NN_SURVEYOR);
     sock_in = nn_socket(AF_SP, NN_REP);
@@ -32,7 +32,7 @@ int oak_bridge_init() {
 }
 
 int oak_bridge_free() {
-    oak_log("[info] stopping bridge...\n");
+    oak_log("^F[^5INFO^F] Stopping bridge...^R\n");
 
     nn_close(sock_out);
     nn_close(sock_in);
@@ -128,7 +128,6 @@ void oak_bridge_event_player_chat(oak_player player, const char *text) {
 }
 
 void oak_bridge_event_console(const char *text) {
-    printf("[info] executing server command: %s\n", text);
     char buffer[OAK_BRIDGE_BUFFER] = {};
     cw_pack_context pc;
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);

@@ -107,12 +107,12 @@ void oak_tasks_process();
 */
 
 const char *banner_text = R"foo(
- .88888.   .d888888  dP     dP dP   dP   dP  .88888.   .88888.  888888ba     8888ba.88ba   888888ba
-d8'   `8b d8'    88  88   .d8' 88   88   88 d8'   `8b d8'   `8b 88    `8b    88  `8b  `8b  88    `8b
-88     88 88aaaaa88a 88aaa8P'  88  .8P  .8P 88     88 88     88 88     88    88   88   88 a88aaaa8P'
-88     88 88     88  88   `8b. 88  d8'  d8' 88     88 88     88 88     88    88   88   88  88
-Y8.   .8P 88     88  88     88 88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    88   88   88  88
- `8888P'  88     88  dP     dP 8888' Y88'    `8888P'   `8888P'  8888888P     dP   dP   dP  dP
+^9 .88888.   .d888888  dP     dP ^FdP   dP   dP  .88888.   .88888.  888888ba     ^B8888ba.88ba   888888ba^R
+^9d8'   `8b d8'    88  88   .d8' ^F88   88   88 d8'   `8b d8'   `8b 88    `8b    ^B88  `8b  `8b  88    `8b^R
+^988     88 88aaaaa88a 88aaa8P'  ^F88  .8P  .8P 88     88 88     88 88     88    ^B88   88   88 a88aaaa8P'^R
+^988     88 88     88  88   `8b. ^F88  d8'  d8' 88     88 88     88 88     88    ^B88   88   88  88^R
+^9Y8.   .8P 88     88  88     88 ^F88.d8P8.d8P  Y8.   .8P Y8.   .8P 88    .8P    ^B88   88   88  88^R
+^9 `8888P'  88     88  dP     dP ^F8888' Y88'    `8888P'   `8888P'  8888888P     ^BdP   dP   dP  dP^R
 
 )foo";
 
@@ -123,12 +123,12 @@ int main(int argc, char **argv)
     oak_log_init();
 
     oak_console_init();
-    oak_console_printf("================================\n");
+    oak_console_printf("^E================================^R\n");
     oak_console_printf(banner_text);
-    oak_console_printf("Build version: v%s\n", OAK_VERSION);
-    oak_console_printf("Build channel: %s\n", OAK_BUILD_TYPE);
-    oak_console_printf("Build time: %s %s\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
-    oak_console_printf("================================\n");
+    oak_console_printf("^FBuild version: ^Av%s^R\n", OAK_VERSION);
+    oak_console_printf("^FBuild channel: ^A%s^R\n", OAK_BUILD_TYPE);
+    oak_console_printf("^FBuild time: ^A%s %s^R\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
+    oak_console_printf("^E================================^R\n");
     oak_cli_init(argc, argv);
 
     oak_sighandler_register();
@@ -158,7 +158,7 @@ int main(int argc, char **argv)
 
 void shutdown_server()
 {
-    oak_log("[info] server is shutting down...\n");
+    oak_log("^F[^5INFO^F] Server is ^9shutting ^Fdown...^R\n");
 
     oak_webserver_stop();
     oak_console_input_handler_destroy();

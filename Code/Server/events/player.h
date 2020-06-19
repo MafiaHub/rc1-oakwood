@@ -26,7 +26,7 @@ void oak_ev_player_requested(librg_event *evnt) {
     auto build_channel = librg_data_ru8(evnt->data);
 
     if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR || build_channel != OAK_BUILD_CHANNEL) {
-        oak_log("Connection for '%s' has been rejected!\nOur version: %s\tTheir version: %d.%d.%d\n", hostname, OAK_VERSION, build_major, build_minor, build_patch);
+        oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^9rejected!^R\n^FOur version: ^A%s^R\t^FTheir version: ^A%d.%d.%d^R\n", hostname, OAK_VERSION, build_major, build_minor, build_patch);
         oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;
     }
@@ -37,7 +37,7 @@ void oak_ev_player_requested(librg_event *evnt) {
 
     if (GlobalConfig.password.size() != 0) {
         if (evnt->data->capacity == evnt->data->read_pos) {
-            oak_log("Connection for '%s' has been rejected!\nIncorrect password!\n", hostname);
+            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", hostname);
             oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
             return;
         }
@@ -46,7 +46,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         librg_data_rptr(evnt->data, prompt_pass, sizeof(char) * 32);
 
         if (std::string(prompt_pass) != GlobalConfig.password) {
-            oak_log("Connection for '%s' has been rejected!\nIncorrect password!\n", hostname);
+            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", hostname);
             oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
             return;
         }
@@ -57,7 +57,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         b32 isBanned = oak_access_bans_get(hwid);
 
         if (isBanned) {
-            oak_log("Connection for %s'%s' has been rejected!\nPlayer is banned! GUID: %llu\n", temp.name, hostname, hwid);
+            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9banned^F! GUID: ^A%llu^R\n", temp.name, hostname, hwid);
             oak_ev_player_send_rejection(REJECTION_BANNED, evnt);
             return;
         }
@@ -67,7 +67,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         b32 isExempted = oak_access_wh_get(hwid);
 
         if (!isExempted) {
-            oak_log("Connection for %s o'%s' has been rejected!\nPlayer is not whitelisted! GUID: %llu\n", temp.name, hostname, hwid);
+            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9not whitelisted^F! GUID: ^A%llu^R\n", temp.name, hostname, hwid);
             oak_ev_player_send_rejection(REJECTION_WH, evnt);
             return;
         }
@@ -93,7 +93,7 @@ void oak_ev_player_connected(librg_event *e) {
     zpl_mfree(temp);
     char ip[24] = {0};
     enet_address_get_host_ip(&e->peer->address, ip, 24);
-    oak_log("[info] player '%s'(%llu from %s) has been connected!\n", player->name, player->hwid, ip);
+    oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%llu ^Ffrom ^B%s^8) ^Fhas been connected!^R\n", player->name, player->hwid, ip);
 
     oak_bridge_event_player_connect(id);
     GlobalConfig.players++;
@@ -106,7 +106,7 @@ void oak_ev_player_disconnected(librg_event *e) {
     /* remove player from vehicle if any */
 
     // oak_vehicle_player_remove(oak_player_vehicle_inside(player->oak_id), player->oak_id);
-    oak_log("[info] player '%s'(%d) %x has been disconnected!\n", player->name, player->oak_id, e->peer);
+    oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%d^8) ^Fhas been disconnected!^R\n", player->name, player->oak_id, e->peer);
 
     oak_bridge_event_player_disconnect(player->oak_id);
     oak_player_destroy(e);
