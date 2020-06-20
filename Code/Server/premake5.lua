@@ -45,6 +45,7 @@ project "Server"
 
     configuration "windows"
         links {
+            "GeoIP",
             "Crypt32",
             "libcurl",
             "nanomsg32",
@@ -57,6 +58,7 @@ project "Server"
         links {
         --    "libcurl",
             "nanomsg",
+            "GeoIP",
             "pthread",
             "dl"
         }

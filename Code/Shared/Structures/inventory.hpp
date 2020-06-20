@@ -17,6 +17,8 @@ struct weapon {
 };
 
 weapon weaponlist[] = {
+    {NULL, NULL}, // DO NOT USE
+    {NULL, NULL}, // DO NOT USE
     {"2boxer.i3d", {2, 0, 0, 0}}, // Boxer (Knuckle Duster)
     {"2knife.i3d", {3, 0, 0, 0}}, // Knife
     {"2bbat1.i3d", {4, 0, 0, 0}}, // Baseball Bat
