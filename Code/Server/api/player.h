@@ -255,7 +255,7 @@ int oak_player_give_weapon(oak_player id, int weapId, int ammoLoaded, int ammoIn
     if (oak_player_invalid(id)) return -1;
     auto player = oak_entity_player_get(id);
 
-    inventory_item gun = weapons[weapId].item;
+    inventory_item gun = weaponlist[weapId].item;
 
     gun.ammoHidden = ammoInInventory;
     gun.ammoLoaded = ammoLoaded;

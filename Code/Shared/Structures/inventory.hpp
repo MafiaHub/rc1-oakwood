@@ -1,5 +1,16 @@
 #pragma once
 
+struct inventory_item {
+	int	weaponId;
+	int	ammoLoaded;
+	int	ammoHidden;
+	int	_unk;
+};
+
+struct player_inventory {
+	inventory_item items[8];
+};
+
 struct weapon {
     const char* model;
     inventory_item item;
@@ -37,15 +48,4 @@ weapon weaponlist[] = {
     {"9klic1.i3d", {30, 0, 0, 0}}, // Small Key
     {"2swr.i3d", {31, 0, 0, 0}}, // Sword
     {"hlavapsa.i3d", {32, 0, 0, 0}}, // Dog's head
-};
-
-struct inventory_item {
-	int	weaponId;
-	int	ammoLoaded;
-	int	ammoHidden;
-	int	_unk;
-};
-
-struct player_inventory {
-	inventory_item items[8];
 };
