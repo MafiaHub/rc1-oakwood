@@ -27,30 +27,34 @@ namespace imgui {
         }
 
         if (clientActiveState == ClientState_Connected) {
-            CHECK_MENU_INPUT(chat, Menu_Chat);
-            CHECK_MENU_INPUT(pausemenu, Menu_Pause);
+
+            if (!modules::dialog::render())
+            {
+                CHECK_MENU_INPUT(chat, Menu_Chat);
+                CHECK_MENU_INPUT(pausemenu, Menu_Pause);
 
 #ifdef OAKWOOD_DEBUG
-            CHECK_MENU_INPUT(debug, Menu_DebugMode);
+                CHECK_MENU_INPUT(debug, Menu_DebugMode);
 #endif
 
-            switch (menuActiveState) {
-            case Menu_Chat: {
-                modules::chat::render();
-            } break;
+                switch (menuActiveState) {
+                case Menu_Chat: {
+                    modules::chat::render();
+                } break;
 
-            case Menu_Pause: {
-                modules::pausemenu::render();
-            } break;
+                case Menu_Pause: {
+                    modules::pausemenu::render();
+                } break;
 
 #ifdef OAKWOOD_DEBUG
-            case Menu_DebugMode: {
-                modules::debug::render();
-            } break;
+                case Menu_DebugMode: {
+                    modules::debug::render();
+                } break;
 #endif
+                }
+
+                modules::playerlist::render();
             }
-
-            modules::playerlist::render();
         }
 
         /**/ if (clientActiveState == ClientState_Browser) {

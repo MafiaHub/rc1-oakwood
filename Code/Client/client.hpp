@@ -11,6 +11,7 @@ enum
     Menu_Connecting,
     Menu_MainMenu,
     Menu_Chat,
+    Menu_Dialog,
     Menu_DebugMode,
 };
 
@@ -42,6 +43,11 @@ void displayError(const std::string &, std::function<void()> _cb = nullptr);
 namespace modules::passwordPrompt
 {
 void init(ServerInfo::ServerData data);
+}
+
+namespace modules::dialog
+{
+    void init(int type, const char* title, const char* desc, const char* b1, const char* b2);
 }
 
 struct _GlobalConfig

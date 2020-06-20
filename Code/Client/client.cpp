@@ -127,7 +127,7 @@
 #include "Game/base.hpp"
 #include "stateManager.hpp"
 
-ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath)
+ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath, const char* ip, int port)
 {
     semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
 

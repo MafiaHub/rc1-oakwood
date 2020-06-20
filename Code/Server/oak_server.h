@@ -17,6 +17,7 @@ OAK_API_TYPE(oak_vec3, vec3)
 OAK_API_TYPE(oak_vec2, vec2)
 OAK_API_TYPE(oak_ref(int), oak_ref(int))
 OAK_API_TYPE(oak_array(oak_player), oak_array(int))
+OAK_API_TYPE(oak_array(oak_dialog), oak_array(int))
 OAK_API_TYPE(oak_array(oak_vehicle), oak_array(int))
 OAK_API_TYPE(oak_array(oak_door), oak_array(int))
 
@@ -27,6 +28,7 @@ typedef union {
 } oak_vec3;
 
 typedef uintptr oak_player;
+typedef uintptr oak_dialog;
 typedef uintptr oak_vehicle;
 typedef uintptr oak_door;
 typedef uintptr oak_npc;
@@ -112,6 +114,7 @@ OAK_API int oak_hud_fadeout(oak_player, int, int, int);
 OAK_API int oak_hud_countdown(oak_player, int);
 OAK_API int oak_hud_announce(oak_player, oak_string, int, float);
 OAK_API int oak_hud_message(oak_player, oak_string, int, int);
+OAK_API int oak_dialog_show(oak_player, oak_string, int, oak_string, int, oak_string, int, oak_string, int, oak_dialog, int);
 
 /* CHAT */
 

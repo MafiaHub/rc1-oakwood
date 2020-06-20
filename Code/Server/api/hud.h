@@ -1,3 +1,27 @@
+int oak_dialog_show(oak_player id, const char* title, int titlelen, const char* message, int msglen, const char* button1, int b1len, const char* button2, int b2len, oak_dialog dialogid, int dialogType)
+{
+    if (oak_player_invalid(id)) return -1;
+
+    auto player = oak_entity_player_get(id);
+
+    librg_send_to(&network_context, NETWORK_DIALOG_OPEN, player->native_entity->client_peer, data, {
+        librg_data_wu16(&data, titlelen);
+        librg_data_wu16(&data, msglen);
+        librg_data_wu16(&data, b1len);
+        librg_data_wu16(&data, b2len);
+        librg_data_wu16(&data, dialogid);
+        librg_data_wu16(&data, dialogType);
+
+        librg_data_wptr(&data, (void*)title, titlelen);
+        librg_data_wptr(&data, (void*)message, msglen);
+        librg_data_wptr(&data, (void*)button1, b1len);
+        librg_data_wptr(&data, (void*)button2, b2len);
+        
+        });
+
+    return 0;
+}
+
 /**
  * Make a fadeout so player will see a nice effect
  * @param  id
@@ -7,7 +31,8 @@
  * @return
  */
 int oak_hud_fadeout(oak_player id, int fadeout, int duration, int color) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
+    if (oak_player_invalid(id)) return -1;
+    auto player = oak_entity_player_get(id);
 
     librg_send_to(&network_context, NETWORK_HUD_FADEOUT, player->native_entity->client_peer, data, {
         librg_data_wu8(&data, fadeout);
@@ -25,7 +50,8 @@ int oak_hud_fadeout(oak_player id, int fadeout, int duration, int color) {
  * @return
  */
 int oak_hud_countdown(oak_player id, int number) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
+    if (oak_player_invalid(id)) return -1;
+    auto player = oak_entity_player_get(id);
 
     // wrap the number around
     number = (3 - number % 4);

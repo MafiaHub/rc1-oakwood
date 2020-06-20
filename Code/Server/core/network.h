@@ -40,6 +40,7 @@ int oak_network_init() {
 
     oak_player_register();
     oak_vehicle_register();
+    oak_dialog_register();
     oak_door_register();
     oak_vehicle_player_register();
     oak_weapon_register();

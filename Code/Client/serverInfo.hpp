@@ -202,6 +202,48 @@ inline ServerData fetch_server_data(std::string addr, int port)
     return data;
 }
 
+inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = true)
+{
+    // server connection data is invalid, assume the server is offline
+    if (!server.valid)
+    {
+        return;
+    }
+
+    // Version mismatch, let the user know!
+    // if (server.version != OAK_BUILD_VERSION)
+    // {
+    //     // modules::infobox::displayError("The client's version is incompatible with the server!");
+    //     return;
+    // }
+
+    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.reconnecting) {
+        modules::passwordPrompt::init(server);
+        GlobalConfig.passworded = true;
+        return;
+    }
+    else if (!server.passworded) {
+        GlobalConfig.passworded = false;
+    }
+
+    GlobalConfig.reconnecting = false;
+
+    strcpy(GlobalConfig.server_address, server.server_ip.c_str());
+    GlobalConfig.port = server.port;
+    lastServer = server;
+
+    // NOTE: mapname is missing, use placeholder
+    if (server.mapname == "")
+    {
+        server.mapname = "freeride";
+    }
+
+    if (forceMapReload)
+        MafiaSDK::GetMission()->MapLoad(server.mapname.c_str());
+
+    mod_librg_connect();
+}
+
 inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true)
 {
     // server connection data is invalid, assume the server is offline

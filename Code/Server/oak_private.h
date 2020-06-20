@@ -41,6 +41,7 @@ void oak_bridge_event_player_chat(oak_player player, const char *text);
 void oak_bridge_event_vehicle_destroy(oak_vehicle vehicle);
 void oak_bridge_event_vehicle_player_use(oak_vehicle vehicle, oak_player player, bool success, int seat_id, int entrance);
 void oak_bridge_event_console(const char *text);
+void oak_bridge_event_dialog_done(oak_player player, int dialogId, int dialogSel, const char* dialogText);
 
 /* NETWORK */
 
@@ -72,6 +73,7 @@ OAK_NETWORK_DECLS(door);
 int oak_player_register();
 int oak_vehicle_register();
 int oak_door_register();
+int oak_dialog_register();
 int oak_vehicle_player_register();
 int oak_weapon_register();
 int oak_chat_register();

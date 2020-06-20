@@ -8,6 +8,11 @@ void add_messages()
         zpl_string_free(chat_line);
     });
 
+    librg_network_add(&network_context, NETWORK_DIALOG_OPEN, [](librg_message* msg) {
+        dialog_data dialog;
+        librg_data_rptr(msg->data, &dialog, sizeof(dialog_data));
+    });
+
     librg_network_add(&network_context, NETWORK_HUD_FADEOUT, [](librg_message *msg) {
         auto do_fade = librg_data_ru8(msg->data);
         auto duration = librg_data_ru32(msg->data);

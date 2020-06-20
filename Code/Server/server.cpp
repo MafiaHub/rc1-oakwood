@@ -94,6 +94,7 @@
 
 #include "events/chat.h"
 #include "events/door.h"
+#include "events/dialogs.h"
 #include "events/player.h"
 #include "events/vehicle.h"
 #include "events/vehicle_player.h"
