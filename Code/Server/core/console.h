@@ -397,11 +397,12 @@ void oak_console_console_update_stats() {
 
     //NOTE(DavoSK): Update our debug tag every 200ms
     if (current_time - oak__console_last_console_update > 0.2f) {
-        oak_console_draw("%c[%c%c%c] Oakwood Server | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
+        oak_console_draw("%c[%c%c%c] %s | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
             132,
             130,
             oak_console_update_loader(),
             132,
+            GlobalConfig.name,
             oak_network_ctx_get()->network.host->totalReceivedData / 1024,
             oak_network_ctx_get()->network.host->totalSentData / 1024,
             oak__console_computed_fps,
