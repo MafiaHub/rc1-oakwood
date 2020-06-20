@@ -93,7 +93,9 @@ void oak_ev_player_connected(librg_event *e) {
     zpl_mfree(temp);
     char ip[24] = {0};
     enet_address_get_host_ip(&e->peer->address, ip, 24);
-    oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%llu ^Ffrom ^B%s^8) ^Fhas been connected!^R\n", player->name, player->hwid, ip);
+    std::string i(ip);
+    replace_text(i, "::ffff:", "");
+    oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%llu ^Ffrom ^B%s^8) ^Fhas been connected!^R\n", player->name, player->hwid, i.c_str());
 
     oak_bridge_event_player_connect(id);
     GlobalConfig.players++;

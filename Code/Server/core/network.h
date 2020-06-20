@@ -1,4 +1,9 @@
+#include <include/GeoIP.h>
+#include <include/GeoIPCity.h>
+
 zpl_global librg_ctx network_context = {0};
+
+GeoIP* geo_ip;
 
 #define OAK_ROUTER_CASE(TYPE, NAME, EVENT, EVENT_NAME) \
     librg_event_add(&network_context,EVENT,[](librg_event*e){if(e->entity->type==TYPE){ZPL_JOIN4(oak_ev_,NAME,_,EVENT_NAME)(e);}});

@@ -350,6 +350,66 @@ int oak_player_remove_weapon(oak_player id, int weapId)
     return 0;
 }
 
+const char* local_ip_get(oak_player id)
+{
+    int code = oak_player_invalid(id);
+
+    if (code == 0 || code == 3) {
+        char ip[24];
+        char rip[24];
+        enet_address_get_host_ip(&oak__entities_data.players[id].native_entity->client_peer->address, ip, sizeof(ip));
+        sprintf(rip, "%s", ip);
+        return rip;
+    }
+
+    return nullptr;
+}
+
+const char* oak_player_statecode_get(oak_player id)
+{
+    if (!geo_ip) return nullptr;
+
+    const char* ip = local_ip_get(id);
+
+    std::string i(ip);
+
+    replace_text(i, "::ffff:", "");
+
+    int country_id = GeoIP_id_by_name(geo_ip, i.c_str());
+
+    return GeoIP_country_code[country_id];
+}
+
+const char* oak_player_statename_get(oak_player id)
+{
+    if (!geo_ip) return nullptr;
+
+    const char* ip = local_ip_get(id);
+
+    std::string i(ip);
+
+    replace_text(i, "::ffff:", "");
+
+    int country_id = GeoIP_id_by_name(geo_ip, i.c_str());
+
+    return GeoIP_country_name[country_id];
+}
+
+const char *oak_player_ip_get(oak_player id)
+{
+    int code = oak_player_invalid(id);
+
+    if (code == 0 || code == 3) {
+        char ip[24];
+        char rip[24];
+        enet_address_get_host_ip(&oak__entities_data.players[id].native_entity->client_peer->address, ip, sizeof(ip));
+        sprintf(rip, "%s\0", ip);
+        return rip;
+    }
+
+    return nullptr;
+}
+
 // =======================================================================//
 // !
 // ! DATA SETTERS (action-based values)

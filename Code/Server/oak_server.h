@@ -90,6 +90,10 @@ OAK_API float oak_player_heading_get(oak_player);
 OAK_API oak_vec3 oak_player_position_get(oak_player);
 OAK_API oak_vec3 oak_player_direction_get(oak_player);
 
+OAK_API oak_string oak_player_ip_get(oak_player id);
+OAK_API oak_string oak_player_statecode_get(oak_player id);
+OAK_API oak_string oak_player_statename_get(oak_player id);
+
 /* PLAYER VISIBILITY */
 
 OAK_API int oak_player_visibility_set(oak_player, oak_visiblity_type, int);

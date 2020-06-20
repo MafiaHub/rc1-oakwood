@@ -136,6 +136,18 @@ int main(int argc, char **argv)
     oak_config_init();
     oak_cli_replace();
 
+    geo_ip = GeoIP_open("GeoIP.dat", NULL);
+
+    if (!geo_ip)
+    {
+        oak_log("^F[^9ERROR^F] Cannot load GeoIP information, GeoIP functions are disabled!^R\n");
+    }
+    else
+    {
+        GeoIP_set_charset(geo_ip, GEOIP_CHARSET_UTF8);
+        //_GeoIP_setup_dbfilename();
+    }
+
     oak_webserver_init();
     oak_bridge_init();
     oak_network_init();
