@@ -351,7 +351,7 @@ inline void oak_console_printf(const char* format, ...) {
     replace_text(strbuf, "^l", "[1m");
     replace_text(strbuf, "^u", "[4m");
     
-    printf(strbuf.c_str());
+    printf("%s", strbuf.c_str());
 
     va_end(arglist);
 }
