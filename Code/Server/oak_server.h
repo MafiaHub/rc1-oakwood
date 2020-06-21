@@ -92,9 +92,10 @@ OAK_API float oak_player_heading_get(oak_player);
 OAK_API oak_vec3 oak_player_position_get(oak_player);
 OAK_API oak_vec3 oak_player_direction_get(oak_player);
 
-OAK_API oak_string oak_player_ip_get(oak_player id);
-OAK_API oak_string oak_player_statecode_get(oak_player id);
-OAK_API oak_string oak_player_statename_get(oak_player id);
+OAK_API oak_string oak_player_ip_get(oak_player);
+OAK_API oak_string oak_player_statecode_get(oak_player);
+OAK_API oak_string oak_player_statename_get(oak_player);
+OAK_API int oak_player_input_enable(oak_player, int);
 
 /* PLAYER VISIBILITY */
 
@@ -119,6 +120,7 @@ OAK_API int oak_dialog_show(oak_player, oak_string, int, oak_string, int, oak_st
 /* CHAT */
 
 OAK_API int oak_chat_send(oak_player, oak_string, int);
+OAK_API int oak_chat_clear(oak_player);
 OAK_API int oak_chat_broadcast(oak_string, int);
 
 /* VEHICLES */
@@ -131,6 +133,8 @@ OAK_API int oak_vehicle_repair(oak_vehicle);
 
 OAK_API int oak_vehicle_position_set(oak_vehicle, oak_vec3);
 OAK_API int oak_vehicle_direction_set(oak_vehicle, oak_vec3);
+OAK_API int oak_vehicle_speed_set(oak_vehicle, float);
+OAK_API int oak_vehicle_velocity_set(oak_vehicle, oak_vec3);
 OAK_API int oak_vehicle_heading_set(oak_vehicle, float);
 OAK_API int oak_vehicle_fuel_set(oak_vehicle, float);
 OAK_API int oak_vehicle_transparency_set(oak_vehicle, float);
@@ -138,6 +142,8 @@ OAK_API int oak_vehicle_lock_set(oak_vehicle, int);
 
 OAK_API oak_vec3 oak_vehicle_position_get(oak_vehicle);
 OAK_API oak_vec3 oak_vehicle_direction_get(oak_vehicle);
+OAK_API float oak_vehicle_speed_get(oak_vehicle);
+OAK_API oak_vec3 oak_vehicle_velocity_get(oak_vehicle);
 OAK_API float oak_vehicle_heading_get(oak_vehicle);
 OAK_API float oak_vehicle_fuel_get(oak_vehicle);
 OAK_API float oak_vehicle_transparency_get(oak_vehicle);

@@ -165,6 +165,38 @@ int oak_vehicle_position_set(oak_vehicle id, oak_vec3 position) {
     return 0;
 }
 
+int oak_vehicle_speed_set(oak_vehicle id, float speed)
+{
+    if (oak_vehicle_invalid(id)) return -1;
+    auto entity = oak_entity_vehicle_get(id);
+
+    zpl_vec3 forward = ComputeDirVector(DirToRotation360(entity->rot_forward));
+
+    zpl_vec3 velocity = { forward.x * speed, forward.y * speed, forward.z * speed };
+
+    entity->speed = EXPAND_VEC(velocity);
+
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_VEL, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wptr(&data, &velocity, sizeof(zpl_vec3));
+        });
+}
+
+int oak_vehicle_velocity_set(oak_vehicle id, oak_vec3 velocity)
+{
+    if (oak_vehicle_invalid(id)) return -1;
+    auto entity = oak_entity_vehicle_get(id);
+
+    entity->speed = EXPAND_VEC(velocity);
+
+    librg_send(oak_network_ctx_get(), NETWORK_VEHICLE_SET_VEL, data, {
+        librg_data_went(&data, entity->native_id);
+        librg_data_wptr(&data, &velocity, sizeof(zpl_vec3));
+        });
+
+    return 0;
+}
+
 /**
  * Helper heading setting method
  * @param  id
@@ -253,6 +285,24 @@ oak_vec3 oak_vehicle_position_get(oak_vehicle id) {
     if (oak_vehicle_invalid(id)) return {-1, -1, -1};
     auto entity = oak_entity_vehicle_get(id);
     return hard_cast(oak_vec3*)entity->native_entity->position;
+}
+
+oak_vec3 oak_vehicle_velocity_get(oak_vehicle id)
+{
+    if (oak_vehicle_invalid(id)) return { -1, -1, -1 };
+    auto entity = oak_entity_vehicle_get(id);
+    return hard_cast(oak_vec3*)entity->speed;
+}
+
+float oak_vehicle_speed_get(oak_vehicle id) {
+    if (oak_vehicle_invalid(id)) return -1;
+    auto entity = oak_entity_vehicle_get(id);
+
+    zpl_vec3 speed = entity->speed;
+
+    float magnitude = sqrt((speed.x * speed.x) + (speed.y * speed.y) + (speed.z * speed.z));
+
+    return magnitude;
 }
 
 /**

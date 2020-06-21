@@ -15,12 +15,116 @@ namespace pausemenu {
         return false;
     }
 
+    inline const char color_marker_start = '{';
+    inline const char color_marker_end = '}';
+
+    inline bool process_inline_hex_color(const char* start, const char* end, ImVec4& color)
+    {
+        const int hexCount = (int)(end - start);
+        if (hexCount == 6 || hexCount == 8)
+        {
+            char hex[9];
+            strncpy(hex, start, hexCount);
+            hex[hexCount] = 0;
+
+            unsigned int hexColor = 0;
+            if (sscanf(hex, "%x", &hexColor) > 0)
+            {
+                color.x = static_cast<float>((hexColor & 0x00FF0000) >> 16) / 255.0f;
+                color.y = static_cast<float>((hexColor & 0x0000FF00) >> 8) / 255.0f;
+                color.z = static_cast<float>((hexColor & 0x000000FF)) / 255.0f;
+                color.w = 1.0f;
+
+                if (hexCount == 8)
+                {
+                    color.w = static_cast<float>((hexColor & 0xFF000000) >> 24) / 255.0f;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    inline void colored_text(const char* fmt, ...)
+    {
+        char tempStr[4096];
+
+        va_list argPtr;
+        va_start(argPtr, fmt);
+        _vsnprintf(tempStr, sizeof(tempStr), fmt, argPtr);
+        va_end(argPtr);
+        tempStr[sizeof(tempStr) - 1] = '\0';
+
+        bool pushedColorStyle = false;
+        const char* textStart = tempStr;
+        const char* textCur = tempStr;
+        while (textCur < (tempStr + sizeof(tempStr)) && *textCur != '\0')
+        {
+            if (*textCur == color_marker_start)
+            {
+                // Print accumulated text
+                if (textCur != textStart)
+                {
+                    ImGui::TextUnformatted(textStart, textCur);
+                    ImGui::SameLine(0.0f, 0.0f);
+                }
+
+                // Process color code
+                const char* colorStart = textCur + 1;
+                do
+                {
+                    ++textCur;
+                } while (*textCur != '\0' && *textCur != color_marker_end);
+
+                // Change color
+                if (pushedColorStyle)
+                {
+                    ImGui::PopStyleColor();
+                    pushedColorStyle = false;
+                }
+
+                ImVec4 textColor;
+                if (process_inline_hex_color(colorStart, textCur, textColor))
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Text, textColor);
+                    pushedColorStyle = true;
+                }
+
+                textStart = textCur + 1;
+            }
+            else if (*textCur == '\n')
+            {
+                // Print accumulated text an go to next line
+                ImGui::TextUnformatted(textStart, textCur);
+                textStart = textCur + 1;
+            }
+
+            ++textCur;
+        }
+
+        if (textCur != textStart)
+        {
+            ImGui::TextUnformatted(textStart, textCur);
+        }
+        else
+        {
+            ImGui::NewLine();
+        }
+
+        if (pushedColorStyle)
+        {
+            ImGui::PopStyleColor();
+        }
+    }
+
     inline void render() {
         
         ImGui::SetNextWindowPosCenter(ImGuiCond_Once);
         if (mainmenu::is_picking_key == -1) {
             ImGui::SetNextWindowPosCenter();
-            ImGui::Begin("Mafia: Oakwood - Pause Menu",
+            ImGui::Begin("Pause Menu",
                 nullptr,
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoResize | 
@@ -36,13 +140,11 @@ namespace pausemenu {
 
                 if (ImGui::BeginTabItem("Info")) {
                     if (clientActiveState == ClientState_Connected) {
-                        ImGui::Text(R"(Welcome to Mafia: Oakwood, you are playing a '%s' version of this modification. 
-Please report all your issues on our discord server.)", OAK_BUILD_TYPE);
-                        ImGui::Text("Current build: v%s", OAK_VERSION);
-                        ImGui::Text("Current build date: %s %s", OAK_BUILD_DATE, OAK_BUILD_TIME);
-                        ImGui::Text("Current server IP: %s", GlobalConfig.server_address);
+                        colored_text(R"(Welcome to Mafia: {ff0000}Oakwood{ffffff}, you are playing a '{00ff00}%s{ffffff}' version of this modification. 
+Please report all your issues on our {8f6eeb}discord {ffffff}server.)", OAK_BUILD_TYPE);
+                        colored_text("Current server IP: {00ff00}%s:%d", GlobalConfig.server_address, GlobalConfig.port);
                     } else {
-                        ImGui::Text("You aren't connected to any server right now! :(");
+                        colored_text("You {ff0000}aren't {ffffff}connected to any server right now! :(");
                     }
 
                     if (ImGui::Button("Exit to menu")) {

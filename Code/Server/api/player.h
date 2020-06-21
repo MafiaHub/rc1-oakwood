@@ -514,3 +514,21 @@ int oak_player_visibility_get(oak_player id, oak_visiblity_type type) {
         default: return -1;
     }
 }
+
+// =======================================================================//
+// !
+// ! PLAYER INPUT
+// !
+// =======================================================================//
+
+int oak_player_input_enable(oak_player id, int state)
+{
+    if (oak_player_invalid(id)) return -1;
+    auto entity = oak_entity_player_get(id);
+
+    entity->input_enabled = state;
+
+    librg_send_to(&network_context, NETWORK_PLAYER_ENABLE_INPUT, entity->native_entity->client_peer, data, {
+        librg_data_wu8(&data, entity->input_enabled);
+        });
+}

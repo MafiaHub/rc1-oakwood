@@ -471,4 +471,11 @@ void add_messages() {
             }
         }
     });
+
+    librg_network_add(&network_context, NETWORK_PLAYER_ENABLE_INPUT, [](librg_message* msg) {
+        int state = librg_data_ru8(msg->data);
+        bool enable = state == 0;
+
+        input::block_input(enable);
+    });
 }

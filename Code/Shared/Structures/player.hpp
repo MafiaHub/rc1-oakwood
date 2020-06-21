@@ -74,6 +74,7 @@ struct mafia_player : public oak_object
 	u8 is_visible_on_map;
     u8 died_ingame;
 	u8 has_visible_nameplate;
+    u8 input_enabled;
 	char model[OAK_PLAYER_MODEL_SIZE];
 	char name[OAK_PLAYER_NAME_SIZE];
 	u32 aiming_time;

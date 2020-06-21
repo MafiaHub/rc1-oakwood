@@ -8,6 +8,10 @@ void add_messages()
         zpl_string_free(chat_line);
     });
 
+    librg_network_add(&network_context, NETWORK_CLEAR_CHAT, [](librg_message* msg) {
+        chat::clear_messages();
+    });
+
     librg_network_add(&network_context, NETWORK_DIALOG_OPEN, [](librg_message* msg) {
         dialog_data dialog;
         librg_data_rptr(msg->data, &dialog, sizeof(dialog_data));

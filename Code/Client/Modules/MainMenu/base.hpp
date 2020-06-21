@@ -140,7 +140,7 @@ namespace mainmenu {
                         if (key_name_next && ImGui::Button(key_name_next)) {
                             execute_picking(key_idx);
                         }
-                        if (!key_name_next && ImGui::Button("EMPTY")) {
+                        if (!key_name_next && ImGui::Button("NONE")) {
                             execute_picking(key_idx);
                         }
                         ImGui::PopID();
@@ -168,6 +168,7 @@ namespace mainmenu {
                 ImGui::Separator();
 
                 MafiaSDK::GameKey* game_key_buffer = MafiaSDK::GetKeysBuffer();
+
                 int key_idx = 33;
                 for (int i = 0; i < 15; i++) {
                     ImGui::Text(car_binds.at(i)); ImGui::NextColumn();
@@ -384,7 +385,7 @@ namespace mainmenu {
     inline void render() {
         if (is_picking_key == -1) {
             ImGui::SetNextWindowPosCenter();
-            ImGui::Begin("Mafia: Oakwood - Main Menu",
+            ImGui::Begin("Main Menu",
                 nullptr,
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoCollapse);

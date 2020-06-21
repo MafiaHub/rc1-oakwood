@@ -145,7 +145,7 @@ namespace dialog
         }
     }
 
-    char response[128] = "";
+    char response [128] = "";
 
     bool render()
     {
@@ -188,9 +188,10 @@ namespace dialog
                 break;
 
             case DIALOG_INPUT:
+                ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, NULL);
 
-                if (ImGui::Button(button1, ImVec2(120, 0)))
+                if (ImGui::Button(button1, ImVec2(120, 0)) || input::is_key_down(VK_RETURN))
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -199,10 +200,11 @@ namespace dialog
                         });
                     input::block_input(false);
                     isOpened = false;
+                    memset(response, 0, sizeof(response));
                 }
                 ImGui::SetItemDefaultFocus();
                 ImGui::SameLine();
-                if (ImGui::Button(button2, ImVec2(120, 0)))
+                if (ImGui::Button(button2, ImVec2(120, 0)) || input::is_key_down(VK_ESCAPE))
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -211,13 +213,14 @@ namespace dialog
                         });
                     input::block_input(false);
                     isOpened = false;
+                    memset(response, 0, sizeof(response));
                 }
                 break;
 
             case DIALOG_PASSWORD:
-                
+                ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, ImGuiInputTextFlags_Password);
-                if (ImGui::Button(button1, ImVec2(120, 0)))
+                if (ImGui::Button(button1, ImVec2(120, 0)) || input::is_key_down(VK_RETURN))
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -226,10 +229,11 @@ namespace dialog
                         });
                     input::block_input(false);
                     isOpened = false;
+                    memset(response, 0, sizeof(response));
                 }
                 ImGui::SetItemDefaultFocus();
                 ImGui::SameLine();
-                if (ImGui::Button(button2, ImVec2(120, 0)))
+                if (ImGui::Button(button2, ImVec2(120, 0)) || input::is_key_down(VK_ESCAPE))
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -238,6 +242,7 @@ namespace dialog
                         });
                     input::block_input(false);
                     isOpened = false;
+                    memset(response, 0, sizeof(response));
                 }
                 break;
             }

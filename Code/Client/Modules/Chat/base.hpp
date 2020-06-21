@@ -36,6 +36,10 @@ namespace chat {
         });
     }
 
+    inline void clear_messages() {
+        chat_messages.clear();
+    }
+
     inline void add_message(const std::string& msg) {
         chat_messages.push_back({
            ImColor(255, 255, 255, 255),
@@ -102,7 +106,7 @@ namespace chat {
         return false;
     }
 
-    inline void draw_colored_text(const char* fmt, ...)
+    inline void colored_text(const char* fmt, ...)
     {
         char tempStr[4096];
 
@@ -192,6 +196,23 @@ namespace chat {
             *(int*)0 = 42;
         });
 
+        register_command("/ver", [&](std::vector<std::string> args) {
+#if _DEBUG
+            const char* wat = "{aaaaaa}({ffff00}Development Build{aaaaaa})";
+#else
+            const char* wat = "";
+#endif
+            char msg[128];
+            char msg2[128];
+            char msg3[128];
+            sprintf(msg, "{ffffff}Mafia: {ff0000}Oakwood {00ff00}v%s %s", OAK_VERSION, wat);
+            sprintf(msg2, "{ffffff}Build date: {00ff00}%s", __DATE__);
+            sprintf(msg3, "{ffffff}Build time: {00ff00}%s", __TIME__);
+            add_message(std::string(msg));
+            add_message(std::string(msg2));
+            add_message(std::string(msg3));
+        });
+
         register_command("/savepos", [&](std::vector<std::string> args) {
             auto local_player = MafiaSDK::GetMission()->GetGame()->GetLocalPlayer();
 
@@ -262,17 +283,20 @@ namespace chat {
             ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
-            ImGuiWindowFlags_NoScrollbar);
-
-        auto screenHeight = MafiaSDK::GetIGraph()->Scrn_sy();
+            ImGuiWindowFlags_NoScrollbar |
+            ImGuiWindowFlags_NoBackground |
+            ImGuiWindowFlags_NoTitleBar);
 
         ImGui::SetWindowSize(ImVec2(400, 300));
-        ImGui::SetWindowPos(ImVec2(20, 20 /*screenHeight - (300+200)*/));
-        ImGui::BeginChild("scrolling");
+        ImGui::SetWindowPos(ImVec2(1, 1));
+
+        ImGui::PushFontShadow(0xFF000000);
+
+        ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar);
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
-                draw_colored_text("%s", message.second.c_str());
+                colored_text("%s", message.second.c_str());
             }
         }
 
@@ -306,15 +330,18 @@ namespace chat {
         }
 
         ImGui::EndChild();
+        ImGui::PopFontShadow();
 
         if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused()) {
 
             if (is_focused)
+            {
                 ImGui::SetKeyboardFocusHere(0);
-
-            ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
+                ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
+            }
         }
         ImGui::SetScrollHere(1.0f);
         ImGui::End();
+        
     }
 }

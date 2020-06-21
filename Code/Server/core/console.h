@@ -397,7 +397,7 @@ void oak_console_console_update_stats() {
 
     //NOTE(DavoSK): Update our debug tag every 200ms
     if (current_time - oak__console_last_console_update > 0.2f) {
-        oak_console_draw("%c[%c%c%c] %s | NET: %dKB / %dKB | TPS: %d (%.02f ms) | Players: %d / %d",
+        oak_console_draw("%c[%c%c%c] %s",
             132,
             130,
             oak_console_update_loader(),

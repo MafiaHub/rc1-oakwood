@@ -209,6 +209,22 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_VEHICLE_SET_VEL, [](librg_message* msg) {
+        auto entity_id = librg_data_rent(msg->data);
+        auto entity = librg_entity_fetch(&network_context, entity_id);
+        if (entity) {
+            zpl_vec3 velocity;
+
+            librg_data_rptr(msg->data, &velocity, sizeof(zpl_vec3));
+
+            auto vehicle = (mafia_vehicle*)entity->user_data;
+
+            if (vehicle) {
+                vehicle->car->GetInterface()->vehicle_interface.speed = EXPAND_VEC(velocity);
+            }
+        }
+    });
+
     librg_network_add(&network_context, NETWORK_VEHICLE_SET_DIR, [](librg_message* msg) {
         auto entity_id = librg_data_rent(msg->data);
         auto entity = librg_entity_fetch(&network_context, entity_id);

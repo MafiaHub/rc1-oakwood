@@ -16,6 +16,13 @@ int oak_chat_send(oak_player id, const char *text, int length) {
     return 0;
 }
 
+int oak_chat_clear(oak_player id) {
+    if (oak_player_invalid(id)) return -1;
+    auto entity = oak_entity_player_get(id);
+
+    librg_send_to(&network_context, NETWORK_CLEAR_CHAT, entity->native_entity->client_peer, data, {});
+}
+
 /**
  * Sned a message to all players
  * @param  text
