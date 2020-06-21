@@ -402,13 +402,7 @@ void oak_console_console_update_stats() {
             130,
             oak_console_update_loader(),
             132,
-            GlobalConfig.name,
-            oak_network_ctx_get()->network.host->totalReceivedData / 1024,
-            oak_network_ctx_get()->network.host->totalSentData / 1024,
-            oak__console_computed_fps,
-            1000.0f / oak__console_computed_fps,
-            (u32)GlobalConfig.players,
-            (u32)GlobalConfig.max_players);
+            GlobalConfig.name);
 
         oak__console_last_console_update = current_time;
     }
