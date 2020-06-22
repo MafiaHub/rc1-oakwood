@@ -30,6 +30,7 @@
 */
 
 #include <iostream>
+#include <regex>
 #include <string>
 #include <functional>
 #include <fstream>

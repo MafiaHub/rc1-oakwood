@@ -14,8 +14,8 @@ namespace chat {
     unsigned int chat_current_msg;
     constexpr unsigned int VK_T = 0x54;
     bool is_focused = false;
-    bool new_msg_arrived=false;
-   
+    bool new_msg_arrived = false;
+
     /* keys definitions */
     input::KeyToggle key_chat_open(VK_T);
     input::KeyToggle key_chat_send(VK_RETURN);
@@ -33,23 +33,84 @@ namespace chat {
         chat_messages.push_back({
             ImColor(255, 255, 255, 255),
             "Debug: " + msg
-        });
+            });
     }
 
     inline void clear_messages() {
         chat_messages.clear();
     }
 
-    inline void add_message(const std::string& msg) {
-        chat_messages.push_back({
-           ImColor(255, 255, 255, 255),
-           msg
-        });
+    inline std::vector<std::string> Split(const std::string& str, int splitLength)
+    {
+        int NumSubstrings = str.length() / splitLength;
+        std::vector<std::string> ret;
 
-        new_msg_arrived=true;
+        for (auto i = 0; i < NumSubstrings; i++)
+        {
+            ret.push_back(str.substr(i * splitLength, splitLength));
+        }
+
+        // If there are leftover characters, create a shorter item at the end.
+        if (str.length() % splitLength != 0)
+        {
+            ret.push_back(str.substr(splitLength * NumSubstrings));
+        }
+
+
+        return ret;
     }
 
-    inline void register_command(const std::string & name, std::function<void(std::vector<std::string>)> ptr) {
+    std::vector<std::string> Split(const std::string& str, const std::string& delim)
+    {
+        std::vector<std::string> tokens;
+        size_t prev = 0, pos = 0;
+        do
+        {
+            pos = str.find(delim, prev);
+            if (pos == std::string::npos) pos = str.length();
+            std::string token = str.substr(prev, pos - prev);
+            if (!token.empty()) tokens.push_back(token);
+            prev = pos + delim.length();
+        } while (pos < str.length() && prev < str.length());
+        return tokens;
+    }
+
+    inline std::string remove_colors(const std::string text) {
+        std::regex r("\\{(\\s*?.*?)*?\\}");
+        return std::regex_replace(text, r, "");
+    }
+
+    inline void add_message(const std::string& msg) {
+        int toSplit = 35;
+        std::string buf = "";
+        
+        std::vector<std::string> colWords = Split(msg, " ");
+        std::vector<std::string> words = Split(remove_colors(msg), " ");
+        std::vector<std::string> lines;
+
+        int size = 0;
+
+        for (int i = 0; i < words.size(); i++)
+        {
+            int strSize = words[i].size();
+            if ((size + strSize) < toSplit)
+            {
+                size += strSize;
+                buf += (colWords[i] + " ");
+            }
+            else
+            {
+                buf += (colWords[i] + "\n");
+                size = 0;
+            }
+        }
+
+        chat_messages.push_back({ ImColor(255, 255, 255, 255), buf });
+
+        new_msg_arrived = true;
+    }
+
+    inline void register_command(const std::string& name, std::function<void(std::vector<std::string>)> ptr) {
         if (ptr != nullptr) {
             chat_commands.push_back({ name, ptr });
         }
@@ -119,6 +180,7 @@ namespace chat {
         bool pushedColorStyle = false;
         const char* textStart = tempStr;
         const char* textCur = tempStr;
+
         while (textCur < (tempStr + sizeof(tempStr)) && *textCur != '\0')
         {
             if (*textCur == color_marker_start)

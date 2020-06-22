@@ -44,6 +44,11 @@ namespace dialog
     inline const char color_marker_start = '{';
     inline const char color_marker_end = '}';
 
+    inline std::string remove_colors(const std::string text) {
+        std::regex r(text);
+        std::string ret = std::regex_replace(text, r, "");
+    }
+
     inline bool process_inline_hex_color(const char* start, const char* end, ImVec4& color)
     {
         const int hexCount = (int)(end - start);
@@ -151,12 +156,14 @@ namespace dialog
     {
         if (!isOpened) return false;
 
+        bool canClose = false;
+
         input::block_input(true);
 
         ImGui::SetNextWindowPosCenter();
-        ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+        ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
         {
-            draw_colored_text(message);
+            ImGui::Text(message);
 
             switch (type)
             {
@@ -190,8 +197,9 @@ namespace dialog
             case DIALOG_INPUT:
                 ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, NULL);
+                ImGui::Text("Press ENTER to confirm, press ESC to cancel.");
 
-                if (ImGui::Button(button1, ImVec2(120, 0)) || input::is_key_down(VK_RETURN))
+                if (input::is_key_down(VK_RETURN) && isOpened)
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -202,9 +210,7 @@ namespace dialog
                     isOpened = false;
                     memset(response, 0, sizeof(response));
                 }
-                ImGui::SetItemDefaultFocus();
-                ImGui::SameLine();
-                if (ImGui::Button(button2, ImVec2(120, 0)) || input::is_key_down(VK_ESCAPE))
+                else if (input::is_key_down(VK_ESCAPE) && isOpened)
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -220,7 +226,8 @@ namespace dialog
             case DIALOG_PASSWORD:
                 ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, ImGuiInputTextFlags_Password);
-                if (ImGui::Button(button1, ImVec2(120, 0)) || input::is_key_down(VK_RETURN))
+                ImGui::Text("Press ENTER to confirm, press ESC to cancel.");
+                if (input::is_key_down(VK_RETURN) && isOpened)
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
@@ -231,9 +238,7 @@ namespace dialog
                     isOpened = false;
                     memset(response, 0, sizeof(response));
                 }
-                ImGui::SetItemDefaultFocus();
-                ImGui::SameLine();
-                if (ImGui::Button(button2, ImVec2(120, 0)) || input::is_key_down(VK_ESCAPE))
+                else if (input::is_key_down(VK_ESCAPE) && isOpened)
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
                         librg_data_wi32(&data, id);
