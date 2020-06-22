@@ -158,7 +158,7 @@ void oak_console_input_handler_init();
 void oak_console_input_handler_destroy();
 void oak_console_draw(const char *format, ...);
 void oak_console_printf(const char *format, ...);
-char oak_console_update_loader();
+char* oak_console_update_loader();
 void oak_console_block_input(int);
 void oak_console_console_update_stats();
 

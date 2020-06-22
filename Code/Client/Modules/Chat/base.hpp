@@ -80,8 +80,27 @@ namespace chat {
         return std::regex_replace(text, r, "");
     }
 
+    template < typename T>
+    std::pair<bool, int > findInVector(const std::vector<T>& vecOfElements, const T& element)
+    {
+        std::pair<bool, int > result;
+        // Find given element in vector
+        auto it = std::find(vecOfElements.begin(), vecOfElements.end(), element);
+        if (it != vecOfElements.end())
+        {
+            result.second = distance(vecOfElements.begin(), it);
+            result.first = true;
+        }
+        else
+        {
+            result.first = false;
+            result.second = -1;
+        }
+        return result;
+    }
+
     inline void add_message(const std::string& msg) {
-        int toSplit = 35;
+        int toSplit = 70;
         std::string buf = "";
         
         std::vector<std::string> colWords = Split(msg, " ");
@@ -100,8 +119,22 @@ namespace chat {
             }
             else
             {
-                buf += (colWords[i] + "\n");
-                size = 0;
+                std::pair<bool, int> result = findInVector<std::string>(words, words[i]);
+
+                if (result.first && result.second == words.size() - 1)
+                {
+                    std::vector<std::string> longToSplit = Split(remove_colors(colWords[i]), 28);
+                    for (auto str : longToSplit)
+                    {
+                        buf += (colWords[i] + "\n");
+                        size = 0;
+                    }
+                }
+                else
+                {
+                    buf += (colWords[i] + "\n");
+                    size = 0;
+                }
             }
         }
 
@@ -349,7 +382,7 @@ namespace chat {
             ImGuiWindowFlags_NoBackground |
             ImGuiWindowFlags_NoTitleBar);
 
-        ImGui::SetWindowSize(ImVec2(400, 300));
+        ImGui::SetWindowSize(ImVec2(800, 400));
         ImGui::SetWindowPos(ImVec2(1, 1));
 
         ImGui::PushFontShadow(0xFF000000);

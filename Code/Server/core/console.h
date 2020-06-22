@@ -356,23 +356,29 @@ inline void oak_console_printf(const char* format, ...) {
     va_end(arglist);
 }
 
-char oak_console_update_loader() {
+char* oak_console_update_loader() {
     static char cnt = -1;
     cnt++;
-    if (cnt > 3)
+    if (cnt > 6)
         cnt = 0;
 
     switch (cnt) {
     case 0:
-        return '/';
+        return "-----";
     case 1:
-        return '-';
+        return "*----";
     case 2:
-        return '\\';
+        return "-*---";
     case 3:
-        return '|';
+        return "--*--";
+    case 4:
+        return "---*-";
+    case 5:
+        return "----*";
+    case 6:
+        return "-----";
     }
-    return ' ';
+    return " ";
 }
 
 zpl_global f64 oak__console_last_console_update  = 0.0f;
@@ -397,12 +403,18 @@ void oak_console_console_update_stats() {
 
     //NOTE(DavoSK): Update our debug tag every 200ms
     if (current_time - oak__console_last_console_update > 0.2f) {
-        oak_console_draw("%c[%c%c%c] %s",
-            132,
+        char loader[16];
+        sprintf(loader, "%c[%c%s%c]", 132,
             130,
             oak_console_update_loader(),
-            132,
-            GlobalConfig.name);
+            132);
+
+        std::stringstream stream;
+        stream << std::fixed << std::setprecision(2) << 1000.0f / oak__console_computed_fps;
+
+        std::string text = std::string(loader) + " " + GlobalConfig.name + " | NET: " + std::to_string(oak_network_ctx_get()->network.host->totalReceivedData / 1024) + "KB / " + std::to_string(oak_network_ctx_get()->network.host->totalSentData / 1024) + "KB | TPS: " + std::to_string(oak__console_computed_fps) + " (" + stream.str() + " ms) | Players: " + std::to_string(GlobalConfig.players) + " / " + std::to_string(GlobalConfig.max_players);
+
+        oak_console_draw(text.c_str());
 
         oak__console_last_console_update = current_time;
     }

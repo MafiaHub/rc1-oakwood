@@ -32,6 +32,8 @@
 #include <clocale>
 #include <vector>
 #include <thread>
+#include <iomanip>
+#include <sstream>
 
 /*
 * STL-powered includes

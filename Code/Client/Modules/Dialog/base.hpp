@@ -45,8 +45,8 @@ namespace dialog
     inline const char color_marker_end = '}';
 
     inline std::string remove_colors(const std::string text) {
-        std::regex r(text);
-        std::string ret = std::regex_replace(text, r, "");
+        std::regex r("\\{(\\s*?.*?)*?\\}");
+        return std::regex_replace(text, r, "");
     }
 
     inline bool process_inline_hex_color(const char* start, const char* end, ImVec4& color)
@@ -78,14 +78,12 @@ namespace dialog
         return false;
     }
 
-    inline void draw_colored_text(const char* fmt, ...)
+    inline void draw_colored_text(const char* str)
     {
         char tempStr[4096];
 
-        va_list argPtr;
-        va_start(argPtr, fmt);
-        _vsnprintf(tempStr, sizeof(tempStr), fmt, argPtr);
-        va_end(argPtr);
+        sprintf(tempStr, str);
+
         tempStr[sizeof(tempStr) - 1] = '\0';
 
         bool pushedColorStyle = false;
@@ -150,6 +148,76 @@ namespace dialog
         }
     }
 
+    inline std::vector<std::string> Split(const std::string& str, int splitLength)
+    {
+        int NumSubstrings = str.length() / splitLength;
+        std::vector<std::string> ret;
+
+        for (auto i = 0; i < NumSubstrings; i++)
+        {
+            ret.push_back(str.substr(i * splitLength, splitLength));
+        }
+
+        // If there are leftover characters, create a shorter item at the end.
+        if (str.length() % splitLength != 0)
+        {
+            ret.push_back(str.substr(splitLength * NumSubstrings));
+        }
+
+
+        return ret;
+    }
+
+    std::vector<std::string> Split(const std::string& str, const std::string& delim)
+    {
+        std::vector<std::string> tokens;
+        size_t prev = 0, pos = 0;
+        do
+        {
+            pos = str.find(delim, prev);
+            if (pos == std::string::npos) pos = str.length();
+            std::string token = str.substr(prev, pos - prev);
+            if (!token.empty()) tokens.push_back(token);
+            prev = pos + delim.length();
+        } while (pos < str.length() && prev < str.length());
+        return tokens;
+    }
+
+    inline void formatted_colored_text(const char* fmt, ...) {
+        char tempStr[4096];
+        
+        va_list argPtr;
+        va_start(argPtr, fmt);
+        _vsnprintf(tempStr, sizeof(tempStr), fmt, argPtr);
+        va_end(argPtr);
+
+        int toSplit = 64;
+        std::string buf = "";
+
+        std::vector<std::string> colWords = Split(std::string(tempStr), " ");
+        std::vector<std::string> words = Split(remove_colors(std::string(tempStr)), " ");
+        std::vector<std::string> lines;
+
+        int size = 0;
+
+        for (int i = 0; i < words.size(); i++)
+        {
+            int strSize = words[i].size();
+            if ((size + strSize) < toSplit)
+            {
+                size += strSize;
+                buf += (colWords[i] + " ");
+            }
+            else
+            {
+                buf += (colWords[i] + "\n");
+                size = 0;
+            }
+        }
+
+        draw_colored_text(buf.c_str());
+    }
+
     char response [128] = "";
 
     bool render()
@@ -163,11 +231,13 @@ namespace dialog
         ImGui::SetNextWindowPosCenter();
         ImGui::Begin(title, nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
         {
-            ImGui::Text(message);
+            formatted_colored_text(message);
 
             switch (type)
             {
             case DIALOG_MSGBOX:
+                ImGui::Text("   Press ENTER to confirm, press ESC to cancel.   ");
+                ImGui::Text("                                                  ");
                 if (ImGui::Button(button1, ImVec2(120, 0)))
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
@@ -197,7 +267,7 @@ namespace dialog
             case DIALOG_INPUT:
                 ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, NULL);
-                ImGui::Text("Press ENTER to confirm, press ESC to cancel.");
+                ImGui::Text("   Press ENTER to confirm, press ESC to cancel.   ");
 
                 if (input::is_key_down(VK_RETURN) && isOpened)
                 {
@@ -226,7 +296,7 @@ namespace dialog
             case DIALOG_PASSWORD:
                 ImGui::SetKeyboardFocusHere(0);
                 ImGui::InputText(" ", response, 128, ImGuiInputTextFlags_Password);
-                ImGui::Text("Press ENTER to confirm, press ESC to cancel.");
+                ImGui::Text("   Press ENTER to confirm, press ESC to cancel.   ");
                 if (input::is_key_down(VK_RETURN) && isOpened)
                 {
                     librg_send(&network_context, NETWORK_DIALOG_DONE, data, {
