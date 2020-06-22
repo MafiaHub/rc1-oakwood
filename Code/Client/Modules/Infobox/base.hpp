@@ -7,11 +7,15 @@ std::function<void()> cb;
 void render()
 {
     ImGui::SetNextWindowPosCenter();
-    ImGui::Begin("Infobox", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin("Infobox", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
     {
         ImGui::Text(error.c_str());
 
-        if (ImGui::Button("OK"))
+        ImGui::NewLine();
+
+        ImGui::SameLine((ImGui::GetWindowWidth() / 2) - 60);
+
+        if (ImGui::Button("OK", ImVec2(120, 0)))
         {
             switchClientState(ClientState_Browser);
         }

@@ -13,15 +13,21 @@ void init(ServerInfo::ServerData data) {
 void render()
 {
     ImGui::SetNextWindowPosCenter();
-    ImGui::Begin("Password", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+    ImGui::Begin("Protected Access", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
     {
         ImGui::Text("Enter the password to access this server:");
 
-        ImGui::InputText("password", GlobalConfig.password, 32, ImGuiInputTextFlags_Password);
-
-        if (ImGui::Button("Connect"))
+        ImGui::SetKeyboardFocusHere(0);
+        ImGui::InputText(" ", GlobalConfig.password, 128, ImGuiInputTextFlags_Password);
+        ImGui::Text("   Press ENTER to confirm, press ESC to cancel.   ");
+        if (input::is_key_down(VK_RETURN))
         {
             ServerInfo::join_server(server);
+        }
+        else if (input::is_key_down(VK_ESCAPE))
+        {
+            memset(GlobalConfig.password, 0, sizeof(GlobalConfig.password));
+            switchClientState(ClientState_Browser);
         }
     }
     ImGui::End();

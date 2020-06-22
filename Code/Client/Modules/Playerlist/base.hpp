@@ -12,11 +12,12 @@ namespace playerlist {
             return;
 
         ImGui::SetNextWindowPosCenter();
-        ImGui::SetNextWindowSizeConstraints({ 230, -1 }, { 230, -1 });
-        ImGui::Begin("Mafia Oakwood - Player list",
+        ImGui::SetNextWindowSizeConstraints({ 520, -1 }, { 520, -1 });
+        ImGui::Begin("Player List",
             nullptr,
             ImGuiWindowFlags_NoMove |
             ImGuiWindowFlags_NoCollapse |
+            ImGuiWindowFlags_NoResize |
             ImGuiWindowFlags_AlwaysAutoResize);
 
         ImGui::Columns(3, "mycolumns");
@@ -30,7 +31,7 @@ namespace playerlist {
             auto scoreboard_info = current_scoreboard.players_info[i];
             ImGui::Text("%d", scoreboard_info.server_id); ImGui::NextColumn();
             ImGui::Text("%s", scoreboard_info.nickname); ImGui::NextColumn();
-            ImGui::Text("%d", scoreboard_info.ping); ImGui::NextColumn();
+            ImGui::Text("%dms", scoreboard_info.ping); ImGui::NextColumn();
         }
 
         ImGui::Columns(1);

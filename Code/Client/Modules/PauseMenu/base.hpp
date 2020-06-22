@@ -128,7 +128,8 @@ namespace pausemenu {
                 nullptr,
                 ImGuiWindowFlags_NoMove |
                 ImGuiWindowFlags_NoResize | 
-                ImGuiWindowFlags_NoCollapse);
+                ImGuiWindowFlags_NoCollapse |
+                ImGuiWindowFlags_NoResize);
 
             constexpr int padding = 100;
             auto width = MafiaSDK::GetIGraph()->Scrn_sx();
