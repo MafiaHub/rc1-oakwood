@@ -126,7 +126,7 @@ bool __fastcall OnHit(void* _this, DWORD edx, int type, S_vector* unk1,S_vector*
 		bool is_alive = player_int->humanObject.entity.isActive;
 
 		if (new_health <= 0.0f)
-			modules::player::died();
+			modules::player::died(attacker, 0, type, player_part);
 
         return ret_val;
 	}
@@ -195,12 +195,16 @@ BOOL __fastcall HumanDoShoot(void*_this, DWORD edx, BOOL do_shoot, S_vector* pos
 //----------------------
 void Player__OnSink()
 {
-    modules::player::died();
+    modules::player::died(modules::player::get_local_ped(), 2, 0, 0);
+}
+void Player__OnFall()
+{
+    modules::player::died(modules::player::get_local_ped(), 1, 0, 0);
 }
 
 __declspec(naked) void PlayerOnSink() {
 	__asm {
-		pushad
+        pushad
 			call Player__OnSink
 		popad
 
@@ -224,7 +228,7 @@ __declspec(naked) void PlayerSinkTwo() {
 __declspec(naked) void PlayerFall() {
 	__asm {
 		pushad
-			call Player__OnSink
+			call Player__OnFall
 		popad
 
 		// 0x0057BAB1

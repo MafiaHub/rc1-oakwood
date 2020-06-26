@@ -4,6 +4,7 @@ auto spawn(zpl_vec3 position,
                   zpl_vec3 rotation,
                   player_inventory inventory,
                   char *model,
+                  char *name,
                   u32 current_wep,
                   f32 health,
                   bool is_local_player,
@@ -19,7 +20,7 @@ auto spawn(zpl_vec3 position,
         printf("Error: Unable to create player model <%s> !\n", model);
     }
 
-    player_model->SetName(get_local_player()->name);
+    player_model->SetName(name);
     player_model->SetScale(default_scale);
     player_model->SetWorldPos(default_pos);
     player_model->Update();
@@ -70,17 +71,35 @@ auto spawn(zpl_vec3 position,
         new_ped->GetInterface()->humanObject.entity.rotation = EXPAND_VEC(rotation);
     }
 
+    for (size_t i = 0; i < 8; i++) {
+        S_GameItem* item = (S_GameItem*)&inventory.items[i];
+        if (item->weaponId != expectedWeaponId) {
+            new_ped->G_Inventory_AddItem(*item);
+        }
+    }
+    //TODO(DavoSK): Make it more fancy !
+    //Select right weapon
+    modules::player::select_by_id_original((void*)new_ped->GetInventory(), current_wep, nullptr);
+    new_ped->Do_ChangeWeapon(0, 0);
+    new_ped->ChangeWeaponModel();
+
+    //If player have hands do holster
+    if (current_wep == 0)
+        new_ped->Do_Holster();
+
     return new_ped;
 }
 
-auto giveWeapon(MafiaSDK::C_Human* player, int weapID, player_inventory inv) -> void { 
-    for (size_t i = 0; i < 8; i++) {
-        S_GameItem* item = (S_GameItem*)&inv.items[i];
+auto giveWeapon(MafiaSDK::C_Human* player, int weapID, int ammo1, int ammo2) -> void { 
 
-        player->G_Inventory_RemoveWeapon(item->weaponId);
+    weapon weap = weaponlist[weapID];
+    weap.item.ammoLoaded = ammo1;
+    weap.item.ammoHidden = ammo2;
 
-        player->G_Inventory_AddItem(*item);
-    }
+    player->G_Inventory_AddItem(*(S_GameItem*)&weap.item);
+    player->G_Inventory_SelectByID(weapID);
+    player->Do_ChangeWeapon(weapID, 0);
+    player->ChangeWeaponModel();
 }
 
 auto removeWeapon(MafiaSDK::C_Human* player, short weapID) -> void {
@@ -156,16 +175,33 @@ inline void on_key_pressed(bool down, unsigned long key) {
 }
 
 /*
-* todo add reason killer and so one ...
+Death reasons:
+    0: Killed by (or commited suicide)
+    1: Fell out of map
+    2: Drowned in the water
 */
-inline auto died() -> void {
+
+inline auto died(MafiaSDK::C_Actor* killer, int death_reason, DWORD hit_type, unsigned int player_part) -> void {
     
     if (local_player.dead) return;
 
     if (!local_player.dead)
         local_player.dead = true;
 
-    librg_message_send_all(&network_context, NETWORK_PLAYER_DIE, nullptr, 0);
+    auto killer_ent = get_player_from_base(killer);
+
+    if (killer_ent == nullptr)
+    {
+        killer_ent = get_local_entity();
+    }
+
+    librg_send(&network_context, NETWORK_PLAYER_DIE, data, {
+        librg_data_went(&data, killer_ent->id);
+        librg_data_wu32(&data, death_reason);
+        librg_data_wu32(&data, hit_type);
+        librg_data_wu32(&data, player_part);
+        });
+
     printf("[debug] died\n");
     
 

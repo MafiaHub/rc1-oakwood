@@ -1,5 +1,23 @@
 void add_messages()
 {
+    librg_network_add(&network_context, NETWORK_CREATE_EXPL, [](librg_message* msg) {
+        auto ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+        zpl_vec3 pos = { 0 };
+        float radius = librg_data_rf32(msg->data);
+        float force = librg_data_rf32(msg->data);
+        librg_data_rptr(msg->data, &pos, sizeof(pos));
+
+        auto data = (mafia_player*)ent->user_data;
+
+        S_vector vec = EXPAND_VEC(pos);
+
+        MafiaSDK::C_Actor *act = MafiaSDK::GetMission()->CreateActor(MafiaSDK::C_Mission_Enum::ObjectTypes::GhostObject);
+
+        MafiaSDK::GetMission()->GetGame()->NewExplosion(act, vec, radius, force, TRUE, TRUE, FALSE, 2);
+
+        MafiaSDK::GetMission()->DelActor(act);
+    });
+
     librg_network_add(&network_context, NETWORK_SEND_CHAT_MSG, [](librg_message *msg) {
         auto chat_len = librg_data_ru16(msg->data);
         zpl_string chat_line = zpl_string_make_reserve(zpl_heap(), chat_len);
@@ -10,11 +28,6 @@ void add_messages()
 
     librg_network_add(&network_context, NETWORK_CLEAR_CHAT, [](librg_message* msg) {
         chat::clear_messages();
-    });
-
-    librg_network_add(&network_context, NETWORK_DIALOG_OPEN, [](librg_message* msg) {
-        dialog_data dialog;
-        librg_data_rptr(msg->data, &dialog, sizeof(dialog_data));
     });
 
     librg_network_add(&network_context, NETWORK_HUD_FADEOUT, [](librg_message *msg) {
@@ -31,6 +44,14 @@ void add_messages()
         u32 msg_color = librg_data_ru32(msg->data);
         librg_data_rptr(msg->data, msg_buf, msg_size < 256 ? msg_size : 256);
         MafiaSDK::GetIndicators()->ConsoleAddText(reinterpret_cast<const char *>(msg_buf), msg_color);
+    });
+
+    librg_network_add(&network_context, NETWORK_KICK, [](librg_message* msg) {
+        if (clientActiveState == ClientState_Connected) {
+            switchClientState(ClientState_Infobox);
+            modules::infobox::displayError("You have been kicked from this server!");
+            librg_network_stop(&network_context);
+        }
     });
 
     librg_network_add(&network_context, NETWORK_SEND_REJECTION, [](librg_message *msg) {

@@ -78,13 +78,17 @@ void oak_bridge_event_player_disconnect(oak_player player) {
     nn_recv(sock_out, buffer, OAK_BRIDGE_BUFFER, 0);
 }
 
-void oak_bridge_event_player_death(oak_player player) {
+void oak_bridge_event_player_death(oak_player player, oak_player killer, int reason, int type, int part) {
     char buffer[OAK_BRIDGE_BUFFER] = {0};
     cw_pack_context pc = {0};
     cw_pack_context_init(&pc, buffer, OAK_BRIDGE_BUFFER, 0);
-    cw_pack_array_size(&pc, 2);
+    cw_pack_array_size(&pc, 6);
     cw_pack_str(&pc, zpl_str_expand("playerDeath"));
     cw_pack_signed(&pc, player);
+    cw_pack_signed(&pc, killer);
+    cw_pack_signed(&pc, reason);
+    cw_pack_signed(&pc, type);
+    cw_pack_signed(&pc, part);
     nn_send(sock_out, buffer, pc.current - pc.start, 0);
     nn_recv(sock_out, buffer, OAK_BRIDGE_BUFFER, 0);
 }

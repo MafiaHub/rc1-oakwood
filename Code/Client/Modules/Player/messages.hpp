@@ -3,11 +3,13 @@ void add_messages() {
     librg_network_add(&network_context, NETWORK_PLAYER_SPAWN, [](librg_message* msg) {
 
         zpl_vec3 position, rotation;
+        player_inventory inventory;
         char model[32];
         u32 player_entity_id = librg_data_ru32(msg->data);
         librg_data_rptr(msg->data, &position, sizeof(zpl_vec3));
         librg_data_rptr(msg->data, &rotation, sizeof(zpl_vec3));
         librg_data_rptr(msg->data, model, sizeof(char) * 32);
+        librg_data_rptr(msg->data, &inventory, sizeof(player_inventory));
         u32 current_wep = librg_data_ru32(msg->data);
         f32 health = librg_data_rf32(msg->data);
 
@@ -25,8 +27,9 @@ void add_messages() {
             auto ped = spawn(
                 position,
                 rotation,
-                player_inventory {},
+                inventory,
                 model,
+                player_data->name,
                 current_wep,
                 health,
                 is_local_player,
@@ -34,6 +37,7 @@ void add_messages() {
                 false);
 
             player_data->ped = ped;
+            player_data->current_weapon_id = current_wep;
         }
     });
 
@@ -78,17 +82,17 @@ void add_messages() {
         u32 player_entity_id = librg_data_ru32(msg->data);
         player_inventory inv;
         i32 weapon_id = librg_data_ri32(msg->data);
-        librg_data_rptr(msg->data, &inv, sizeof(player_inventory));
+        i32 ammo1 = librg_data_ri32(msg->data);
+        i32 ammo2 = librg_data_ri32(msg->data);
+        
 
         auto player = librg_entity_fetch(&network_context, player_entity_id);
         if (player && player->user_data) {
             auto data = (mafia_player*)player->user_data;
-            auto isLocal = player_entity_id == local_player.entity_id;
 
-            if (isLocal)
-            {
-                giveWeapon(data->ped, weapon_id, inv);
-            }
+            giveWeapon(data->ped, weapon_id, ammo1, ammo2);
+
+            data->current_weapon_id = weapon_id;
         }
     });
 

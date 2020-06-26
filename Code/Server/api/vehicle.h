@@ -347,7 +347,11 @@ int oak_vehicle_lock_get(oak_vehicle id) {
  * @return
  */
 int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int state) {
-    auto entity = oak_entity_vehicle_get(id); ZPL_ASSERT_NOT_NULL(entity);
+    if (oak_vehicle_invalid(id)) return -1;
+
+    auto entity = oak_entity_vehicle_get(id);
+
+    if (!entity) return -1;
 
     switch (type) {
         case OAK_VISIBILITY_ICON: {
@@ -384,7 +388,7 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
         } break;
 
         default:
-            ZPL_ASSERT_MSG(0, "oak_vehicle_visibility_set: specified visibility type is not implemented!");
+            return -1;
             break;
     }
 
@@ -398,7 +402,12 @@ int oak_vehicle_visibility_set(oak_vehicle id, oak_visiblity_type type, int stat
  * @return
  */
 int oak_vehicle_visibility_get(oak_vehicle id, oak_visiblity_type type) {
-    auto entity = oak_entity_vehicle_get(id); ZPL_ASSERT_NOT_NULL(entity);
+    if (oak_vehicle_invalid(id)) return -1;
+
+    auto entity = oak_entity_vehicle_get(id);
+
+    if (!entity) return -1;
+
 
     switch (type) {
         case OAK_VISIBILITY_ICON: return (int)entity->is_visible_on_map; break;
@@ -406,6 +415,15 @@ int oak_vehicle_visibility_get(oak_vehicle id, oak_visiblity_type type) {
         case OAK_VISIBILITY_COLLISION: return (int)entity->collision_state; break;
         default: return -1;
     }
+}
+
+int oak_vehicle_explode(oak_vehicle id)
+{
+    if (oak_vehicle_invalid(id)) return -1;
+
+    librg_send(&network_context, NETWORK_VEHICLE_BOOM, data, {
+        librg_data_wu32(&data, id);
+        });
 }
 
 /**

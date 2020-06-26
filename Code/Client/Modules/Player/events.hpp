@@ -127,6 +127,7 @@ inline auto entitycreate(librg_event* evnt) -> void {
         player->rotation,
         player->inventory,
         player->model,
+        player->name,
         player->current_weapon_id,
         player->health,
         false,

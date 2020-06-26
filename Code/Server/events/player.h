@@ -26,7 +26,7 @@ void oak_ev_player_requested(librg_event *evnt) {
     auto build_channel = librg_data_ru8(evnt->data);
 
     if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR || build_channel != OAK_BUILD_CHANNEL) {
-        oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^9rejected!^R\n^FOur version: ^A%s^R\t^FTheir version: ^A%d.%d.%d^R\n", hostname, OAK_VERSION, build_major, build_minor, build_patch);
+        oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^9rejected!^R\n^FOur version: ^A%s (%s)^R\t^FTheir version: ^A%d.%d.%d (%s)^R\n", hostname, OAK_VERSION, OAK_BUILD_TYPE, build_major, build_minor, build_patch, oak__build_channel[build_channel]);
         oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;
     }
@@ -103,7 +103,8 @@ void oak_ev_player_connected(librg_event *e) {
 
 void oak_ev_player_disconnected(librg_event *e) {
     auto player = oak_entity_player_get_from_native(e->entity);
-    ZPL_ASSERT_NOT_NULL(player);
+
+    if (!player) return;
 
     /* remove player from vehicle if any */
 
@@ -119,7 +120,8 @@ void oak_ev_player_disconnected(librg_event *e) {
 
 void oak_ev_player_create(librg_event *e) {
     auto player = oak_entity_player_get_from_native(e->entity);
-    ZPL_ASSERT_NOT_NULL(player);
+
+    if (!player) return;
 
     librg_data_wi32(e->data, player->vehicle_id);
     librg_data_wi32(e->data, player->streamer_entity_id);
@@ -143,7 +145,8 @@ void oak_ev_player_remove(librg_event *e) {
 
 void oak_ev_player_update(librg_event *e) {
     auto player = oak_entity_player_get_from_native(e->entity);
-    ZPL_ASSERT_NOT_NULL(player);
+    
+    if (!player) return;
 
     librg_data_wptr(e->data, &player->position, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &player->rotation, sizeof(zpl_vec3));
@@ -196,6 +199,11 @@ int oak_player_register() {
 
     librg_network_add(&network_context, NETWORK_PLAYER_DIE, [](librg_message *msg) {
         oak_player pid = (oak_player)librg_entity_find(&network_context, msg->peer)->user_data;
+        librg_entity_id killer_id = librg_data_rent(msg->data);
+        int reason = librg_data_ru32(msg->data);
+        int hit_type = librg_data_ru32(msg->data);
+        int player_part = librg_data_ru32(msg->data);
+
         if (oak_player_invalid(pid)) {
             return;
         }
@@ -209,7 +217,9 @@ int oak_player_register() {
             oak_vehicle_player_remove(vid, player->oak_id);
         }
 
-        oak_bridge_event_player_death(pid);
+        oak_player kid = (oak_player)librg_entity_fetch(msg->ctx, killer_id)->user_data;
+
+        oak_bridge_event_player_death(pid, kid, reason, hit_type, player_part);
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {

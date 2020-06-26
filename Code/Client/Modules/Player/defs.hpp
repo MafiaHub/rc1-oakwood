@@ -6,13 +6,14 @@ auto spawn(zpl_vec3 position,
                   zpl_vec3 rotation,
                   player_inventory inventory,
                   char *model,
+                  char *name,
                   u32 current_wep,
                   f32 health,
                   bool is_local_player, 
                   int expectedWeaponId,
                   bool is_in_car) -> MafiaSDK::C_Player *;
 auto despawn(MafiaSDK::C_Human* player) -> void;
-auto giveWeapon(MafiaSDK::C_Human* player, int weapID, player_inventory inv) -> void;
+auto giveWeapon(MafiaSDK::C_Human* player, int weapID, int ammo1, int ammo2) -> void;
 auto removeWeapon(MafiaSDK::C_Human* player, short weapID) -> void;
 inline auto get_local_entity();
 inline auto get_local_player() -> mafia_player*;
@@ -21,10 +22,7 @@ inline auto get_player_from_base(void* base) -> librg_entity*;
 inline auto get_vehicle_from_base(void* base) -> librg_entity*;
 inline auto on_key_pressed(bool down, unsigned long key) -> void;
 
-/* 
-* todo add reason killer and so one ...
-*/
-inline auto died() -> void;
+inline auto died(MafiaSDK::C_Actor* killer, int death_reason, DWORD hit_type, unsigned int player_part) -> void;
 inline auto hit(
     MafiaSDK::C_Human* victim,
     DWORD hit_type, 

@@ -171,8 +171,8 @@ namespace input {
         mod_wndproc_original_mouse = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_mouse);
         SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
 
-        auto hwnd = (HWND)MafiaSDK::GetIGraph()->GetMainHWND();
-        SetWindowTextA(GetForegroundWindow(), "Mafia: Oakwood");
+        SetWindowTextA(mod_win32_hwnd_parent, "Mafia: Oakwood");
+        SetWindowTextA(mod_win32_hwnd, "Mafia: Oakwood");
     }
 
     auto toggle_block_input() {

@@ -59,6 +59,7 @@ OAK_API int oak_logn(oak_string, int);
 
 OAK_API int   oak_killbox_set(float);
 OAK_API float oak_killbox_get();
+OAK_API int oak_create_explosion(oak_player, oak_vec3, float, float);
 
 /* ENTITY LISTS */
 
@@ -130,6 +131,7 @@ OAK_API int oak_vehicle_despawn(oak_vehicle);
 
 OAK_API int oak_vehicle_invalid(oak_vehicle);
 OAK_API int oak_vehicle_repair(oak_vehicle);
+OAK_API int oak_vehicle_explode(oak_vehicle);
 
 OAK_API int oak_vehicle_position_set(oak_vehicle, oak_vec3);
 OAK_API int oak_vehicle_direction_set(oak_vehicle, oak_vec3);

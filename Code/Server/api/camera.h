@@ -18,7 +18,11 @@
  * @return 0 on success
  */
 int oak_camera_set(oak_player id, oak_vec3 pos, oak_vec3 rot) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
+    if(oak_player_invalid(id)) return -1;
+
+    auto player = oak_entity_player_get(id);
+
+    if (!player) return -1;
 
     librg_send_to(&network_context, NETWORK_CAMERA_SET_POS, player->native_entity->client_peer, data, {
         librg_data_wptr(&data, &pos, sizeof(pos));
@@ -34,7 +38,12 @@ int oak_camera_set(oak_player id, oak_vec3 pos, oak_vec3 rot) {
  * @return
  */
 int oak_camera_unlock(oak_player id) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
+    if (oak_player_invalid(id)) return -1;
+
+    auto player = oak_entity_player_get(id);
+
+    if (!player) return -1;
+
     librg_message_send_to(&network_context, NETWORK_CAMERA_UNLOCK, player->native_entity->client_peer, NULL, 0);
 
     return 0;
@@ -47,8 +56,12 @@ int oak_camera_unlock(oak_player id) {
  * @return
  */
 int oak_camera_target_player(oak_player id, oak_player targetid) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
-    auto target = oak_entity_player_get(targetid); ZPL_ASSERT_NOT_NULL(target);
+    if (oak_player_invalid(id) || oak_player_invalid(targetid)) return -1;
+
+    auto player = oak_entity_player_get(id);
+    auto target = oak_entity_player_get(targetid);
+
+    if (!player || !target) return -1;
 
     OAK_CAMERA_TARGETING(player, target);
 
@@ -62,8 +75,12 @@ int oak_camera_target_player(oak_player id, oak_player targetid) {
  * @return
  */
 int oak_camera_target_vehicle(oak_player id, oak_vehicle targetid) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
-    auto target = oak_entity_vehicle_get(targetid); ZPL_ASSERT_NOT_NULL(target);
+    if (oak_player_invalid(id) || oak_vehicle_invalid(targetid)) return -1;
+
+    auto player = oak_entity_player_get(id);
+    auto target = oak_entity_vehicle_get(targetid);
+
+    if (!player || !target) return -1;
 
     OAK_CAMERA_TARGETING(player, target);
 
@@ -76,7 +93,11 @@ int oak_camera_target_vehicle(oak_player id, oak_vehicle targetid) {
  * @return
  */
 int oak_camera_target_unset(oak_player id) {
-    auto player = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(player);
+    if (oak_player_invalid(id)) return -1;
+
+    auto player = oak_entity_player_get(id);
+
+    if (!player) return -1;
 
     if (player->spec_id != -1) {
         librg_entity_visibility_set_for(&network_context, player->native_id, -1, LIBRG_DEFAULT_VISIBILITY);

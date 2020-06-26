@@ -113,6 +113,20 @@ void add_messages() {
         }
     });
 
+    librg_network_add(&network_context, NETWORK_VEHICLE_BOOM, [](librg_message* msg) {
+
+        u32 vehicle_id = librg_data_ru32(msg->data);
+        auto vehicle_ent = librg_entity_fetch(&network_context, vehicle_id);
+
+        if (vehicle_ent && vehicle_ent->user_data) {
+            auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+            if (vehicle->car) {
+                vehicle->car->CarExplosion(20);
+            }
+        }
+    });
+
     librg_network_add(&network_context, NETWORK_VEHICLE_DEFORM_DELTA, [](librg_message* msg) {
 
         u32 vehicle_id = librg_data_ru32(msg->data);

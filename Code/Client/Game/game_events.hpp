@@ -57,12 +57,13 @@ auto mod_bind_events()
     });
 
     MafiaSDK::C_Game_Hooks::HookLocalPlayerFallDown([&]() {
-        modules::player::died();
+        modules::player::died(modules::player::get_local_ped(), 1, 0, 0);
         local_player.dead = true;
     });
 
     MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
         delta_time = zpl_time_now() - last_time;
+
 
         switch (clientActiveState)
         {

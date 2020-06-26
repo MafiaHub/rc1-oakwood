@@ -2,7 +2,8 @@
 
 void oak_ev_vehicle_create(librg_event *e) {
     auto vehicle = oak_entity_vehicle_get((oak_vehicle)e->entity->user_data);
-    ZPL_ASSERT_NOT_NULL(vehicle);
+    
+    if (!vehicle) return;
 
     librg_data_wptr(e->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &vehicle->rot_up, sizeof(zpl_vec3));
@@ -43,7 +44,8 @@ void oak_ev_vehicle_create(librg_event *e) {
 
 void oak_ev_vehicle_update(librg_event *e) {
     auto vehicle = oak_entity_vehicle_get((oak_vehicle)e->entity->user_data);
-    ZPL_ASSERT_NOT_NULL(vehicle);
+
+    if (!vehicle) return;
 
     librg_data_wptr(e->data, &vehicle->rot_forward, sizeof(zpl_vec3));
     librg_data_wptr(e->data, &vehicle->rot_up, sizeof(zpl_vec3));

@@ -34,7 +34,7 @@ int oak_bridge_router(const char *, usize);
 
 void oak_bridge_event_player_connect(oak_player player);
 void oak_bridge_event_player_disconnect(oak_player player);
-void oak_bridge_event_player_death(oak_player player);
+void oak_bridge_event_player_death(oak_player player, oak_player killer, int reason, int type, int part);
 void oak_bridge_event_player_hit(oak_player player, oak_player attacker, float damage);
 void oak_bridge_event_player_key(oak_player player, int key, bool is_pressed);
 void oak_bridge_event_player_chat(oak_player player, const char *text);

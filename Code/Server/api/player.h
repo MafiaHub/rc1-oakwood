@@ -68,18 +68,12 @@ int oak_player_spawn(oak_player id, oak_vec3 position, float heading) {
     /* use player var as temp storage */
     player->rotation = ComputeDirVector(heading);
 
-    for (size_t i = 0; i < 8; i++)
-    {
-        player->inventory.items[i].weaponId = 0;
-        player->inventory.items[i].ammoLoaded = 0;
-        player->inventory.items[i].ammoHidden = 0;
-    }
-
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_SPAWN, data, {
         librg_data_wu32(&data, entity->id);
         librg_data_wptr(&data, &position, sizeof(oak_vec3));
         librg_data_wptr(&data, &player->rotation, sizeof(zpl_vec3));
         librg_data_wptr(&data, player->model, sizeof(char) * OAK_PLAYER_MODEL_SIZE);
+        librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
         librg_data_wu32(&data, player->current_weapon_id);
         librg_data_wf32(&data, player->health);
     });
@@ -142,15 +136,17 @@ int oak_player_kill(oak_player id) {
 }
 
 int oak_player_kick(oak_player id, const char *reason, int length) {
-    // todo: send reason
-
     auto player = oak_entity_player_get(id);
+
+    oak_console_printf("Kicking player %s for %s (%d)\n", player->name, reason, length);
 
     if (!player) {
         return -1;
     }
 
-    librg_network_kick(oak_network_ctx_get(), player->native_entity->client_peer);
+    librg_send_to(oak_network_ctx_get(), NETWORK_KICK, player->native_entity->client_peer, data, {
+        });
+
     return 0;
 }
 
@@ -279,7 +275,8 @@ int oak_player_give_weapon(oak_player id, int weapId, int ammoLoaded, int ammoIn
     librg_send(oak_network_ctx_get(), NETWORK_PLAYER_WEAPON_ADD, data, {
         librg_data_wu32(&data, player->native_entity->id);
         librg_data_wi32(&data, weapId);
-        librg_data_wptr(&data, &player->inventory, sizeof(player_inventory));
+        librg_data_wi32(&data, ammoLoaded);
+        librg_data_wi32(&data, ammoInInventory);
         });
 
     return 0;
@@ -465,7 +462,11 @@ float oak_player_heading_get(oak_player id) {
  * @return
  */
 int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state) {
-    auto entity = oak_entity_player_get(id); ZPL_ASSERT_NOT_NULL(entity);
+    if (oak_player_invalid(id)) return -1;
+
+    auto entity = oak_entity_player_get(id);
+
+    if (!entity) return -1;
 
     switch (type) {
         case OAK_VISIBILITY_ICON: {
@@ -491,7 +492,7 @@ int oak_player_visibility_set(oak_player id, oak_visiblity_type type, int state)
         } break;
 
         default:
-            ZPL_ASSERT_MSG(0, "oak_player_visibility_set: specified visibility type is not implemented!");
+            return -1;
             break;
     }
 
