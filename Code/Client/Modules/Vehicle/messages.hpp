@@ -246,6 +246,8 @@ void add_messages() {
             auto vehicle = (mafia_vehicle*)entity->user_data;
 
             librg_data_rptr(msg->data, &vehicle->rot_forward, sizeof(zpl_vec3));
+            lib_inter_reset(vehicle->interp.rot, EXPAND_VEC(vehicle->rot_forward));
+            vehicle->car->GetInterface()->vehicle_interface.rot_forward = EXPAND_VEC(vehicle->rot_forward);
         }
     });
 
