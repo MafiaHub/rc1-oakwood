@@ -12,6 +12,7 @@ project "Client"
         "**.cpp",
         "**.rc",
         "../../Vendors/semver/semver.c",
+        "../../Vendors/md5/md5.c",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../Shared/*.hpp",
@@ -21,6 +22,7 @@ project "Client"
 
     includedirs {
         "../../Vendors/semver",
+        "../../Vendors/md5"
     }
 
     flags "NoManifest"
@@ -29,6 +31,11 @@ project "Client"
     }
 
 	links {
+        "libcurl",
+        "Ws2_32",
+        "Wldap32",
+        "Normaliz",
+        "Crypt32",
 		"d3d9",
 		"d3dx9",
 		"detours",
@@ -49,4 +56,4 @@ project "Client"
     }
 
     filter "configurations:Production"
-        toolset "v141_xp" -- TODO: update to the future releases
+        toolset "v142" -- TODO: update to the future releases

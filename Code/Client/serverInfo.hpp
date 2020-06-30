@@ -21,9 +21,11 @@ struct ServerData
     std::string current_players;
     std::string mapname;
     std::string version;
+    std::string download_id, download_url;
     int port;
     bool valid;
     bool passworded;
+    bool needToDown;
 };
 
 ServerData lastServer;
@@ -178,8 +180,11 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     server_property = zpl_json_find(server_node, "pass", false);
     new_server_data.passworded = server_property->constant == ZPL_JSON_CONST_TRUE;
 
-    server_property = zpl_json_find(server_node, "mapname", false);
-    new_server_data.mapname = std::string(server_property->string);
+    server_property = zpl_json_find(server_node, "download-id", false);
+    if(server_property != nullptr) new_server_data.download_id = std::string(server_property->string);
+
+    server_property = zpl_json_find(server_node, "download-json", false);
+    if (server_property != nullptr) new_server_data.download_url = std::string(server_property->string);
 
     return new_server_data;
 }
@@ -226,6 +231,17 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
         GlobalConfig.passworded = false;
     }
 
+    if (server.download_url.size() && server.needToDown)
+    {
+        modules::dldialog::init(server);
+        GlobalConfig.needToDownload = true;
+        return;
+    }
+    else
+    {
+        GlobalConfig.needToDownload = false;
+    }
+
     GlobalConfig.reconnecting = false;
 
     strcpy(GlobalConfig.server_address, server.server_ip.c_str());
@@ -237,6 +253,8 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
     {
         server.mapname = "freeride";
     }
+
+    GlobalConfig.server_map = server.mapname;
 
     if (forceMapReload)
         MafiaSDK::GetMission()->MapLoad(server.mapname.c_str());
@@ -267,6 +285,17 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
         GlobalConfig.passworded = false;
     }
 
+    if (server.download_url.size() && server.needToDown)
+    {
+        modules::dldialog::init(server);
+        GlobalConfig.needToDownload = true;
+        return;
+    }
+    else
+    {
+        GlobalConfig.needToDownload = false;
+    }
+
     GlobalConfig.reconnecting = false;
 
     strcpy(GlobalConfig.server_address, server.server_ip.c_str());
@@ -278,6 +307,8 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
     {
         server.mapname = "freeride";
     }
+
+    GlobalConfig.server_map = server.mapname;
 
     input::block_input(false);
 

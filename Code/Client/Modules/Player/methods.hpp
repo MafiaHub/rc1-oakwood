@@ -202,7 +202,7 @@ inline auto died(MafiaSDK::C_Actor* killer, int death_reason, DWORD hit_type, un
         librg_data_wu32(&data, player_part);
         });
 
-    printf("[debug] died\n");
+    printf("[debug] diedw\n");
     
 
     /*auto player = get_local_player();

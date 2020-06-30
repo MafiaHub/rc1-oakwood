@@ -66,6 +66,9 @@ namespace imgui {
         else if (clientActiveState == ClientState_PasswordPrompt) {
             modules::passwordPrompt::render();
         }
+        else if (clientActiveState == ClientState_Downloading) {
+            modules::dldialog::render();
+        }
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -135,8 +138,8 @@ namespace imgui {
         style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.19f, 0.19f, 0.19f, 1.00f);
         style.Colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
         style.Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.68f, 0.68f, 0.68f, 1.00f);
-        style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.77f, 0.33f, 1.00f);
-        style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.87f, 0.55f, 0.08f, 1.00f);
+        style.Colors[ImGuiCol_PlotHistogram] = ImVec4(0.933f, 0.0f, 0.0f, 1.00f);
+        style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.633f, 0.0f, 0.0f, 1.00f);
         style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.47f, 0.60f, 0.76f, 0.47f);
         style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.58f, 0.58f, 0.58f, 0.90f);
         style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.60f, 0.60f, 0.60f, 1.00f);

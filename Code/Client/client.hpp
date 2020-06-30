@@ -22,6 +22,7 @@ enum ClientStates
     ClientState_Browser,
     ClientState_Infobox,
     ClientState_PasswordPrompt,
+    ClientState_Downloading,
     ClientState_Connecting,
     ClientState_Connected,
 };
@@ -32,22 +33,22 @@ void switchClientState(int state);
 
 namespace ServerInfo
 {
-struct ServerData;
+    struct ServerData;
 }
 
 namespace modules::infobox
 {
-void displayError(const std::string &, std::function<void()> _cb = nullptr);
+    void displayError(const std::string &, std::function<void()> _cb = nullptr);
 }
 
 namespace modules::passwordPrompt
 {
-void init(ServerInfo::ServerData data);
+    void init(ServerInfo::ServerData data);
 }
 
-namespace modules::dialog
+namespace modules::dldialog
 {
-    void init(int type, const char* title, const char* desc, const char* b1, const char* b2);
+    void init(ServerInfo::ServerData data);
 }
 
 struct _GlobalConfig
@@ -57,8 +58,10 @@ struct _GlobalConfig
     char username[32];
     char password[32];
     bool passworded;
+    bool needToDownload;
     bool reconnecting;
     float view_distance;
+    std::string server_map;
     std::string localpath;
     std::string gamepath;
     // NOTE(DavoSK): Better result with high delay values for vehicle interpolation

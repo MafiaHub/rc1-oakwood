@@ -58,11 +58,11 @@ void oak__masterlist_push() {
 
     switch (status) {
         case HTTP_STATUS_FAILED:
-            zpl_printf("[ERROR] Could not push update to the masterlist! \n\t%s: \"%s\" (%d)\n",
+            oak_console_printf("^F[^9ERROR^F] Could not push update to the masterlist! \n\t%s: \"%s\" (%d)^R\n",
                 req->reason_phrase, oak__masterlist_response(req), req->status_code);
 
             if (req->status_code == 502) {
-                oak_log("Masterlist is down! Please, contact developers!");
+                oak_log("^AMasterlist is down! Please, contact developers!^R");
             }
 
             http_release(req);
@@ -74,7 +74,7 @@ void oak__masterlist_push() {
             http_release(req);
 
             if (!was_push_successful)
-                oak_log("Successfully registered to the masterlist!");
+                oak_log("^FSuccessfully registered to the masterlist!^R");
 
             was_push_successful = true;
             req = nullptr;

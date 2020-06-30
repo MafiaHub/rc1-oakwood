@@ -1,7 +1,5 @@
 namespace dialog
 {
-    #include "messages.hpp"
-
     bool isOpened = false;
 
     char *title, *message, *button1, *button2;

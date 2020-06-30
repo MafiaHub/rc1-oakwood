@@ -143,10 +143,11 @@ int main(int argc, char **argv)
 
     if (!geo_ip)
     {
-        oak_log("^F[^9ERROR^F] Cannot load GeoIP information, GeoIP functions are disabled!^R\n");
+        oak_log("^F[^9ERROR^F] Cannot load GeoIP database, GeoIP functions are disabled!^R\n");
     }
     else
     {
+        oak_log("^F[^5INFO^F] GeoIP database loaded!^R\n");
         GeoIP_set_charset(geo_ip, GEOIP_CHARSET_UTF8);
         //_GeoIP_setup_dbfilename();
     }

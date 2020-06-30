@@ -91,7 +91,7 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     g_gamepath  = std::string(gamepath);
 
     zpl_file_contents gamefile = zpl_file_read_contents(zpl_heap(), true, gamepath.c_str());
-    zpl_printf("[info] loaded game binary (%lf MB)\n", gamefile.size / 1024.0f / 1024.0f);
+    zpl_printf("[info] loaded game binary (%.1f MB)\n", gamefile.size / 1024.0f / 1024.0f);
 
     u32 gamefile_hash = zpl_crc32(gamefile.data, gamefile.size);
     if (gamefile_hash != 0xFE21781 && gamefile_hash != 0xD6A991EA) {
@@ -103,15 +103,8 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     ExecutableLoader loader((const u8 *)gamefile.data);
 
     loader.SetLibraryLoader([](const char* library) -> HMODULE {
-        //zpl_printf("[info] library: %s\n", library);
-        auto base = LoadLibraryA(library);
-        
-        if(!_strcmpi(library, "rw_data.dll")) 
-        {
-            *(BYTE*)(((DWORD)base + 0x12C98)) = 1;
-        }
-
-        return base;
+        zpl_printf("[info] library: %s\n", library);
+        return LoadLibraryA(library);
     });
 
     loader.SetFunctionResolver([](HMODULE hmod, const char* exportFn) -> LPVOID {

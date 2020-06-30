@@ -90,6 +90,17 @@
 #include <dinput.h>
 
 /*
+* CURL
+*/
+
+#include <curl/curl.h>
+
+/*
+* MD5 Library
+*/
+#include <md5/md5.h>
+
+/*
 * Shared
 */
 
@@ -121,12 +132,46 @@
 #include "profile.hpp"
 #include "serverInfo.hpp"
 #include "Input/input.hpp"
+#include "Game/filesystem.hpp"
 #include "modules.hpp"
 #include "Network/base.hpp"
 #include "Graphics/base.hpp"
 #include "Graphics/elements.hpp"
 #include "Game/base.hpp"
 #include "stateManager.hpp"
+
+DWORD JumpBackMenu = 0x00594896;
+__declspec(naked) void HookMultipleMenus() {
+    __asm {
+        MOV EAX, 0x0A9
+        jmp JumpBackMenu
+    }
+}
+
+__declspec(naked) void RETN4() {
+    __asm retn 0x4
+}
+
+auto mod_init_patches() {
+    MafiaSDK::C_Game_Patches::PatchDisableLogos();
+    MafiaSDK::C_Game_Patches::PatchDisableGameScripting();
+    MafiaSDK::C_Game_Patches::PatchCustomPlayerRespawning();
+    MafiaSDK::C_Game_Patches::PatchRemovePlayer();
+    MafiaSDK::C_Game_Patches::PatchDisableSuspendProcess();
+    MafiaSDK::C_Game_Patches::PatchDisableInventory();
+    MafiaSDK::C_Game_Patches::PatchDisablePauseMenu();
+    MafiaSDK::C_Game_Patches::PatchJumpToGame("tutorial");
+
+    MemoryPatcher::InstallJmpHook(0x005EA7E0, (DWORD)&RETN4);
+
+    // 0004E034A
+    // Force update car physics
+    BYTE patchCarPhysics[] = "\xE9\xF1\x00\x00\x00\x90";
+    MemoryPatcher::PatchAddress(0x0004E034A, patchCarPhysics, sizeof(patchCarPhysics));
+
+    //NOTE(DavoSK): Remove multiple AB selection menu
+    MemoryPatcher::InstallJmpHook(0x00594885, (DWORD)&HookMultipleMenus);
+}
 
 ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath, const char* ip, int port)
 {
@@ -137,4 +182,5 @@ ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath, c
 
     mod_init_game();
     mod_init_patches();
+    mod_init_fs();
 }

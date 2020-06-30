@@ -103,12 +103,8 @@ void add_messages() {
         auto player = librg_entity_fetch(&network_context, player_entity_id);
         if (player && player->user_data) {
             auto data = (mafia_player*)player->user_data;
-            auto isLocal = player_entity_id == local_player.entity_id;
 
-            if (isLocal)
-            {
-                removeWeapon(data->ped, weapon);
-            }
+            removeWeapon(data->ped, weapon);
         }
     });
 

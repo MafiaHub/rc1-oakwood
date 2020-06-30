@@ -13,6 +13,23 @@ void oak_ev_player_send_rejection(u32 type, librg_event *evnt) {
     });
 }
 
+void oak_ev_player_send_downloads(librg_event* evnt) {
+    std::string msg = GlobalConfig.host == "" ? "127.0.0.1" : GlobalConfig.host + ":" + std::to_string((int)GlobalConfig.port);
+
+    std::string url = "http://" + msg + "/files.json";
+
+    char hostname[128] = { 0 };
+    enet_address_get_host_ip(&evnt->peer->address, hostname, 128);
+    oak_console_printf("^F[^5INFO^F] Sending file list '%s' to ^B'%s'^R\n", url.c_str(), hostname);
+    const char* h = url.c_str();
+    librg_send_to(&network_context, NETWORK_FORCE_DOWNLOAD, evnt->peer, data, {
+            librg_data_wu16(&data, url.size());
+            librg_data_wu16(&data, GlobalConfig.download_id.size());
+            librg_data_wptr(&data, (void*)url.c_str(), url.size());
+            librg_data_wptr(&data, (void*)GlobalConfig.download_id.c_str(), GlobalConfig.download_id.size());
+        });
+}
+
 void oak_ev_player_requested(librg_event *evnt) {
     auto peer_ip = evnt->peer->address;
 
@@ -71,6 +88,18 @@ void oak_ev_player_requested(librg_event *evnt) {
             oak_ev_player_send_rejection(REJECTION_WH, evnt);
             return;
         }
+    }
+
+    FILE* file = fopen("static/files.json", "rb");
+
+    if (file)
+    {
+        fclose(file);
+        oak_ev_player_send_downloads(evnt);
+    }
+    else
+    {
+        oak_console_printf("Cannot open file list: %s", GetLastErrorAsString().c_str());
     }
 
     /* NOTE: dont forget to free the temp data ptr */

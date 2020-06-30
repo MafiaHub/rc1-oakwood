@@ -33,7 +33,8 @@ auto mod_bind_events()
         // Note: tutorial map is reserved for main browser state
         if (strcmp(mission_name, "tutorial") == 0 &&
             ((clientActiveState != ClientState_Infobox)
-                && (clientActiveState != ClientState_PasswordPrompt)))
+                && (clientActiveState != ClientState_PasswordPrompt)
+                && (clientActiveState != ClientState_Downloading)))
         {
             switchClientState(ClientState_Browser);
             return;
@@ -69,6 +70,7 @@ auto mod_bind_events()
         {
         case ClientState_Infobox:
         case ClientState_PasswordPrompt:
+        case ClientState_Downloading:
         case ClientState_Browser:
         {
             auto game = MafiaSDK::GetMission()->GetGame();
