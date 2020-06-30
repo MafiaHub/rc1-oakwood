@@ -138,8 +138,6 @@ int oak_player_kill(oak_player id) {
 int oak_player_kick(oak_player id, const char *reason, int length) {
     auto player = oak_entity_player_get(id);
 
-    oak_console_printf("Kicking player %s for %s (%d)\n", player->name, reason, length);
-
     if (!player) {
         return -1;
     }

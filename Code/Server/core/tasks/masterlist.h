@@ -62,7 +62,7 @@ void oak__masterlist_push() {
                 req->reason_phrase, oak__masterlist_response(req), req->status_code);
 
             if (req->status_code == 502) {
-                oak_log("^AMasterlist is down! Please, contact developers!^R");
+                oak_log("^F[^9ERROR^F] ^AMasterlist is down! Please, contact developers!\n^R");
             }
 
             http_release(req);
@@ -74,7 +74,7 @@ void oak__masterlist_push() {
             http_release(req);
 
             if (!was_push_successful)
-                oak_log("^FSuccessfully registered to the masterlist!^R");
+                oak_log("^F[^5INFO^F] ^FSuccessfully registered to the masterlist!\n^R");
 
             was_push_successful = true;
             req = nullptr;
