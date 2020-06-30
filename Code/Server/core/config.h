@@ -12,8 +12,7 @@ static const char *oak__config_mod_default = "\n"\
     "killbox = -40.0\n"\
     "bridge_inbound = \"ipc://oakwood-inbound\"\n"\
     "bridge_outbound = \"ipc://oakwood-outbound\"\n"\
-    "whitelist = false\n"\
-    "download_id = \"oak-default\"";
+    "whitelist = false\n";
 
 struct _GlobalConfig {
     std::string name;
@@ -26,8 +25,6 @@ struct _GlobalConfig {
     std::string password;
     std::string bridge_inbound, bridge_outbound;
     b32 visible;
-    std::string download_id;
-    std::string download_url;
 } GlobalConfig;
 
 int oak_config_init() {
@@ -47,7 +44,6 @@ int oak_config_init() {
     json_apply(json, whOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
     json_apply(json, GlobalConfig.bridge_inbound, bridge_inbound, string, "ipc://oakwood-inbound");
     json_apply(json, GlobalConfig.bridge_outbound, bridge_outbound, string, "ipc://oakwood-outbound");
-    json_apply(json, GlobalConfig.download_id, download_id, string, "oak-default");
 
     if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
         GlobalConfig.visible = false;
@@ -56,10 +52,6 @@ int oak_config_init() {
 
     oak_access_wh_load();
     oak_access_bans_load();
-
-    std::string msg = GlobalConfig.host == "" ? "127.0.0.1" : GlobalConfig.host + ":" + std::to_string((int)GlobalConfig.port);
-
-    GlobalConfig.download_url = "http://" + msg + "/files.json";
 
     bool isAnyHost = (GlobalConfig.host == "");
 

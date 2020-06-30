@@ -180,11 +180,21 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
     server_property = zpl_json_find(server_node, "pass", false);
     new_server_data.passworded = server_property->constant == ZPL_JSON_CONST_TRUE;
 
-    server_property = zpl_json_find(server_node, "download-id", false);
-    if(server_property != nullptr) new_server_data.download_id = std::string(server_property->string);
+    std::string w = new_server_data.server_ip + ":" + std::to_string(new_server_data.port);
 
-    server_property = zpl_json_find(server_node, "download-json", false);
-    if (server_property != nullptr) new_server_data.download_url = std::string(server_property->string);
+    md5_state_t state;
+    md5_byte_t digest[16];
+    char hex_output[16 * 2 + 1];
+    int di;
+
+    md5_init(&state);
+    md5_append(&state, (const md5_byte_t*)w.c_str(), w.size());
+    md5_finish(&state, digest);
+    for (di = 0; di < 16; ++di)
+        sprintf(hex_output + di * 2, "%02x", digest[di]);
+
+    new_server_data.download_id = std::string(hex_output);
+    new_server_data.download_url = "http://" + w + "/files.json";
 
     return new_server_data;
 }

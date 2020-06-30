@@ -152,6 +152,12 @@ int main(int argc, char **argv)
         //_GeoIP_setup_dbfilename();
     }
 
+    oak_console_printf("^F[^5INFO^F] Loading files... ");
+
+    system("genlist.exe");
+
+    oak_console_printf("^R");
+
     oak_webserver_init();
     oak_bridge_init();
     oak_network_init();

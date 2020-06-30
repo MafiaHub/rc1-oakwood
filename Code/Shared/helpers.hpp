@@ -8,7 +8,7 @@ std::string get_platform_path() {
     auto temp_pos = temp_path.rfind("\\");
     return temp_path.erase(temp_pos, std::string::npos);
 }
-#endif
+
 
 std::string GetLastErrorAsString()
 {
@@ -28,3 +28,4 @@ std::string GetLastErrorAsString()
 
     return message;
 }
+#endif
