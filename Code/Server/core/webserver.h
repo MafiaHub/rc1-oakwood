@@ -20,6 +20,22 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
     nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
+static void oak__webserver_handle_files(struct mg_connection* nc, int ev, void* p) {
+    std::string filelist = "";
+
+    for (int i = 0; i < jfiles.size(); i++) {
+        filelist += "{\n    \"name\":\"" + jfiles[i].first + "\", \n    \"hash\":\"" + jfiles[i].second + "\"\n}";
+
+        if (i + 1 != jfiles.size())
+            filelist += ",\n";
+    }
+
+    std::string json = "{\"files\":[\n" + filelist + "]\n}";
+
+    mg_printf(nc, "HTTP/1.0 200 OK\r\n\r\n%s", json.c_str());
+    nc->flags |= MG_F_SEND_AND_CLOSE;
+}
+
 zpl_isize oak__webserver_runner(struct zpl_thread *t) {
     while (web_server_running) {
         mg_mgr_poll(&mgr, 1);
@@ -46,6 +62,7 @@ void oak_webserver_init() {
     s_http_server_opts.enable_directory_listing = "yes";
 
     mg_register_http_endpoint(nc, "/info", oak__webserver_handle_info);
+    mg_register_http_endpoint(nc, "/files", oak__webserver_handle_files);
 
     zpl_thread_init(&web_thread);
     zpl_thread_start(&web_thread, oak__webserver_runner, NULL);

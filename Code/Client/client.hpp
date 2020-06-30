@@ -58,6 +58,7 @@ struct _GlobalConfig
     char username[32];
     char password[32];
     bool passworded;
+    bool alreadyHasPassword;
     bool needToDownload;
     bool reconnecting;
     float view_distance;

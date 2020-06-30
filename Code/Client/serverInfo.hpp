@@ -289,8 +289,9 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
     //     return;
     // }
 
-    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.reconnecting) {
+    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.alreadyHasPassword && !GlobalConfig.reconnecting) {
         modules::passwordPrompt::init(server);
+        GlobalConfig.alreadyHasPassword = true;
         GlobalConfig.passworded = true;
         return;
     } else if (!server.passworded) {

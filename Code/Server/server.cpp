@@ -35,6 +35,9 @@
 #include <iomanip>
 #include <sstream>
 
+#include <filesystem>
+#include <md5.h>
+
 /*
 * STL-powered includes
 */
@@ -75,6 +78,7 @@
 #include "core/bridge.h"
 #include "core/bridge.generated.h"
 #include "core/endpoints.h"
+#include "core/files.h"
 #include "core/webserver.h"
 
 #include "core/tasks/killbox.h"
@@ -152,16 +156,12 @@ int main(int argc, char **argv)
         //_GeoIP_setup_dbfilename();
     }
 
-    oak_console_printf("^F[^5INFO^F] Loading files... ");
-
-    system("genlist.exe");
-
-    oak_console_printf("^R");
-
     oak_webserver_init();
     oak_bridge_init();
     oak_network_init();
     oak_entities_init();
+
+    generate_list();
 
     oak_console_input_handler_init();
 
