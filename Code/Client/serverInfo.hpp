@@ -241,6 +241,8 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
         GlobalConfig.passworded = false;
     }
 
+    server.needToDown = true;
+
     if (server.download_url.size() && server.needToDown)
     {
         modules::dldialog::init(server);
@@ -295,7 +297,7 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
         GlobalConfig.passworded = false;
     }
 
-    if (server.download_url.size() && server.needToDown)
+    if (server.download_url.size() && clientActiveState != ClientState_Downloading && !GlobalConfig.reconnecting)
     {
         modules::dldialog::init(server);
         GlobalConfig.needToDownload = true;

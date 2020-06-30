@@ -14,6 +14,8 @@ const char *launcher_localpath();
 int launcher_abort(const char *msg);
 int launcher_gameinit(std::string localpath, std::string gamepath);
 
+#define OAKWOOD_CONSOLE 1
+
 /* small local helper */
 #define concat(local, path) (local + "/" + path).c_str()
 #define json_apply(OBJ, VAR, NAME, STR, DEF, CAST)           \

@@ -47,9 +47,14 @@ void add_messages()
     });
 
     librg_network_add(&network_context, NETWORK_KICK, [](librg_message* msg) {
+        u16 len = librg_data_ru16(msg->data);
+        zpl_string reason = zpl_string_make_reserve(zpl_heap(), len);
+        librg_data_rptr(msg->data, reason, len);
+
         if (clientActiveState == ClientState_Connected) {
             switchClientState(ClientState_Infobox);
-            modules::infobox::displayError("You have been kicked from this server!");
+            std::string txt = "You have been kicked from this server!\n\nReason: " + std::string(reason);
+            modules::infobox::displayError(txt.c_str());
             librg_network_stop(&network_context);
         }
     });

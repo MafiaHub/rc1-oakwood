@@ -145,6 +145,8 @@ int oak_player_kick(oak_player id, const char *reason, int length) {
     }
 
     librg_send_to(oak_network_ctx_get(), NETWORK_KICK, player->native_entity->client_peer, data, {
+            librg_data_wu16(&data, length);
+            librg_data_wptr(&data, (void*)reason, length);
         });
 
     return 0;
