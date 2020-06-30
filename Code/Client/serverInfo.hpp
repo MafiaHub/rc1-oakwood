@@ -194,7 +194,7 @@ inline ServerData populate_server_data(zpl_json_object *server_node)
         sprintf(hex_output + di * 2, "%02x", digest[di]);
 
     new_server_data.download_id = std::string(hex_output);
-    new_server_data.download_url = "http://" + w + "/files.json";
+    new_server_data.download_url = "http://" + w + "/files";
 
     return new_server_data;
 }
@@ -232,8 +232,9 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
     //     return;
     // }
 
-    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.reconnecting) {
+    if (server.passworded && clientActiveState != ClientState_PasswordPrompt && !GlobalConfig.alreadyHasPassword && !GlobalConfig.reconnecting) {
         modules::passwordPrompt::init(server);
+        GlobalConfig.alreadyHasPassword = true;
         GlobalConfig.passworded = true;
         return;
     }
@@ -241,17 +242,11 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
         GlobalConfig.passworded = false;
     }
 
-    server.needToDown = true;
-
-    if (server.download_url.size() && server.needToDown)
+    if (server.download_url.size() && !GlobalConfig.needToDownload)
     {
         modules::dldialog::init(server);
         GlobalConfig.needToDownload = true;
         return;
-    }
-    else
-    {
-        GlobalConfig.needToDownload = false;
     }
 
     GlobalConfig.reconnecting = false;
@@ -298,15 +293,11 @@ inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true
         GlobalConfig.passworded = false;
     }
 
-    if (server.download_url.size() && clientActiveState != ClientState_Downloading && !GlobalConfig.reconnecting)
+    if (server.download_url.size() && !GlobalConfig.needToDownload)
     {
         modules::dldialog::init(server);
         GlobalConfig.needToDownload = true;
         return;
-    }
-    else
-    {
-        GlobalConfig.needToDownload = false;
     }
 
     GlobalConfig.reconnecting = false;

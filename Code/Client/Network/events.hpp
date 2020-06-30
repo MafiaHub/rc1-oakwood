@@ -40,6 +40,9 @@ void handle_disconnection()
 
     car_delte_queue.clear();
 
+    GlobalConfig.alreadyHasPassword = false;
+    GlobalConfig.needToDownload = false;
+
     //librg_free(&network_context);
     //mod_init_networking();
 }

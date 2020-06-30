@@ -23,14 +23,23 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
 static void oak__webserver_handle_files(struct mg_connection* nc, int ev, void* p) {
     std::string filelist = "";
 
-    for (int i = 0; i < jfiles.size(); i++) {
-        filelist += "{\n    \"name\":\"" + jfiles[i].first + "\", \n    \"hash\":\"" + jfiles[i].second + "\"\n}";
+    std::string json;
 
-        if (i + 1 != jfiles.size())
-            filelist += ",\n";
+    if (jfiles.size() >= 1)
+    {
+        for (int i = 0; i < jfiles.size(); i++) {
+            filelist += "{\n    \"name\":\"" + jfiles[i].first + "\", \n    \"hash\":\"" + jfiles[i].second + "\"\n}";
+
+            if (i + 1 != jfiles.size())
+                filelist += ",\n";
+        }
+
+        json = "{\"files\":[\n" + filelist + "]\n}";
     }
-
-    std::string json = "{\"files\":[\n" + filelist + "]\n}";
+    else
+    {
+        json = "";
+    }
 
     mg_printf(nc, "HTTP/1.0 200 OK\r\n\r\n%s", json.c_str());
     nc->flags |= MG_F_SEND_AND_CLOSE;
