@@ -17,13 +17,9 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
     oak_endp_payload_info(buf);
 
 #ifdef WIN32
-#define SYS_TYPE "Win-VS2019"
+#define SYS_TYPE "Win32"
 #elif __APPLE__
 #define SYS_TYPE "MacOS"
-#elif __MINGW32__
-#define SYS_TYPE "Win-MinGW-x86)"
-#elif __MINGW64__
-#define SYS_TYPE "Win-MinGW-x64)"
 #elif __linux__
 #define SYS_TYPE "Linux"
 #endif
