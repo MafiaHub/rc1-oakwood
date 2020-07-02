@@ -14,6 +14,7 @@ project "Server"
         "../../Vendors/http/mongoose.h",
         "../../Vendors/http/mongoose.h",
         "../../Vendors/semver/semver.c",
+        "../../Vendors/md5/md5.c",
         "../../Vendors/*.h",
         "../../Vendors/*.hpp",
         "../../Vendors/librg/*.h",
@@ -28,6 +29,7 @@ project "Server"
         "../../Vendors/semver",
         "../../Vendors",
         "../../Vendors/nanomsg/include",
+        "../../Vendors/md5",
     }
 
     defines {

@@ -16,7 +16,19 @@ static void oak__webserver_handle_info(struct mg_connection* nc, int ev, void* p
 
     oak_endp_payload_info(buf);
 
-    mg_printf(nc, "HTTP/1.0 200 OK\r\n\r\n%s", buf);
+#ifdef WIN32
+#define SYS_TYPE "Win-VS2019"
+#elif __APPLE__
+#define SYS_TYPE "MacOS"
+#elif __MINGW32__
+#define SYS_TYPE "Win-MinGW-x86)"
+#elif __MINGW64__
+#define SYS_TYPE "Win-MinGW-x64)"
+#elif __linux__
+#define SYS_TYPE "Linux"
+#endif
+
+    mg_printf(nc, "HTTP/1.0 200 OK\nServer: Oakwood/%s (%s)\nContent-Length: %d\nContent-Type: application/json\nConnection: Closed\r\n\r\n%s", OAK_VERSION, SYS_TYPE, strlen(buf), buf);
     nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
@@ -28,20 +40,28 @@ static void oak__webserver_handle_files(struct mg_connection* nc, int ev, void* 
     if (jfiles.size() >= 1)
     {
         for (int i = 0; i < jfiles.size(); i++) {
-            filelist += "{\n    \"name\":\"" + jfiles[i].first + "\", \n    \"hash\":\"" + jfiles[i].second + "\"\n}";
+            filelist += "    {\n        \"name\": \"" + jfiles[i].first + "\", \n        \"hash\": \"" + jfiles[i].second + "\"\n    }";
 
             if (i + 1 != jfiles.size())
                 filelist += ",\n";
         }
 
-        json = "{\"files\":[\n" + filelist + "]\n}";
+        json = "{\n    \"files\": [\n" + filelist + "]\n}";
     }
     else
     {
         json = "";
     }
 
-    mg_printf(nc, "HTTP/1.0 200 OK\r\n\r\n%s", json.c_str());
+    #ifdef WIN32
+        #define SYS_TYPE "Win32"
+    #elif __APPLE__
+        #define SYS_TYPE "MacOS"
+    #elif __linux__
+        #define SYS_TYPE "Linux"
+    #endif
+
+    mg_printf(nc, "HTTP/1.0 200 OK\nServer: Oakwood/%s (%s)\nContent-Length: %d\nContent-Type: application/json\nConnection: Closed\r\n\r\n%s", OAK_VERSION, SYS_TYPE, json.size(), json.c_str());
     nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
