@@ -134,8 +134,21 @@ void add_messages() {
         if (sender_ent && sender_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
 
-            /*if (sender->ped)
-                sender->ped->Intern_ForceDeath();*/
+            if (sender->ped)
+                sender->ped->Intern_ForceDeath();
+        }
+    });
+
+    librg_network_add(&network_context, NETWORK_PLAYER_FORCEKILL, [](librg_message* msg) {
+        auto sender_ent = librg_entity_fetch(&network_context, librg_data_rent(msg->data));
+
+        if (sender_ent && sender_ent->user_data) {
+            auto sender = (mafia_player*)sender_ent->user_data;
+
+            if (sender->ped)
+            {
+                sender->ped->Intern_ForceDeath();
+            }
         }
     });
 

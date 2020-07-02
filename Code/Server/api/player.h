@@ -132,6 +132,10 @@ int oak_player_kill(oak_player id) {
         }
     }
 
+    librg_send(oak_network_ctx_get(), NETWORK_PLAYER_FORCEKILL, data, {
+        librg_data_went(&data, player->native_id);
+        });
+
     return res;
 }
 
