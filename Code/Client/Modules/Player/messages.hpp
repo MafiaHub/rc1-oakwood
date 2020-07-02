@@ -134,8 +134,8 @@ void add_messages() {
         if (sender_ent && sender_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
 
-            if (sender->ped)
-                sender->ped->Intern_ForceDeath();
+            /*if (sender->ped)
+                sender->ped->Intern_ForceDeath();*/
         }
     });
 
