@@ -65,6 +65,13 @@ int oak_player_spawn(oak_player id, oak_vec3 position, float heading) {
     auto player = oak_entity_player_get(id);
     auto entity = player->native_entity;
 
+    if (librg_entity_valid(oak_network_ctx_get(), player->vehicle_id)) {
+        auto vid = oak_entity_vehicle_get_from_native(
+            librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id))->oak_id;
+
+        oak_vehicle_player_remove(vid, player->oak_id);
+    }
+
     /* use player var as temp storage */
     player->rotation = ComputeDirVector(heading);
 

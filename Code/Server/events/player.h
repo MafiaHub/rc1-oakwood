@@ -210,13 +210,6 @@ int oak_player_register() {
 
         auto player = oak_entity_player_get(pid);
 
-        if (librg_entity_valid(oak_network_ctx_get(), player->vehicle_id)) {
-            auto vid = oak_entity_vehicle_get_from_native(
-                librg_entity_fetch(oak_network_ctx_get(), player->vehicle_id))->oak_id;
-
-            oak_vehicle_player_remove(vid, player->oak_id);
-        }
-
         oak_player kid = (oak_player)librg_entity_fetch(msg->ctx, killer_id)->user_data;
 
         oak_bridge_event_player_death(pid, kid, reason, hit_type, player_part);
