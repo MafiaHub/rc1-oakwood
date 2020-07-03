@@ -3,7 +3,7 @@ namespace pausemenu {
 
     inline bool check_input() {
         bool state = !!esc_key;
-        if (state) {
+        if (state && menuActiveState != Menu_Dialog) {
             if (menuActiveState == Menu_Pause) {
                 menuActiveState = Menu_Chat;
                 input::block_input(false);

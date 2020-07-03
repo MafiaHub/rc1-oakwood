@@ -35,6 +35,8 @@ namespace dialog
 
             button2 = b2;
             
+            menuActiveState = Menu_Dialog;
+
             isOpened = true;
         });
     }
@@ -218,6 +220,12 @@ namespace dialog
 
     char response [128] = "";
 
+    void waitAndChangeState()
+    {
+        Sleep(50);
+        menuActiveState = Menu_Chat;
+    }
+
     bool render()
     {
         if (!isOpened) return false;
@@ -244,6 +252,9 @@ namespace dialog
                         });
                     input::block_input(false);
                     isOpened = false;
+                    std::thread thr(waitAndChangeState);
+
+                    thr.detach();
                 }
                 if (len4 > 1)
                 {
@@ -257,6 +268,9 @@ namespace dialog
                             });
                         input::block_input(false);
                         isOpened = false;
+                        std::thread thr(waitAndChangeState);
+
+                        thr.detach();
                     }
                 }
                 break;
@@ -276,6 +290,9 @@ namespace dialog
                     input::block_input(false);
                     isOpened = false;
                     memset(response, 0, sizeof(response));
+                    std::thread thr(waitAndChangeState);
+
+                    thr.detach();
                 }
                 else if (input::is_key_down(VK_ESCAPE) && isOpened)
                 {
@@ -287,6 +304,9 @@ namespace dialog
                     input::block_input(false);
                     isOpened = false;
                     memset(response, 0, sizeof(response));
+                    std::thread thr(waitAndChangeState);
+
+                    thr.detach();
                 }
                 break;
 
@@ -304,6 +324,9 @@ namespace dialog
                     input::block_input(false);
                     isOpened = false;
                     memset(response, 0, sizeof(response));
+                    std::thread thr(waitAndChangeState);
+
+                    thr.detach();
                 }
                 else if (input::is_key_down(VK_ESCAPE) && isOpened)
                 {
@@ -315,6 +338,9 @@ namespace dialog
                     input::block_input(false);
                     isOpened = false;
                     memset(response, 0, sizeof(response));
+                    std::thread thr(waitAndChangeState);
+
+                    thr.detach();
                 }
                 break;
             }
