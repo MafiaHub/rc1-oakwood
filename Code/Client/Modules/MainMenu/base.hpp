@@ -398,33 +398,40 @@ namespace mainmenu {
 
             if (ImGui::BeginTabBar("blah")) {
                 if (ImGui::BeginTabItem("Server Browser")) {
-                    ImGui::Columns(4, "mycolumns");
-                    ImGui::Text("Name"); ImGui::NextColumn();
-                    ImGui::Text("Host"); ImGui::NextColumn();
-                    ImGui::Text("Players"); ImGui::NextColumn();
-                    ImGui::Text("Port"); ImGui::NextColumn();
-                    ImGui::Separator();
-
-                    for (auto server : servers) {
-                        if (ImGui::Button(server.server_name.c_str())) {
-                            if (::strnicmp(GlobalConfig.username, "ChangeName", 10) == 0 ||
-                                ::strlen(GlobalConfig.username) == 0)
-                            {
-                                modules::infobox::displayError("You need to set your nickname first! See Player tab.");
-                            }
-                            else
-                            {
-                                Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
-                                ServerInfo::join_server(server);
-                            }
-                        } ImGui::NextColumn();
-
-                        ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
-                        ImGui::Text("%s/%s", server.current_players.c_str(), server.max_players.c_str()); ImGui::NextColumn();
-                        ImGui::Text("%d", server.port); ImGui::NextColumn();
+                    if (servers.size() == 0)
+                    {
+                        ImGui::Text("Sorry, but there aren't any available servers now. :(");
                     }
+                    else
+                    {
+                        ImGui::Columns(4, "mycolumns");
+                        ImGui::Text("Name"); ImGui::NextColumn();
+                        ImGui::Text("Host"); ImGui::NextColumn();
+                        ImGui::Text("Players"); ImGui::NextColumn();
+                        ImGui::Text("Port"); ImGui::NextColumn();
+                        ImGui::Separator();
 
-                    ImGui::Columns(1);
+                        for (auto server : servers) {
+                            if (ImGui::Button(server.server_name.c_str())) {
+                                if (::strnicmp(GlobalConfig.username, "ChangeName", 10) == 0 ||
+                                    ::strlen(GlobalConfig.username) == 0)
+                                {
+                                    modules::infobox::displayError("You need to set your nickname first! See Player tab.");
+                                }
+                                else
+                                {
+                                    Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+                                    ServerInfo::join_server(server);
+                                }
+                            } ImGui::NextColumn();
+
+                            ImGui::Text("%s", server.server_ip.c_str()); ImGui::NextColumn();
+                            ImGui::Text("%s/%s", server.current_players.c_str(), server.max_players.c_str()); ImGui::NextColumn();
+                            ImGui::Text("%d", server.port); ImGui::NextColumn();
+                        }
+
+                        ImGui::Columns(1);
+                    }
                     ImGui::Separator();
 
                     if (ImGui::Button("Refresh")) {

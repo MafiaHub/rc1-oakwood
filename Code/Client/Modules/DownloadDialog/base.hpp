@@ -264,6 +264,11 @@ namespace dldialog
 
             isDownloading = false;
         }
+        else
+        {
+            GlobalConfig.noNeedToLoad = true;
+            printf("There's no need to load any files. :)\n");
+        }
 
         server.needToDown = false;
 
@@ -274,6 +279,8 @@ namespace dldialog
     {
         server = data;
 
+        modules::conndlg::text = "Getting download list..";
+            
         baseURL = std::string(data.download_url);
         folder = std::string(data.download_id);
 
@@ -321,6 +328,8 @@ namespace dldialog
 
         if (jsonText != "{}")
         {
+            modules::conndlg::text = "Preparing download...";
+
             std::thread thr(startDownload);
             thr.detach();
         }

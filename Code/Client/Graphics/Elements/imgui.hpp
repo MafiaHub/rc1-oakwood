@@ -66,6 +66,9 @@ namespace imgui {
         else if (clientActiveState == ClientState_PasswordPrompt) {
             modules::passwordPrompt::render();
         }
+        else if (clientActiveState == ClientState_TryingToConnect) {
+            modules::conndlg::render();
+        }
         else if (clientActiveState == ClientState_Downloading) {
             modules::dldialog::render();
         }

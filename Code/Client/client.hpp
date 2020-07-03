@@ -22,6 +22,7 @@ enum ClientStates
     ClientState_Browser,
     ClientState_Infobox,
     ClientState_PasswordPrompt,
+    ClientState_TryingToConnect,
     ClientState_Downloading,
     ClientState_Connecting,
     ClientState_Connected,
@@ -39,6 +40,11 @@ namespace ServerInfo
 namespace modules::infobox
 {
     void displayError(const std::string &, std::function<void()> _cb = nullptr);
+}
+
+namespace modules::conndlg
+{
+    extern std::string text;
 }
 
 namespace modules::passwordPrompt
@@ -60,6 +66,7 @@ struct _GlobalConfig
     bool passworded;
     bool alreadyHasPassword = false;
     bool needToDownload;
+    bool noNeedToLoad = true;
     bool reconnecting;
     float view_distance;
     std::string server_map;

@@ -366,15 +366,15 @@ char* oak_console_update_loader() {
     case 0:
         return "-----";
     case 1:
-        return "*----";
+        return " ----";
     case 2:
-        return "-*---";
+        return "- ---";
     case 3:
-        return "--*--";
+        return "-- --";
     case 4:
-        return "---*-";
+        return "--- -";
     case 5:
-        return "----*";
+        return "---- ";
     case 6:
         return "-----";
     }
@@ -404,8 +404,7 @@ void oak_console_console_update_stats() {
     //NOTE(DavoSK): Update our debug tag every 200ms
     if (current_time - oak__console_last_console_update > 0.2f) {
         char loader[16];
-        sprintf(loader, "%c[%c%s%c]", 132,
-            130,
+        sprintf(loader, "%c[%s%c]", 132,
             oak_console_update_loader(),
             132);
 

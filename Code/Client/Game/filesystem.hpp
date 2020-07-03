@@ -31,7 +31,7 @@ bool fileExists(const std::string& name) {
 
 auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
 {
-    if (modpath == "")
+    if (modpath == "" || GlobalConfig.noNeedToLoad)
     {
         DWORD res = DtaOpen(filename, params);
         if (res < 0)
@@ -43,8 +43,6 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
 
     std::string newfile = modpath + "\\" + std::string(filename);
 
-    printf("%s\n", newfile.c_str());
-
     std::string gpath = GlobalConfig.gamepath;
 
     replaceAll(gpath, "/Game.exe", "");
@@ -53,8 +51,6 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
     std::string checkfile = gpath + modpath + "\\" + std::string(filename);
 
     DWORD res;
-
-    printf("%s\n", checkfile.c_str());
 
     if (fileExists(checkfile))
     {

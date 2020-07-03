@@ -234,7 +234,6 @@ namespace dialog
             switch (type)
             {
             case DIALOG_MSGBOX:
-                ImGui::Text("   Press ENTER to confirm, press ESC to cancel.   ");
                 ImGui::Text("                                                  ");
                 if (ImGui::Button(button1, ImVec2(120, 0)))
                 {

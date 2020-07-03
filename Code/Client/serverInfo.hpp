@@ -219,6 +219,8 @@ inline ServerData fetch_server_data(std::string addr, int port)
 
 inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = true)
 {
+    clientActiveState = ClientState_TryingToConnect;
+
     // server connection data is invalid, assume the server is offline
     if (!server.valid)
     {
@@ -271,6 +273,9 @@ inline void join_server_wi(ServerInfo::ServerData server, b32 forceMapReload = t
 
 inline void join_server(ServerInfo::ServerData server, b32 forceMapReload = true)
 {
+    clientActiveState = ClientState_TryingToConnect;
+    modules::conndlg::text = "Connecting to " + server.server_ip + ":" + std::to_string(server.port);
+
     // server connection data is invalid, assume the server is offline
     if (!server.valid)
     {

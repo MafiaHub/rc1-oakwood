@@ -11,7 +11,7 @@ void render()
     {
         ImGui::Text(error.c_str());
 
-        ImGui::NewLine();
+        ImGui::Text("                                                                                            ");
 
         ImGui::SameLine((ImGui::GetWindowWidth() / 2) - 60);
 
