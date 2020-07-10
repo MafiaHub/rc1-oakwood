@@ -4,11 +4,12 @@
 #include "semver.h"
 
 static semver_t oak__version = {0};
-static const char *oak__build_channel[4] = {
+static const char *oak__build_channel[5] = {
     "Undefined",
     "Development",
     "Testing",
     "Release",
+    "Pre-Release"
 };
 
 #define OAK_NAME "Oakwood"

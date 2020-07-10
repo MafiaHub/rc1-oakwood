@@ -81,7 +81,7 @@ namespace dldialog
 
     void createDlList()
     {
-        replaceAll(baseURL, "/files.json", "");
+        replaceAll(baseURL, "/files", "");
 
         std::string gpath = GlobalConfig.gamepath;
 
@@ -182,7 +182,7 @@ namespace dldialog
         std::string gpath = GlobalConfig.gamepath;
 
         replaceAll(gpath, "//Game.exe", "");
-        replaceAll(burl, "/files.txt", "");
+        replaceAll(burl, "/files", "");
         replaceAll(path, burl + "/", "");
         replaceAll(wpath, burl + "/", "");
         replaceAll(path, "/", "\\");
@@ -263,6 +263,7 @@ namespace dldialog
             }
 
             isDownloading = false;
+            GlobalConfig.noNeedToLoad = false;
         }
         else
         {

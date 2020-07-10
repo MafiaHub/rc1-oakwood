@@ -292,8 +292,10 @@ namespace chat {
         });
 
         register_command("/ver", [&](std::vector<std::string> args) {
-#if _DEBUG
+#if _DEBUG == 1
             const char* wat = "{aaaaaa}({ffff00}Development Build{aaaaaa})";
+#elif OAK_BUILD_CHANNEL == 4
+            const char* wat = "{aaaaaa}({ffff00}Pre-Release Build{aaaaaa})";
 #else
             const char* wat = "";
 #endif

@@ -70,36 +70,54 @@ void generate_list()
 
         if (n == "models" || n == "maps" || n == "sounds" || n == "anims")
         {
-            auto files = get_files(dir);
-            for (auto file : files)
+            try
             {
-                auto p2 = SplitFilename(file);
+                auto files = get_files(dir);
+                for (auto file : files)
+                {
+                    auto p2 = SplitFilename(file);
 
-                auto f = d1 + "/" + p2.second;
+                    auto f = d1 + "/" + p2.second;
 
-                auto h = get_hash(file);
+                    auto h = get_hash(file);
 
-                jfiles.push_back(std::make_pair(f, h));
+                    oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
+
+                    jfiles.push_back(std::make_pair(f, h));
+                }
+            }
+            catch (const std::bad_array_new_length & e)
+            {
+                // Do nothing, i just put that here to prevent server from crashing
             }
         }
         else if (n == "missions")
         {
-            auto dirs2 = get_directories(dir);
-            for (auto dir2 : dirs2)
+            try
             {
-                auto p2 = SplitFilename(dir2);
-                auto d2 = p2.second;
-                auto files = get_files(dir2);
-                for (auto file : files)
+                auto dirs2 = get_directories(dir);
+                for (auto dir2 : dirs2)
                 {
-                    auto p3 = SplitFilename(file);
+                    auto p2 = SplitFilename(dir2);
+                    auto d2 = p2.second;
+                    auto files = get_files(dir2);
+                    for (auto file : files)
+                    {
+                        auto p3 = SplitFilename(file);
 
-                    auto f = d1 + "/" + d2 + "/" + p3.second;
+                        auto f = d1 + "/" + d2 + "/" + p3.second;
 
-                    auto h = get_hash(file);
+                        auto h = get_hash(file);
 
-                    jfiles.push_back(std::make_pair(f, h));
+                        oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
+
+                        jfiles.push_back(std::make_pair(f, h));
+                    }
                 }
+            }
+            catch (const std::bad_array_new_length & e)
+            {
+                // Do nothing, i just put that here to prevent server from crashing
             }
         }
     }
