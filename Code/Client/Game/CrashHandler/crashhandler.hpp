@@ -50,9 +50,13 @@ namespace crashhandler
     }
 
     inline void send_report(char* report_buffer) {
+        
+        std::string buf(report_buffer);
 
-        std::string starting_params = "\"" + std::string(GlobalConfig.username) + "|" + std::string(GlobalConfig.server_address) + "|" + std::string(report_buffer) + "\"";
-        auto stuff = launch_process("bin\\oakreport.exe", starting_params);
+        replaceAll(buf, "\n", "{br}");
+
+        std::string starting_params = "\"" + std::string(GlobalConfig.username) + "|" + std::string(GlobalConfig.server_address) + ":" + std::to_string(GlobalConfig.port) + "|" + buf + "\"";
+        auto stuff = launch_process("bin\\CrashHandler.exe", starting_params);
         ResumeThread(stuff.hThread);
     }
 

@@ -96,6 +96,7 @@
 #pragma pack(push, 8)
 #if _MSC_VER >= 1300
 #include <dbghelp.h>
+#include <string>
 #else
 // inline the important dbghelp.h-declarations...
 typedef enum
@@ -1417,6 +1418,23 @@ void StackWalker::OnDbgHelpErr(LPCSTR szFuncName, DWORD gle, DWORD64 addr)
   OnOutput(buffer);
 }
 
+std::string getSysVer()
+{
+    std::string ret;
+    NTSTATUS(WINAPI * RtlGetVersion)(LPOSVERSIONINFOEXW);
+    OSVERSIONINFOEXW osInfo;
+
+    *(FARPROC*)&RtlGetVersion = GetProcAddress(GetModuleHandleA("ntdll"), "RtlGetVersion");
+
+    if (NULL != RtlGetVersion)
+    {
+        osInfo.dwOSVersionInfoSize = sizeof(osInfo);
+        RtlGetVersion(&osInfo);
+        ret = std::to_string(osInfo.dwMajorVersion) + "." + std::to_string(osInfo.dwMinorVersion) + "." + std::to_string(osInfo.dwBuildNumber);
+    }
+    return ret;
+}
+
 void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName)
 {
   CHAR   buffer[STACKWALK_MAX_NAMELEN];
@@ -1430,32 +1448,18 @@ void StackWalker::OnSymInit(LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUser
   OnOutput(buffer);
   // Also display the OS-version
 #if _MSC_VER <= 1200
-  OSVERSIONINFOA ver;
-  ZeroMemory(&ver, sizeof(OSVERSIONINFOA));
-  ver.dwOSVersionInfoSize = sizeof(ver);
-  if (GetVersionExA(&ver) != FALSE)
-  {
-    _snprintf_s(buffer, maxLen, "OS-Version: %d.%d.%d (%s)\n", ver.dwMajorVersion,
-                ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion);
-    buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-    OnOutput(buffer);
-  }
+  _snprintf_s(buffer, maxLen, "OS-Version: %s\n", getSysVer().c_str());
+  buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
+  OnOutput(buffer);
 #else
-  OSVERSIONINFOEXA ver;
-  ZeroMemory(&ver, sizeof(OSVERSIONINFOEXA));
-  ver.dwOSVersionInfoSize = sizeof(ver);
 #if _MSC_VER >= 1900
 #pragma warning(push)
 #pragma warning(disable : 4996)
 #endif
-  if (GetVersionExA((OSVERSIONINFOA*)&ver) != FALSE)
-  {
-    _snprintf_s(buffer, maxLen, "OS-Version: %d.%d.%d (%s) 0x%x-0x%x\n", ver.dwMajorVersion,
-                ver.dwMinorVersion, ver.dwBuildNumber, ver.szCSDVersion, ver.wSuiteMask,
-                ver.wProductType);
-    buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
-    OnOutput(buffer);
-  }
+
+  _snprintf_s(buffer, maxLen, "OS-Version: %s\n", getSysVer().c_str());
+  buffer[STACKWALK_MAX_NAMELEN - 1] = 0;
+  OnOutput(buffer);
 #if _MSC_VER >= 1900
 #pragma warning(pop)
 #endif
