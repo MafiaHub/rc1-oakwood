@@ -15,8 +15,6 @@ namespace Oakwood.CrashReporter
         [STAThread]
         static void Main(string[] args)
         {
-            File.WriteAllText("args.txt", string.Join(", ", args));
-
             if(args.Length < 1)
             {
                 MessageBox.Show("Nice try. :)", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
