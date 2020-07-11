@@ -385,7 +385,7 @@ namespace chat {
             ImGuiWindowFlags_NoTitleBar);
 
         ImGui::SetWindowSize(ImVec2(800, 400));
-        ImGui::SetWindowPos(ImVec2(1, 1));
+        ImGui::SetWindowPos(ImVec2(1, 250));
 
         ImGui::PushFontShadow(0xFF000000);
 
