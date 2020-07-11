@@ -363,6 +363,13 @@ namespace chat {
         return false;
     }
 
+    int yPos = 1;
+
+    inline void set_chat_y(int pos)
+    {
+        yPos = pos;
+    }
+
     inline void render() {
         if (key_chat_open && !is_focused) {
             is_focused = true;
@@ -385,7 +392,7 @@ namespace chat {
             ImGuiWindowFlags_NoTitleBar);
 
         ImGui::SetWindowSize(ImVec2(800, 400));
-        ImGui::SetWindowPos(ImVec2(1, 250));
+        ImGui::SetWindowPos(ImVec2(1, yPos));
 
         ImGui::PushFontShadow(0xFF000000);
 

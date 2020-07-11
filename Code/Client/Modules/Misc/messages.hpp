@@ -70,6 +70,7 @@ void add_messages()
 
         case REJECTION_PASSWORD:
             modules::infobox::displayError("Server password is incorrect!");
+            GlobalConfig.alreadyHasPassword = false;
             break;
 
         case REJECTION_WH:
