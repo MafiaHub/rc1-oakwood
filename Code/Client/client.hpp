@@ -57,6 +57,15 @@ namespace modules::dldialog
     void init(ServerInfo::ServerData data);
 }
 
+namespace modules::audiostream
+{
+    void init();
+    void set_volume(float volume);
+    void pause();
+    void play();
+    bool is_playing();
+}
+
 struct _GlobalConfig
 {
     char server_address[32];
@@ -77,6 +86,7 @@ struct _GlobalConfig
     // TODO(DavoSK): Find real good value
     float interp_time_vehicle = 4.0f;
     float interp_time_player = 0.08f;
+    float mus_volume = 1;
 } GlobalConfig;
 
 struct data

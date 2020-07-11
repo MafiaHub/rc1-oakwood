@@ -23,6 +23,9 @@ void handle_disconnection()
 
     modpath = "";
 
+    if (modules::audiostream::is_playing())
+        modules::audiostream::stop();
+
     auto player = modules::player::get_local_player();
     if (player && player->ped)
     {

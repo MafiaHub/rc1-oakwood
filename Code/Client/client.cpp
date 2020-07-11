@@ -54,6 +54,11 @@
 #include "Game/CrashHandler/StackWalker/StackWalker.h"
 
 /*
+* BASS Audio Library
+*/
+#include "bass.h"
+
+/*
 * Dear ImGUI
 */
 
@@ -183,4 +188,6 @@ ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath, c
     mod_init_game();
     mod_init_patches();
     mod_init_fs();
+
+    modules::audiostream::init();
 }

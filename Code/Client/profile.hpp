@@ -89,6 +89,8 @@ namespace Profile {
             json_apply(&json_master_data, *(f32*)(ADDR_MUSIC_SLIDER), music_slider, real, 0.0f);
             json_apply(&json_master_data, *(f32*)(ADDR_SPEECH_SLIDER), speech_slider, real, 0.0f);
 
+            GlobalConfig.mus_volume = *(f32*)(ADDR_MUSIC_SLIDER);
+
             node_property = zpl_json_find(&json_master_data, "keys", false);
             if (!node_property)
                 return;
@@ -169,7 +171,7 @@ namespace Profile {
         new_node->real = *(f32*)(ADDR_CAR_SLIDER);
 
         new_node = zpl_json_add(&new_json_file, "music_slider", ZPL_JSON_TYPE_REAL);
-        new_node->real = *(f32*)(ADDR_MUSIC_SLIDER);
+        new_node->real = GlobalConfig.mus_volume;
 
         new_node = zpl_json_add(&new_json_file, "speech_slider", ZPL_JSON_TYPE_REAL);
         new_node->real = *(f32*)(ADDR_SPEECH_SLIDER);

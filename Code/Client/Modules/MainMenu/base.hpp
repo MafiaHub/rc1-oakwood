@@ -277,8 +277,20 @@ namespace mainmenu {
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_volume);
         }
 
-        if (ImGui::SliderFloat("Music", (float*)ADDR_MUSIC_SLIDER, 0.0f, 1.0f)) {
-            MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
+        float volume = GlobalConfig.mus_volume;
+
+        if (ImGui::SliderFloat("Music / Audio Stream", &volume, 0.0f, 1.0f)) {
+            GlobalConfig.mus_volume = volume;
+            if (modules::audiostream::is_playing())
+            {
+                modules::audiostream::set_volume(volume);
+                *(float*)ADDR_MUSIC_SLIDER = 0;
+            }
+            else
+            {
+                *(float*)ADDR_MUSIC_SLIDER = volume;
+                MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
+            }
         }
 
         ImGui::SliderFloat("Vehicles", (float*)ADDR_CAR_SLIDER, 0.0f, 1.0f);
@@ -291,7 +303,18 @@ namespace mainmenu {
             *(float*)(ADDR_SOUNDS_SLIDER)    = new_sound_val;
             *(float*)(ADDR_CAR_SLIDER)       = new_sound_val;
             *(float*)(ADDR_SPEECH_SLIDER)    = new_sound_val;
-            *(float*)(ADDR_MUSIC_SLIDER)     = new_sound_val;
+
+            if (modules::audiostream::is_playing())
+            {
+                modules::audiostream::set_volume(new_sound_val);
+                *(float*)ADDR_MUSIC_SLIDER = 0;
+            }
+            else
+            {
+                *(float*)(ADDR_MUSIC_SLIDER) = new_sound_val;
+            }
+            
+            GlobalConfig.mus_volume = new_sound_val;
             MafiaSDK::GetMission()->GetGame()->SetSoundsVolume(new_sound_val);
             MafiaSDK::GetMission()->GetGame()->UpdateMusicVolume();
         }

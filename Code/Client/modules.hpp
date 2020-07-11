@@ -22,6 +22,7 @@ namespace modules {
     #include "Modules/DownloadDialog/base.hpp"
     #include "Modules/ConnectDialog/base.hpp"
     #include "Modules/PasswordPrompt/base.hpp"
+    #include "Modules/AudioStreamer/base.hpp"  
     #include "Modules/PauseMenu/base.hpp"
     #include "Modules/Door/base.hpp"
     #include "Modules/Player/base.hpp"

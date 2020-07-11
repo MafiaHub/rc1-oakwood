@@ -52,7 +52,7 @@ int main()
         localpath = first + "\\" + last;
     }
 
-    zpl_printf("[info] oakwood: %s\n", localpath.c_str());
+    zpl_printf("[info] Oakwood path: %s\n", localpath.c_str());
 
     /* create default folder structure */
     zpl_path_mkdir(concat(localpath, "bin"), 0755);
@@ -67,7 +67,7 @@ int main()
 
         if (argc > 1) {
             config_name = (char *)zpl_ucs2_to_utf8_buf((u16 *)argv[1]);
-            zpl_printf("[info] custom config used: %s\n", config_name);
+            zpl_printf("[info] Custom config used: %s\n", config_name);
         }
 
         zpl_file file = {0};
@@ -113,7 +113,7 @@ int main()
 
     std::replace(gamepath.begin(), gamepath.end(), '\\', '/');
 
-    zpl_printf("[info] gamepath: %s\n", gamepath.c_str());
+    zpl_printf("[info] Game path: %s\n", gamepath.c_str());
     if (!zpl_fs_exists(concat(gamepath, "Game.exe"))) {
         return launcher_abort(("Cannot find a game executable by given path:\n" + gamepath + "\n\n Please check your path and try again!").c_str());
     }

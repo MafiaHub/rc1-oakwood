@@ -4,7 +4,8 @@ return function()
         "../Vendors/librg",
         "../Vendors/geoIP",
         "../Vendors/curl",
-        "../Vendors/md5"
+        "../Vendors/md5",
+        "../Vendors/bass"
     }
 
     libdirs {
@@ -12,6 +13,7 @@ return function()
         "../Vendors/detours",
         "../Vendors/lua/lib",
         "../Vendors/geoIP",
-        "../Vendors/curl"
+        "../Vendors/curl",
+        "../Vendors/bass"
     }
 end

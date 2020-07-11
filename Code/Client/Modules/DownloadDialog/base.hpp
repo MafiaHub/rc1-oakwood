@@ -20,6 +20,7 @@ namespace dldialog
     char* title, * message, * button;
 
     std::vector<DlFile> filesToDownload;
+    std::vector<std::string> filesToLoad;
 
     ServerInfo::ServerData server;
 
@@ -88,8 +89,13 @@ namespace dldialog
         std::string burl = baseURL;
 
         replaceAll(gpath, "//Game.exe", "");
-        replaceAll(burl, "/files.txt", "");
+        replaceAll(gpath, "/Game.exe", "");
+        replaceAll(burl, "/files", "");
         replaceAll(gpath, "/", "\\");
+
+        std::string modDir = gpath + "\\mods\\";
+
+        CreateDirectory(modDir.c_str(), NULL);
 
         std::string fileDir = gpath + "\\mods\\" + folder;
         modpath = "mods\\" + folder;
@@ -122,20 +128,25 @@ namespace dldialog
                     file_property = zpl_json_find(file_node, "hash", false);
                     file.hash = std::string(file_property->string);
 
-                    if (file.name.find("Models") != std::string::npos) {
-                        CreateDirectory((fileDir + "\\Models").c_str(), NULL);
+                    auto str = file.name;
+
+                    std::transform(str.begin(), str.end(), str.begin(),
+                        [](unsigned char c) { return std::tolower(c); });
+
+                    if (str.find("models") != std::string::npos) {
+                        CreateDirectory((fileDir + "\\models").c_str(), NULL);
                     }
-                    else if (file.name.find("Maps") != std::string::npos) {
-                        CreateDirectory((fileDir + "\\Maps").c_str(), NULL);
+                    else if (str.find("maps") != std::string::npos) {
+                        CreateDirectory((fileDir + "\\maps").c_str(), NULL);
                     }
-                    else if (file.name.find("Missions") != std::string::npos) {
-                        CreateDirectory((fileDir + "\\Missions").c_str(), NULL);
+                    else if (str.find("missions") != std::string::npos) {
+                        CreateDirectory((fileDir + "\\missions").c_str(), NULL);
                     }
-                    else if (file.name.find("Sounds") != std::string::npos) {
-                        CreateDirectory((fileDir + "\\Sounds").c_str(), NULL);
+                    else if (str.find("sounds") != std::string::npos) {
+                        CreateDirectory((fileDir + "\\sounds").c_str(), NULL);
                     }
-                    else if (file.name.find("Anims") != std::string::npos) {
-                        CreateDirectory((fileDir + "\\Anims").c_str(), NULL);
+                    else if (str.find("anims") != std::string::npos) {
+                        CreateDirectory((fileDir + "\\anims").c_str(), NULL);
                     }
 
                     std::string path = file.name;
@@ -155,6 +166,7 @@ namespace dldialog
                     {
                         std::string fhash = get_hash(hashPath);
                         if (file.hash != fhash) filesToDownload.push_back(file);
+                        else filesToLoad.push_back(file.name);
                     }
                 }
             }
@@ -222,6 +234,7 @@ namespace dldialog
 
             if (res == CURLE_OK)
             {
+                filesToLoad.push_back("mods\\" + folder + "\\" + path);
                 printf("File downloaded successfully.\n");
             }
             else
@@ -263,6 +276,10 @@ namespace dldialog
             }
 
             isDownloading = false;
+            GlobalConfig.noNeedToLoad = false;
+        }
+        else if (filesToLoad.size() >= 1)
+        {
             GlobalConfig.noNeedToLoad = false;
         }
         else

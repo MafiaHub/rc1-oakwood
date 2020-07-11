@@ -22,7 +22,8 @@ project "Client"
 
     includedirs {
         "../../Vendors/semver",
-        "../../Vendors/md5"
+        "../../Vendors/md5",
+        "../../Vendors/bass"
     }
 
     flags "NoManifest"
@@ -43,7 +44,8 @@ project "Client"
 		"dxguid",
         "wbemuuid",
         "advapi32",
-		"dinput8"
+        "dinput8",
+        "bass"
 	}
 
 	postbuildcommands {
