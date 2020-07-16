@@ -43,7 +43,10 @@ zpl_isize oak__console_input_handler(struct zpl_thread *t) {
             zpl_yield_thread();
         }
 
-        oak_bridge_event_console(line.c_str());
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_console(line.c_str());
+        else
+            oak_bridge_event_console(line.c_str());
     } while(zpl_atomic32_load(&oak__console_data.input_handler_running) > 0);
 
     return 0;

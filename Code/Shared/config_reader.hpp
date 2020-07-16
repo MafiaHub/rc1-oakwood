@@ -10,7 +10,7 @@ inline auto config_get(const char *filename, const char *default_cfg) -> zpl_jso
     zpl_path_mkdir("config", 0775);
     
     if (!zpl_fs_exists(filename)) {
-        printf("No JSON config found! Generating...");
+        printf("No JSON config found! Generating...\n");
         zpl_file default_file = { 0 };
         zpl_file_create(&default_file, filename);
         zpl_file_write(&default_file, default_cfg, zpl_strlen(default_cfg));

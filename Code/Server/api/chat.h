@@ -21,6 +21,8 @@ int oak_chat_clear(oak_player id) {
     auto entity = oak_entity_player_get(id);
 
     librg_send_to(&network_context, NETWORK_CLEAR_CHAT, entity->native_entity->client_peer, data, {});
+
+    return 0;
 }
 
 /**

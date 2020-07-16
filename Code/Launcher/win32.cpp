@@ -5,6 +5,7 @@
 #include "zpl.h"
 #include "loader/exeldr.h"
 #include "settings.h"
+#include <filesystem>
 
 /* temp storage */
 static std::string g_gamepath;
@@ -140,6 +141,7 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
     auto entry_point = static_cast<void(*)()>(loader.GetEP());
 
     // load our plugins
+
     LoadLibraryA("WidescreenFix.dll");
 
     // invoke original entry point

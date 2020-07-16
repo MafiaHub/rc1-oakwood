@@ -108,6 +108,7 @@ void add_messages() {
           
             if (vehicle->car) {
                 vehicle->wants_explode = false;
+
                 c_car_carexplosion_original(vehicle->car, 200);
             }
         }
@@ -122,7 +123,9 @@ void add_messages() {
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
 
             if (vehicle->car) {
-                vehicle->car->CarExplosion(20);
+                vehicle->wants_explode = true;
+
+                C_car_CarExplosion(vehicle->car, 0, 200);
             }
         }
     });

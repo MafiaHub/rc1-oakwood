@@ -20,7 +20,9 @@ project "Server"
         "../../Vendors/librg/*.h",
         "../../Vendors/librg/*.hpp",
         "../Shared/*.hpp",
-        "../Shared/*.cpp"
+        "../Shared/*.cpp",
+        "../../Vendors/angelscript/addon/*/*.h",
+        "../../Vendors/angelscript/addon/*/*.cpp"
     }
 
     includedirs {
@@ -30,6 +32,7 @@ project "Server"
         "../../Vendors",
         "../../Vendors/nanomsg/include",
         "../../Vendors/md5",
+        "../../Vendors/angelscript/include"
     }
 
     defines {
@@ -39,6 +42,7 @@ project "Server"
     libdirs {
         "../../Vendors/nanomsg/lib",
         "../../Vendors/curl",
+        "../../Vendors/angelscript/lib"
     }
 
     prebuildcommands {
@@ -54,6 +58,7 @@ project "Server"
             "ws2_32",
             "mswsock",
             "advapi32",
+            "angelscript"
         }
 
     configuration "linux or macosx"
@@ -62,5 +67,6 @@ project "Server"
             "nanomsg",
             "GeoIP",
             "pthread",
-            "dl"
+            "dl",
+            "angelscript"
         }

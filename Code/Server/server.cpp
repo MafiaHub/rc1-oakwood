@@ -53,6 +53,22 @@
 #include "http/mongoose.h"
 
 /*
+* AngelScript & Addons
+*/
+#define AS_USE_STLNAMES 1
+#define AS_USE_ACCESSORS 1
+
+#include "angelscript.h"
+#include "angelscript/addon/scriptstdstring/scriptstdstring.h"
+#include "angelscript/addon/scriptbuilder/scriptbuilder.h"
+#include "angelscript/addon/scriptarray/scriptarray.h"
+#include "angelscript/addon/scriptany/scriptany.h"
+#include "angelscript/addon/scriptmath/scriptmath.h"
+#include "angelscript/addon/datetime/datetime.h"
+#include "angelscript/addon/scriptfile/scriptfile.h"
+#include "angelscript/addon/scriptfile/scriptfilesystem.h"
+
+/*
 * Shared
 */
 
@@ -80,6 +96,7 @@
 #include "core/endpoints.h"
 #include "core/files.h"
 #include "core/webserver.h"
+#include "core/angelapi.h"
 
 #include "core/tasks/killbox.h"
 #include "core/tasks/masterlist.h"
@@ -153,11 +170,24 @@ int main(int argc, char **argv)
     {
         oak_log("^F[^5INFO^F] GeoIP database loaded!^R\n");
         GeoIP_set_charset(geo_ip, GEOIP_CHARSET_UTF8);
-        //_GeoIP_setup_dbfilename();
     }
 
     oak_webserver_init();
-    oak_bridge_init();
+    if (GlobalConfig.api_type == "internal")
+    {
+        oak_angel_init();
+    }
+    else if (GlobalConfig.api_type == "external")
+    {
+        oak_bridge_init();
+    }
+    else
+    {
+        oak_log("^F[^9ERROR^F] Invalid API type!^R\n");
+        oak_webserver_stop();
+        return 0;
+    }
+    
     oak_network_init();
     oak_entities_init();
 
@@ -169,7 +199,11 @@ int main(int argc, char **argv)
     {
         oak_console_block_input(1);
         oak_network_tick();
-        oak_bridge_tick();
+        if (GlobalConfig.api_type == "external")
+        {
+            oak_bridge_tick();
+        }
+        
         oak_tasks_process();
         oak_console_block_input(0);
         zpl_sleep_ms(1);
@@ -184,7 +218,16 @@ void shutdown_server()
 
     oak_webserver_stop();
     oak_console_input_handler_destroy();
-    oak_bridge_free();
+    
+    if (GlobalConfig.api_type == "external")
+    {
+        oak_bridge_free();
+    }
+    else
+    {
+        oak_angel_stop();
+    }
+
     oak_network_free();
     oak_sighandler_unregister();
 

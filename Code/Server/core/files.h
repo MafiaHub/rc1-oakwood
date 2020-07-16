@@ -81,7 +81,7 @@ void generate_list()
 
                     auto h = get_hash(file);
 
-                    oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
+                    //oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
 
                     jfiles.push_back(std::make_pair(f, h));
                 }
@@ -109,7 +109,7 @@ void generate_list()
 
                         auto h = get_hash(file);
 
-                        oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
+                        //oak_console_printf("^FLoaded file #%d: ^A%s - %s^R\n", jfiles.size(), f.c_str(), h.c_str());
 
                         jfiles.push_back(std::make_pair(f, h));
                     }

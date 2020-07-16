@@ -545,4 +545,6 @@ int oak_player_input_enable(oak_player id, int state)
     librg_send_to(&network_context, NETWORK_PLAYER_ENABLE_INPUT, entity->native_entity->client_peer, data, {
         librg_data_wu8(&data, entity->input_enabled);
         });
+
+    return 0;
 }

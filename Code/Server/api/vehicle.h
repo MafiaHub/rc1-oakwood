@@ -180,6 +180,8 @@ int oak_vehicle_speed_set(oak_vehicle id, float speed)
         librg_data_went(&data, entity->native_id);
         librg_data_wptr(&data, &velocity, sizeof(zpl_vec3));
         });
+
+    return 0;
 }
 
 int oak_vehicle_velocity_set(oak_vehicle id, oak_vec3 velocity)
@@ -424,6 +426,8 @@ int oak_vehicle_explode(oak_vehicle id)
     librg_send(&network_context, NETWORK_VEHICLE_BOOM, data, {
         librg_data_wu32(&data, id);
         });
+
+    return 0;
 }
 
 /**

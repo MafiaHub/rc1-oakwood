@@ -302,6 +302,8 @@ namespace dldialog
         baseURL = std::string(data.download_url);
         folder = std::string(data.download_id);
 
+        printf("%s\n", baseURL.c_str());
+
         http_t* request = http_get(baseURL.c_str(), NULL);
 
         if (!request)

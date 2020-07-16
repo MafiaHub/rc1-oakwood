@@ -2,17 +2,19 @@
 
 static const char *oak__config_file_name = "config/server.json";
 static const char *oak__config_mod_default = "\n"\
-    "max_players = 64\n"\
-    "name = \"default oakwood server\"\n"\
-    "host = \"\"\n"\
-    "password = \"\"\n"\
-    "visible = true\n"\
-    "port = 27010\n"\
-    "mapname = \"freeride\"\n"\
-    "killbox = -40.0\n"\
-    "bridge_inbound = \"ipc://oakwood-inbound\"\n"\
-    "bridge_outbound = \"ipc://oakwood-outbound\"\n"\
-    "whitelist = false\n";
+    "/* How many players will be able to join this server */\nmax_players = 64\n"\
+    "/* Server name shown in serverlist */\nname = \"default oakwood server\"\n"\
+    "/* Server host (IP) */\nhost = \"\"\n"\
+    "/* Server password - leave empty for free access */\npassword = \"\"\n"\
+    "/*\n Determines, if server will push requests to masterlist\n Disable in case of local server, etc.\n*/\nvisible = true\n"\
+    "/*\n Server port\n Both TCP and UDP must be unblocked and port-forwarded\n*/\nport = 27010\n"\
+    "/* Scene name, which will server use */\nmapname = \"freeride\"\n"\
+    "/* Height, which will cause player to kill (fell out of the world) */\nkillbox = -40.0\n"\
+    "/*\n Script API Type:\n  - internal -> Internal API using AngelScript language\n  - bridge -> External API using bridge\n*/\napi_type = \"internal\"\n"\
+    "/* Script file, which the internal API will run on startup */\nscript_file = \"gamemode.as\"\n"\
+    "/* Bridge inbound address (for function calls) */\nbridge_inbound = \"ipc://oakwood-inbound\"\n"\
+    "/* Bridge outbound address (for event calls)*/\nbridge_outbound = \"ipc://oakwood-outbound\"\n"\
+    "/* Determines, if this server will use whitelist */\nwhitelist = false\n";
 
 struct _GlobalConfig {
     std::string name;
@@ -23,6 +25,7 @@ struct _GlobalConfig {
     f64 killbox_level;
     std::string mapname;
     std::string password;
+    std::string api_type, script_file;
     std::string bridge_inbound, bridge_outbound;
     b32 visible;
 } GlobalConfig;
@@ -33,7 +36,7 @@ int oak_config_init() {
     auto json = config_get(oak__config_file_name, oak__config_mod_default);
     b32 whOnly = false;
 
-    json_apply(json, GlobalConfig.host, host, string, "");
+    json_apply(json, GlobalConfig.host, host, string, "127.0.0.1");
     json_apply(json, GlobalConfig.name, name, string, "default oakwood server");
     json_apply(json, GlobalConfig.max_players, max_players, integer, 16);
     json_apply(json, GlobalConfig.killbox_level, killbox_level, real, -40.0);
@@ -42,6 +45,8 @@ int oak_config_init() {
     json_apply(json, GlobalConfig.port, port, integer, 27010);
     json_apply(json, GlobalConfig.visible, visible, constant, ZPL_JSON_CONST_TRUE);
     json_apply(json, whOnly, whitelist, constant, ZPL_JSON_CONST_FALSE);
+    json_apply(json, GlobalConfig.api_type, api_type, string, "internal");
+    json_apply(json, GlobalConfig.script_file, script_file, string, "gamemode.as");
     json_apply(json, GlobalConfig.bridge_inbound, bridge_inbound, string, "ipc://oakwood-inbound");
     json_apply(json, GlobalConfig.bridge_outbound, bridge_outbound, string, "ipc://oakwood-outbound");
 
@@ -53,16 +58,24 @@ int oak_config_init() {
     oak_access_wh_load();
     oak_access_bans_load();
 
-    bool isAnyHost = (GlobalConfig.host == "");
+    bool isAnyHost = (GlobalConfig.host == "") || (GlobalConfig.host == "127.0.0.1");
 
     oak_log("^B================================^R\n");
     oak_log("^FName: ^A%s^R\n", GlobalConfig.name.c_str());
     oak_log("^FMax players: ^A%d^R\n", (u32)GlobalConfig.max_players);
-    oak_log("^FHost IP: ^A%s^R\n", isAnyHost ? "(any)" : GlobalConfig.host.c_str());
+    oak_log("^FHost IP: ^A%s^R\n", isAnyHost ? "(local)" : GlobalConfig.host.c_str());
     oak_log("^FPort: ^A%d^R\n", (u32)GlobalConfig.port);
     oak_log("^FPassworded: ^A%s^R\n", (GlobalConfig.password != "") ? "yes" : "no");
-    oak_log("^FPublisher address: ^A%s^R\n", GlobalConfig.bridge_outbound.c_str());
-    oak_log("^FListener address: ^A%s^R\n", GlobalConfig.bridge_inbound.c_str());
+    oak_log("^FAPI Type: ^A%s^R\n", GlobalConfig.api_type.c_str());
+    if (GlobalConfig.api_type == "external")
+    {
+        oak_log("^FPublisher address: ^A%s^R\n", GlobalConfig.bridge_outbound.c_str());
+        oak_log("^FListener address: ^A%s^R\n", GlobalConfig.bridge_inbound.c_str());
+    }
+    else
+    {
+        oak_log("^FScript file: ^A%s^R\n", GlobalConfig.script_file.c_str());
+    }
     oak_log("^FVisible: ^A%s^R\n", GlobalConfig.visible ? "yes" : "no");
     oak_log("^B================================^R\n");
 

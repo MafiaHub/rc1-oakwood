@@ -10,7 +10,10 @@ int oak_chat_register() {
         text_len = zpl_min(text_len, OAK_MAX_CHAT);
         librg_data_rptr(msg->data, text, text_len);
 
-        oak_bridge_event_player_chat(pid, text);
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_player_chat(pid, text);
+        else
+            oak_bridge_event_player_chat(pid, text);
     });
 
     return 0;

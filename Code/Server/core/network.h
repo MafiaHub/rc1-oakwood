@@ -46,7 +46,7 @@ int oak_network_init() {
     oak_weapon_register();
     oak_chat_register();
 
-    librg_address addr = { (i32)GlobalConfig.port };
+    librg_address addr = { (i32)GlobalConfig.port, strdup(GlobalConfig.host == "" ? "127.0.0.1" : GlobalConfig.host.c_str()) };
     librg_network_start(&network_context, addr);
 
     return 0;

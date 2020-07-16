@@ -13,7 +13,10 @@ int oak_dialog_register()
         char text[128];
         librg_data_rptr(msg->data, &text, 128);
 
-        oak_bridge_event_dialog_done(pid, id, sel, text);
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_dialog_done(pid, id, sel, text);
+        else
+            oak_bridge_event_dialog_done(pid, id, sel, text);
     });
 
     return 0;

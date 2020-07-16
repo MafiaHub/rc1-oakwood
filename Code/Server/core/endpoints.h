@@ -5,7 +5,7 @@
 
 int oak_endp_payload_info(char *buf) {
     return sprintf(buf, OAK_ENDP_INFO_FORMAT,
-        GlobalConfig.host.c_str(),
+        GlobalConfig.host == "" ? "127.0.0.1" : GlobalConfig.host.c_str(),
         GlobalConfig.name.c_str(),
         (int)GlobalConfig.players,
         (int)GlobalConfig.max_players,

@@ -5,7 +5,8 @@ return function()
         "../Vendors/geoIP",
         "../Vendors/curl",
         "../Vendors/md5",
-        "../Vendors/bass"
+        "../Vendors/bass",
+        "../Vendors/angelscript/include"
     }
 
     libdirs {
@@ -14,6 +15,7 @@ return function()
         "../Vendors/lua/lib",
         "../Vendors/geoIP",
         "../Vendors/curl",
-        "../Vendors/bass"
+        "../Vendors/bass",
+        "../Vendors/angelscript/lib"
     }
 end

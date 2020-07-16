@@ -22,7 +22,9 @@ OAK_API_TYPE(oak_array(oak_vehicle), oak_array(int))
 OAK_API_TYPE(oak_array(oak_door), oak_array(int))
 
 typedef union {
-    struct { float x, y, z; };
+    struct { 
+        float x, y, z; 
+    };
     struct { int r, g, b; };
     float e[3];
 } oak_vec3;
@@ -170,10 +172,13 @@ OAK_API oak_array(oak_player) oak_vehicle_player_list(oak_vehicle, oak_ref(int))
 OAK_API oak_door oak_door_create(oak_string, int);
 OAK_API int oak_door_destroy(oak_door);
 OAK_API int oak_door_invalid(oak_door);
+OAK_API oak_string oak_door_name_get(oak_door);
+
+/* AUDIO STREAMING */
+
 OAK_API int oak_play_audio_stream(oak_player, oak_string, int);
 OAK_API int oak_pause_audio_stream(oak_player);
 OAK_API int oak_set_stream_volume(oak_player, float);
 OAK_API int oak_stop_audio_stream(oak_player);
-OAK_API oak_string oak_door_name_get(oak_door);
 
 #endif // OAK_SERVER_H

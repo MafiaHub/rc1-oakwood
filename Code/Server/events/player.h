@@ -20,6 +20,8 @@ void oak_ev_player_requested(librg_event *evnt) {
     char hostname[128] = { 0 };
     enet_address_get_host_ip(&peer_ip, hostname, 128);
 
+    oak_log("^F[^5INFO^F] Pending connection from ^B'%s'^R\n", hostname);
+
     auto build_major = librg_data_ru8(evnt->data);
     auto build_minor = librg_data_ru8(evnt->data);
     auto build_patch = librg_data_ru8(evnt->data);
@@ -97,7 +99,10 @@ void oak_ev_player_connected(librg_event *e) {
     replace_text(i, "::ffff:", "");
     oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%llu ^Ffrom ^B%s^8) ^Fhas been connected!^R\n", player->name, player->hwid, i.c_str());
 
-    oak_bridge_event_player_connect(id);
+    if (GlobalConfig.api_type == "internal")
+        oak_angel_event_player_connect(id);
+    else
+        oak_bridge_event_player_connect(id);
     GlobalConfig.players++;
 }
 
@@ -111,7 +116,11 @@ void oak_ev_player_disconnected(librg_event *e) {
     // oak_vehicle_player_remove(oak_player_vehicle_inside(player->oak_id), player->oak_id);
     oak_log("^F[^5INFO^F] Player ^A'%s' ^8(^B%d^8) ^Fhas been disconnected!^R\n", player->name, player->oak_id, e->peer);
 
-    oak_bridge_event_player_disconnect(player->oak_id);
+    if (GlobalConfig.api_type == "internal")
+        oak_angel_event_player_disconnect(player->oak_id);
+    else
+        oak_bridge_event_player_disconnect(player->oak_id);
+    
     oak_player_destroy(e);
     GlobalConfig.players--;
 }
@@ -212,7 +221,10 @@ int oak_player_register() {
 
         oak_player kid = (oak_player)librg_entity_fetch(msg->ctx, killer_id)->user_data;
 
-        oak_bridge_event_player_death(pid, kid, reason, hit_type, player_part);
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_player_death(pid, kid, reason, hit_type, player_part);
+        else
+            oak_bridge_event_player_death(pid, kid, reason, hit_type, player_part);
     });
 
     librg_network_add(&network_context, NETWORK_PLAYER_HIT, [](librg_message* msg) {
@@ -233,7 +245,11 @@ int oak_player_register() {
         float current_health = oak_player_health_get(pid);
 
         oak_player_health_set(pid, health);
-        oak_bridge_event_player_hit(pid, aid, current_health - health);
+
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_player_hit(pid, aid, current_health - health);
+        else
+            oak_bridge_event_player_hit(pid, aid, current_health - health);
 
         /*if (current_health <= 0.0) {
             mod_message_send_except(&network_context, NETWORK_PLAYER_HIT, msg->peer, [&](librg_data* data) {
@@ -256,7 +272,10 @@ int oak_player_register() {
         auto key = librg_data_ru32(msg->data);
 
         oak_player pid = (oak_player)player_entity->user_data;
-        oak_bridge_event_player_key(pid, key, is_pressed);
+        if (GlobalConfig.api_type == "internal")
+            oak_angel_event_player_key(pid, key, is_pressed);
+        else
+            oak_bridge_event_player_key(pid, key, is_pressed);
     });
 
     return 0;

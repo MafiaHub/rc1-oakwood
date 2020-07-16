@@ -43,6 +43,8 @@ void oak_bridge_event_vehicle_player_use(oak_vehicle vehicle, oak_player player,
 void oak_bridge_event_console(const char *text);
 void oak_bridge_event_dialog_done(oak_player player, int dialogId, int dialogSel, const char* dialogText);
 
+void oak_angel_event_console(const char* text);
+
 /* NETWORK */
 
 int oak_network_init();
