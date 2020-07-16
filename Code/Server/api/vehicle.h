@@ -423,8 +423,15 @@ int oak_vehicle_explode(oak_vehicle id)
 {
     if (oak_vehicle_invalid(id)) return -1;
 
-    librg_send(&network_context, NETWORK_VEHICLE_BOOM, data, {
-        librg_data_wu32(&data, id);
+    auto entity = oak_entity_vehicle_get(id);
+    if (!entity) return -1;
+
+    entity->engine_health = 0;
+    entity->engine_on = false;
+    entity->health = 0;
+
+    librg_send(&network_context, NETWORK_VEHICLE_EXPLODE, data, {
+        librg_data_wu32(&data, entity->native_entity->id);
         });
 
     return 0;
