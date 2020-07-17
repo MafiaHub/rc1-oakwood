@@ -674,6 +674,7 @@ void oak_angel_register_functions()
 
     r = engine->RegisterGlobalFunction("int playerGiveWeapon(int playerid, int weapId, int ammo1, int ammo2)", asFUNCTION(oak_player_give_weapon), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerRemoveWeapon(int playerid, int weapId)", asFUNCTION(oak_player_remove_weapon), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int playerClearInventory(int playerid)", asFUNCTION(oak_player_clear_inventory), asCALL_CDECL); ZPL_ASSERT(r >= 0);
 
     r = engine->RegisterGlobalFunction("string playerGetName(int playerid)", asFUNCTION(a_oak_player_name_get), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("string playerGetModel(int playerid)", asFUNCTION(a_oak_player_model_get), asCALL_CDECL); ZPL_ASSERT(r >= 0);

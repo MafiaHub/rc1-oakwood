@@ -443,15 +443,13 @@ void add_messages() {
     });
 
     librg_network_add(&network_context, NETWORK_HUD_ALERT, [](librg_message* msg) {
-        u16 msg_size = librg_data_ru16(msg->data);
+        zpl_local_persist char msg_buf[256] = { 0 };
+        zpl_memset(msg_buf, 0, 256);
+        u32 msg_size = librg_data_ru32(msg->data);
         f32 msg_duration = librg_data_rf32(msg->data);
-
-        zpl_string msg_buf = zpl_string_make_reserve(zpl_heap(), msg_size);
-        librg_data_rptr(msg->data, msg_buf, msg_size);
 
         librg_data_rptr(msg->data, msg_buf, msg_size < 256 ? msg_size : 256);
         MafiaSDK::GetIndicators()->RaceFlashText(reinterpret_cast<const char*>(msg_buf), msg_duration);
-        zpl_string_free(msg_buf);
     });
 
     librg_network_add(&network_context, NETWORK_HUD_COUNTDOWN, [](librg_message* msg) {

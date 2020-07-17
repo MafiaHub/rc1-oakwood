@@ -75,7 +75,7 @@ int oak_hud_announce(oak_player id, const char *text, int length, float duration
     auto player = oak_entity_player_get(id);
 
     librg_send_to(&network_context, NETWORK_HUD_ALERT, player->native_entity->client_peer, data, {
-        librg_data_wu16(&data, length);
+        librg_data_wu32(&data, length);
         librg_data_wf32(&data, duration);
         librg_data_wptr(&data, (void *)text, length);
     });
@@ -94,7 +94,7 @@ int oak_hud_message(oak_player id, const char *text, int length, int color) {
     auto player = oak_entity_player_get(id);
 
     librg_send_to(&network_context, NETWORK_SEND_CONSOLE_MSG, player->native_entity->client_peer, data, {
-        librg_data_wu16(&data, length);
+        librg_data_wu32(&data, length);
         librg_data_wu32(&data, color);
         librg_data_wptr(&data, (void*)text, length);
     });
