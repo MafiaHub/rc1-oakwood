@@ -203,6 +203,10 @@ int main(int argc, char **argv)
         {
             oak_bridge_tick();
         }
+        else
+        {
+            oak_angel_tick();
+        }
         
         oak_tasks_process();
         oak_console_block_input(0);

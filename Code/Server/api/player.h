@@ -319,6 +319,23 @@ int oak_player_remove_weapon(oak_player id, int weapId)
     return 0;
 }
 
+int oak_player_clear_inventory(oak_player id)
+{
+    if (oak_player_invalid(id)) return -1;
+    auto player = oak_entity_player_get(id);
+
+    for (size_t i = 0; i < 8; i++)
+    {
+        auto cur_item = player->inventory.items[i];
+        if (cur_item.weaponId != -1)
+        {
+            oak_player_remove_weapon(id, cur_item.weaponId);
+        }
+    }
+
+    return 0;
+}
+
 const char* local_ip_get(oak_player id)
 {
     int code = oak_player_invalid(id);

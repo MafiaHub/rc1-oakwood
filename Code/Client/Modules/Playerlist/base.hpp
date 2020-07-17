@@ -29,6 +29,7 @@ namespace playerlist {
 
         for (u32 i = 0; i < current_scoreboard.player_count; i++) {
             auto scoreboard_info = current_scoreboard.players_info[i];
+
             ImGui::Text("%d", scoreboard_info.server_id); ImGui::NextColumn();
             ImGui::Text("%s", scoreboard_info.nickname); ImGui::NextColumn();
             ImGui::Text("%dms", scoreboard_info.ping); ImGui::NextColumn();

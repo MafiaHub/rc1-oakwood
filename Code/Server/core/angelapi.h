@@ -30,6 +30,11 @@ void RegisterCommand(std::string cmdName, asIScriptFunction* cb)
     commands[cmdName] = cb;
 }
 
+int RandomNumber(int min, int max)
+{
+    return rand() % max + min;
+}
+
 #pragma region AngelScript Callbacks
 void oak_angel_msg_callback(const asSMessageInfo* msg, void* param)
 {
@@ -64,6 +69,38 @@ void oak_angel_proak_vehicle_exception(asIScriptContext *ctx)
 int oak_print(std::string msg)
 {
     return oak_logn(msg.c_str(), msg.size());
+}
+
+CScriptArray* a_oak_player_list()
+{
+    std::vector<int> players;
+
+    auto list = oak_player_list(0);
+
+    for (int i = 0; i < GlobalConfig.players; i++)
+    {
+        players.push_back((int)list[i]);
+    }
+
+    asITypeInfo* t = engine->GetTypeInfoByDecl("array<int>");
+
+    CScriptArray* arr;
+
+    if (players.size() >= 1)
+    {
+        arr = CScriptArray::Create(t, players.size());
+
+        for (asUINT i = 1; i < players.size(); i++)
+        {
+            arr->SetValue(i, &list[i]);
+        }
+    }
+    else
+    {
+        arr = CScriptArray::Create(t, (asUINT)0);
+    }
+
+    return arr;
 }
 
 int a_oak_player_spawn(int player, float x, float y, float z, float heading)
@@ -181,6 +218,31 @@ int a_oak_chat_broadcast(std::string text)
     return oak_chat_broadcast(text.c_str(), text.size());
 }
 
+CScriptArray* a_oak_vehicle_list()
+{
+    auto list = oak_vehicle_list(0);
+
+    asITypeInfo* t = engine->GetTypeInfoByDecl("array<int>");
+
+    CScriptArray* arr;
+
+    if (sizeof(list) / 4 >= 1)
+    {
+        arr = CScriptArray::Create(t, sizeof(list) / 4);
+
+        for (asUINT i = 1; i < sizeof(list) / 4; i++)
+        {
+            arr->SetValue(i, &list[i]);
+        }
+    }
+    else
+    {
+        arr = CScriptArray::Create(t, (asUINT)0);
+    }
+
+    return arr;
+}
+
 int a_oak_vehicle_spawn(std::string vehName, float x, float y, float z, float heading)
 {
     return oak_vehicle_spawn(vehName.c_str(), vehName.size(), { x, y, z }, heading);
@@ -258,6 +320,38 @@ int a_oak_create_explosion(int player, float x, float y, float z, float radius, 
 #pragma endregion
 
 #pragma region AngelScript events
+void oak_angel_event_server_tick() {
+    if (engine->GetModule("OakModule") == nullptr) return;
+
+    asIScriptContext* ctx = engine->CreateContext();
+
+    asIScriptFunction* func = engine->GetModule("OakModule")->GetFunctionByName("onServerTick");
+
+    if (!func) return;
+
+    ctx->Prepare(func);
+
+    ctx->Execute();
+
+    ctx->Release();
+}
+
+void oak_angel_event_server_tick_second() {
+    if (engine->GetModule("OakModule") == nullptr) return;
+
+    asIScriptContext* ctx = engine->CreateContext();
+
+    asIScriptFunction* func = engine->GetModule("OakModule")->GetFunctionByName("onServerTickSecond");
+
+    if (!func) return;
+
+    ctx->Prepare(func);
+
+    ctx->Execute();
+
+    ctx->Release();
+}
+
 void oak_angel_event_player_connect(int player) {
     if (engine->GetModule("OakModule") == nullptr) return;
 
@@ -301,15 +395,24 @@ void oak_angel_event_player_death(int player, int killer, int reason, int type, 
 
     asIScriptFunction* func = engine->GetModule("OakModule")->GetFunctionByName("onPlayerDeath");
 
+    oak_player_clear_inventory(player);
+
     if (!func) return;
 
     ctx->Prepare(func);
 
+    switch (reason)
+    {
+    case 1:
+        type = 10;
+    case 2:
+        type = 9;
+    }
+
     ctx->SetArgDWord(0, player);
     ctx->SetArgDWord(1, killer);
-    ctx->SetArgDWord(2, reason);
-    ctx->SetArgDWord(3, type);
-    ctx->SetArgDWord(4, part);
+    ctx->SetArgDWord(2, type);
+    ctx->SetArgDWord(3, part);
 
     ctx->Execute();
 
@@ -412,8 +515,10 @@ void oak_angel_event_player_chat(int player, const char* text) {
 
         ctx->Prepare(func);
 
+        auto well = std::string(text);
+
         ctx->SetArgDWord(0, player);
-        ctx->SetArgObject(1, &std::string(text));
+        ctx->SetArgObject(1, &well);
     }
 
     
@@ -496,10 +601,12 @@ void oak_angel_event_dialog_done(int player, int dialogId, int dialogSel, const 
 
     ctx->Prepare(func);
 
+    auto well = std::string(dialogText);
+
     ctx->SetArgDWord(0, player);
     ctx->SetArgDWord(1, dialogId);
     ctx->SetArgDWord(2, dialogSel);
-    ctx->SetArgObject(3, &std::string(dialogText));
+    ctx->SetArgObject(3, &well);
 
     ctx->Execute();
 
@@ -522,12 +629,37 @@ void oak_angel_register_enums()
     r = engine->RegisterEnumValue("VehicleSeat", "FrontRight", 1); ZPL_ASSERT(r >= 0);
     r = engine->RegisterEnumValue("VehicleSeat", "RearLeft", 2); ZPL_ASSERT(r >= 0);
     r = engine->RegisterEnumValue("VehicleSeat", "RearRight", 3); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterEnum("DeathType"); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "Unknown", 1); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "Explosion", 2); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "Fire", 3); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "CarCrash", 5); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "FallDamage", 6); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "KilledByCar", 8); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "Drowned", 9); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DeathType", "OutOfWorld", 10); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterEnum("PlayerPart"); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "Unknown", 0); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "RightHand", 1); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "LeftHand", 2); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "RightLeg", 3); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "LeftLeg", 4); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "Torso", 5); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("PlayerPart", "Head", 5); ZPL_ASSERT(r >= 0); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterEnum("DialogType"); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DialogType", "MsgBox", 0); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DialogType", "Input", 1); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterEnumValue("DialogType", "Password", 2); ZPL_ASSERT(r >= 0);
 }
 
 void oak_angel_register_functions()
 {
     #pragma region Player Functions
-    int r = engine->RegisterGlobalFunction("int playerSpawn(int playerid, float x, float y, float z, float heading)", asFUNCTION(a_oak_player_spawn), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    int r = engine->RegisterGlobalFunction("array<int>@ playerGetList()", asFUNCTION(a_oak_player_list), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int playerSpawn(int playerid, float x, float y, float z, float heading)", asFUNCTION(a_oak_player_spawn), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerDespawn(int playerid)", asFUNCTION(oak_player_despawn), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerInvalid(int playerid)", asFUNCTION(oak_player_invalid), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerKick(int playerid, string reason)", asFUNCTION(a_oak_player_kick), asCALL_CDECL); ZPL_ASSERT(r >= 0);
@@ -577,11 +709,11 @@ void oak_angel_register_functions()
     #pragma endregion
 
     #pragma region HUD Functions
-    r = engine->RegisterGlobalFunction("int hudFadeout(int playerid, int fadeout, int duration, int color)", asFUNCTION(oak_hud_fadeout), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int playerHudFade(int playerid, int fadeout, int duration, int color)", asFUNCTION(oak_hud_fadeout), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerHudCountdown(int playerid, int number)", asFUNCTION(oak_hud_countdown), asCALL_CDECL); ZPL_ASSERT(r >= 0);
-    r = engine->RegisterGlobalFunction("int playerHudAnnounce(int playerid, string message)", asFUNCTION(a_oak_hud_announce), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int playerHudAnnounce(int playerid, string message, float length)", asFUNCTION(a_oak_hud_announce), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int playerHudMessage(int playerid, string message, int color)", asFUNCTION(a_oak_hud_message), asCALL_CDECL); ZPL_ASSERT(r >= 0);
-    r = engine->RegisterGlobalFunction("int playerShowDialog(int playerid, string title, string message, string button1, string button2, int dialogId, int dialogType)", asFUNCTION(a_oak_dialog_show), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int playerShowDialog(int playerid, string title, string message, string button1, string button2, int dialogId, DialogType dialogType)", asFUNCTION(a_oak_dialog_show), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     #pragma endregion
 
     #pragma region Chat Functions
@@ -591,6 +723,7 @@ void oak_angel_register_functions()
     #pragma endregion
 
     #pragma region Vehicle Functions
+    r = engine->RegisterGlobalFunction("array<int>@ vehicleGetList()", asFUNCTION(a_oak_vehicle_list), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int vehicleSpawn(string vehicleName, float x, float y, float z, float heading)", asFUNCTION(a_oak_vehicle_spawn), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int vehicleDespawn(int vehId)", asFUNCTION(oak_vehicle_despawn), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int vehicleInvalid(int vehId)", asFUNCTION(oak_vehicle_invalid), asCALL_CDECL); ZPL_ASSERT(r >= 0);
@@ -641,6 +774,21 @@ void oak_angel_register_functions()
     #pragma endregion
 }
 
+int upd = 0;
+
+void oak_angel_tick()
+{
+    oak_angel_event_server_tick();
+
+    if (upd >= oak__console_computed_fps)
+    {
+        oak_angel_event_server_tick_second();
+        upd = 0;
+    }
+
+    upd++;
+}
+
 void oak_angel_init()
 {
     oak_log("^F[^5INFO^F] Initializing AngelScript^R\n");
@@ -657,9 +805,11 @@ void oak_angel_init()
     RegisterScriptFileSystem(engine);
     RegisterStdStringUtils(engine);
 
-    r = engine->RegisterFuncdef("void OakCmdCallback(int playerid, array<string> args)");
+    r = engine->RegisterFuncdef("void OakCmdCallback(int playerid, array<string> args)"); ZPL_ASSERT(r >= 0);
 
-    engine->RegisterGlobalFunction("void registerCommand(string cmdName, OakCmdCallback @cb)", asFUNCTION(RegisterCommand), asCALL_CDECL);
+    r = engine->RegisterGlobalFunction("void registerCommand(string cmdName, OakCmdCallback @cb)", asFUNCTION(RegisterCommand), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterGlobalFunction("int random(int min, int max)", asFUNCTION(RandomNumber), asCALL_CDECL); ZPL_ASSERT(r >= 0);
 
     r = engine->RegisterGlobalProperty("int maxPlayers", &GlobalConfig.max_players); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalProperty("int connectedPlayers", &GlobalConfig.players); ZPL_ASSERT(r >= 0);
@@ -681,13 +831,13 @@ void oak_angel_init()
     r = builder.AddSectionFromFile(GlobalConfig.script_file.c_str());
     if (r < 0)
     {
-        oak_log("^F[^9ERROR^F] Please correct the errors in the script and try again.\n");
+        oak_log("^F[^9ERROR^F] Failed to add script file.\n");
         return;
     }
     r = builder.BuildModule();
     if (r < 0)
     {
-        oak_log("^F[^9ERROR^F] Please correct the errors in the script and try again.\n");
+        oak_log("^F[^9ERROR^F] Failed to build script module, please fix all the issues and run again.\n");
         return;
     }
 

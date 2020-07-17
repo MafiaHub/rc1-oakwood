@@ -6,7 +6,7 @@ do { \
     VAR = (NAME) ? NAME->STR : DEF; \
 } while (0)
 
-inline auto config_get(const char *filename, const char *default_cfg) -> zpl_json_object* {
+inline zpl_json_object* config_get(const char *filename, const char *default_cfg) {
     zpl_path_mkdir("config", 0775);
     
     if (!zpl_fs_exists(filename)) {

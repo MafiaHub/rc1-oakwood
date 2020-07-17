@@ -5,6 +5,8 @@ namespace imgui {
         if (state && menuActiveState != Menu_DebugMode) menuActiveState = ID;\
     } while (0);
 
+    input::KeyToggle showfps_key(VK_F8);
+
     /*
         auto mafia_text         = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
         auto mafia_color        = ImVec4(0.533f, 0.0f, 0.0f, 1.00f);
@@ -12,6 +14,29 @@ namespace imgui {
         auto mafia_color_active = ImVec4(0.733f, 0.0f, 0.0f, 1.00f);
         auto mafia_color_bg     = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
     */
+
+    inline void showFps(bool* p_open)
+    {
+        const float DISTANCE = 10.0f;
+        static int corner = 1;
+        ImGuiIO& io = ImGui::GetIO();
+        if (corner != -1)
+        {
+            ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
+            ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+            ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        }
+        ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+        if (ImGui::Begin("Overlay", p_open, (corner != -1 ? ImGuiWindowFlags_NoMove : 0) | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+        {
+            ImGui::Text("Mafia: Oakwood");
+            ImGui::Text("Version %s (%s build)", OAK_VERSION, oak__build_channel[OAK_BUILD_CHANNEL]);
+            ImGui::Text("%.1f fps (%d ms)", ImGui::GetIO().Framerate, (int)(ImGui::GetIO().DeltaTime * 1000));
+        }
+        ImGui::End();
+    }
+
+    bool canShow = false;
 
     inline void render() {
         ImGui_ImplDX9_NewFrame();
@@ -72,6 +97,15 @@ namespace imgui {
         else if (clientActiveState == ClientState_Downloading) {
             modules::dldialog::render();
         }
+
+        bool state = showfps_key;
+        if (state)
+        {
+            canShow = !canShow;
+        }
+
+        if(canShow)
+            showFps(&canShow);
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -151,7 +185,7 @@ namespace imgui {
         style.Colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
 
         auto io = ImGui::GetIO();
-        io.FontDefault = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\verdana.ttf", 16, NULL, GetCustomGlyphRanges());
+        io.FontDefault = io.Fonts->AddFontFromFileTTF(std::string(GlobalConfig.localpath + "\\files\\UIFont.ttf").c_str(), 16, NULL, GetCustomGlyphRanges());
         io.FontAllowUserScaling = true;
     }
 
