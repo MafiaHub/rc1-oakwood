@@ -128,17 +128,17 @@ int a_oak_player_position_set(int player, float x, float y, float z)
     return oak_player_position_set(player, { x, y, z });
 }
 
-int a_oak_player_position_getx(int player)
+float a_oak_player_position_getx(int player)
 {
     return oak_player_position_get(player).x;
 }
 
-int a_oak_player_position_gety(int player)
+float a_oak_player_position_gety(int player)
 {
     return oak_player_position_get(player).y;
 }
 
-int a_oak_player_position_getz(int player)
+float a_oak_player_position_getz(int player)
 {
     return oak_player_position_get(player).z;
 }
@@ -148,17 +148,17 @@ int a_oak_player_direction_set(int player, float x, float y, float z)
     return oak_player_direction_set(player, { x, y, z });
 }
 
-int a_oak_player_direction_getx(int player)
+float a_oak_player_direction_getx(int player)
 {
     return oak_player_direction_get(player).x;
 }
 
-int a_oak_player_direction_gety(int player)
+float a_oak_player_direction_gety(int player)
 {
     return oak_player_direction_get(player).y;
 }
 
-int a_oak_player_direction_getz(int player)
+float a_oak_player_direction_getz(int player)
 {
     return oak_player_direction_get(player).z;
 }
@@ -253,17 +253,17 @@ int a_oak_vehicle_position_set(int vehicle, float x, float y, float z)
     return oak_vehicle_position_set(vehicle, { x, y, z });
 }
 
-int a_oak_vehicle_position_getx(int vehicle)
+float a_oak_vehicle_position_getx(int vehicle)
 {
     return oak_vehicle_position_get(vehicle).x;
 }
 
-int a_oak_vehicle_position_gety(int vehicle)
+float a_oak_vehicle_position_gety(int vehicle)
 {
     return oak_vehicle_position_get(vehicle).y;
 }
 
-int a_oak_vehicle_position_getz(int vehicle)
+float a_oak_vehicle_position_getz(int vehicle)
 {
     return oak_vehicle_position_get(vehicle).z;
 }
@@ -273,17 +273,17 @@ int a_oak_vehicle_direction_set(int vehicle, float x, float y, float z)
     return oak_vehicle_direction_set(vehicle, { x, y, z });
 }
 
-int a_oak_vehicle_direction_getx(int vehicle)
+float a_oak_vehicle_direction_getx(int vehicle)
 {
     return oak_vehicle_direction_get(vehicle).x;
 }
 
-int a_oak_vehicle_direction_gety(int vehicle)
+float a_oak_vehicle_direction_gety(int vehicle)
 {
     return oak_vehicle_direction_get(vehicle).y;
 }
 
-int a_oak_vehicle_direction_getz(int vehicle)
+float a_oak_vehicle_direction_getz(int vehicle)
 {
     return oak_vehicle_direction_get(vehicle).z;
 }
@@ -293,17 +293,17 @@ int a_oak_vehicle_velocity_set(int vehicle, float x, float y, float z)
     return oak_vehicle_velocity_set(vehicle, { x, y, z });
 }
 
-int a_oak_vehicle_velocity_getx(int vehicle)
+float a_oak_vehicle_velocity_getx(int vehicle)
 {
     return oak_vehicle_velocity_get(vehicle).x;
 }
 
-int a_oak_vehicle_velocity_gety(int vehicle)
+float a_oak_vehicle_velocity_gety(int vehicle)
 {
     return oak_vehicle_velocity_get(vehicle).y;
 }
 
-int a_oak_vehicle_velocity_getz(int vehicle)
+float a_oak_vehicle_velocity_getz(int vehicle)
 {
     return oak_vehicle_velocity_get(vehicle).z;
 }

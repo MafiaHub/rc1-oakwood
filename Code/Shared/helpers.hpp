@@ -9,7 +9,6 @@ std::string get_platform_path() {
     return temp_path.erase(temp_pos, std::string::npos);
 }
 
-
 std::string GetLastErrorAsString()
 {
     //Get the error message, if any.

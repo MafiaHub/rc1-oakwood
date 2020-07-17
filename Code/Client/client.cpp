@@ -180,6 +180,7 @@ auto mod_init_patches() {
 
 ZPL_DLL_EXPORT void oakwood_start(const char *localpath, const char *gamepath, const char* ip, int port)
 {
+    SetConsoleCP(CP_UTF8);
     semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
 
     GlobalConfig.localpath = localpath;
