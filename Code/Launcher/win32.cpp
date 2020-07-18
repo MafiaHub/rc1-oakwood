@@ -105,7 +105,14 @@ int launcher_gameinit(std::string localpath, std::string gamepath) {
 
     loader.SetLibraryLoader([](const char* library) -> HMODULE {
         zpl_printf("[info] library: %s\n", library);
-        return LoadLibraryA(library);
+        auto base = LoadLibraryA(library);
+
+        if (!_strcmpi(library, "rw_data.dll"))
+        {
+            *(BYTE*)(((DWORD)base + 0x12C98)) = 1;
+        }
+
+        return base;
     });
 
     loader.SetFunctionResolver([](HMODULE hmod, const char* exportFn) -> LPVOID {

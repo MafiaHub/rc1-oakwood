@@ -65,7 +65,6 @@ auto mod_bind_events()
     MafiaSDK::C_Game_Hooks::HookOnGameTick([&]() {
         delta_time = zpl_time_now() - last_time;
 
-
         switch (clientActiveState)
         {
         case ClientState_Infobox:

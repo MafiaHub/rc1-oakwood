@@ -15,6 +15,10 @@ namespace imgui {
         auto mafia_color_bg     = ImVec4(0.18f, 0.18f, 0.18f, 1.00f);
     */
 
+    float time = 0;
+    float fps = 0;
+    float frametime = 0;
+
     inline void showFps(bool* p_open)
     {
         const float DISTANCE = 10.0f;
@@ -31,9 +35,18 @@ namespace imgui {
         {
             ImGui::Text("Mafia: Oakwood");
             ImGui::Text("Version %s (%s build)", OAK_VERSION, oak__build_channel[OAK_BUILD_CHANNEL]);
-            ImGui::Text("%.1f fps (%d ms)", ImGui::GetIO().Framerate, (int)(ImGui::GetIO().DeltaTime * 1000));
+            ImGui::Text("%.1f fps (%.1f ms)", fps, frametime);
         }
         ImGui::End();
+
+        if (time >= 0.25F)
+        {
+            fps = ImGui::GetIO().Framerate;
+            frametime = ImGui::GetIO().DeltaTime * 1000.0F;
+            time = 0;
+        }
+
+        time += ImGui::GetIO().DeltaTime;
     }
 
     bool canShow = false;

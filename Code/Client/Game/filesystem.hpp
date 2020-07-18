@@ -58,6 +58,10 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
 
     if (fileExists(checkfile))
     {
+        auto base = GetModuleHandle("rw_data.dll");
+
+        *(BYTE*)(((DWORD)base + 0x12C98)) = 0;
+
         res = DtaOpen(newfile.c_str(), params);
         if (res < 0)
         {
@@ -72,6 +76,10 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
     }
     else
     {
+        auto base = GetModuleHandle("rw_data.dll");
+
+        *(BYTE*)(((DWORD)base + 0x12C98)) = 1;
+
         res = DtaOpen(filename, params);
         if (res < 0)
         {

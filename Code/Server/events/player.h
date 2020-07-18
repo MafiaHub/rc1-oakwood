@@ -20,15 +20,16 @@ void oak_ev_player_requested(librg_event *evnt) {
     char hostname[128] = { 0 };
     enet_address_get_host_ip(&peer_ip, hostname, 128);
 
-    oak_log("^F[^5INFO^F] Pending connection from ^B'%s'^R\n", hostname);
-
     auto build_major = librg_data_ru8(evnt->data);
     auto build_minor = librg_data_ru8(evnt->data);
     auto build_patch = librg_data_ru8(evnt->data);
     auto build_channel = librg_data_ru8(evnt->data);
 
+    std::string i(hostname);
+    replace_text(i, "::ffff:", "");
+
     if (build_major != OAK_VERSION_MAJOR || build_minor != OAK_VERSION_MINOR || build_channel != OAK_BUILD_CHANNEL) {
-        oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^9rejected!^R\n^FOur version: ^A%s (%s)^R\t^FTheir version: ^A%d.%d.%d (%s)^R\n", hostname, OAK_VERSION, OAK_BUILD_TYPE, build_major, build_minor, build_patch, oak__build_channel[build_channel]);
+        oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^9rejected!^R\n^FOur version: ^A%s (%s)^R\t^FTheir version: ^A%d.%d.%d (%s)^R\n", i.c_str(), OAK_VERSION, OAK_BUILD_TYPE, build_major, build_minor, build_patch, oak__build_channel[build_channel]);
         oak_ev_player_send_rejection(REJECTION_VERSION, evnt);
         return;
     }
@@ -39,7 +40,7 @@ void oak_ev_player_requested(librg_event *evnt) {
 
     if (GlobalConfig.password.size() != 0) {
         if (evnt->data->capacity == evnt->data->read_pos) {
-            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", hostname);
+            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", i.c_str());
             oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
             return;
         }
@@ -48,7 +49,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         librg_data_rptr(evnt->data, prompt_pass, sizeof(char) * 32);
 
         if (std::string(prompt_pass) != GlobalConfig.password) {
-            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", hostname);
+            oak_log("^F[^5INFO^F] Connection for ^B'%s' ^Fhas been ^Arejected^F!\n^AIncorrect password!^R\n", i.c_str());
             oak_ev_player_send_rejection(REJECTION_PASSWORD, evnt);
             return;
         }
@@ -59,7 +60,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         b32 isBanned = oak_access_bans_get(hwid);
 
         if (isBanned) {
-            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9banned^F! GUID: ^A%llu^R\n", temp.name, hostname, hwid);
+            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9banned^F! GUID: ^A%llu^R\n", temp.name, i.c_str(), hwid);
             oak_ev_player_send_rejection(REJECTION_BANNED, evnt);
             return;
         }
@@ -69,7 +70,7 @@ void oak_ev_player_requested(librg_event *evnt) {
         b32 isExempted = oak_access_wh_get(hwid);
 
         if (!isExempted) {
-            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9not whitelisted^F! GUID: ^A%llu^R\n", temp.name, hostname, hwid);
+            oak_log("^F[^5INFO^F] Connection for ^A%s ^8(^B%s)^8 ^Fhas been ^9rejected^F!\n^FPlayer is ^9not whitelisted^F! GUID: ^A%llu^R\n", temp.name, i.c_str(), hwid);
             oak_ev_player_send_rejection(REJECTION_WH, evnt);
             return;
         }
