@@ -29,7 +29,7 @@ int wmain()
 int main()
 #endif
 {
-#if defined(ZPL_SYSTEM_WINDOWS) //&& OAKWOOD_CONSOLE == 1
+#if defined(ZPL_SYSTEM_WINDOWS) && OAKWOOD_CONSOLE == 1
     { /* console handler */
         AllocConsole();
         AttachConsole(GetCurrentProcessId());
