@@ -288,6 +288,20 @@ namespace dldialog
             printf("There's no need to load any files. :)\n");
         }
 
+        std::string gpath = GlobalConfig.gamepath;
+
+        replaceAll(gpath, "//Game.exe", "");
+        replaceAll(gpath, "/", "\\");
+
+        std::string filePath = gpath + "\\mods\\" + folder + "\\loadscreen.png";
+
+        printf("%s\n", filePath.c_str());
+
+        if (fileExists(filePath))
+        {
+            loadingscreen::changeTex(filePath);
+        }
+
         server.needToDown = false;
 
         ServerInfo::join_server(server);

@@ -40,6 +40,31 @@ namespace loadingscreen {
         }
     }
 
+    void changeTex(std::string path)
+    {
+        if (global_device)
+        {
+            if (loadingscreen_texture) {
+                loadingscreen_texture->Release();
+                loadingscreen_texture = nullptr;
+            }
+
+            D3DXCreateTextureFromFileExA(
+                global_device,
+                path.c_str(),
+                texture_width,
+                texture_height,
+                1, 0,
+                D3DFMT_X8R8G8B8,
+                D3DPOOL_DEFAULT,
+                D3DX_FILTER_LINEAR,
+                D3DX_FILTER_LINEAR,
+                0x1000ff00,
+                NULL, NULL, &loadingscreen_texture
+            );
+        }
+    }
+
     inline void render(IDirect3DDevice9* device) {
         if (device != nullptr && loadingscreen_texture != nullptr 
             && current_loading_progress > 0.00f && current_loading_progress < 1.0f) {

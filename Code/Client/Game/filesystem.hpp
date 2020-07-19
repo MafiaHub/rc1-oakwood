@@ -38,10 +38,6 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
         {
             printf("Failed to load file (%d): %s\n", res, filename);
         }
-        else
-        {
-            printf("Loading file: %s\n", filename);
-        }
         return res;
     }
 
@@ -69,7 +65,7 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
         }
         else
         {
-            printf("Loading file: %s -> %s\n", filename, newfile.c_str());
+            printf("Loading modded file: %s -> %s\n", filename, newfile.c_str());
         }
 
         return res;
@@ -84,10 +80,6 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
         if (res < 0)
         {
             printf("Failed to load file (%d): %s\n", res, filename);
-        }
-        else
-        {
-            printf("Loading file: %s -> Original one\n", filename);
         }
     }
 

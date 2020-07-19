@@ -4,6 +4,7 @@
 
 namespace loadingscreen {
     inline void init(IDirect3DDevice9* device);
+    inline void changeTex(std::string path);
     inline void device_lost();
     inline void device_reset(IDirect3DDevice9* device);
     inline void render(IDirect3DDevice9* device);

@@ -17,9 +17,12 @@ void on_librg_connect(librg_event *evnt)
     evnt->entity->user_data = (void *)new_player;
 }
 
+
 void handle_disconnection()
 {
     //chat::add_message("Disconnected from " + std::string(GlobalConfig.server_address) + ".");
+
+    loadingscreen::changeTex(GlobalConfig.localpath + "\\files\\oakwood.png");
 
     modpath = "";
 

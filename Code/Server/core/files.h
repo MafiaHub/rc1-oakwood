@@ -58,6 +58,19 @@ std::vector<std::string> get_directories(const std::string& s)
 void generate_list()
 {
     std::vector<std::string> dirs = get_directories("static");
+    std::vector<std::string> files = get_files("static");
+
+    for (auto file : files)
+    {
+        std::string name = SplitFilename(file).second;
+
+        if (name == "loadscreen.png")
+        {
+            auto h = get_hash(file);
+            jfiles.push_back(std::make_pair(name, h));
+            oak_console_printf("^FLoaded custom loading screen!\n");
+        }
+    }
 
     for (auto dir : dirs)
     {

@@ -3,6 +3,11 @@
 #define EXPAND_VEC(VEC) {VEC.x, VEC.y, VEC.z}
 #define EXPLODE_VEC(VEC) VEC.x, VEC.y, VEC.z
 
+namespace loadingscreen
+{
+    extern void changeTex(std::string path);
+}
+
 inline auto split(std::string str, std::string token) {
     std::vector<std::string> result;
     while (str.size()) {
