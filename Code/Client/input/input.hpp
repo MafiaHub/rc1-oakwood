@@ -78,6 +78,10 @@ namespace input {
     POINT last_mouse_pos;
     LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     
+        if (uMsg == WM_SETTEXT) {
+            printf("Window title changed: %s\n", lParam);
+        }
+
         // Process gui input only when our window is focues
         if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) {
             curent_key_states[wParam] = true;
@@ -171,8 +175,7 @@ namespace input {
         mod_wndproc_original_mouse = (WNDPROC)SetWindowLongPtr(mod_win32_hwnd, GWL_WNDPROC, (LONG_PTR)mod_wndproc_hook_mouse);
         SetWindowLongW(mod_win32_hwnd, GWL_WNDPROC, GetWindowLong(mod_win32_hwnd, GWL_WNDPROC));
 
-        SetWindowTextA(mod_win32_hwnd_parent, "Mafia: Oakwood");
-        SetWindowTextA(mod_win32_hwnd, "Mafia: Oakwood");
+        //SetWindowTextA(mod_win32_hwnd_parent, "Mafia: Oakwood");
     }
 
     auto toggle_block_input() {

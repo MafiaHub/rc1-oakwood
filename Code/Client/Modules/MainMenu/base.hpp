@@ -89,6 +89,8 @@ namespace mainmenu {
     }
 
     inline void init() {
+        SendMessageW((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETTEXT, 0, (LPARAM)"Mafia: Oakwood");
+
         Profile::load_profile();
         strcpy(qc_address, (char *)GlobalConfig.server_address);
         qc_port = GlobalConfig.port;

@@ -26,6 +26,9 @@ void handle_disconnection()
     if (modules::audiostream::is_playing())
         modules::audiostream::stop();
 
+    modules::chat::set_chat_y(1);
+    modules::chat::new_msg_arrived = true;
+
     auto player = modules::player::get_local_player();
     if (player && player->ped)
     {

@@ -35,12 +35,18 @@ int launcher_abort(const char *msg) {
 /* hooked handlers */
 LPSTR WINAPI GetCommandLineA_Hook() {
     static bool init = false; if (!init) {
-        auto mod = LoadLibraryW(L"OakwoodClient.dll"); if (mod) {
-            auto oakwood_start = (oakwood_proc *)(GetProcAddress(mod, "oakwood_start")); if (oakwood_start) {
+        auto mod = LoadLibraryA("OakwoodClient.dll"); 
+        if (mod) {
+            auto oakwood_start = (oakwood_proc *)(GetProcAddress(mod, "oakwood_start")); 
+            if (oakwood_start) {
                 oakwood_start(g_localpath.c_str(), g_gamepath.c_str());
             }
+            else
+            {
+                launcher_abort("We couldn't initialize the multiplayer client!\n\nMake sure you've installed everything properly.");
+            }
         } else {
-            launcher_abort("We couldn't initialize the multiplayer client!\n\nMake sure you've installed everything properly.");
+            launcher_abort("Multiplayer client cannot be loaded!\n\nMake sure you've installed everything properly.");
         }
 
         init = true;
