@@ -8,6 +8,7 @@ std::vector<std::string> forbidden_bridges = {
     "sklapx01"};
 
 #include "connecting_cam.hpp"
+#include "resource.h"
 
 f64 delta_time = 0.0f;
 input::KeyToggle key_conn_escape(VK_ESCAPE);
@@ -31,6 +32,17 @@ auto mod_bind_events()
         auto mission_name = MafiaSDK::GetCurrentMissionName();
 
         SendMessageW((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETTEXT, 0, (LPARAM)"Mafia: Oakwood");
+
+        HICON hIcon = (HICON)LoadImageA(NULL, "files\\Oakwood.ico", 1, NULL, NULL, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        if (hIcon)
+        {
+            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+        }
+        else
+        {
+            printf("Failed to set icon.\n");
+        }
 
         // Note: tutorial map is reserved for main browser state
         if (strcmp(mission_name, "tutorial") == 0 &&

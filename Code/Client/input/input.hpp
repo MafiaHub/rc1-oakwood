@@ -77,10 +77,6 @@ namespace input {
     */
     POINT last_mouse_pos;
     LRESULT wndproc_combined(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-    
-        if (uMsg == WM_SETTEXT) {
-            printf("Window title changed: %s\n", lParam);
-        }
 
         // Process gui input only when our window is focues
         if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) {
