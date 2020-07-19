@@ -30,6 +30,8 @@ auto mod_bind_events()
 
         auto mission_name = MafiaSDK::GetCurrentMissionName();
 
+        SendMessageW((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETTEXT, 0, (LPARAM)"Mafia: Oakwood");
+
         // Note: tutorial map is reserved for main browser state
         if (strcmp(mission_name, "tutorial") == 0 &&
             ((clientActiveState != ClientState_Infobox)
