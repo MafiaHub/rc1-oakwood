@@ -2,6 +2,8 @@ project "Launcher"
     language "C++"
     kind "WindowedApp"
 
+    toolset "v142"
+
     flags { "NoIncrementalLink" }
     editandcontinue "Off"
 

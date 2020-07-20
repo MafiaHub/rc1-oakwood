@@ -35,10 +35,6 @@ project "Server"
         "../../Vendors/angelscript/include"
     }
 
-    defines {
-        "CURL_STATICLIB"
-    }
-
     libdirs {
         "../../Vendors/nanomsg/lib",
         "../../Vendors/curl",
@@ -50,6 +46,20 @@ project "Server"
     }
 
     configuration "windows"
+        toolset "v142"
+        filter "configurations:Debug"
+            links {
+                "GeoIP",
+                "Crypt32",
+                "libcurl",
+                "nanomsg32",
+                "ws2_32",
+                "mswsock",
+                "advapi32",
+                "angelscriptd"
+            }
+
+        filter "configurations:Release or Production or Pre-Release"
         links {
             "GeoIP",
             "Crypt32",
@@ -60,6 +70,7 @@ project "Server"
             "advapi32",
             "angelscript"
         }
+        
 
     configuration "linux or macosx"
         links {

@@ -5,6 +5,8 @@ project "Client"
     targetname "OakwoodClient"
     vpaths { ["*"] = "*" }
 
+    toolset "v142"
+
     files {
         "premake5.lua",
         "**.h",
@@ -17,8 +19,15 @@ project "Client"
         "../../Vendors/*.hpp",
         "../Shared/*.hpp",
         "../Shared/*.cpp",
-        "**.manifest"
+        "**.manifest",
+        "../../Vendors/angelscript/addon/*/*.h",
+        "../../Vendors/angelscript/addon/*/*.cpp"
     }
+
+    defines {
+        "CURL_STATICLIB"
+    }
+
 
     includedirs {
         "../../Vendors/semver",
@@ -31,22 +40,43 @@ project "Client"
         "../../Bin/%{cfg.buildcfg}/bin"
     }
 
-	links {
-        "libcurl",
-        "Ws2_32",
-        "Wldap32",
-        "Normaliz",
-        "Crypt32",
-		"d3d9",
-		"d3dx9",
-		"detours",
-		"lua",
-		"dxguid",
-        "wbemuuid",
-        "advapi32",
-        "dinput8",
-        "bass"
-	}
+	filter "configurations:Debug"
+            links {
+                "libcurl",
+                "Ws2_32",
+                "Wldap32",
+                "Normaliz",
+                "Crypt32",
+		        "d3d9",
+		        "d3dx9",
+		        "detours",
+		        "lua",
+		        "dxguid",
+                "wbemuuid",
+                "advapi32",
+                "dinput8",
+                "bass",
+                "angelscriptd"
+            }
+
+        filter "configurations:Release or Production or Pre-Release"
+            links {
+                "libcurl",
+                "Ws2_32",
+                "Wldap32",
+                "Normaliz",
+                "Crypt32",
+                "d3d9",
+                "d3dx9",
+                "detours",
+                "lua",
+                "dxguid",
+                "wbemuuid",
+                "advapi32",
+                "dinput8",
+                "bass",
+                "angelscript"
+            }
 
 	postbuildcommands {
         -- copy additional files and stuff
@@ -56,6 +86,3 @@ project "Client"
     linkoptions {
         "/SAFESEH:NO"
     }
-
-    filter "configurations:Production"
-        toolset "v142" -- TODO: update to the future releases

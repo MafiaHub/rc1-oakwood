@@ -2,6 +2,8 @@ project "WidescreenFix"
     language "C++"
     kind "SharedLib"
 
+    toolset "v142"
+
     targetname "WidescreenFix"
     targetdir "../../Bin/%{cfg.buildcfg}/bin"
     vpaths { ["*"] = "*" }

@@ -124,17 +124,6 @@ void add_messages() {
                 use_actor_skip=true;
             }
 
-            if (action == 1)
-            {
-                chat::set_chat_y(250);
-                chat::new_msg_arrived = true;
-            }
-            else
-            {
-                chat::set_chat_y(1);
-                chat::new_msg_arrived = true;
-            }
-
             sender->ped->Use_Actor(vehicle->car, action, seat_original, unk3);
         }
     });
@@ -190,9 +179,6 @@ void add_messages() {
         if (sender_ent && sender_ent->user_data && vehicle_ent && vehicle_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
-
-            chat::set_chat_y(1);
-            chat::new_msg_arrived = true;
 
             sender->ped->Intern_FromCar();
             vehicle->seats[seat_id] = -1;
@@ -486,9 +472,6 @@ void add_messages() {
         if (player_ent && player_ent->user_data) {
             auto player = (mafia_player*)player_ent->user_data;
             player->vehicle_id = vehicle_id;
-
-            chat::set_chat_y(250);
-            chat::new_msg_arrived = true;
 
             auto player_vehicle = librg_entity_fetch(&network_context, vehicle_id);
             if(player_vehicle && player_vehicle->user_data) {

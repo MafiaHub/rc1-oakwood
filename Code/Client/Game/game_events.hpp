@@ -33,11 +33,15 @@ auto mod_bind_events()
 
         SendMessageW((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETTEXT, 0, (LPARAM)"Mafia: Oakwood");
 
-        HICON hIcon = (HICON)LoadImageA(NULL, "files\\Oakwood.ico", 1, NULL, NULL, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
-        if (hIcon)
+        HICON hIcon1 = (HICON)LoadImageA(NULL, "files\\Oakwood.ico", 1, NULL, NULL, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        HICON hIcon2 = (HICON)LoadImageA(NULL, "files\\OakwoodBig.ico", 1, NULL, NULL, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        if (hIcon1)
         {
-            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_BIG, (LPARAM)hIcon);
-            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_SMALL, (LPARAM)hIcon1);
+        }
+        if (hIcon2)
+        {
+            SendMessage((HWND)MafiaSDK::GetIGraph()->GetMainHWND(), WM_SETICON, ICON_BIG, (LPARAM)hIcon2);
         }
         else
         {

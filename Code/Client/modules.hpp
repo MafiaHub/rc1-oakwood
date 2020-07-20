@@ -29,4 +29,5 @@ namespace modules {
     #include "Modules/Vehicle/base.hpp"
     #include "Modules/Misc/base.hpp"
     #include "Modules/WeaponDrop/base.hpp"
+    #include "Modules/ClientSideScript/base.hpp"
 }

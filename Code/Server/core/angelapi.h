@@ -51,7 +51,7 @@ int oak_angel_include_callback(const char* include, const char* from, CScriptBui
     return builder->AddSectionFromFile(include);
 }
 
-void oak_angel_proak_vehicle_exception(asIScriptContext *ctx)
+void oak_angel_exception(asIScriptContext *ctx)
 {
     asIScriptEngine* e = ctx->GetEngine();
 

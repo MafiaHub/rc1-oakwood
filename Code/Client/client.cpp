@@ -106,6 +106,22 @@
 #include <md5/md5.h>
 
 /*
+* AngelScript & Addons
+*/
+#define AS_USE_STLNAMES 1
+#define AS_USE_ACCESSORS 1
+
+#include "angelscript.h"
+#include "angelscript/addon/scriptstdstring/scriptstdstring.h"
+#include "angelscript/addon/scriptbuilder/scriptbuilder.h"
+#include "angelscript/addon/scriptarray/scriptarray.h"
+#include "angelscript/addon/scriptany/scriptany.h"
+#include "angelscript/addon/scriptmath/scriptmath.h"
+#include "angelscript/addon/datetime/datetime.h"
+#include "angelscript/addon/scriptfile/scriptfile.h"
+#include "angelscript/addon/scriptfile/scriptfilesystem.h"
+
+/*
 * Shared
 */
 
