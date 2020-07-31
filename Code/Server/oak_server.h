@@ -63,6 +63,8 @@ OAK_API int   oak_killbox_set(float);
 OAK_API float oak_killbox_get();
 OAK_API int oak_create_explosion(oak_player, oak_vec3, float, float);
 
+OAK_API int oak_server_reload();
+
 /* ENTITY LISTS */
 
 OAK_API oak_array(oak_player) oak_player_list(oak_ref(int));

@@ -85,6 +85,7 @@
 
 #include "core/config.h"
 #include "core/signal_handling.h"
+#include "core/consolecmds.h"
 #include "core/console.h"
 #include "core/cli_opts.h"
 #include "core/entities.h"
@@ -97,6 +98,7 @@
 #include "core/files.h"
 #include "core/webserver.h"
 #include "core/angelapi.h"
+#include "core/crashhandler.h"
 
 #include "core/tasks/killbox.h"
 #include "core/tasks/masterlist.h"
@@ -142,78 +144,90 @@ const char *banner_text = R"foo(
 
 int main(int argc, char **argv)
 {
-    semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
+#if defined(ZPL_SYSTEM_WINDOWS) && !defined(_DEBUG) && !defined(__GNUC__)
+    __try {
+#endif
+        semver_parse(OAK_VERSION, &OAK_VERSION_SEMVER);
 
-    oak_log_init();
+        oak_log_init();
 
-    oak_console_init();
-    oak_console_printf("^E================================^R\n");
-    oak_console_printf(banner_text);
-    oak_console_printf("^FBuild version: ^Av%s^R\n", OAK_VERSION);
-    oak_console_printf("^FBuild channel: ^A%s^R\n", OAK_BUILD_TYPE);
-    oak_console_printf("^FBuild time: ^A%s %s^R\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
-    oak_console_printf("^E================================^R\n");
-    oak_cli_init(argc, argv);
+        oak_console_init();
+        oak_console_printf("^E================================^R\n");
+        oak_console_printf(banner_text);
+        oak_console_printf("^FBuild version: ^Av%s^R\n", OAK_VERSION);
+        oak_console_printf("^FBuild channel: ^A%s^R\n", OAK_BUILD_TYPE);
+        oak_console_printf("^FBuild time: ^A%s %s^R\n", OAK_BUILD_DATE, OAK_BUILD_TIME);
+        oak_console_printf("^E================================^R\n");
+        oak_cli_init(argc, argv);
 
-    oak_sighandler_register();
+        oak_sighandler_register();
 
-    oak_config_init();
-    oak_cli_replace();
+        oak_config_init();
+        oak_cli_replace();
 
-    geo_ip = GeoIP_open("GeoIP.dat", NULL);
+        geo_ip = GeoIP_open("GeoIP.dat", NULL);
 
-    if (!geo_ip)
-    {
-        oak_log("^F[^9ERROR^F] Cannot load GeoIP database, GeoIP functions are disabled!^R\n");
-    }
-    else
-    {
-        oak_log("^F[^5INFO^F] GeoIP database loaded!^R\n");
-        GeoIP_set_charset(geo_ip, GEOIP_CHARSET_UTF8);
-    }
-
-    oak_webserver_init();
-    if (GlobalConfig.api_type == "internal")
-    {
-        oak_angel_init();
-    }
-    else if (GlobalConfig.api_type == "external")
-    {
-        oak_bridge_init();
-    }
-    else
-    {
-        oak_log("^F[^9ERROR^F] Invalid API type!^R\n");
-        oak_webserver_stop();
-        return 0;
-    }
-    
-    oak_network_init();
-    oak_entities_init();
-
-    generate_list();
-
-    oak_console_input_handler_init();
-
-    while (true)
-    {
-        oak_console_block_input(1);
-        oak_network_tick();
-        if (GlobalConfig.api_type == "external")
+        if (!geo_ip)
         {
-            oak_bridge_tick();
+            oak_log("^F[^9ERROR^F] Cannot load GeoIP database, GeoIP functions are disabled!^R\n");
         }
         else
         {
-            oak_angel_tick();
+            oak_log("^F[^5INFO^F] GeoIP database loaded!^R\n");
+            GeoIP_set_charset(geo_ip, GEOIP_CHARSET_UTF8);
         }
-        
-        oak_tasks_process();
-        oak_console_block_input(0);
-        zpl_sleep_ms(1);
-    }
 
-    return 0;
+        oak_webserver_init();
+        if (GlobalConfig.api_type == "internal")
+        {
+            oak_angel_init();
+        }
+        else if (GlobalConfig.api_type == "external")
+        {
+            oak_bridge_init();
+        }
+        else
+        {
+            oak_log("^F[^9ERROR^F] Invalid API type!^R\n");
+            oak_webserver_stop();
+            return EXIT_SUCCESS;
+        }
+
+        oak_network_init();
+        oak_entities_init();
+
+        generate_list();
+
+        oak_console_input_handler_init();
+
+        registerCmds();
+
+        while (true)
+        {
+            oak_console_block_input(1);
+            oak_network_tick();
+            if (GlobalConfig.api_type == "external")
+            {
+                oak_bridge_tick();
+            }
+            else
+            {
+                oak_angel_tick();
+            }
+
+            oak_tasks_process();
+            oak_console_block_input(0);
+            zpl_sleep_ms(1);
+        }
+
+        return EXIT_SUCCESS;
+#if defined(ZPL_SYSTEM_WINDOWS) && !defined(_DEBUG) && !defined(__GNUC__)
+    }
+    __except (oak_crash_handler(0, GetExceptionInformation()), EXCEPTION_CONTINUE_SEARCH)
+    { 
+        return EXIT_FAILURE;
+    }
+#endif
 }
 
 void shutdown_server()

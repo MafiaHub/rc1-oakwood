@@ -57,6 +57,12 @@ std::vector<std::string> get_directories(const std::string& s)
 
 void generate_list()
 {
+    if (jfiles.size() != 0) jfiles.clear();
+
+    auto path = std::filesystem::current_path();
+
+    std::filesystem::create_directories(std::filesystem::path(path.generic_string() + "/static"));
+        
     std::vector<std::string> dirs = get_directories("static");
     std::vector<std::string> files = get_files("static");
 

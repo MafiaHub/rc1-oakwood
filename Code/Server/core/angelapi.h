@@ -1,23 +1,8 @@
 asIScriptEngine *engine;
 
-std::map<std::string, asIScriptFunction*> commands;
+bool canRun = false;
 
-inline std::vector<std::string> SplitString(std::string str, std::string token) {
-    std::vector<std::string> result;
-    while (str.size()) {
-        int index = str.find(token);
-        if (index != std::string::npos) {
-            result.push_back(str.substr(0, index));
-            str = str.substr(index + token.size());
-            if (str.size() == 0) result.push_back(str);
-        }
-        else {
-            result.push_back(str);
-            str = "";
-        }
-    }
-    return result;
-}
+std::map<std::string, asIScriptFunction*> commands;
 
 void RegisterCommand(std::string cmdName, asIScriptFunction* cb)
 {
@@ -321,6 +306,8 @@ int a_oak_create_explosion(int player, float x, float y, float z, float radius, 
 
 #pragma region AngelScript events
 void oak_angel_event_server_tick() {
+    if (!canRun) return;
+
     if (engine->GetModule("OakModule") == nullptr) return;
 
     asIScriptContext* ctx = engine->CreateContext();
@@ -478,8 +465,10 @@ void oak_angel_event_player_chat(int player, const char* text) {
 
             ctx->Prepare(func1);
 
+            std::string cmdName = ar[0].substr(1);
+
             ctx->SetArgDWord(0, player);
-            ctx->SetArgObject(1, &ar[0].substr(1));
+            ctx->SetArgObject(1, &cmdName);
         }
         else
         {
@@ -772,6 +761,7 @@ void oak_angel_register_functions()
     r = engine->RegisterGlobalFunction("int setKillbox(float level)", asFUNCTION(oak_killbox_set), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("float getKillbox()", asFUNCTION(oak_killbox_get), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     r = engine->RegisterGlobalFunction("int createExplosion(int sender, float x, float y, float z, float radius, float force)", asFUNCTION(a_oak_create_explosion), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalFunction("int serverReload()", asFUNCTION(oak_server_reload), asCALL_CDECL); ZPL_ASSERT(r >= 0);
     #pragma endregion
 }
 
@@ -867,16 +857,114 @@ void oak_angel_init()
     }
 
     ctx->Release();
+
+    canRun = true;
+}
+
+void oak_angel_reload()
+{
+    oak_log("^F[^5INFO^F] Reloading AngelScript^R\n");
+
+    canRun = false;
+
+    for (std::map<std::string, asIScriptFunction*>::iterator it = commands.begin(); it != commands.end(); ++it)
+    {
+        it->second->Release();
+    }
+
+    commands.clear();
+
+    engine->ShutDownAndRelease();
+
+    engine = asCreateScriptEngine();
+
+    int r = engine->SetMessageCallback(asFUNCTION(oak_angel_msg_callback), 0, asCALL_CDECL); ZPL_ASSERT(r >= 0);
+
+    RegisterStdString(engine);
+    RegisterScriptAny(engine);
+    RegisterScriptArray(engine, true);
+    RegisterScriptDateTime(engine);
+    RegisterScriptFile(engine);
+    RegisterScriptFileSystem(engine);
+    RegisterStdStringUtils(engine);
+
+    r = engine->RegisterFuncdef("void OakCmdCallback(int playerid, array<string> args)"); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterGlobalFunction("void registerCommand(string cmdName, OakCmdCallback @cb)", asFUNCTION(RegisterCommand), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterGlobalFunction("int random(int min, int max)", asFUNCTION(RandomNumber), asCALL_CDECL); ZPL_ASSERT(r >= 0);
+
+    r = engine->RegisterGlobalProperty("int maxPlayers", &GlobalConfig.max_players); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalProperty("int connectedPlayers", &GlobalConfig.players); ZPL_ASSERT(r >= 0);
+    r = engine->RegisterGlobalProperty("string serverName", &GlobalConfig.name); ZPL_ASSERT(r >= 0);
+
+    oak_angel_register_enums();
+    oak_angel_register_functions();
+
+    CScriptBuilder builder;
+
+    builder.SetIncludeCallback(oak_angel_include_callback, NULL);
+
+    r = builder.StartNewModule(engine, "OakModule");
+    if (r < 0)
+    {
+        oak_log("^F[^9ERROR^F] Cannot start new script module.\n");
+        return;
+    }
+    r = builder.AddSectionFromFile(GlobalConfig.script_file.c_str());
+    if (r < 0)
+    {
+        oak_log("^F[^9ERROR^F] Failed to add script file.\n");
+        return;
+    }
+    r = builder.BuildModule();
+    if (r < 0)
+    {
+        oak_log("^F[^9ERROR^F] Failed to build script module, please fix all the issues and run again.\n");
+        return;
+    }
+
+    asIScriptModule* mod = engine->GetModule("OakModule");
+    asIScriptFunction* func = mod->GetFunctionByDecl("void main()");
+    if (func == 0)
+    {
+        // The function couldn't be found. Instruct the script writer
+        // to include the expected function in the script.
+        oak_log("^F[^9ERROR^F] The script must have the function ^A'void main()'^F. Please add it and try again.^R\n");
+        return;
+    }
+
+    // Create our context, prepare it, and then execute
+    asIScriptContext* ctx = engine->CreateContext();
+    ctx->Prepare(func);
+    r = ctx->Execute();
+    if (r != asEXECUTION_FINISHED)
+    {
+        // The execution didn't complete as expected. Determine what happened.
+        if (r == asEXECUTION_EXCEPTION)
+        {
+            // An exception occurred, let the script writer know what happened so it can be corrected.
+            oak_log("^F[^9ERROR^F] An exception ^A'%s'^F occurred. Please correct the code and try again.^R\n", ctx->GetExceptionString());
+        }
+    }
+
+    ctx->Release();
+
+    canRun = true;
 }
 
 void oak_angel_stop()
 {
     oak_log("^F[^5INFO^F] Shutting down AngelScript^R\n");
 
+    canRun = false;
+
     for (std::map<std::string, asIScriptFunction*>::iterator it = commands.begin(); it != commands.end(); ++it)
     {
         it->second->Release();
     }
+    
+    commands.clear();
 
     engine->ShutDownAndRelease();
 }

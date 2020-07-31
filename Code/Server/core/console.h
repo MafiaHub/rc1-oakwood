@@ -34,19 +34,49 @@ void oak_console_init();
 void oak_console_draw(const char* format, ...);
 void oak_console_printf(const char* format, ...);
 
+inline std::vector<std::string> SplitString(std::string str, std::string token) {
+    std::vector<std::string> result;
+    while (str.size()) {
+        int index = str.find(token);
+        if (index != std::string::npos) {
+            result.push_back(str.substr(0, index));
+            str = str.substr(index + token.size());
+            if (str.size() == 0) result.push_back(str);
+        }
+        else {
+            result.push_back(str);
+            str = "";
+        }
+    }
+    return result;
+}
+
 zpl_isize oak__console_input_handler(struct zpl_thread *t) {
     do {
         std::string line;
         std::getline(std::cin, line);
-
+        
         while (zpl_atomic32_load(&oak__console_data.input_block) > 0) {
             zpl_yield_thread();
         }
 
-        if (GlobalConfig.api_type == "internal")
-            oak_angel_event_console(line.c_str());
-        else
-            oak_bridge_event_console(line.c_str());
+        auto list = SplitString(line, " ");
+
+        std::string cmdName = list[0];
+        std::vector<std::string> args;
+
+        for (int i = 1; i < list.size(); i++)
+        {
+            args.push_back(list[i]);
+        }
+
+        if (!execCmd(cmdName, args))
+        {
+            if (GlobalConfig.api_type == "internal")
+                oak_angel_event_console(line.c_str());
+            else
+                oak_bridge_event_console(line.c_str());
+        }
     } while(zpl_atomic32_load(&oak__console_data.input_handler_running) > 0);
 
     return 0;

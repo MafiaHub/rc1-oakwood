@@ -30,6 +30,8 @@ oak_vehicle oak_vehicle_spawn(const char *model, int length, oak_vec3 position, 
     entity->rot_up             = { 0.0f, 1.0f, 0.0f };
     oak_vehicle_visibility_set(oak_id, OAK_VISIBILITY_ICON, 1);
 
+    GlobalConfig.vehicles++;
+
     zpl_memset(entity->model, 0, OAK_VEHICLE_MODEL_SIZE);
     zpl_memcopy(entity->model, model, length);
 
@@ -73,6 +75,8 @@ int oak_vehicle_despawn(oak_vehicle id) {
     librg_entity_destroy(oak_network_ctx_get(), vehicle->native_id);
     oak_entity_free(OAK_VEHICLE, id);
     vehicle->native_entity->user_data = nullptr;
+
+    GlobalConfig.vehicles--;
 
     return 0;
 }

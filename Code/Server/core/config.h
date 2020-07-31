@@ -14,7 +14,8 @@ static const char *oak__config_mod_default = "\n"\
     "/* Script file, which the internal API will run on startup */\nscript_file = \"gamemode.as\"\n"\
     "/* Bridge inbound address (for function calls) */\nbridge_inbound = \"ipc://oakwood-inbound\"\n"\
     "/* Bridge outbound address (for event calls)*/\nbridge_outbound = \"ipc://oakwood-outbound\"\n"\
-    "/* Determines, if this server will use whitelist */\nwhitelist = false\n";
+    "/* Determines, if this server will use whitelist */\nwhitelist = false\n"\
+    "/* If this option is true, the server will automatically restart on crash */\ncrash_restart = false\n";
 
 struct _GlobalConfig {
     std::string name;
@@ -28,6 +29,8 @@ struct _GlobalConfig {
     std::string api_type, script_file;
     std::string bridge_inbound, bridge_outbound;
     b32 visible;
+    b32 crash_restart;
+    i64 vehicles;
 } GlobalConfig;
 
 int oak_config_init() {
@@ -49,9 +52,13 @@ int oak_config_init() {
     json_apply(json, GlobalConfig.script_file, script_file, string, "gamemode.as");
     json_apply(json, GlobalConfig.bridge_inbound, bridge_inbound, string, "ipc://oakwood-inbound");
     json_apply(json, GlobalConfig.bridge_outbound, bridge_outbound, string, "ipc://oakwood-outbound");
+    json_apply(json, GlobalConfig.crash_restart, crash_restart, constant, ZPL_JSON_CONST_TRUE);
 
     if (GlobalConfig.visible == ZPL_JSON_CONST_FALSE)
         GlobalConfig.visible = false;
+
+    if (GlobalConfig.crash_restart == ZPL_JSON_CONST_FALSE)
+        GlobalConfig.crash_restart = false;
 
     oak_access_wh_state_set(whOnly);
 
@@ -78,6 +85,13 @@ int oak_config_init() {
     }
     oak_log("^FVisible: ^A%s^R\n", GlobalConfig.visible ? "yes" : "no");
     oak_log("^B================================^R\n");
+
+#if !defined(ZPL_SYSTEM_WINDOWS)
+    if (GlobalConfig.api_type == "internal")
+        oak_log("^F[^9WARNING^F] Internal API support is experimental on Linux & Mac, so it couldn't work or it could crash the server!^R\n", GlobalConfig.script_file.c_str());
+#endif
+
+    
 
     return 0;
 }

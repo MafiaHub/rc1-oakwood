@@ -177,4 +177,7 @@ void oak_cli_free();
 
 int oak_player_clear_inventory(oak_player id);
 
+
+void shutdown_server();
+
 #endif // OAK_PRIVATE_H

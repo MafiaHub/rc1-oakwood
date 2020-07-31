@@ -76,6 +76,33 @@ int oak_create_explosion(oak_player sender, oak_vec3 pos, float radius, float fo
     return 0;
 }
 
+int oak_server_reload()
+{
+    oak_console_printf("^F[^5INFO^F] Server is restarting...^R\n");
+    std::string kickReason = "Server is restarting";
+
+    auto players = oak_player_list(NULL);
+    for (int i = 0; i < GlobalConfig.players; i++)
+    {
+        oak_player_kick(players[i], kickReason.c_str(), kickReason.size());
+    }
+
+    auto vehicles = oak_vehicle_list(NULL);
+    for (int i = 0; i < GlobalConfig.vehicles; i++)
+    {
+        oak_vehicle_despawn(vehicles[i]);
+    }
+
+    generate_list();
+
+    if(GlobalConfig.api_type == "internal")
+        oak_angel_reload();
+
+    oak_console_printf("^F[^5INFO^F] ^AReload complete^R\n");
+
+    return 0;
+}
+
 float oak_killbox_get() {
     return oak_config_killbox_get();
 }

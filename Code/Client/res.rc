@@ -67,7 +67,7 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "CompanyName", "MafiaHub & Contributors"
+            VALUE "CompanyName", "Oakwood DevTeam & Contributors"
             VALUE "FileDescription", "Mafia: Oakwood - Client DLL"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "Oakwood.exe"
