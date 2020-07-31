@@ -85,5 +85,25 @@ namespace Oakwood.CrashReporter
         {
             Close();
         }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox1.Checked)
+            {
+                button1.DialogResult = DialogResult.None;
+                button1.Text = "View Report";
+            }
+            else
+            {
+                button1.DialogResult = DialogResult.OK;
+                button1.Text = "Send Report";
+            }
+        }
+
+        private void CrashForm_Load(object sender, EventArgs e)
+        {
+            BringToFront();
+            Focus();
+        }
     }
 }

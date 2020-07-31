@@ -67,7 +67,15 @@ void add_messages() {
 
             if (vehicle->seats[seat] != -1) {
 
+                if (sender->name == player::get_local_player()->name)
+                {
+                    chat::set_chat_y(1);
+                    chat::set_chat_ysize(400);
+                    
+                }
+
                 if (sender_ent->id == local_player.entity_id) {
+                    
                     hijack_skip=true;
                 }
 
@@ -119,6 +127,20 @@ void add_messages() {
         if (sender_ent && vehicle_ent && sender_ent->user_data && vehicle_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+            if (sender->name == player::get_local_player()->name)
+            {
+                if (action == 2)
+                {
+                    chat::set_chat_y(chat::plYPos);
+                    chat::set_chat_ysize(chat::plYSize);
+                }
+                else
+                {
+                    chat::set_chat_y(chat::vehYPos);
+                    chat::set_chat_ysize(chat::vehYSize);
+                }
+            }
 
             if (sender_ent->id == local_player.entity_id) {
                 use_actor_skip=true;
@@ -179,6 +201,12 @@ void add_messages() {
         if (sender_ent && sender_ent->user_data && vehicle_ent && vehicle_ent->user_data) {
             auto sender = (mafia_player*)sender_ent->user_data;
             auto vehicle = (mafia_vehicle*)vehicle_ent->user_data;
+
+            if (player::get_local_player()->name == sender->name)
+            {
+                chat::set_chat_y(chat::plYPos);
+                chat::set_chat_ysize(chat::plYSize);
+            }
 
             sender->ped->Intern_FromCar();
             vehicle->seats[seat_id] = -1;
@@ -472,6 +500,12 @@ void add_messages() {
         if (player_ent && player_ent->user_data) {
             auto player = (mafia_player*)player_ent->user_data;
             player->vehicle_id = vehicle_id;
+
+            if (player->name == player::get_local_player()->name)
+            {
+                chat::set_chat_y(chat::vehYPos);
+                chat::set_chat_ysize(chat::vehYSize);
+            }
 
             auto player_vehicle = librg_entity_fetch(&network_context, vehicle_id);
             if(player_vehicle && player_vehicle->user_data) {

@@ -601,6 +601,24 @@ void oak_angel_event_dialog_done(int player, int dialogId, int dialogSel, const 
 
     ctx->Release();
 }
+
+void oak_angel_event_vehicle_exploded(int vehicle) {
+    if (engine->GetModule("OakModule") == nullptr) return;
+
+    asIScriptContext* ctx = engine->CreateContext();
+
+    asIScriptFunction* func = engine->GetModule("OakModule")->GetFunctionByName("onVehicleExplode");
+
+    if (!func) return;
+
+    ctx->Prepare(func);
+
+    ctx->SetArgDWord(0, vehicle);
+
+    ctx->Execute();
+
+    ctx->Release();
+}
 #pragma endregion
 
 #pragma region AngelScript functions

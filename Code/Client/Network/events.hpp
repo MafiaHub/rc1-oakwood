@@ -24,6 +24,9 @@ void handle_disconnection()
 
     loadingscreen::changeTex(GlobalConfig.localpath + "\\files\\oakwood.png");
 
+    modules::chat::set_chat_y(1);
+    modules::chat::set_chat_ysize(400);
+
     modpath = "";
 
     if (modules::audiostream::is_playing())

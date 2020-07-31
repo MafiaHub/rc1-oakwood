@@ -83,8 +83,13 @@ namespace loadingscreen {
             graphics::main_sprite->Draw(loadingscreen_texture, NULL, NULL, NULL, D3DCOLOR_ARGB(255, 255, 255, 255));
             graphics::main_sprite->End();
 
-            constexpr float loading_bar_height = 15.0f;
-            graphics::draw_box(device, 0.0f, screen_y - loading_bar_height, 0.0f, screen_x * current_loading_progress, loading_bar_height, 0xFFFF0000);
+            float loading_bar_width = 420.0f;
+            constexpr float loading_bar_height = 12.0f;
+
+            graphics::draw_box(device, (screen_x / 2.0f) - (loading_bar_width / 2.0f) - 9, screen_y - loading_bar_height - 48, 0, loading_bar_width + 8, loading_bar_height + 8, 0xFF2A2A2A);
+            graphics::draw_box(device, (screen_x / 2.0f) - (loading_bar_width / 2.0f) - 5, screen_y - loading_bar_height - 44, 0, loading_bar_width * current_loading_progress, loading_bar_height, 0xFFFF0000);
+
+            //graphics::draw_box(device, 0.0f, screen_y - loading_bar_height, 0.0f, screen_x * current_loading_progress, loading_bar_height, 0xFFFF0000);
         }
     }
 

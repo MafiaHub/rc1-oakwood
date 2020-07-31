@@ -121,6 +121,17 @@ int oak_vehicle_register() {
                 mod_message_send(&network_context, NETWORK_VEHICLE_EXPLODE, [&](librg_data *data) {
                     librg_data_wu32(data, vehicle_ent->id);
                 });
+
+                auto veh = (oak_vehicle)vehicle_ent->user_data;
+
+                if (GlobalConfig.api_type == "internal")
+                {
+                    oak_angel_event_vehicle_exploded(veh);
+                }
+                else
+                {
+                    oak_bridge_event_vehicle_exploded(veh);
+                }
   
                 oak_vehicle_despawn((oak_vehicle)vehicle_ent->user_data);
             }

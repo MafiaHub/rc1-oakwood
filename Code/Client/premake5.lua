@@ -42,6 +42,7 @@ project "Client"
 
 	filter "configurations:Debug"
             links {
+                "DbgHelp",
                 "libcurl",
                 "Ws2_32",
                 "Wldap32",

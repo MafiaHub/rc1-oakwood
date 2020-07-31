@@ -48,12 +48,6 @@
 #include "librg/librg_ext.h"
 
 /*
-* Stack walker
-*/
-
-#include "Game/CrashHandler/StackWalker/StackWalker.h"
-
-/*
 * BASS Audio Library
 */
 #include "bass.h"

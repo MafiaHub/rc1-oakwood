@@ -273,6 +273,15 @@ namespace chat {
         }
     }
 
+    int yPos = 1;
+    int ySize = 400;
+
+    int vehYPos = 265;
+    int vehYSize = 260;
+
+    int plYPos = 1;
+    int plYSize = 400;
+
     inline void init() {
         zpl_local_persist bool itpl = false;
 
@@ -281,6 +290,8 @@ namespace chat {
         }
 
         itpl = true;
+
+        vehYPos = (MafiaSDK::GetIGraph()->Scrn_sy() / 2) - 95;
 
         register_command("/q", [&](std::vector<std::string> args) {
             librg_network_stop(&network_context);
@@ -363,11 +374,16 @@ namespace chat {
         return false;
     }
 
-    int yPos = 1;
-
     inline void set_chat_y(int pos)
     {
         yPos = pos;
+        new_msg_arrived = true;
+    }
+
+    inline void set_chat_ysize(int size)
+    {
+        ySize = size;
+        new_msg_arrived = true;
     }
 
     inline void render() {
@@ -391,12 +407,15 @@ namespace chat {
             ImGuiWindowFlags_NoBackground |
             ImGuiWindowFlags_NoTitleBar);
 
-        ImGui::SetWindowSize(ImVec2(800, 400));
+        ImGui::SetWindowSize(ImVec2(450, ySize));
         ImGui::SetWindowPos(ImVec2(1, yPos));
 
         ImGui::PushFontShadow(0xFF000000);
 
-        ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar);
+        if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused())
+            ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, NULL);
+        else
+            ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar);
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
@@ -441,7 +460,9 @@ namespace chat {
             if (is_focused)
             {
                 ImGui::SetKeyboardFocusHere(0);
+                ImGui::PushItemWidth(450);
                 ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
+                ImGui::PopItemWidth();
             }
         }
         ImGui::SetScrollHere(1.0f);
