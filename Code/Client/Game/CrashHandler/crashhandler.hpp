@@ -290,7 +290,7 @@ namespace crashhandler
 
         CreateDirectory(dir, NULL);
 
-        sprintf(name, "%s\\%s.txt", dir, time);
+        sprintf(name, "%s\\client_%s.txt", dir, time);
 
         std::ofstream file;
         file.open(name);

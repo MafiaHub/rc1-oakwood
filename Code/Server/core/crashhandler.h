@@ -199,7 +199,7 @@ void oak_crash_handler(unsigned int type, EXCEPTION_POINTERS* ep)
 
     CreateDirectory(dir, NULL);
 
-    sprintf(name, "%s\\%s.txt", dir, time);
+    sprintf(name, "%s\\server_%s.txt", dir, time);
 
     std::ofstream file;
     file.open(name);
