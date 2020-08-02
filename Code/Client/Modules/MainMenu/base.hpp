@@ -52,6 +52,11 @@ namespace mainmenu {
     std::vector<ServerInfo::ServerData> servers;
     std::vector<const char*> car_binds = { "Accelerate", "Brake/Back", "Turn Left", "Turn Right", "Handbrake", "Speed Limiter", "Gear change up", "Gear change down", "Horn", "Look Left", "Look Right", "Clutch", "Manual/Automatic transmission", "Change Camera", "Put back on the Track" };
     std::vector<const char*> player_binds = { "Move Forward", "Move Backwards", "Strafe Left", "Strafe Right", "Walk", "Action Button (Use)", "Fire", "Crouch", "Jump", "Aim", "Next Weapon", "Prev Weapon", "Inventory", "Hide Weapon", "Throw Weapon", "Switch Run/Walk", "Reload", "Sniper Mode", "Objectives", "Map" };
+
+    std::vector<const char*> key_names = { "ESC", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "=", "Backspace", "Tab", "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "Left Bracket", "Right Bracket", "Enter", "Left CTRL", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Semicolon", "Apostrophe", "Grave", "Left Shift", "Backslash", "Z", "X", "C", "V", "B", "N", "M", "Comma", "Period", "Slash", "Right Shift", "Num Multiply", "Left Alt", "Space", "Caps Lock", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "Num Lock", "Scroll Lock", "Num 7", "Num 8", "Num 9", "Num -", "Num 4", "Num 5", "Num 6", "Num +", "Num 1", "Num 2", "Num 3", "Num 0", "Num .", "notUsed", "F11", "F12", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "Num Enter", "Right CTRL", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "Num /", "SysRQ", "Right Alt", "Pause", "Home", "Up Arrow", "Page Up", "Left Arrow", "Right Arrow", "End", "Down Arrow", "Page Down", "Insert", "Delete", "Left WinKey", "Right WinKey", "AppMenu", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed", "notUsed" };
+
+    std::vector<const char*> mouse_names = { "LMB", "RMB", "MMB", "Mouse X", "Mouse Y", "Mouse Z" };
+
     int is_picking_key              = -1;
     BYTE old_dik_buffer[256];
     char qc_address[32] = "127.0.0.1";
@@ -107,7 +112,7 @@ namespace mainmenu {
         is_picking_key = (key_idx - 1);
         input::block_input(false);
     }
-
+    
     inline void render_input_settings() {
         if (ImGui::BeginTabBar("input")) {
             if (ImGui::BeginTabItem("Player")) {
@@ -121,7 +126,56 @@ namespace mainmenu {
                 int key_idx = 0;
                 for (int i = 0; i < 20; i++) {
                     ImGui::Text(player_binds.at(i)); ImGui::NextColumn();
-                    const char* key_name = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
+                    auto key = &game_key_buffer[key_idx++];
+                    
+                    const char* key_name = MafiaSDK::GetInput()->GetKeyName(key);
+
+                    auto keydik = key->GetDIK() - 1;
+                    auto keytype = key->GetType();
+
+                    switch (key->GetType())
+                    {
+                        case 1:
+                        {
+                            key_name = key_names[key->GetDIK() - 1];
+                        }
+                        break;
+
+                        case 2:
+                        {
+                            switch (key->GetDIK())
+                            {
+                                case 256:
+                                {
+                                    key_name = mouse_names[3];
+                                }
+                                break;
+                                case 512:
+                                {
+                                    key_name = mouse_names[4];
+                                }
+                                break;
+                                case 768:
+                                {
+                                    key_name = mouse_names[5];
+                                }
+                                break;
+                                default:
+                                {
+                                    key_name = mouse_names[key->GetDIK() - 1];
+                                }
+                                break;
+                            }
+                            
+                        }
+                        break;
+
+                        default:
+                        {
+                            key_name = MafiaSDK::GetInput()->GetKeyName(key);
+                        }
+                        break;
+                    }
 
                     ImGui::PushID(key_idx);
                     if (key_name && ImGui::Button(key_name)) {
@@ -135,7 +189,51 @@ namespace mainmenu {
                     ImGui::NextColumn();
 
                     if (key_idx < 24) {
-                        const char* key_name_next = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
+                        auto key2 = &game_key_buffer[key_idx++];
+                        const char* key_name_next = MafiaSDK::GetInput()->GetKeyName(key2);
+                        
+                        auto key2dik = key2->GetDIK() - 1;
+                        auto key2type = key2->GetType();
+
+                        /*switch (key2->GetType())
+                        {
+                        case 1:
+                        {
+                            key_name_next = key_names[key2->GetDIK() - 1];
+                        }
+                        break;
+
+                        case 2:
+                        {
+                            switch (key2->GetDIK())
+                            {
+                            case 256:
+                            {
+                                key_name_next = mouse_names[3];
+                            }
+                            break;
+                            case 512:
+                            {
+                                key_name_next = mouse_names[4];
+                            }
+                            break;
+                            case 768:
+                            {
+                                key_name_next = mouse_names[5];
+                            }
+                            break;
+                            }
+
+                        }
+                        break;
+
+                        default:
+                        {
+                            key_name_next = MafiaSDK::GetInput()->GetKeyName(key2);
+                        }
+                        break;
+                        }*/
+
                         ImGui::PushID(key_idx);
                         if (key_name_next && ImGui::Button(key_name_next)) {
                             execute_picking(key_idx);
@@ -172,7 +270,51 @@ namespace mainmenu {
                 int key_idx = 33;
                 for (int i = 0; i < 15; i++) {
                     ImGui::Text(car_binds.at(i)); ImGui::NextColumn();
-                    const char* key_name = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
+                    auto key = &game_key_buffer[key_idx++];
+
+                    const char* key_name = MafiaSDK::GetInput()->GetKeyName(key);
+
+                    auto keydik = key->GetDIK() - 1;
+                    auto keytype = key->GetType();
+
+                    switch (key->GetType())
+                    {
+                    case 1:
+                    {
+                        key_name = key_names[key->GetDIK() - 1];
+                    }
+                    break;
+
+                    case 2:
+                    {
+                        switch (key->GetDIK())
+                        {
+                        case 256:
+                        {
+                            key_name = mouse_names[3];
+                        }
+                        break;
+                        case 512:
+                        {
+                            key_name = mouse_names[4];
+                        }
+                        break;
+                        case 768:
+                        {
+                            key_name = mouse_names[5];
+                        }
+                        break;
+                        }
+
+                    }
+                    break;
+
+                    default:
+                    {
+                        key_name = MafiaSDK::GetInput()->GetKeyName(key);
+                    }
+                    break;
+                    }
 
                     ImGui::PushID(key_idx);
                     if (key_name && ImGui::Button(key_name)) {
@@ -187,7 +329,51 @@ namespace mainmenu {
                     ImGui::NextColumn();
 
                     if (key_idx < 57) {
-                        const char* key_name_ex = MafiaSDK::GetInput()->GetKeyName(&game_key_buffer[key_idx++]);
+                        auto key2 = &game_key_buffer[key_idx++];
+                        const char* key_name_ex = MafiaSDK::GetInput()->GetKeyName(key2);
+
+                        auto key2dik = key2->GetDIK() - 1;
+                        auto key2type = key2->GetType();
+
+                        /*switch (key2->GetType())
+                        {
+                        case 1:
+                        {
+                            key_name_ex = key_names[key2->GetDIK() - 1];
+                        }
+                        break;
+
+                        case 2:
+                        {
+                            switch (key2->GetDIK())
+                            {
+                            case 256:
+                            {
+                                key_name_ex = mouse_names[3];
+                            }
+                            break;
+                            case 512:
+                            {
+                                key_name_ex = mouse_names[4];
+                            }
+                            break;
+                            case 768:
+                            {
+                                key_name_ex = mouse_names[5];
+                            }
+                            break;
+                            }
+
+                        }
+                        break;
+
+                        default:
+                        {
+                            key_name_ex = MafiaSDK::GetInput()->GetKeyName(key2);
+                        }
+                        break;
+                        }*/
+
                         ImGui::PushID(key_idx);
                         if (key_name_ex && ImGui::Button(key_name_ex)) {
                             execute_picking(key_idx);
@@ -354,6 +540,7 @@ namespace mainmenu {
                 if (engine_dik_buffer[i] != old_dik_buffer[i]) {
                     //NOTE(DavoSK): Check if key is not binded somewhere else
                     MafiaSDK::GameKey newToBind(i, MafiaSDK::GameKey_Type::KEYBOARD);
+                    printf("%d\n", newToBind.GetDIK());
                     auto keys = MafiaSDK::GetKeysBuffer();
 
                     if (i == DIK_BACKSPACE) {

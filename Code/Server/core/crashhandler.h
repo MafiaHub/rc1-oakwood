@@ -206,22 +206,7 @@ void oak_crash_handler(unsigned int type, EXCEPTION_POINTERS* ep)
     file << content;
     file.close();
 
-    oak_webserver_stop();
     oak_console_input_handler_destroy();
-
-    if (GlobalConfig.api_type == "external")
-    {
-        oak_bridge_free();
-    }
-    else
-    {
-        oak_angel_stop();
-    }
-
-    oak_network_free();
-    oak_sighandler_unregister();
-
-    oak_cli_free();
 
     char errorText[512];
     sprintf(errorText, "^F[^9ERROR^F] Unhandled exception ^A0x%08X ^8(^B%s^8)^F at ^A0x%08X^R\n\t^AMore information available in ^B%s^R\n", er->ExceptionCode, expDesc, er->ExceptionAddress, name);

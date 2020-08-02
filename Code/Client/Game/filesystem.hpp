@@ -45,7 +45,7 @@ auto _stdcall dta_open_hook(const char* filename, DWORD params) -> DWORD
 
     std::string gpath = GlobalConfig.gamepath;
 
-    replaceAll(gpath, "/Game.exe", "");
+    replaceAll(gpath, "Game.exe", "");
     replaceAll(gpath, "/", "\\");
 
     std::string checkfile = gpath + modpath + "\\" + std::string(filename);

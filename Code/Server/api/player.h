@@ -279,6 +279,7 @@ int oak_player_give_weapon(oak_player id, int weapId, int ammoLoaded, int ammoIn
         }
         else if (i == 7) // If inventory is full, so just give the weapon into the last slot in Inventory
         {
+            oak_player_remove_weapon(id, player->inventory.items[i].weaponId);
             player->inventory.items[i] = gun;
         }
     }

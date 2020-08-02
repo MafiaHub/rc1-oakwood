@@ -407,15 +407,12 @@ namespace chat {
             ImGuiWindowFlags_NoBackground |
             ImGuiWindowFlags_NoTitleBar);
 
-        ImGui::SetWindowSize(ImVec2(450, ySize));
+        ImGui::SetWindowSize(ImVec2(600, ySize));
         ImGui::SetWindowPos(ImVec2(1, yPos));
 
         ImGui::PushFontShadow(0xFF000000);
 
-        if (input::InputState.input_blocked && MafiaSDK::IsWindowFocused())
-            ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, NULL);
-        else
-            ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar);
+        ImGui::BeginChild("scrolling", ImVec2(0, -ImGui::GetItemsLineHeightWithSpacing()), false, ImGuiWindowFlags_NoScrollbar);
 
         if (!chat_messages.empty()) {
             for (auto message : chat_messages) {
@@ -460,7 +457,7 @@ namespace chat {
             if (is_focused)
             {
                 ImGui::SetKeyboardFocusHere(0);
-                ImGui::PushItemWidth(450);
+                ImGui::PushItemWidth(600);
                 ImGui::InputText("", add_text, IM_ARRAYSIZE(add_text), ImGuiInputTextFlags_CallbackAlways, inputTextHandler);
                 ImGui::PopItemWidth();
             }

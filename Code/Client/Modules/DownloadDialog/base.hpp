@@ -84,20 +84,24 @@ namespace dldialog
     {
         replaceAll(baseURL, "/files", "");
 
-        std::string gpath = GlobalConfig.gamepath;
+        std::string gpath(GlobalConfig.gamepath);
 
         std::string burl = baseURL;
 
-        replaceAll(gpath, "//Game.exe", "");
-        replaceAll(gpath, "/Game.exe", "");
+        printf("%s\n", gpath.c_str());
+
+        replaceAll(gpath, "Game.exe", "");
+
         replaceAll(burl, "/files", "");
         replaceAll(gpath, "/", "\\");
 
-        std::string modDir = gpath + "\\mods\\";
+        printf("%s\n", gpath.c_str());
+
+        std::string modDir = gpath + "mods\\";
 
         CreateDirectory(modDir.c_str(), NULL);
 
-        std::string fileDir = gpath + "\\mods\\" + folder;
+        std::string fileDir = gpath + "mods\\" + folder;
         modpath = "mods\\" + folder;
 
         CreateDirectory(fileDir.c_str(), NULL);
@@ -153,8 +157,8 @@ namespace dldialog
                     replaceAll(path, burl + "/", "");
                     replaceAll(path, "/", "\\");
 
-                    std::string filePath = gpath + "\\mods\\" + folder + "\\" + path;
-                    std::string hashPath = gpath + "\\mods\\" + folder + "\\" + path;
+                    std::string filePath = gpath + "mods\\" + folder + "\\" + path;
+                    std::string hashPath = gpath + "mods\\" + folder + "\\" + path;
                     replaceAll(hashPath, "\\", "/");
                     std::string lPath = "mods\\" + folder + "\\" + path;
 
@@ -191,16 +195,16 @@ namespace dldialog
         std::string path = currentFileUrl;
         std::string wpath = currentFileUrl;
 
-        std::string gpath = GlobalConfig.gamepath;
+        std::string gpath(GlobalConfig.gamepath);
 
-        replaceAll(gpath, "//Game.exe", "");
+        replaceAll(gpath, "Game.exe", "");
         replaceAll(burl, "/files", "");
         replaceAll(path, burl + "/", "");
         replaceAll(wpath, burl + "/", "");
         replaceAll(path, "/", "\\");
         replaceAll(gpath, "/", "\\");
 
-        std::string filePath = gpath + "\\mods\\" + folder + "\\" + path;
+        std::string filePath = gpath + "mods\\" + folder + "\\" + path;
 
         std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
 
