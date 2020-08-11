@@ -442,7 +442,7 @@ http_t* http_post( char const* url, void const* data, size_t size, void* memctx 
     char const* resource;
     
     if( http_internal_parse_url( url, address, sizeof( address ), port, sizeof( port ), &resource ) == 0 )
-        return NULL; 
+        return NULL;
 
     HTTP_SOCKET socket = http_internal_connect( address, port );
     if( socket == HTTP_INVALID_SOCKET ) return NULL;

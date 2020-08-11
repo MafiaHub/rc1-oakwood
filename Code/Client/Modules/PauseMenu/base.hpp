@@ -119,6 +119,92 @@ namespace pausemenu {
         }
     }
 
+    char title[32] = "";
+    char message[512] = "";
+
+    std::string errMsg = "";
+
+    HANDLE myProcess = NULL;
+    DWORD exCode = NULL;
+
+    bool failedToStart = false;
+
+    inline void render_report()
+    {
+        ImGui::InputText("Title", title, 32);
+        ImGui::InputTextMultiline("Message", message, 512, ImVec2(0, 400));
+
+        if (myProcess == NULL)
+        {
+            if (ImGui::Button("Send"))
+            {
+                STARTUPINFO si;
+                PROCESS_INFORMATION pi;
+
+                ZeroMemory(&si, sizeof(si));
+                si.cb = sizeof(si);
+                ZeroMemory(&pi, sizeof(pi));
+
+                std::string server;
+
+                if (clientActiveState == ClientState_Browser)
+                {
+                    server = "ServerBrowser";
+                }
+                else
+                {
+                    server = std::string(GlobalConfig.server_address) + ":" + std::to_string(GlobalConfig.port);
+                }
+
+                std::string t(title);
+                std::string m(message);
+
+                replaceAll(t, " ", "{sp}");
+                replaceAll(m, " ", "{sp}");
+                replaceAll(m, "\n", "{br}");
+
+                if (!CreateProcessA(NULL, (LPSTR)(GlobalConfig.localpath + "\\bin\\BugReporter.exe" + " " + GlobalConfig.username + "|" + server + "|" + t + "|" + m).c_str(), NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi)) failedToStart = true;
+                myProcess = pi.hProcess;
+                if (failedToStart)
+                {
+                    errMsg = "Unable to start process";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+                else
+                {
+                    errMsg = "Sending report...";
+                }
+            }
+        }
+        else
+        {
+            GetExitCodeProcess(myProcess, &exCode);
+
+            if (exCode == STILL_ACTIVE)
+            {
+                errMsg = "Sending report...";
+            }
+            else
+            {
+                if (!exCode)
+                {
+                    errMsg = "Report successfully sent!";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+                else
+                {
+                    errMsg = "Failed to send report";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+            }
+        }
+
+        if (errMsg != "") ImGui::Text("%s", errMsg.c_str());
+    }
+
     inline void render() {
         
         ImGui::SetNextWindowPosCenter(ImGuiCond_Once);
@@ -140,9 +226,19 @@ namespace pausemenu {
             if (ImGui::BeginTabBar("escmenu")) {
 
                 if (ImGui::BeginTabItem("Info")) {
+                    if(errMsg.size() > 0) errMsg = "";
+
+                    if(myProcess) myProcess = NULL;
+                    if(exCode) exCode = NULL;
+
+                    if (strlen(title) > 0) memset(title, 0, 32);
+                    if (strlen(message) > 0) memset(title, 0, 512);
+
+                    if(failedToStart) failedToStart = false;
+
                     if (clientActiveState == ClientState_Connected) {
                         colored_text(R"(Welcome to Mafia: {ff0000}Oakwood{ffffff}, you are playing a '{00ff00}%s{ffffff}' version of this modification. 
-Please report all your issues on our {8f6eeb}discord {ffffff}server.)", OAK_BUILD_TYPE);
+Please report all your issues using the {00ff00}Report {ffffff}tab or on our {8f6eeb}discord {ffffff}server.)", OAK_BUILD_TYPE);
                         colored_text("Current server IP: {00ff00}%s:%d", GlobalConfig.server_address, GlobalConfig.port);
                     } else {
                         colored_text("You {ff0000}aren't {ffffff}connected to any server right now! :(");
@@ -162,8 +258,29 @@ Please report all your issues on our {8f6eeb}discord {ffffff}server.)", OAK_BUIL
                     ImGui::EndTabItem();
                 }
 
-                mainmenu::render_game_settings();
+                if (ImGui::BeginTabItem("Settings"))
+                {
+                    if (errMsg.size() > 0) errMsg = "";
 
+                    if (myProcess) myProcess = NULL;
+                    if (exCode) exCode = NULL;
+
+                    if (strlen(title) > 0) memset(title, 0, 32);
+                    if (strlen(message) > 0) memset(title, 0, 512);
+
+                    if (failedToStart) failedToStart = false;
+
+                    mainmenu::render_game_settings();
+
+                    ImGui::EndTabItem();
+                }
+
+                if (ImGui::BeginTabItem("Report"))
+                {
+                    render_report();
+                    ImGui::EndTabItem();
+                }
+                
                 ImGui::EndTabBar();
             }
             

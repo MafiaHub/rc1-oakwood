@@ -506,20 +506,40 @@ namespace mainmenu {
         }
     }
 
+    char title[32] = "";
+    char message[512] = "";
+
+    std::string errMsg = "";
+
+    bool failedToStart = false;
+
+    HANDLE myProcess = NULL;
+    DWORD exCode = NULL;
+
     inline void render_game_settings() {
-        if (ImGui::BeginTabItem("Input Settings")) {
-            render_input_settings();
-            ImGui::EndTabItem();
-        }
+        if (ImGui::BeginTabBar("settings"))
+        {
+            if (ImGui::BeginTabItem("Player")) {
+                ImGui::InputText("Nickname", (char*)GlobalConfig.username, 32);
+                ImGui::EndTabItem();
+            }
 
-        if (ImGui::BeginTabItem("Audio Settings")) {
-            render_audio_settings();
-            ImGui::EndTabItem();
-        }
+            if (ImGui::BeginTabItem("Input")) {
+                render_input_settings();
+                ImGui::EndTabItem();
+            }
 
-        if (ImGui::Button("Save")) {
-            Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
-        } ImGui::SameLine();
+            if (ImGui::BeginTabItem("Audio")) {
+                render_audio_settings();
+                ImGui::EndTabItem();
+            }
+
+            if (ImGui::Button("Save")) {
+                Profile::generate_profile(Profile::ExtraFields{ qc_address, qc_port });
+            } ImGui::SameLine();
+
+            ImGui::EndTabBar();
+        }
     }
 
     inline void draw_picking_state() {
@@ -592,6 +612,82 @@ namespace mainmenu {
         ImGui::End();
     }
 
+    inline void render_report()
+    {
+        ImGui::InputText("Title", title, 32);
+        ImGui::InputTextMultiline("Message", message, 512, ImVec2(0, 400));
+
+        if (myProcess == NULL)
+        {
+            if (ImGui::Button("Send"))
+            {
+                STARTUPINFO si;
+                PROCESS_INFORMATION pi;
+
+                ZeroMemory(&si, sizeof(si));
+                si.cb = sizeof(si);
+                ZeroMemory(&pi, sizeof(pi));
+
+                std::string server;
+
+                if (clientActiveState == ClientState_Browser)
+                {
+                    server = "ServerBrowser";
+                }
+                else
+                {
+                    server = std::string(GlobalConfig.server_address) + ":" + std::to_string(GlobalConfig.port);
+                }
+
+                std::string t(title);
+                std::string m(message);
+
+                replaceAll(t, " ", "{sp}");
+                replaceAll(m, " ", "{sp}");
+                replaceAll(m, "\n", "{br}");
+
+                if (!CreateProcessA(NULL, (LPSTR)(GlobalConfig.localpath + "\\bin\\BugReporter.exe" + " " + GlobalConfig.username + "|" + server + "|" + t + "|" + m).c_str(), NULL, NULL, FALSE, NULL, NULL, NULL, &si, &pi)) failedToStart = true;
+                myProcess = pi.hProcess;
+                if (failedToStart)
+                {
+                    errMsg = "Unable to start process";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+                else
+                {
+                    errMsg = "Sending report...";
+                }
+            }
+        }
+        else
+        {
+            GetExitCodeProcess(myProcess, &exCode);
+
+            if (exCode == STILL_ACTIVE)
+            {
+                errMsg = "Sending report...";
+            }
+            else
+            {
+                if (!exCode)
+                {
+                    errMsg = "Report successfully sent!";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+                else
+                {
+                    errMsg = "Failed to send report";
+                    myProcess = NULL;
+                    exCode = NULL;
+                }
+            }
+        }
+
+        if (errMsg != "") ImGui::Text("%s", errMsg.c_str());
+    }
+
     inline void render() {
         if (is_picking_key == -1) {
             ImGui::SetNextWindowPosCenter();
@@ -608,6 +704,16 @@ namespace mainmenu {
 
             if (ImGui::BeginTabBar("blah")) {
                 if (ImGui::BeginTabItem("Server Browser")) {
+                    if (errMsg.size() > 0) errMsg = "";
+
+                    if (myProcess) myProcess = NULL;
+                    if (exCode) exCode = NULL;
+
+                    if(strlen(title) > 0) memset(title, 0, 32);
+                    if(strlen(message) > 0) memset(title, 0, 512);
+
+                    if (failedToStart) failedToStart = false;
+
                     if (servers.size() == 0)
                     {
                         ImGui::Text("Sorry, but there aren't any available servers now. :(");
@@ -652,6 +758,16 @@ namespace mainmenu {
                 }
 
                 if (ImGui::BeginTabItem("Quick Connect")) {
+                    if (errMsg.size() > 0) errMsg = "";
+
+                    if (myProcess) myProcess = NULL;
+                    if (exCode) exCode = NULL;
+
+                    if (strlen(title) > 0) memset(title, 0, 32);
+                    if (strlen(message) > 0) memset(title, 0, 512);
+
+                    if (failedToStart) failedToStart = false;
+
                     ImGui::InputText("IP", (char*)qc_address, 32);
                     ImGui::InputInt("Port", &qc_port);
 
@@ -681,12 +797,29 @@ namespace mainmenu {
                     ImGui::EndTabItem();
                 }
 
-                if (ImGui::BeginTabItem("Player Settings")) {
-                    ImGui::InputText("Nickname", (char*)GlobalConfig.username, 32);
+                if (ImGui::BeginTabItem("Settings"))
+                {
+                    if (errMsg.size() > 0) errMsg = "";
+
+                    if (myProcess) myProcess = NULL;
+                    if (exCode) exCode = NULL;
+
+                    if (strlen(title) > 0) memset(title, 0, 32);
+                    if (strlen(message) > 0) memset(title, 0, 512);
+
+                    if (failedToStart) failedToStart = false;
+
+                    render_game_settings();
+
                     ImGui::EndTabItem();
                 }
 
-                render_game_settings();
+                if (ImGui::BeginTabItem("Report"))
+                {
+                    render_report();
+                    ImGui::EndTabItem();
+                }
+
                 ImGui::EndTabBar();
 
                 if (ImGui::Button("Quit")) {
